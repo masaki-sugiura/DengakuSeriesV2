@@ -1,4 +1,4 @@
-//	$Id: menu.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: menu.cpp,v 1.2 2003-10-18 13:42:34 sugiura Exp $
 /*
  *	menu.cpp
  *	メニュー表示に関するクラス
@@ -27,7 +27,10 @@ MenuItem::readOpt(const StringBuffer& opt)
 int
 MenuList::addMenu(Menu* menu)
 {
-	if (menu == NULL || menu->getName().length() <= 0) return -1;
+	if (menu == NULL || menu->getName().length() <= 0) {
+//		::MessageBox(NULL, "addMenu() failed.", NULL, MB_OK);
+		return -1;
+	}
 	int	ret = this->addItem(menu);
 	if (ret >= 0) m_pLastMenu = menu;
 	return ret;

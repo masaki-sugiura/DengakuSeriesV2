@@ -1,4 +1,4 @@
-//	$Id: si_menu.cpp,v 1.5 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: si_menu.cpp,v 1.6 2003-10-18 13:42:34 sugiura Exp $
 /*
  *	si_menu.cpp
  *	メニュー表示関数
@@ -245,7 +245,9 @@ SessionInstance::stopMenuThread(DWORD waittime)
 int
 SessionInstance::si_newmenu(const StringBuffer& name, BOOL bExtended)
 {
-	if (name.length() <= 0) return FALSE;
+	if (name.length() <= 0) {
+		return FALSE;
+	}
 	//	新しいメニューの割り当て
 	return m_UserMenu.addMenu(new Menu(name, bExtended)) > 0;
 }

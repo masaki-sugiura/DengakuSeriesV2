@@ -1,5 +1,5 @@
 //Microsoft Developer Studio generated resource script.
-//	$Id: seldir.rc,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//
 #include "resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
@@ -7,9 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#ifndef __GNUC__
 #include "afxres.h"
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -22,34 +20,6 @@
 LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
 #pragma code_page(932)
 #endif //_WIN32
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-#define SELDIR_INC_TEMPLATE
-#include "sddlg_templ.rc"
-#undef SELDIR_INC_TEMPLATE
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
-BEGIN
-    IDD_DIRBROWSE, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 180
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 200
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////

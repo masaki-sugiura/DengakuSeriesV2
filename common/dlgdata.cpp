@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.11 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.12 2003-10-18 13:42:34 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -123,9 +123,20 @@ DlgPageProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_CTLCOLORSTATIC:
 	case WM_CTLCOLORBTN:
-//	case WM_CTLCOLOREDIT:
+	case WM_CTLCOLORLISTBOX:
+	case WM_CTLCOLOREDIT:
 		//	コントロールのフォントの色を変更
-		return reinterpret_cast<BOOL>(pdp->onCtlColor(wParam,lParam));
+		return reinterpret_cast<BOOL>(pdp->onCtlColor(uMsg, wParam,lParam));
+
+#if 0
+	case WM_CTLCOLORSTATIC:
+		pdp->onCtlColor(wParam,lParam);
+		return FALSE;
+#endif
+
+	case DM_SETDEFID:
+		// prevent the default message handling
+		break;
 
 	case WM_CLOSE:
 		hwndFrame = pdp->getDlgFrame().getUserDlg();
@@ -177,6 +188,7 @@ DlgPage::createPage(
 	HWND hwndCtrl,
 	BYTE hbId,
 	WORD x, WORD y, WORD cx, WORD cy,
+	bool bInTabCtrl,
 	FontProperty& fp)
 {
 	//	hwndCtrl	:	子ダイアログを持つコントロールのウィンドウハンドル
@@ -221,6 +233,7 @@ DlgPage::createPage(
 
 	//	ダイアログの作成
 	HWND hwndFrame = m_pDlgFrame->getUserDlg();
+	m_bInTabCtrl = bInTabCtrl;
 	m_hwndPage = ::CreateDialogIndirectParam(
 					m_pDlgFrame->getSessionInstance()->getInstanceHandle(),
 					(LPDLGTEMPLATE)(BYTE*)pDlgTemplate,
@@ -251,7 +264,8 @@ DlgPage::createPage(
 								childPageQI->m_pdp->getName(),
 								childPageQI->m_hwndCtrl,
 								childPageQI->m_x,childPageQI->m_y,
-								childPageQI->m_cx,childPageQI->m_cy
+								childPageQI->m_cx,childPageQI->m_cy,
+								childPageQI->m_bInTabCtrl
 							);
 			m_pShowPageQueue->delItemByIndex(0);
 		}
@@ -266,6 +280,9 @@ DlgPage::initPage(HWND hDlg)
 {
 	if (hDlg == NULL) return FALSE;
 	m_hwndPage = hDlg;
+	if (m_bInTabCtrl) {
+		m_pDlgFrame->setBackGroundToTabColor(m_hwndPage);
+	}
 	//	コントロールの初期化
 	m_pCtrlList->initSequentialGet();
 	CtrlListItem* cli;
@@ -411,13 +428,16 @@ BOOL
 DlgPage::addShowPageQueue(
 	LPCSTR pname,
 	HWND hwndCtrl,
-	WORD x, WORD y, WORD cx, WORD cy)
+	WORD x, WORD y, WORD cx, WORD cy,
+	bool bInTabCtrl)
 {
 	if (m_pDlgFrame->getUserDlg() == NULL) return FALSE;
 	DlgPage* pdp = m_pDlgFrame->getPage(pname);
 	if (pdp == NULL) return FALSE;
-	m_pShowPageQueue->addItem(new ShowPageQueueItem(pdp,hwndCtrl,x,y,cx,cy),
-							-1);
+	m_pShowPageQueue->addItem(new ShowPageQueueItem(pdp, hwndCtrl,
+													x, y, cx, cy,
+													bInTabCtrl),
+							  -1);
 	return TRUE;
 }
 
@@ -478,7 +498,9 @@ GetCtrlListItemByHWND(HWND hwndCtrl)
 	if (hwndCtrl == NULL) return NULL;
 	CtrlListItem*
 		cli = (CtrlListItem*)::SendMessage(hwndCtrl, WM_GET_CTRL_PTR, 0, 0);
-	if (cli == NULL || !cli->isValid()) return NULL;
+	if (cli == NULL || !cli->isValid()) {
+		return NULL;
+	}
 	return cli;
 }
 
@@ -516,10 +538,10 @@ DlgPage::onHScroll(WPARAM wParam, LPARAM lParam)
 
 //	WM_CTLCOLOR ハンドラ
 HBRUSH
-DlgPage::onCtlColor(WPARAM wParam, LPARAM lParam)
+DlgPage::onCtlColor(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	CtrlListItem* cli = GetCtrlListItemByHWND((HWND)lParam);
-	return cli ? cli->onWmCtlColor(wParam, lParam) : NULL;
+	return cli ? cli->onWmCtlColor(uMsg, wParam, lParam) : NULL;
 }
 
 WORD
@@ -654,6 +676,10 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 
+	case DM_SETDEFID:
+		// prevent the default message handling
+		break;
+
 	case DM_GETDEFID:
 		::SetWindowLong(hDlg, DWL_MSGRESULT, (DC_HASDEFID << 16) | pdf->getDefID());
 		break;
@@ -715,6 +741,7 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 DlgFrame::DlgFrame()
 	:	m_pSessionInstance(NULL),
 		m_hwndFrame(NULL),
+		m_pThemeWrapper(NULL),
 		m_pPageList(new NamedLinkList<DlgPage>),
 		m_pCurDlgPage(NULL),
 		m_DlgTitle(80),
@@ -723,6 +750,15 @@ DlgFrame::DlgFrame()
 		m_height(0),
 		m_flags(0)
 {
+	try {
+		m_pThemeWrapper = new ThemeWrapper();
+		m_pThemeWrapper->SetThemeAppProperties(STAP_ALLOW_NONCLIENT |
+											   STAP_ALLOW_CONTROLS  |
+											   STAP_ALLOW_WEBCONTENT);
+	} catch (ThemeNotSupportedError&) {
+		m_pThemeWrapper = NULL;
+	}
+
 	GetDefFontProperty(m_pFontProp);
 	m_pos.x = m_pos.y = 0;
 }
@@ -731,6 +767,7 @@ DlgFrame::~DlgFrame()
 {
 	if (m_hwndFrame != NULL) ::DestroyWindow(m_hwndFrame);
 	delete m_pPageList;
+	delete m_pThemeWrapper;
 	delete m_pFontProp;
 }
 
@@ -928,7 +965,8 @@ DlgFrame::initFrame(HWND hDlg)
 	return this->createPage(strRootPageName,
 							NULL,
 							UWIDTH,UHEIGHT / 2,
-							m_width-2,m_height - 1) != NULL;
+							m_width-2,m_height - 1,
+							false) != NULL;
 }
 
 //	親ダイアログの破棄
@@ -971,7 +1009,8 @@ DlgFrame::createPage(
 	const StringBuffer& name,
 	HWND hWnd,
 	WORD ofx, WORD ofy,
-	WORD cx, WORD cy)
+	WORD cx, WORD cy,
+	bool bInTabCtrl)
 {
 	//	ofx, ofy はダイアログ単位(横=文字幅/4, 縦=文字高/8)、
 	//	cx, cy は文字単位で与えられる
@@ -980,8 +1019,9 @@ DlgFrame::createPage(
 	if (pdp == NULL) return NULL;
 	//	コントロールのIDの HIBYTE() には子ダイアログ識別indexが入る
 	BYTE index = (BYTE)(m_pPageList->getItemIndexByPtr(pdp) + 1);
-	return pdp->createPage(hWnd,index,
-							ofx,ofy,cx*UWIDTH,cy*UHEIGHT,*m_pFontProp);
+	return pdp->createPage(hWnd, index,
+						   ofx, ofy, cx*UWIDTH, cy*UHEIGHT,
+						   bInTabCtrl, *m_pFontProp);
 }
 
 //	コントロールを名前で取得

@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.14 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: ctrldata.h,v 1.15 2003-10-18 13:42:34 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -216,8 +216,8 @@ public:
 
 	WORD onWmCommand(WPARAM wParam, LPARAM lParam);
 	WORD onWmNotify(WPARAM wParam, LPARAM lParam);
-	HBRUSH onWmCtlColor(WPARAM wParam, LPARAM lParam);
 	WORD onWmImeNotify(WPARAM wParam, LPARAM lParam);
+	HBRUSH onWmCtlColor(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	//	virtual functions, should/may be overrided.
 	virtual	int getCtrlNum() const { return m_cnum; }
@@ -359,7 +359,7 @@ protected:
 	//	ウィンドウメッセージハンドラ
 	virtual	WORD onCommand(WPARAM,LPARAM);	//	WM_COMMAND
 	virtual	WORD onNotify(WPARAM,LPARAM);	//	WM_NOTIFY
-	virtual	HBRUSH onCtlColor(HDC);			//	WM_CTLCOLOR
+	virtual	HBRUSH onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDC);	//	WM_CTLCOLOR
 	virtual WORD onImeNotify(WPARAM,LPARAM);	//	WM_IME_NOTIFY
 };
 
@@ -404,7 +404,7 @@ public:
 	StringBuffer onGetString();
 	StringBuffer onGetCtrlFont();
 
-	HBRUSH onCtlColor(HDC);
+	HBRUSH onCtlColor(HWND hwndCtrl, UINT, HDC);
 
 	BOOL isCommand(WORD);
 
@@ -429,7 +429,7 @@ public:
 	WORD onCommand(WPARAM, LPARAM);
 
 protected:
-//	BOOL onCtlColor(HDC);
+	HBRUSH onCtlColor(HWND hwndCtrl, UINT, HDC); // WM_CTLCOLORBTN
 };
 
 //	check, rdbtn
@@ -463,7 +463,7 @@ public:
 	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
 
 protected:
-//	BOOL onCtlColor(HDC);
+	HBRUSH onCtlColor(HWND hwndCtrl, UINT, HDC); // WM_CTLCOLORSTATIC
 };
 
 //	edit, mledit
@@ -561,6 +561,7 @@ public:
 	BOOL onInsertItem(CmdLineParser&, const StringBuffer&);
 	BOOL onDeleteItem(const StringBuffer&);
 	BOOL onResetList();
+	BOOL onSetCtrlFont(CmdLineParser&);	//	フォントの変更
 	StringBuffer onGetState();
 	StringBuffer onGetItem(const StringBuffer&);
 
@@ -662,6 +663,9 @@ public:
 	BOOL isCommand(WORD);
 
 	WORD onCommand(WPARAM, LPARAM);
+
+protected:
+	HBRUSH onCtlColor(HWND hwndCtrl, UINT, HDC); // WM_CTLCOLORSTATIC
 };
 
 //	list
@@ -765,6 +769,7 @@ public:
 	BOOL onDeleteItem(const StringBuffer&);
 	BOOL onResetList();
 	StringBuffer onGetState();
+	BOOL onSetCtrlFont(CmdLineParser&);	//	フォントの変更
 
 	WORD onNotify(WPARAM, LPARAM);
 
@@ -853,6 +858,8 @@ protected:
 	POINTS m_poffset;
 	POINTS m_pmargin;
 	BOOL m_bVisible;
+
+	HBRUSH onCtlColor(HWND hwndCtrl, UINT, HDC);
 };
 
 //	tab
@@ -862,6 +869,7 @@ public:
 			const StringBuffer& text = nullStr);
 
 	HWND getFocusedCtrl() const;
+	WORD getDefID() const; // デフォルトプッシュボタンのＩＤを返す
 
 	WORD getHeight();
 

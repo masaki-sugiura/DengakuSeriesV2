@@ -1,4 +1,4 @@
-//	$Id: ms_func.cpp,v 1.5 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: ms_func.cpp,v 1.6 2003-10-18 13:42:34 sugiura Exp $
 /*
  *	ms_func.cpp
  *	ƒƒjƒ…[•\Ž¦ŠÖ”
@@ -82,6 +82,7 @@ NEWMENU(LPCSTR menuname)
 	try {
 		return g_pSessionInstance->si_newmenu(menuname,TRUE);
 	} catch (...) {
+//		::MessageBox(NULL, "some exception occured.", NULL, MB_OK);
 		return 0;
 	}
 }

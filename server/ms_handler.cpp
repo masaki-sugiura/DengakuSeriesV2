@@ -1,4 +1,4 @@
-//	$Id: ms_handler.cpp,v 1.4 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: ms_handler.cpp,v 1.5 2003-10-18 13:42:34 sugiura Exp $
 /*
  *	ms_handler.cpp
  *	メニューサービスの実装
@@ -46,6 +46,7 @@ ConvData::On_menu(CmdLineParser& params)
 			}
 			if (hwndTemp && ::IsWindow(hwndTemp)) {
 				POINT pt;
+				pt.x = pt.y = 0;
 				::ClientToScreen(hwndTemp,&pt);
 				MenuPos.x += pt.x;
 				MenuPos.y += pt.y;

@@ -26,7 +26,6 @@ NULL=nul
 !ENDIF 
 
 CPP=cl.exe
-F90=df.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "common - Win32 Release"
@@ -134,8 +133,7 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-F90_PROJ=/compile_only /include:"$(INTDIR)\\" /nologo /warn:nofileopt /module:"Release/" /object:"Release/" 
-F90_OBJS=.\Release/
+F90=df.exe
 CPP_PROJ=/nologo /MT /W3 /GR /GX /O2 /I "..\common" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /FAcs /Fa"$(INTDIR)\\" /FR"$(INTDIR)\\" /Fp"$(INTDIR)\common.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\common.bsc" 
@@ -303,8 +301,7 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-F90_PROJ=/check:bounds /compile_only /debug:full /include:"$(INTDIR)\\" /nologo /traceback /warn:argument_checking /warn:nofileopt /module:"Debug/" /object:"Debug/" /pdbfile:"Debug/DF60.PDB" 
-F90_OBJS=.\Debug/
+F90=df.exe
 CPP_PROJ=/nologo /MTd /W3 /Gm /GR /GX /ZI /Od /I "..\common" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /Fp"$(INTDIR)\common.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\common.bsc" 
@@ -393,20 +390,6 @@ LIB32_OBJS= \
    $(CPP) @<<
    $(CPP_PROJ) $< 
 <<
-
-.SUFFIXES: .fpp
-
-.for{$(F90_OBJS)}.obj:
-   $(F90) $(F90_PROJ) $<  
-
-.f{$(F90_OBJS)}.obj:
-   $(F90) $(F90_PROJ) $<  
-
-.f90{$(F90_OBJS)}.obj:
-   $(F90) $(F90_PROJ) $<  
-
-.fpp{$(F90_OBJS)}.obj:
-   $(F90) $(F90_PROJ) $<  
 
 
 !IF "$(NO_EXTERNAL_DEPS)" != "1"

@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.26 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.27 2003-10-18 13:42:34 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -182,6 +182,7 @@ CtrlListItem::CtrlProperty::init(HWND hDlg)
 {
 	m_hwndCtrl = ::GetDlgItem(hDlg, m_id);
 	if (m_hwndCtrl == NULL) return FALSE;
+//	m_pCtrl->getParentPage().getDlgFrame().setWindowTheme(m_hwndCtrl);
 	m_pfnDefCallback = (WNDPROC)::SetWindowLong(m_hwndCtrl,
 												GWL_WNDPROC,
 												(LONG)CtrlListItemProc);
@@ -466,9 +467,9 @@ CtrlListItem::onWmNotify(WPARAM wParam, LPARAM lParam)
 }
 
 HBRUSH
-CtrlListItem::onWmCtlColor(WPARAM wParam, LPARAM lParam)
+CtrlListItem::onWmCtlColor(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	return m_bInitDone ? this->onCtlColor((HDC)wParam) : NULL;
+	return m_bInitDone ? this->onCtlColor((HWND)lParam, uMsg, (HDC)wParam) : NULL;
 }
 
 WORD
@@ -676,6 +677,20 @@ CtrlListItem::dispatchRawMsg(
 	HWND hCtrl, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg) {
+#if 0
+	case WM_PAINT:
+		{
+			LRESULT ret = ::CallWindowProc(pCProp->m_pfnDefCallback,
+										   hCtrl, uMsg, wParam, lParam);
+			PAINTSTRUCT ps;
+			::BeginPaint(hCtrl, &ps);
+			pCProp->m_pCtrl->getParentPage()
+				.getDlgFrame().drawThemeParentBackground(hCtrl, ps.hdc, &ps.rcPaint);
+			::EndPaint(hCtrl, &ps);
+			return ret;
+		}
+		break;
+#endif
 	case WM_GET_CTRL_PTR:
 		return (LRESULT)pCProp->m_pCtrl;
 #if 0
@@ -703,7 +718,7 @@ CtrlListItem::onNotify(WPARAM, LPARAM)
 }
 
 HBRUSH
-CtrlListItem::onCtlColor(HDC)
+CtrlListItem::onCtlColor(HWND hwndCtrl, UINT, HDC)
 {
 	return 0;
 }
@@ -965,22 +980,17 @@ SimpleCtrl::onGetCtrlFont()
 }
 
 HBRUSH
-SimpleCtrl::onCtlColor(HDC hDc)
+SimpleCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDc)
 {
-#if 0
 	if (!m_pcp->m_hbrBackground) {
 		LOGBRUSH lbr;
 		lbr.lbColor = ::GetBkColor(hDc);
 		lbr.lbStyle = BS_SOLID;
 		m_pcp->m_hbrBackground = ::CreateBrushIndirect(&lbr);
 	}
-#endif
 	::SetTextColor(hDc, m_pcp->m_fontprop.m_color);
-	::SetBkMode(hDc, TRANSPARENT);
-	return ::GetSysColorBrush(COLOR_BTNFACE);
-#if 0
+//	::SetBkMode(hDc, TRANSPARENT);
 	return m_pcp->m_hbrBackground;
-#endif
 }
 
 BOOL
@@ -1019,9 +1029,17 @@ BtnCtrl::getHeight()
 WORD
 BtnCtrl::getDefID() const
 {
-	DWORD dwStyle = ::GetWindowLong(m_pcp->m_hwndCtrl, GWL_STYLE);
-	if (dwStyle & BS_DEFPUSHBUTTON) return m_pcp->m_id;
+//	DWORD dwStyle = ::GetWindowLong(m_pcp->m_hwndCtrl, GWL_STYLE);
+//	if (dwStyle & BS_DEFPUSHBUTTON) return m_pcp->m_id;
+	if (m_pcp->m_style & BS_DEFPUSHBUTTON) return m_pcp->m_id;
 	return 0xFFFF;
+}
+
+HBRUSH
+BtnCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDc)
+{
+	HBRUSH hBrush = SimpleCtrl::onCtlColor(hwndCtrl, uMsg, hDc);
+	return uMsg == WM_CTLCOLORBTN ? hBrush : NULL;
 }
 
 WORD
@@ -1039,7 +1057,7 @@ TextCtrl::TextCtrl(
 {
 	m_pcp->m_style		= SS_LEFTNOWORDWRAP|SS_NOTIFY|
 							WS_CHILD/*|WS_TABSTOP*/|WS_VISIBLE|WS_GROUP;
-	m_pcp->m_exstyle	= 0x0;
+	m_pcp->m_exstyle	= 0;
 	m_pcp->m_id			= 0;
 	m_pcp->m_bufsize	= 1;
 	m_pcp->m_classname	= (LPSTR)0x82;
@@ -1054,6 +1072,13 @@ TextCtrl::createCtrlTemplate(CtrlTemplateArgs& cta)
 	cta.m_cy = UHEIGHT * m_cy - UHEIGHT;
 	m_pcp->setCtrlTemplate(cta);
 	return TRUE;
+}
+
+HBRUSH
+TextCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDc)
+{
+	SimpleCtrl::onCtlColor(hwndCtrl, uMsg, hDc);
+	return NULL;
 }
 
 EditCtrl::EditCtrl(
@@ -1640,6 +1665,7 @@ RadioCtrl::RadioCtrl(
 	: HasListCtrl(name,text,CTRLID_RADIO)
 {
 	m_pcp->m_style		= BS_GROUPBOX|BS_NOTIFY|WS_CHILD|WS_VISIBLE|WS_TABSTOP;
+	m_pcp->m_exstyle	= WS_EX_TRANSPARENT;
 	m_pcp->m_bufsize	= 1;
 	m_pcp->m_classname	= (LPSTR)0x80;
 	m_pcp->m_text = text;
@@ -1836,6 +1862,13 @@ RadioCtrl::onResetList()
 {
 	if (m_pcp->m_hwndCtrl != NULL) return FALSE;
 	return HasListCtrl::onResetList() != 0;
+}
+
+HBRUSH
+RadioCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDC)
+{
+	SimpleCtrl::onCtlColor(hwndCtrl, uMsg, hDC);
+	return NULL;
 }
 
 StringBuffer
@@ -2356,8 +2389,9 @@ RefBtnCtrl::getHeight()
 WORD
 RefBtnCtrl::getDefID() const
 {
-	DWORD dwStyle = ::GetWindowLong(m_pcp->m_hwndCtrl, GWL_STYLE);
-	if (dwStyle & BS_DEFPUSHBUTTON) return m_pcp->m_id;
+//	DWORD dwStyle = ::GetWindowLong(m_pcp->m_hwndCtrl, GWL_STYLE);
+//	if (dwStyle & BS_DEFPUSHBUTTON) return m_pcp->m_id;
+	if (m_pcp->m_style & BS_DEFPUSHBUTTON) return m_pcp->m_id;
 	return 0xFFFF;
 }
 
@@ -2513,6 +2547,9 @@ ChkListCtrl::initCtrl(HWND hDlg)
 	}
 	this->setViewIndex();
 	ListView_SetColumnWidth(m_pcp->m_hwndCtrl, 0, LVSCW_AUTOSIZE);
+
+	ListView_SetTextColor(m_pcp->m_hwndCtrl, m_pcp->m_fontprop.m_color);
+
 	return TRUE;
 }
 
@@ -2730,6 +2767,20 @@ ChkListCtrl::onGetState()
 		}
 	}
 	return buf;
+}
+
+BOOL
+ChkListCtrl::onSetCtrlFont(CmdLineParser& argv)
+{
+	if (argv.itemNum() < 1) return FALSE;
+	argv.initSequentialGet();
+	const StringBuffer& fface = argv.getNextArgvStr();
+	const StringBuffer& color = argv.getNextArgvStr();
+	const StringBuffer& fname = argv.getNextArgvStr();
+	this->setFont(fface, color, fname);
+	ListView_SetTextColor(m_pcp->m_hwndCtrl, m_pcp->m_fontprop.m_color);
+	this->sendData();
+	return TRUE;
 }
 
 WORD
@@ -2989,6 +3040,7 @@ LViewCtrl::initCtrl(HWND hDlg)
 	ListView_SetExtendedListViewStyleEx(m_pcp->m_hwndCtrl,
 										LVS_EX_FULLROWSELECT,
 										LVS_EX_FULLROWSELECT);
+	ListView_SetTextColor(m_pcp->m_hwndCtrl, m_pcp->m_fontprop.m_color);
 
 	return TRUE;
 }
@@ -3613,6 +3665,20 @@ TreeCtrl::onResetList()
 	return TRUE;
 }
 
+BOOL
+TreeCtrl::onSetCtrlFont(CmdLineParser& argv)
+{
+	if (argv.itemNum() < 1) return FALSE;
+	argv.initSequentialGet();
+	const StringBuffer& fface = argv.getNextArgvStr();
+	const StringBuffer& color = argv.getNextArgvStr();
+	const StringBuffer& fname = argv.getNextArgvStr();
+	this->setFont(fface, color, fname);
+	TreeView_SetTextColor(m_pcp->m_hwndCtrl, m_pcp->m_fontprop.m_color);
+	this->sendData();
+	return TRUE;
+}
+
 StringBuffer
 TreeCtrl::onGetState()
 {
@@ -3707,6 +3773,7 @@ FrameCtrl::FrameCtrl(
 		m_bVisible = FALSE;
 	} else if (type == CTRLID_GROUP) {
 		m_pcp->m_style		= BS_GROUPBOX;
+		m_pcp->m_exstyle	= WS_EX_TRANSPARENT;
 		m_pcp->m_classname	= (LPSTR)0x80;
 		m_poffset.x = UWIDTH / 2;
 		m_poffset.y = UHEIGHT * 3 / 2;
@@ -3745,9 +3812,16 @@ FrameCtrl::getDefID() const
 {
 	if (m_state == 0) return 0xFFFF;
 	ItemData* id = m_item->getItemByIndex(m_state - 1);
-	if (!id) return 0xFFFF;
+	if (!id) {
+//		::MessageBox(NULL, "Failed to get id", NULL, MB_OK);
+		return 0xFFFF;
+	}
+	::MessageBox(NULL, (LPCSTR)id->getText(), NULL, MB_OK);
 	DlgPage* pdp = m_pDlgPage->getDlgFrame().getPage(id->getText());
-	if (!pdp) return 0xFFFF;
+	if (!pdp) {
+		::MessageBox(NULL, "Failed to get pdp", NULL, MB_OK);
+		return 0xFFFF;
+	}
 	return pdp->getDefID();
 }
 
@@ -3793,7 +3867,8 @@ FrameCtrl::initCtrl(HWND hDlg)
 								m_pcp->m_hwndCtrl,
 								m_poffset.x, m_poffset.y,
 								m_cx - m_pmargin.x,
-								m_cy - m_pmargin.y)) {
+								m_cy - m_pmargin.y,
+								m_pDlgPage->isInTabCtrl())) {
 			return FALSE;
 		}
 	}
@@ -3881,6 +3956,13 @@ FrameCtrl::onResetList()
 	return HasListCtrl::onResetList();
 }
 
+HBRUSH
+FrameCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDC)
+{
+	SimpleCtrl::onCtlColor(hwndCtrl, uMsg, hDC);
+	return NULL;
+}
+
 WORD
 FrameCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -3920,6 +4002,24 @@ TabCtrl::getFocusedCtrl() const
 			(hwndCtrl = pdp->getFocusedCtrl()) != 0) return hwndCtrl;
 	}
 	return NULL;
+}
+
+WORD
+TabCtrl::getDefID() const
+{
+	if (m_state == 0) return 0xFFFF;
+	ItemData* id = m_item->getItemByIndex(m_state - 1);
+	if (!id) {
+//		::MessageBox(NULL, "Failed to get id", NULL, MB_OK);
+		return 0xFFFF;
+	}
+	DlgPage* pdp = m_pDlgPage->getDlgFrame().getPage(
+					static_cast<NamedItemData*>(id)->getName());
+	if (!pdp) {
+//		::MessageBox(NULL, "Failed to get pdp", NULL, MB_OK);
+		return 0xFFFF;
+	}
+	return pdp->getDefID();
 }
 
 WORD
@@ -3964,7 +4064,8 @@ TabCtrl::initCtrl(HWND hDlg)
 							m_pcp->m_hwndCtrl,
 							m_poffset.x, m_poffset.y,
 							m_cx - m_pmargin.x,
-							m_cy - m_pmargin.y);
+							m_cy - m_pmargin.y,
+							true);
 	}
 	return TRUE;
 }
@@ -4458,8 +4559,11 @@ WORD
 OkCancelCtrl::getDefID() const
 {
 	for (int i = 0; i < 2; i++) {
-		DWORD dwStyle = ::GetWindowLong(m_pcp[i].m_hwndCtrl, GWL_STYLE);
-		if (dwStyle & BS_DEFPUSHBUTTON) return m_pcp[i].m_id;
+//		DWORD dwStyle = ::GetWindowLong(m_pcp[i].m_hwndCtrl, GWL_STYLE);
+//		if (dwStyle & BS_DEFPUSHBUTTON) return m_pcp[i].m_id;
+		if (m_pcp[i].m_style & BS_DEFPUSHBUTTON) {
+			return m_pcp[i].m_id;
+		}
 	}
 	return 0xFFFF;
 }

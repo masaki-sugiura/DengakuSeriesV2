@@ -1,4 +1,4 @@
-//	$Id: dlgdata.h,v 1.5 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: dlgdata.h,v 1.6 2003-10-18 13:42:34 sugiura Exp $
 /*
  *	dlgdata.h
  *	ダイアログを扱うクラス
@@ -19,6 +19,7 @@
 
 #include "linklist.h"
 #include "ctrlname.h"
+#include "ThemeWrapper.h"
 
 class SessionInstance;
 class DlgPage;
@@ -55,9 +56,11 @@ typedef	HashTable<CtrlListItem*,31>	CtrlHashTable;
 class ShowPageQueueItem {
 public:
 	ShowPageQueueItem(DlgPage* pdp, HWND hwndCtrl,
-					WORD x, WORD y, WORD cx, WORD cy)
+					  WORD x, WORD y, WORD cx, WORD cy,
+					  bool bInTabCtrl)
 		:	m_pdp(pdp), m_hwndCtrl(hwndCtrl),
-			m_x(x), m_y(y), m_cx(cx), m_cy(cy)
+			m_x(x), m_y(y), m_cx(cx), m_cy(cy),
+			m_bInTabCtrl(bInTabCtrl)
 	{}
 	DlgPage* m_pdp;
 	HWND m_hwndCtrl;
@@ -65,6 +68,7 @@ public:
 	WORD m_y;
 	WORD m_cx;
 	WORD m_cy;
+	bool m_bInTabCtrl;
 };
 
 //	子ダイアログを表すクラス
@@ -80,17 +84,19 @@ public:
 	WORD getWidth() const { return m_width; }
 	WORD getHeight() const { return m_height; }
 	WORD getDefID() const;
+	bool isInTabCtrl() const { return m_bInTabCtrl; }
 
 //	ダイアログの構築/初期化
 	DWORD evalPageSize();	//	m_width, m_height を計算
 	//	子ダイアログの構築
-	HWND createPage(HWND, BYTE, WORD, WORD, WORD, WORD, FontProperty&);
+	HWND createPage(HWND, BYTE, WORD, WORD, WORD, WORD, bool, FontProperty&);
 	BOOL initPage(HWND);	//	子ダイアログの初期化処理
 	BOOL uninitPage();	//	子ダイアログの破棄時の処理
 	BOOL showPage(BOOL);	//	子ダイアログの可視化
 	BOOL enablePage(BOOL);	//	子ダイアログの有効化
 	BOOL addShowPageQueue(LPCSTR pname, HWND hwndCtrl,
-							WORD x, WORD y, WORD cx, WORD cy);
+						  WORD x, WORD y, WORD cx, WORD cy,
+						  bool bInTabCtrl);
 
 //	コントロールの追加・取得
 	int addCtrl(CtrlListItem*);	//	コントロールの追加
@@ -103,8 +109,8 @@ public:
 	WORD onCommand(WPARAM, LPARAM);
 	WORD onNotify(WPARAM, LPARAM);
 	WORD onHScroll(WPARAM, LPARAM);
-	HBRUSH onCtlColor(WPARAM, LPARAM);
 	WORD onImeNotify(WPARAM, LPARAM);
+	HBRUSH onCtlColor(UINT, WPARAM, LPARAM);
 
 //	データの書き込み・読み出し
 	BOOL dumpData(DlgDataFile&);
@@ -128,6 +134,7 @@ private:
 	WORD m_iniwidth;	//	ダイアログの初期幅
 	WORD m_width;		//	ダイアログの幅
 	WORD m_height;		//	ダイアログの高さ
+	bool m_bInTabCtrl;  //  Tab コントロールの内部に表示されるかどうか
 };
 
 //	コントロール名からコントロール識別ＩＤを求めるハッシュテーブル
@@ -197,7 +204,8 @@ public:
 	HWND createPage(
 					const StringBuffer& name,
 					HWND hWnd,
-					WORD ofx, WORD ofy, WORD cx, WORD cy
+					WORD ofx, WORD ofy, WORD cx, WORD cy,
+					bool bInTabCtrl
 				);	//	子ダイアログのウィンドウ作成
 
 //	コントロールの取得
@@ -208,6 +216,27 @@ public:
 	int setFocusedCtrl(const StringBuffer& name);
 	const StringBuffer& getFocusedCtrl() const;
 
+//	ダイアログの背景をTABコントロールと同色にする
+	void setBackGroundToTabColor(HWND hwndPage)
+	{
+		if (m_pThemeWrapper) {
+			m_pThemeWrapper->EnableThemeDialogTexture(hwndPage,
+													  ETDT_ENABLETAB);
+		}
+	}
+	void drawThemeParentBackground(HWND hwndCtrl, HDC hDC, const RECT* pRect)
+	{
+		if (m_pThemeWrapper) {
+			m_pThemeWrapper->DrawThemeParentBackground(hwndCtrl, hDC, pRect);
+		}
+	}
+	void setWindowTheme(HWND hwndCtrl)
+	{
+		if (m_pThemeWrapper) {
+			m_pThemeWrapper->SetWindowTheme(hwndCtrl, NULL, NULL);
+		}
+	}
+
 //	データの書き込み・読込み
 	BOOL dumpData(DlgDataFile&);
 	BOOL loadData(DlgDataFile&);
@@ -216,6 +245,7 @@ private:
 	SessionInstance* m_pSessionInstance; // セッションインスタンスへのポインタ
 	CtrlIdHashTable	m_HashCtrl; // コントロール名→ＩＤ
 	HWND m_hwndFrame;	//	ウィンドウハンドル
+	ThemeWrapper* m_pThemeWrapper;
 	NamedLinkList<DlgPage>* m_pPageList;	//	子ダイアログのリスト
 	DlgPage* m_pCurDlgPage;	//	現在処理対象の子ダイアログ
 	StringBuffer m_DlgTitle;	//	ダイアログのタイトル
