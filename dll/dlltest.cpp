@@ -1,4 +1,4 @@
-//	$Id: dlltest.cpp,v 1.3 2002-06-16 14:56:09 sugiura Exp $
+//	$Id: dlltest.cpp,v 1.4 2002-06-22 13:55:45 sugiura Exp $
 /*
  *	dlltest.cpp
  *	テスト用アプリ
@@ -164,6 +164,7 @@ DENGAKUDLL_API int    COPY(LPCSTR, LPCSTR);
 DENGAKUDLL_API int    MOVE(LPCSTR, LPCSTR);
 DENGAKUDLL_API int    REMOVE(LPCSTR);
 DENGAKUDLL_API int    TOUCH(LPCSTR);
+DENGAKUDLL_API int    RUN(LPCSTR);
 DENGAKUDLL_API int    ENUMFILE(LPCSTR);
 DENGAKUDLL_API int    ENUMDIR(LPCSTR);
 DENGAKUDLL_API int    ENUMPATH(LPCSTR);
@@ -353,6 +354,8 @@ int main(int ac, char** av)
 	str = GETLONGNAME("C:\\PROGRA~1\\WINDOW~2");
 	lstrcpy(buf, str);
 #endif
+
+	RUN("\"D:\\Program Files\\CHOCOA\\license.txt\"");
 
 	ASSERT_NUM(SETCURDIR("C:\\usertemp"), ==, 1);
 	ASSERT_STR(GETCURDIR(), "C:\\usertemp");

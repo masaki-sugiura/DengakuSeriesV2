@@ -1,4 +1,4 @@
-//	$Id: si_file.cpp,v 1.10 2002-06-16 14:56:09 sugiura Exp $
+//	$Id: si_file.cpp,v 1.11 2002-06-22 13:55:45 sugiura Exp $
 /*
  *	si_file.cpp
  *	SessionInstance: ファイルサービスの関数
@@ -143,7 +143,7 @@ RunCmd(CmdLineParser& rCmdLine, const StringBuffer& curdir, int nCmdShow)
 	int	num = rCmdLine.itemNum();
 	if (num < 1) return FALSE;
 
-	StringBuffer strFile(rCmdLine.getRawData());
+	StringBuffer strFile(RemoveQuote(rCmdLine.getRawData()));
 	LPCSTR lpParam = NULL;
 	if (num > 1) {
 		strFile = rCmdLine.getArgv(0);
