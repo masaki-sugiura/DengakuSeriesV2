@@ -1,4 +1,4 @@
-//	$Id: si_file.cpp,v 1.14 2002-12-16 15:50:42 sugiura Exp $
+//	$Id: si_file.cpp,v 1.15 2002-12-16 16:04:46 sugiura Exp $
 /*
  *	si_file.cpp
  *	SessionInstance: ファイルサービスの関数
@@ -547,6 +547,7 @@ SessionInstance::si_touch(CmdLineParser& params)
 		if (pptr != NULL) {
 			*pptr = av;
 			pptr = NULL;
+			optnum++;
 			continue;
 		}
 		if (!isopthead(*av)) break;
