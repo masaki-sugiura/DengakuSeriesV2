@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.21 2002-12-15 12:09:49 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.22 2002-12-18 13:20:08 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -1493,7 +1493,7 @@ HasListCtrl::onSetItem(CmdLineParser& text, const StringBuffer& pos)
 	if (ind < 0) return FALSE;
 	ItemData* id = static_cast<ItemData*>(m_item->getItemByIndex(ind));
 	if (id == NULL) return FALSE;
-	id->getText() = text.getRawData();
+	id->getText() = RemoveQuote(text.getRawData());
 	return ind + 1;
 }
 
@@ -1507,7 +1507,7 @@ HasListCtrl::onInsertItem(CmdLineParser& text, const StringBuffer& pos)
 		int	tmp = ival(pos) - 1;
 		if (tmp >= 0 && tmp < num) ind = tmp;
 	}
-	m_item->addItem(new ItemData(text.getRawData()), ind);
+	m_item->addItem(new ItemData(RemoveQuote(text.getRawData())), ind);
 	if (ind < 0) ind = num;
 	if (ind < m_state) m_state++;
 	return ind + 1;
@@ -1984,12 +1984,14 @@ ListCtrl::onSetItem(CmdLineParser& text, const StringBuffer& pos)
 		int vindex = id->getViewIndex();
 		::SendMessage(m_pcp->m_hwndCtrl, m_msg_delstr, vindex, 0);
 		if (m_bSorted) {
-			::SendMessage(m_pcp->m_hwndCtrl, m_msg_addstr,
-						  0, (LPARAM)id->getText().getBufPtr());
+			vindex = ::SendMessage(m_pcp->m_hwndCtrl, m_msg_addstr,
+								   0, (LPARAM)id->getText().getBufPtr());
 		} else {
-			::SendMessage(m_pcp->m_hwndCtrl, m_msg_setstr,
-						  vindex, (LPARAM)id->getText().getBufPtr());
+			vindex = ::SendMessage(m_pcp->m_hwndCtrl, m_msg_setstr,
+								   vindex, (LPARAM)id->getText().getBufPtr());
 		}
+		::SendMessage(m_pcp->m_hwndCtrl, m_msg_setdata,
+					  vindex, (LPARAM)id);
 		this->setViewIndex();
 		this->sendData();
 	}
@@ -2006,7 +2008,7 @@ ListCtrl::onInsertItem(CmdLineParser& text, const StringBuffer& pos)
 		int	tmp = ival(pos) - 1;
 		if (tmp >= 0 && tmp < num) ind = tmp;
 	}
-	m_item->addItem(new ItemData(text.getRawData()), ind);
+	m_item->addItem(new ItemData(RemoveQuote(text.getRawData())), ind);
 	if (ind < 0) ind = num;
 	if (m_pcp->m_hwndCtrl != NULL) {
 		ItemData* id = m_item->getItemByIndex(ind);
@@ -2903,8 +2905,8 @@ LViewCtrl::initCtrl(HWND hDlg)
 
 	this->setViewIndex();
 
-	m_lastSortKey = -1;
-	m_bAscending = TRUE;
+//	m_lastSortKey = -1;
+//	m_bAscending = TRUE;
 
 	return TRUE;
 }
@@ -3050,6 +3052,17 @@ LViewCtrl::onSetItem(CmdLineParser& argv, const StringBuffer& pos)
 	for (lvi.iSubItem = 0; lvi.iSubItem < (int)m_colnum; lvi.iSubItem++) {
 		setlvitem(lvi, lvid, m_pcp->m_hwndCtrl, LVM_SETITEMTEXT, lvi.iItem);
 	}
+
+	if (m_bSorted && m_lastSortKey >= 0 && m_lastSortKey < m_colnum) {
+		SortParam sp;
+		sp.m_nColumn = m_lastSortKey;
+		sp.m_bAscending = m_bAscending;
+		::SendMessage(m_pcp->m_hwndCtrl, LVM_SORTITEMS,
+					  (WPARAM)&sp, (LPARAM)CompareItem);
+		this->setViewIndex();
+		this->getStateFromView();
+	}
+
 	return TRUE;
 }
 
@@ -3093,7 +3106,17 @@ LViewCtrl::onInsertItem(CmdLineParser& argv, const StringBuffer& pos)
 					LVM_SETITEMTEXT,
 					lvi.iItem);
 	}
+
+	if (m_bSorted && m_lastSortKey >= 0 && m_lastSortKey < m_colnum) {
+		SortParam sp;
+		sp.m_nColumn = m_lastSortKey;
+		sp.m_bAscending = m_bAscending;
+		::SendMessage(m_pcp->m_hwndCtrl, LVM_SORTITEMS,
+					  (WPARAM)&sp, (LPARAM)CompareItem);
+		this->setViewIndex();
+	}
 	this->getStateFromView();
+
 	return TRUE;
 }
 
@@ -3433,7 +3456,7 @@ TreeCtrl::onSetItem(CmdLineParser& text, const StringBuffer& pos)
 	TreeItemData*
 		tid = m_pHashItem->getValue(pos.length() > 0 ? pos : m_state);
 	if (tid == NULL) return FALSE;
-	tid->getText() = text.getRawData();
+	tid->getText() = RemoveQuote(text.getRawData());
 	if (m_pcp->m_hwndCtrl != NULL) {
 		TV_ITEM	tvi;
 		tvi.mask	= TVIF_TEXT;
