@@ -1,4 +1,4 @@
-//	$Id: dlgdata.h,v 1.8 2003-11-23 15:37:21 sugiura Exp $
+//	$Id: dlgdata.h,v 1.9 2003-12-18 17:00:49 sugiura Exp $
 /*
  *	dlgdata.h
  *	ダイアログを扱うクラス
@@ -225,6 +225,12 @@ public:
 //	フォーカスを得(てい)るコントロール
 	int setFocusedCtrl(const StringBuffer& name);
 	const StringBuffer& getFocusedCtrl() const;
+
+	// 純粋にフォーカスを得るコントロールの名前を返すメソッド
+	const StringBuffer& getFocusedCtrlName() const
+	{
+		return m_sbFocusedCtrl;
+	}
 
 //	ダイアログの背景をTABコントロールと同色にする
 	void setBackGroundToTabColor(HWND hwndPage)

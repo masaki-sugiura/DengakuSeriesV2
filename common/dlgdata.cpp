@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.17 2003-12-15 15:20:44 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.18 2003-12-18 17:00:49 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -162,11 +162,11 @@ DlgPageProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	if (uMsg == WM_INITDIALOG) {
 		//	子ダイアログの初期化
-		::SetWindowLong(hDlg,DWL_USER,(LONG)lParam);
 		pdp = reinterpret_cast<DlgPage*>(lParam);
 		if (!pdp->initPage(hDlg)) {
 			::PostMessage(pdp->getDlgFrame().getUserDlg(),WM_CLOSE,0,0);
 		}
+		::SetWindowLong(hDlg,DWL_USER,(LONG)lParam);
 		return FALSE;
 	}
 
@@ -372,11 +372,18 @@ DlgPage::initPage(HWND hDlg)
 		m_pDlgFrame->setBackGroundToTabColor(m_hwndPage);
 	}
 	//	コントロールの初期化
+//	const StringBuffer& sbFocusedCtrl = m_pDlgFrame->getFocusedCtrlName();
 	m_pCtrlList->initSequentialGet();
 	CtrlListItem* cli;
 	while ((cli = m_pCtrlList->getNextItem()) != NULL) {
 		cli->onInitCtrl(hDlg);
 		cli->enableCtrl(m_bEnable,FALSE);
+#if 0
+		if (sbFocusedCtrl.length() > 0 &&
+			sbFocusedCtrl.compareTo(cli->getName()) == 0) {
+			::SetFocus(cli->getCtrlHWND());
+		}
+#endif
 	}
 	::ShowWindow(m_hwndPage,m_bVisible ? SW_SHOW : SW_HIDE);
 	return TRUE;
@@ -707,13 +714,14 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	if (uMsg == WM_INITDIALOG) {
 		//	親ダイアログの初期化
-		::SetWindowLong(hDlg,DWL_USER,(LONG)lParam);
 		pdf = reinterpret_cast<DlgFrame*>(lParam);
 		if (!pdf->initFrame(hDlg)) {
 			::DestroyWindow(hDlg);
 		}
+		::SetWindowLong(hDlg,DWL_USER,(LONG)lParam);
 		return FALSE;
 	}
+
 	if ((pdf = reinterpret_cast<DlgFrame*>(::GetWindowLong(hDlg,DWL_USER)))
 		== NULL) return FALSE;
 
@@ -1074,11 +1082,20 @@ DlgFrame::initFrame(HWND hDlg)
 	m_hwndFrame = hDlg;
 
 	//	"root" 子ダイアログの生成
-	return this->createPage(strRootPageName,
-							NULL,
-							UWIDTH,UHEIGHT / 2,
-							m_width-2,m_height - 1,
-							false) != NULL;
+	HWND hwndRoot = this->createPage(strRootPageName,
+									 NULL,
+									 UWIDTH,UHEIGHT / 2,
+									 m_width-2,m_height - 1,
+									 false);
+
+#if 0 // このタイミングで SetFocus() を呼び出すと秀丸がハングする!!
+	if (hwndRoot) {
+		// デフォルトフォーカスの設定
+		this->setFocusedCtrl(m_sbFocusedCtrl);
+	}
+#endif
+
+	return hwndRoot != NULL;
 }
 
 //	親ダイアログの破棄
@@ -1177,6 +1194,11 @@ DlgFrame::setFocusedCtrl(const StringBuffer& name)
 		if (pctrl == NULL) return FALSE;
 		m_sbFocusedCtrl = name;
 		if (m_hwndFrame != NULL) {
+#if 0
+			TCHAR buf[80];
+			wsprintf(buf, "setFocusedCtrl(%s)", (LPCSTR)name);
+			::MessageBox(NULL, buf, NULL, MB_OK);
+#endif
 			HWND hwndFocused = pctrl->getCtrlHWND();
 			if (hwndFocused == NULL) return FALSE;
 			::SetFocus(hwndFocused);
