@@ -1,4 +1,4 @@
-//	$Id: ds_handler.cpp,v 1.6 2005-01-16 07:09:12 sugiura Exp $
+//	$Id: ds_handler.cpp,v 1.7 2005-01-16 07:38:33 sugiura Exp $
 /*
  *	ds_handler.cpp
  *	ダイアログサービスの実装
@@ -291,12 +291,6 @@ StringBuffer
 ConvData::On_getdlgsize(CmdLineParser&)
 {
 	return this->si_getdlgsize();
-}
-
-StringBuffer
-ConvData::On_getcaretpos(CmdLineParser&)
-{
-	return this->si_getcaretpos();
 }
 
 StringBuffer

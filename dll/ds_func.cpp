@@ -1,4 +1,4 @@
-//	$Id: ds_func.cpp,v 1.8 2005-01-16 07:09:12 sugiura Exp $
+//	$Id: ds_func.cpp,v 1.9 2005-01-16 07:38:33 sugiura Exp $
 /*
  *	ds_func.cpp
  *	ダイアログ操作関数
@@ -473,17 +473,6 @@ GETDLGSIZE()
 {
 	try {
 		g_strBuffer = g_pSessionInstance->si_getdlgsize();
-		return g_strBuffer;
-	} catch (...) {
-		return "";
-	}
-}
-
-DENGAKUDLL_API LPCSTR
-GETCARETPOS()
-{
-	try {
-		g_strBuffer = g_pSessionInstance->si_getcaretpos();
 		return g_strBuffer;
 	} catch (...) {
 		return "";

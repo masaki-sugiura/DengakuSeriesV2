@@ -1,4 +1,4 @@
-//	$Id: cs_handler.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: cs_handler.cpp,v 1.2 2005-01-16 07:38:33 sugiura Exp $
 /*
  *	cs_handler.cpp
  *	共通サービスの実装
@@ -90,5 +90,17 @@ StringBuffer
 ConvData::On_getosinfo(CmdLineParser& params)
 {
 	return si_getosinfo(params);
+}
+
+StringBuffer
+ConvData::On_getcaretpos(CmdLineParser&)
+{
+	return this->si_getcaretpos();
+}
+
+StringBuffer
+ConvData::On_getcursorpos(CmdLineParser&)
+{
+	return this->si_getcursorpos();
 }
 

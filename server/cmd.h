@@ -1,4 +1,4 @@
-//	$Id: cmd.h,v 1.14 2005-01-16 07:09:12 sugiura Exp $
+//	$Id: cmd.h,v 1.15 2005-01-16 07:38:33 sugiura Exp $
 /*
  *	cmd.h
  *	ƒRƒ}ƒ“ƒh–¼ˆê——
@@ -68,6 +68,8 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_REQUEST(getversion)
 	DECLARE_DDECMD_REQUEST(getlibversion)
 	DECLARE_DDECMD_REQUEST(getosinfo)
+	DECLARE_DDECMD_REQUEST(getcaretpos)
+	DECLARE_DDECMD_REQUEST(getcursorpos)
 	DECLARE_DDECMD_REQUEST(getcurdir)
 	DECLARE_DDECMD_REQUEST(isreadonly)
 	DECLARE_DDECMD_REQUEST(sizeof)
@@ -123,7 +125,6 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_REQUEST(getdlgpos)
 	DECLARE_DDECMD_REQUEST(getdlgimestate)
 	DECLARE_DDECMD_REQUEST(getdlgsize)
-	DECLARE_DDECMD_REQUEST(getcaretpos)
 	DECLARE_DDECMD_REQUEST(getvar)
 	DECLARE_DDECMD_REQUEST(existvar)
 	DECLARE_DDECMD_REQUEST(nextvar)

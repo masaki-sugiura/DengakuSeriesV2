@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.16 2005-01-16 07:09:12 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.17 2005-01-16 07:38:33 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -622,26 +622,6 @@ SessionInstance::si_getdlgimestate()
 	int nState = m_DlgFrame.getImeState();
 	TCHAR buf[32];
 	wsprintf(buf, "%d", nState);
-	return buf;
-}
-
-StringBuffer
-SessionInstance::si_getcaretpos()
-{
-	GUITHREADINFO guiThreadInfo;
-	guiThreadInfo.cbSize = sizeof(guiThreadInfo);
-	if (!::GetGUIThreadInfo(0, &guiThreadInfo)) {
-		return "";
-	}
-
-	POINT ptCaret;
-	ptCaret.x = guiThreadInfo.rcCaret.right;
-	ptCaret.y = guiThreadInfo.rcCaret.bottom;
-	::ClientToScreen(guiThreadInfo.hwndCaret, &ptCaret);
-
-	TCHAR buf[32];
-	wsprintf(buf, "%d,%d", ptCaret.x, ptCaret.y);
-
 	return buf;
 }
 

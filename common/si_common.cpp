@@ -1,4 +1,4 @@
-//	$Id: si_common.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: si_common.cpp,v 1.2 2005-01-16 07:38:33 sugiura Exp $
 /*
  *	si_common.cpp
  *	共通サービスの関数
@@ -104,4 +104,37 @@ SessionInstance::si_calc(const StringBuffer& fmt, const StringBuffer& expr)
 	return EvalExpression::eval(fmt,expr);
 }
 #endif
+
+StringBuffer
+SessionInstance::si_getcaretpos()
+{
+	GUITHREADINFO guiThreadInfo;
+	guiThreadInfo.cbSize = sizeof(guiThreadInfo);
+	if (!::GetGUIThreadInfo(0, &guiThreadInfo)) {
+		return "";
+	}
+
+	POINT ptCaret;
+	ptCaret.x = guiThreadInfo.rcCaret.right;
+	ptCaret.y = guiThreadInfo.rcCaret.bottom;
+	::ClientToScreen(guiThreadInfo.hwndCaret, &ptCaret);
+
+	TCHAR buf[32];
+	wsprintf(buf, "%d,%d", ptCaret.x, ptCaret.y);
+
+	return buf;
+}
+
+StringBuffer
+SessionInstance::si_getcursorpos()
+{
+	POINT ptCursor;
+
+	::GetCursorPos(&ptCursor);
+
+	TCHAR buf[32];
+	wsprintf(buf, "%d,%d", ptCursor.x, ptCursor.y);
+
+	return buf;
+}
 

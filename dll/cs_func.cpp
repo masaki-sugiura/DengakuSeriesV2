@@ -1,4 +1,4 @@
-//	$Id: cs_func.cpp,v 1.3 2002-02-19 15:34:22 sugiura Exp $
+//	$Id: cs_func.cpp,v 1.4 2005-01-16 07:38:33 sugiura Exp $
 /*
  *	cs_func.cpp
  *	共通サービスの関数
@@ -49,4 +49,26 @@ CALC(LPCSTR str1, LPCSTR str2)
 	return g_strBuffer;
 }
 #endif
+
+DENGAKUDLL_API LPCSTR
+GETCARETPOS()
+{
+	try {
+		g_strBuffer = g_pSessionInstance->si_getcaretpos();
+		return g_strBuffer;
+	} catch (...) {
+		return "";
+	}
+}
+
+DENGAKUDLL_API LPCSTR
+GETCURSORPOS()
+{
+	try {
+		g_strBuffer = g_pSessionInstance->si_getcursorpos();
+		return g_strBuffer;
+	} catch (...) {
+		return "";
+	}
+}
 
