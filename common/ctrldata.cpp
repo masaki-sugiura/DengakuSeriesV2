@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.42 2005-02-22 15:33:19 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.34 2004-05-03 16:05:43 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -100,8 +100,7 @@ CtrlListItem::CtrlProperty::CtrlProperty(CtrlListItem* pCtrl)
 		m_id(0),
 		m_bufsize(0),
 		m_text(32),
-		m_hbrBackground(NULL),
-		m_hDC(NULL)
+		m_hbrBackground(NULL)
 {
 //	::ZeroMemory(&m_fontprop, sizeof(CtrlFontProperty));
 }
@@ -110,7 +109,6 @@ CtrlListItem::CtrlProperty::~CtrlProperty()
 {
 	if (m_fontprop.m_hfont) ::DeleteObject(m_fontprop.m_hfont);
 	if (m_hbrBackground) ::DeleteObject(m_hbrBackground);
-	if (m_hDC) ::DeleteDC(m_hDC);
 }
 
 void
@@ -166,32 +164,8 @@ CtrlListItem::CtrlProperty::changeFont()
 	}
 	if (m_fontprop.m_hfont != NULL) ::DeleteObject(m_fontprop.m_hfont);
 	m_fontprop.m_hfont = ::CreateFontIndirect(&lf);
-	if (m_fontprop.m_hfont != NULL) {
-		DlgFrame& dlgFrame = m_pCtrl->getParentPage().getDlgFrame();
-		if (dlgFrame.isThemeActive() && m_classname == (LPCSTR)0x82) {
-			// XP Theme が有効の場合、タブコントロール内にないスタティックテキストの色が
-			// 変わらないことへの対策(何だかなぁ。。。)
-			if (m_hDC) ::DeleteDC(m_hDC);
-			HDC hDC = ::GetDC(m_hwndCtrl);
-			m_hDC = ::CreateCompatibleDC(hDC);
-			RECT rcCtrl;
-			::GetWindowRect(m_hwndCtrl, &rcCtrl);
-			rcCtrl.right -= rcCtrl.left;
-			rcCtrl.bottom -= rcCtrl.top;
-			rcCtrl.left = rcCtrl.top = 0;
-			HBITMAP hBitmap = ::CreateCompatibleBitmap(hDC,
-													   rcCtrl.right,
-													   rcCtrl.bottom);
-			::ReleaseDC(m_hwndCtrl, hDC);
-			::SelectObject(m_hDC, hBitmap);
-			dlgFrame.drawThemeParentBackground(m_hwndCtrl, m_hDC, &rcCtrl);
-			::SetTextColor(m_hDC, m_fontprop.m_color);
-			::SetBkMode(m_hDC, TRANSPARENT);
-			::SelectObject(m_hDC, m_fontprop.m_hfont);
-			::TextOut(m_hDC, 0, 0, m_text, m_text.length());
-		}
+	if (m_fontprop.m_hfont != NULL)
 		::SendMessage(m_hwndCtrl, WM_SETFONT, (WPARAM)m_fontprop.m_hfont, TRUE);
-	}
 	m_fontprop.m_bchanged = FALSE;
 }
 
@@ -713,24 +687,6 @@ CtrlListItem::dispatchRawMsg(
 		}
 		break;
 #endif
-#if 1
-	// XP Theme が有効の場合、タブコントロール内にないスタティックテキストの色が
-	// 変わらないことへの対策(何だかなぁ。。。)
-	case WM_PAINT:
-		if (pCProp->m_hDC) {
-			PAINTSTRUCT ps;
-			::BeginPaint(hCtrl, &ps);
-			::BitBlt(ps.hdc, ps.rcPaint.left, ps.rcPaint.top,
-					 ps.rcPaint.right - ps.rcPaint.left,
-					 ps.rcPaint.bottom - ps.rcPaint.top,
-					 pCProp->m_hDC,
-					 ps.rcPaint.left, ps.rcPaint.top,
-					 SRCCOPY);
-			::EndPaint(hCtrl, &ps);
-			return 0;
-		}
-		return ::CallWindowProc(pCProp->m_pfnDefCallback, hCtrl, uMsg, wParam, lParam);
-#endif
 	case WM_GET_CTRL_PTR:
 		return (LRESULT)pCProp->m_pCtrl;
 #if 0
@@ -784,10 +740,7 @@ CtrlListItem::onGetSort()
 BOOL
 CtrlListItem::dumpData(DlgDataFile& ddfile)
 {
-	if (!ddfile.isValid()) return FALSE;
-	if (m_pcp && m_pcp->m_hwndCtrl) {
-		this->receiveData();
-	}
+	if (!ddfile.isValid() || !this->receiveData()) return FALSE;
 	ddfile.write(m_type, GetString(STR_DLGDATA_TYPE));
 	ddfile.write(m_name, GetString(STR_DLGDATA_NAME));
 	ddfile.write(m_text, GetString(STR_DLGDATA_TEXT));
@@ -828,7 +781,7 @@ CtrlListItem::loadData(DlgDataFile& ddfile)
 	for (int i = 0; i < sizeof(m_notify) / sizeof(m_notify[0]); i++) {
 		buf.append(i);
 		if (!ddfile.read(&m_notify[i], buf)) m_notify[i] = 0xFFFF;
-		buf.setlength(len);
+		buf.setlength(i);
 	}
 	ddfile.read(&m_width, GetString(STR_DLGDATA_WIDTH));
 	ddfile.read(&m_height, GetString(STR_DLGDATA_HEIGHT));
@@ -1151,8 +1104,7 @@ EditCtrl::EditCtrl(
 	const StringBuffer& text,
 	CTRL_ID type)
 	: SimpleCtrl(name,text,type),
-	  m_imestate(0L),
-	  m_bAlreadyFocused(FALSE)
+	  m_imestate(0L)
 {
 	m_pcp->m_style		= /*ES_AUTOHSCROLL|*/
 							WS_BORDER|WS_CHILD|WS_TABSTOP|WS_VISIBLE|WS_GROUP;
@@ -1187,13 +1139,6 @@ EditCtrl::createCtrlTemplate(CtrlTemplateArgs& cta)
 	cta.m_cy = UHEIGHT * m_cy - UHEIGHT;
 	m_pcp->setCtrlTemplate(cta);
 	return TRUE;
-}
-
-BOOL
-EditCtrl::initCtrl(HWND hDlg)
-{
-	m_bAlreadyFocused = FALSE;
-	return SimpleCtrl::initCtrl(hDlg);
 }
 
 BOOL
@@ -1239,7 +1184,6 @@ BOOL
 EditCtrl::onSetImeState(int state)
 {
 	m_imestate = state;
-	m_bAlreadyFocused = FALSE;
 	return TRUE;
 }
 
@@ -1256,39 +1200,19 @@ EditCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 	case EN_CHANGE:
 		return m_notify[0];
 	case EN_SETFOCUS:
-		{
-			DlgFrame& dlgFrame = m_pDlgPage->getDlgFrame();
-			int nState = dlgFrame.getImeState();
-			if (nState > 2 && dlgFrame.isImeAlreadyFocused()) {
-				// 既にいずれかのコントロールがフォーカスを得ている
-				nState = 0;
+		if (m_imestate > 0) {
+			HIMC hImc = ::ImmGetContext((HWND)lParam);
+			switch (m_imestate) {
+			case 1:
+				if (!::ImmGetOpenStatus(hImc)) ::ImmSetOpenStatus(hImc,TRUE);
+				break;
+			default:
+				if (::ImmGetOpenStatus(hImc)) ::ImmSetOpenStatus(hImc,FALSE);
+				break;
 			}
-			if (m_imestate > 0 || nState > 0) {
-				// グローバル設定をローカル設定で上書き
-				if (m_imestate > 0) nState = m_imestate;
-				HIMC hImc = ::ImmGetContext((HWND)lParam);
-				switch (nState) {
-				case 3:
-					if (m_bAlreadyFocused) break;
-					// through down
-				case 1:
-					if (!::ImmGetOpenStatus(hImc)) ::ImmSetOpenStatus(hImc,TRUE);
-					break;
-				case 4:
-					if (m_bAlreadyFocused) break;
-					// through down
-				case 2:
-					if (::ImmGetOpenStatus(hImc)) ::ImmSetOpenStatus(hImc,FALSE);
-					break;
-				default:
-					break;
-				}
-				::ImmReleaseContext((HWND)lParam,hImc);
-			}
-			::SendMessage((HWND)lParam, EM_SETSEL, 0, -1);
-			m_bAlreadyFocused = TRUE;
-			dlgFrame.setImeAlreadyFocused();
+			::ImmReleaseContext((HWND)lParam,hImc);
 		}
+		::SendMessage((HWND)lParam,EM_SETSEL,0,-1);
 		break;
 	}
 	return 0xFFFF;
@@ -2277,10 +2201,9 @@ ComboCtrl::ComboCtrl(
 	const StringBuffer& name,
 	const StringBuffer& text,
 	CTRL_ID type)
-	: ListCtrl(name,text,type),
+	: ListCtrl(name,text,CTRLID_COMBO),
 	  m_imestate(0L),
-	  m_bEditable(type == CTRLID_COMBO),
-	  m_bAlreadyFocused(FALSE)
+	  m_bEditable(type == CTRLID_COMBO)
 {
 	m_pcp->m_style		= CBS_AUTOHSCROLL|CBS_SORT|WS_BORDER|WS_VSCROLL|
 							WS_CHILD|WS_VISIBLE|WS_TABSTOP|WS_VISIBLE|WS_GROUP|
@@ -2315,11 +2238,7 @@ ComboCtrl::createCtrlTemplate(CtrlTemplateArgs& cta)
 	cta.m_cx = UWIDTH * m_cx - OWIDTH;
 	// height of drop-down list
 //	cta.m_cy = (WORD)(8 * (m_item->itemNum() + 3) + 2);
-	if (m_height > 0) {
-		cta.m_cy = (WORD)(8 * m_height + 2);
-	} else {
-		cta.m_cy = (WORD)(8 * (m_item->itemNum() + 3) + 2);
-	}
+	cta.m_cy = (WORD)(((m_item->itemNum() + 3) << 3) + 2);
 	m_pcp->setCtrlTemplate(cta);
 	return TRUE;
 }
@@ -2327,7 +2246,6 @@ ComboCtrl::createCtrlTemplate(CtrlTemplateArgs& cta)
 BOOL
 ComboCtrl::initCtrl(HWND hDlg)
 {
-	m_bAlreadyFocused = FALSE;
 	if (!ListCtrl::initCtrl(hDlg)) return FALSE;
 	ChildCtrlSubClassInfo*
 		pCCSci = new ChildCtrlSubClassInfo();
@@ -2350,9 +2268,6 @@ ComboCtrl::initCtrl(HWND hDlg)
 #endif
 	}
 	::SetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text);
-	if (m_height > 0) {
-		::SendMessage(m_pcp->m_hwndCtrl, CB_SETMINVISIBLE, m_height, 0);
-	}
 	return TRUE;
 }
 
@@ -2389,7 +2304,6 @@ BOOL
 ComboCtrl::onSetImeState(int state)
 {
 	m_imestate = state;
-	m_bAlreadyFocused = FALSE;
 	return TRUE;
 }
 
@@ -2409,39 +2323,21 @@ ComboCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 		if (m_bEditable) {
 			HWND hwndEdit = ::GetTopWindow((HWND)lParam);
 			if (hwndEdit == NULL) break;
-			DlgFrame& dlgFrame = m_pDlgPage->getDlgFrame();
-			int nState = dlgFrame.getImeState();
-			if (nState > 2 && dlgFrame.isImeAlreadyFocused()) {
-				// 既にいずれかのコントロールがフォーカスを得ている
-				nState = 0;
-			}
-			if (m_imestate > 0 || nState > 0) {
-				// グローバル設定をローカル設定で上書き
-				if (m_imestate > 0) nState = m_imestate;
+			if (m_imestate > 0) {
 				HIMC hImc = ::ImmGetContext(hwndEdit);
-				switch (nState) {
-				case 3:
-					if (m_bAlreadyFocused) break;
-					// through down
+				switch (m_imestate) {
 				case 1:
 					if (!::ImmGetOpenStatus(hImc))
 						::ImmSetOpenStatus(hImc, TRUE);
 					break;
-				case 4:
-					if (m_bAlreadyFocused) break;
-					// through down
-				case 2:
+				default:
 					if (::ImmGetOpenStatus(hImc))
 						::ImmSetOpenStatus(hImc, FALSE);
 					break;
-				default:
-					break;
 				}
-				::ImmReleaseContext(hwndEdit, hImc);
+				::ImmReleaseContext((HWND)lParam, hImc);
 			}
-			::SendMessage(hwndEdit, EM_SETSEL, 0, -1);
-			m_bAlreadyFocused = TRUE;
-			dlgFrame.setImeAlreadyFocused();
+			::SendMessage(hwndEdit,EM_SETSEL,0,-1);
 		}
 		break;
 	}
@@ -2453,7 +2349,6 @@ ComboCtrl::dumpData(DlgDataFile& ddfile)
 {
 	if (!ListCtrl::dumpData(ddfile)) return FALSE;
 	ddfile.write(m_imestate, GetString(STR_DLGDATA_IMESTATE));
-	ddfile.write(m_bEditable, GetString(STR_DLGDATA_EDITABLE));
 	return TRUE;
 }
 
@@ -2461,9 +2356,6 @@ BOOL
 ComboCtrl::loadData(DlgDataFile& ddfile)
 {
 	ddfile.read(&m_imestate, GetString(STR_DLGDATA_IMESTATE));
-	ddfile.read(&m_bEditable, GetString(STR_DLGDATA_EDITABLE));
-	m_pcp->m_style = (m_pcp->m_style & ~(CBS_DROPDOWN | CBS_DROPDOWNLIST)) |
-					 (m_bEditable ? CBS_DROPDOWN : CBS_DROPDOWNLIST);
 	return ListCtrl::loadData(ddfile);
 }
 
@@ -2638,7 +2530,6 @@ ChkListCtrl::ChkListCtrl(
 	const StringBuffer& text,
 	CTRL_ID type)
 	: HasListCtrl(name, text, type)
-	, m_bSorted(FALSE)
 {
 	m_pcp->m_style		= LVS_REPORT|LVS_NOCOLUMNHEADER|LVS_SINGLESEL|
 							WS_CHILD|WS_BORDER|WS_TABSTOP|WS_VISIBLE|WS_GROUP;
@@ -3897,8 +3788,7 @@ FrameCtrl::FrameCtrl(
 	const StringBuffer& name,
 	const StringBuffer& text,
 	CTRL_ID type)
-	: HasListCtrl(name, text, type)
-	, m_page(NULL)
+	: HasListCtrl(name, text, type), m_page(NULL)
 {
 	if (type == CTRLID_FRAME) {
 		m_pcp->m_style		= BS_FLAT;
@@ -3989,21 +3879,6 @@ FrameCtrl::initCtrl(HWND hDlg)
 	m_page = new DlgPage*[num];
 	::ZeroMemory(m_page, sizeof(DlgPage*) * num);
 	if (!m_bVisible) ::ShowWindow(m_pcp->m_hwndCtrl, SW_HIDE);
-
-	// グループボックス内のダイアログのオフセットを文字の大きさから決定
-	if (m_type == CTRLID_GROUP) {
-		DWORD fontsize = m_pDlgPage->getDlgFrame().getFontSize();
-		HDC hDC = ::GetDC(hDlg);
-		DWORD dwLPX = ::GetDeviceCaps(hDC, LOGPIXELSX),
-			  dwLPY = ::GetDeviceCaps(hDC, LOGPIXELSY);
-		TEXTMETRIC tm;
-		::GetTextMetrics(hDC, &tm);
-		::ReleaseDC(hDlg, hDC);
-
-		m_poffset.x = dwLPX * fontsize * 4 / (72 * 2 * tm.tmAveCharWidth);
-		m_poffset.y = dwLPY * fontsize * 8 * 4 / (72 * 3 * tm.tmHeight);
-	}
-	
 	num = 0;
 	DlgFrame& rDlgFrame = m_pDlgPage->getDlgFrame();
 	m_item->initSequentialGet();
@@ -4021,7 +3896,6 @@ FrameCtrl::initCtrl(HWND hDlg)
 			return FALSE;
 		}
 	}
-
 	return TRUE;
 }
 
@@ -4197,18 +4071,6 @@ BOOL
 TabCtrl::initCtrl(HWND hDlg)
 {
 	if (!HasListCtrl::initCtrl(hDlg)) return FALSE;
-
-	DWORD fontsize = m_pDlgPage->getDlgFrame().getFontSize();
-	HDC hDC = ::GetDC(hDlg);
-	DWORD dwLPX = ::GetDeviceCaps(hDC, LOGPIXELSX),
-		  dwLPY = ::GetDeviceCaps(hDC, LOGPIXELSY);
-	TEXTMETRIC tm;
-	::GetTextMetrics(hDC, &tm);
-	::ReleaseDC(hDlg, hDC);
-
-	m_poffset.x = dwLPX * fontsize * 4 / (72 * 2 * tm.tmAveCharWidth);
-	m_poffset.y = dwLPY * fontsize * 8 * 2 / (72 * tm.tmHeight);
-	
 	TC_ITEM	tci;
 	tci.mask = TCIF_TEXT|TCIF_PARAM;
 	DlgFrame& rDlgFrame = m_pDlgPage->getDlgFrame();

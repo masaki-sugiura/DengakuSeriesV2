@@ -1,4 +1,4 @@
-//	$Id: fs_handler.cpp,v 1.3 2004-11-16 17:03:51 sugiura Exp $
+//	$Id: fs_handler.cpp,v 1.2 2002-02-17 08:00:41 sugiura Exp $
 /*
  *	fs_handler.cpp
  *	ファイルサービスの実装
@@ -209,11 +209,5 @@ StringBuffer
 ConvData::On_getlongname(CmdLineParser& params)
 {
 	return this->si_getlongname(params.getArgvStr(0),FALSE);
-}
-
-StringBuffer
-ConvData::On_getshortname(CmdLineParser& params)
-{
-	return this->si_getshortname(params.getArgvStr(0),FALSE);
 }
 

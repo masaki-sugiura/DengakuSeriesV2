@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.29 2005-01-18 13:52:08 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.22 2004-05-03 16:05:43 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -370,13 +370,9 @@ DlgPage::initPage(HWND hDlg)
 {
 	if (hDlg == NULL) return FALSE;
 	m_hwndPage = hDlg;
-#if 0
 	if (m_bInTabCtrl) {
 		m_pDlgFrame->setBackGroundToTabColor(m_hwndPage);
 	}
-#else
-	m_pDlgFrame->setBackGroundTheme(m_hwndPage, m_bInTabCtrl);
-#endif
 	//	コントロールの初期化
 //	const StringBuffer& sbFocusedCtrl = m_pDlgFrame->getFocusedCtrlName();
 	m_pCtrlList->initSequentialGet();
@@ -428,7 +424,6 @@ DlgPage::showPage(BOOL bVisible)
 	CtrlListItem* cli;
 	while ((cli = m_pCtrlList->getNextItem()) != NULL) {
 		cli->showCtrl(bVisible);
-		cli->enableCtrl(cli->isEnabled(), FALSE);
 	}
 
 	return TRUE;
@@ -674,11 +669,6 @@ DlgPage::dumpData(DlgDataFile& ddfile)
 		secname.setlength(len);
 		secname.append(i);
 		ddfile.setSecName(secname);
-#ifdef _DEBUG
-		char buf[80];
-		wsprintf(buf, "dump:%s\n", (LPCSTR)secname);
-		::OutputDebugString(buf);
-#endif
 		cli = m_pCtrlList->getNextItem();
 		cli->dumpData(ddfile);
 	}
@@ -709,11 +699,6 @@ DlgPage::loadData(DlgDataFile& ddfile)
 		m_pCurCtrlData = CtrlListItem::createCtrl(type,namebuf,textbuf);
 		if (m_pCurCtrlData == NULL) continue;
 		ddfile.setSecName(secname);
-#ifdef _DEBUG
-		char buf[80];
-		wsprintf(buf, "load:%s\n", (LPCSTR)secname);
-		::OutputDebugString(buf);
-#endif
 		if (m_pCurCtrlData->loadData(ddfile)) this->addCtrl(m_pCurCtrlData);
 		else {
 			delete m_pCurCtrlData;
@@ -868,9 +853,7 @@ DlgFrame::DlgFrame()
 		m_pFontProp(new FontProperty),
 		m_width(0),
 		m_height(0),
-		m_flags(0),
-		m_imestate(0),
-		m_bAlreadyFocused(FALSE)
+		m_flags(0)
 {
 	try {
 		m_pThemeWrapper = new ThemeWrapper();
@@ -1063,11 +1046,9 @@ DlgFrame::showFrame()
 	if (pdproot != NULL) {
 		pdproot->showPage(TRUE);
 	}
-
-	// デフォルトフォーカスの設定
-//	this->setFocusedCtrl(m_sbFocusedCtrl);
-
 	::ShowWindow(m_hwndFrame, SW_SHOW);
+	// デフォルトフォーカスの設定
+	this->setFocusedCtrl(m_sbFocusedCtrl);
 
 	return TRUE;
 }
@@ -1077,7 +1058,7 @@ BOOL
 DlgFrame::closeFrame()
 {
 	if (m_hwndFrame == NULL) return FALSE;
-	BOOL ret = !::SendMessage(m_hwndFrame, WM_DESTROY, 0, 0);
+	BOOL ret = !::SendMessage(m_hwndFrame,WM_DESTROY,0,0);
 	m_hwndFrame = NULL;
 	return ret;
 }
@@ -1110,7 +1091,7 @@ DlgFrame::initFrame(HWND hDlg)
 									 m_width-2,m_height - 1,
 									 false);
 
-#if 0
+#if 1
 	if (hwndRoot) {
 		// 初期化完了を親スレッドに通知
 		// (このタイミングで行わないと SetFocus() でハングする)
@@ -1121,7 +1102,6 @@ DlgFrame::initFrame(HWND hDlg)
 		m_pSessionInstance->SessionInstance::setNotify(ngStr);
 	}
 #endif
-	m_bAlreadyFocused = FALSE;
 
 	return hwndRoot != NULL;
 }
@@ -1215,10 +1195,7 @@ DlgFrame::setFocusedCtrl(const StringBuffer& name)
 		if (m_hwndFrame != NULL) {
 			DlgPage* pdproot = this->getPage(strRootPageName);
 			if (pdproot == NULL) return FALSE;
-			HWND hwndFocused = pdproot->getFocusedCtrl();
-			if (hwndFocused) {
-				::SetFocus(hwndFocused);
-			}
+			::SetFocus(pdproot->getFocusedCtrl());
 		}
 	} else {
 		CtrlListItem* pctrl = this->getCtrl(name);
@@ -1251,30 +1228,6 @@ DlgFrame::getFocusedCtrl() const
 		}
 	}
 	return nullStr;
-}
-
-int
-DlgFrame::setImeState(int nState)
-{
-	m_imestate = nState;
-	m_bAlreadyFocused = FALSE;
-#if 0 // 入力フォーカスを得るコントロールに個別に設定が必要
-	if (m_hwndFrame) {
-		HIMC hImc = ::ImmGetContext(m_hwndFrame);
-		switch (m_imestate) {
-		case 1:
-			if (!::ImmGetOpenStatus(hImc))
-				::ImmSetOpenStatus(hImc, TRUE);
-			break;
-		default:
-			if (::ImmGetOpenStatus(hImc))
-				::ImmSetOpenStatus(hImc, FALSE);
-			break;
-		}
-		::ImmReleaseContext(m_hwndFrame, hImc);
-	}
-#endif
-	return m_imestate;
 }
 
 WORD

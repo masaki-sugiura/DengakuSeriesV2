@@ -1,4 +1,4 @@
-//	$Id: fs_func.cpp,v 1.5 2004-11-16 17:03:51 sugiura Exp $
+//	$Id: fs_func.cpp,v 1.4 2002-02-19 15:34:22 sugiura Exp $
 /*
  *	fs_func.cpp
  *	ファイルサービスの関数
@@ -342,18 +342,6 @@ GETLONGNAME(LPCSTR str)
 {
 	try {
 		g_strBuffer = g_pSessionInstance->si_getlongname(RemoveQuote(str),FALSE);
-		return g_strBuffer;
-	} catch (...) {
-		return "";
-	}
-}
-
-//	ファイル名をDOSファイル名に変換する
-DENGAKUDLL_API LPCSTR
-GETSHORTNAME(LPCSTR str)
-{
-	try {
-		g_strBuffer = g_pSessionInstance->si_getshortname(RemoveQuote(str),FALSE);
 		return g_strBuffer;
 	} catch (...) {
 		return "";

@@ -1,4 +1,4 @@
-//	$Id: dlltest.cpp,v 1.8 2005-01-24 15:27:51 sugiura Exp $
+//	$Id: dlltest.cpp,v 1.5 2003-12-15 15:20:44 sugiura Exp $
 /*
  *	dlltest.cpp
  *	テスト用アプリ
@@ -154,8 +154,6 @@ using namespace std;
 
 #define DENGAKUDLL_API extern "C" __declspec(dllimport)
 
-DENGAKUDLL_API LPCSTR GETDIRNAME(int, LPCSTR, LPCSTR);
-
 DENGAKUDLL_API LPCSTR GETDRIVES();
 DENGAKUDLL_API LPCSTR GETLONGNAME(LPCSTR);
 DENGAKUDLL_API int    SETCURDIR(LPCSTR);
@@ -199,17 +197,6 @@ DENGAKUDLL_API LPCSTR TOLOWER(LPCSTR);
 DENGAKUDLL_API LPCSTR TOLOWER2(LPCSTR);
 DENGAKUDLL_API LPCSTR TOUPPER(LPCSTR);
 DENGAKUDLL_API LPCSTR TOUPPER2(LPCSTR);
-
-DENGAKUDLL_API int NEWDIALOG(LPCSTR, int, LPCSTR);
-DENGAKUDLL_API int NEWCONTROL(LPCSTR, LPCSTR, LPCSTR);
-DENGAKUDLL_API int SHOWDIALOG(int, int);
-DENGAKUDLL_API int WAITCTRLNOTIFY(int);
-DENGAKUDLL_API int ENDDIALOG();
-
-DENGAKUDLL_API int BRE_LOAD(LPCSTR);
-DENGAKUDLL_API LPCSTR BRE_SUBST(LPCSTR, LPCSTR);
-DENGAKUDLL_API LPCSTR BRE_TRANS(LPCSTR, LPCSTR);
-DENGAKUDLL_API int BRE_FREE();
 
 #define NO_OUTPUT
 #define PROF_FILE
@@ -296,25 +283,6 @@ CREATE_FILE(LPCSTR filename)
 
 #endif
 
-#include <string>
-using std::string;
-
-void enumtest(const char* parent)
-{
-	int n = ENUMDIR((string(parent) + "\\*.*").c_str());
-	if (n == 0) {
-		MessageBox(NULL, NULL, "Error: 検索失敗", MB_OK);
-	} else if (n == 1) {
-		const char* child = FINDNEXT();
-		while (strlen(child) != 0) {
-//			MessageBox("$$parent = [" + $$parent + "]\n$$child = [" + $$child + "]");
-			child = FINDNEXT();
-		}
-	} else {
-//		message("Error: 不明");
-	}
-}
-
 
 #ifdef _WINDOWS
 int WINAPI
@@ -323,8 +291,8 @@ WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pszCmdLine, int nCmdShow)
 int main(int ac, char** av)
 #endif
 {
-//	initDll();
-#if 1
+	initDll();
+#if 0
 #if 0
 	static FARPROC lpfnGetDirName = ::GetProcAddress(hModule,"GETDIRNAME");
 	LPCSTR ret = (*(LPFNSTRFUNC)lpfnGetDirName)((PVOID)NULL,"フォルダの選択","C:\\hidemaru",1);
@@ -401,7 +369,6 @@ int main(int ac, char** av)
 	TOUCH("foo1.txt");
 #endif
 
-#if 0
 	ASSERT_NUM(MKDIR("foodir1\\foodir2"), ==, 0);
 	ASSERT_NUM(MKDIR("-p foodir1\\foodir2"), ==, 1);
 
@@ -413,32 +380,22 @@ int main(int ac, char** av)
 	ASSERT_NUM(MOVE("foo1.txt", "foo3.txt"), ==, 1);
 	ASSERT_NUM(MOVE("foo3.txt", "foodir1"), ==, 1);
 	ASSERT_NUM(MOVE("foodir2", "foodir3"), ==, 1);
-#endif
 
-#if 0
-//	ASSERT_NUM(ENUMFILE("C:\\*.*"), ==, 1);
-//	SHOW_FINDNEXT_RESULTS();
-	ASSERT_NUM(ENUMFILE("C:\\temp\\*.txt"), ==, 1);
+	ASSERT_NUM(ENUMFILE("C:\\*.*"), ==, 1);
+	SHOW_FINDNEXT_RESULTS();
+	ASSERT_NUM(ENUMFILE("C:\\usertemp\\*.txt"), ==, 1);
 	SHOW_FINDNEXT_RESULTS();
 
-//	ASSERT_NUM(ENUMDIR("C:\\*.*"), ==, 1);
-//	SHOW_FINDNEXT_RESULTS();
-	ASSERT_NUM(ENUMDIR("C:\\temp\\*.*"), ==, 1);
+	ASSERT_NUM(ENUMDIR("C:\\*.*"), ==, 1);
+	SHOW_FINDNEXT_RESULTS();
+	ASSERT_NUM(ENUMDIR("C:\\usertemp\\*.*"), ==, 1);
 	SHOW_FINDNEXT_RESULTS();
 
-//	ASSERT_NUM(ENUMPATH("-f C:\\*.doc"), ==, 1);
-//	SHOW_FINDNEXT_RESULTS();
-	ASSERT_NUM(ENUMPATH("C:\\temp\\*.txt"), ==, 1);
+	ASSERT_NUM(ENUMPATH("-f C:\\*.doc"), ==, 1);
 	SHOW_FINDNEXT_RESULTS();
-#endif
+	ASSERT_NUM(ENUMPATH("C:\\usertemp\\*.txt"), ==, 1);
+	SHOW_FINDNEXT_RESULTS();
 
-#if 0
-	enumtest("C:\\temp\\work\\00_Folder");
-	enumtest("C:\\temp\\work\\01 Folder");
-	enumtest("C:\\temp\\work\\02,Folder");
-#endif
-
-#if 0
 	ASSERT_NUM(RMDIR("foodir1"), ==, 0);
 	ASSERT_NUM(RMDIR("foodir1\\foodir2"), ==, 1);
 
@@ -446,7 +403,6 @@ int main(int ac, char** av)
 	ASSERT_NUM(REMOVE("foodir1\\foo?.txt"), ==, 1);
 	ASSERT_NUM(REMOVE("-r foodir?"), ==, 1);
 	ASSERT_NUM(REMOVE("foo?.txt"), ==, 1);
-#endif
 
 #endif
 
@@ -618,25 +574,6 @@ int main(int ac, char** av)
 #endif
 //	ASSERT(uninitDll());
 #endif
-
-#if 0
-	NEWDIALOG("Dialog Test", 40, "");
-	NEWCONTROL("text","","ダイアログテスト");
-//	NEWCONTROL("edit","","");
-	SHOWDIALOG(0, 1);
-	WAITCTRLNOTIFY(1000);
-	ENDDIALOG();
-#endif
-
-//	LPCSTR pszDirName = GETDIRNAME(0, "test", "\\\\topquark\\smbshare");
-//	MessageBox(NULL, pszDirName, NULL, MB_OK);
-
-	BRE_LOAD("C:\\Program Files\\hidemaru\\bregexp.dll");
-
-	BRE_SUBST("s/ひ/に/gk", "にゃあ");
-	BRE_TRANS("tr/ひ/に/gk", "にゃあ");
-
-	BRE_FREE();
 
 	return 0;
 }

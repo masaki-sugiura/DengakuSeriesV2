@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.18 2005-01-24 15:27:51 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.12 2004-01-15 15:44:40 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -55,16 +55,15 @@ ShowDlgProc(LPDWORD pThreadArgs)
 
 	DWORD ret = 1;
 //	StringBuffer* ntf = new StringBuffer(okStr);
-	const StringBuffer okStr("OK"), ngStr("NG");
 	HWND hwndDlg;
 	if ((hwndDlg = df.createFrame(psdpa->m_hwndOwner,psdpa->m_bOnTop))
 		== NULL) {
 //		*ntf = ngStr;
-		psi->SessionInstance::setNotify(ngStr);
+//		psi->SessionInstance::setNotify(*ntf);
 	} else {
 //		psi->SessionInstance::setNotify(*ntf);
-
-		psi->SessionInstance::setNotify(okStr);
+		::SetForegroundWindow(hwndDlg);
+		df.showFrame();
 
 		MSG	msg;
 		while (::GetMessage(&msg,NULL,0,0)) {
@@ -147,17 +146,12 @@ SessionInstance::si_showdialog(HWND hwndOwner, BOOL bOnTop)
 	}
 
 	StringBuffer buf(nullStr);
-	while (!this->SessionInstance::getNotify(buf, 1)) {
+	while (!this->SessionInstance::getNotify(buf,10))
 		/* no op. */;
-	}
 	if (buf.compareTo(okStr) != 0) {
 		m_pDlgThread = NULL;
 		return FALSE;
 	}
-
-	::SetForegroundWindow(m_DlgFrame.getUserDlg());
-	m_DlgFrame.setFocusedCtrl(m_DlgFrame.getFocusedCtrlName());
-	m_DlgFrame.showFrame();
 
 	return TRUE;
 }
@@ -592,36 +586,5 @@ SessionInstance::si_setdlgpos(int x, int y,
 						 ParseDlgPosOrigin(strOrigin),
 						 ParseDlgPosUnit(strUnit));
 	return 1;
-}
-
-StringBuffer
-SessionInstance::si_getdlgsize()
-{
-	HWND hwndDlg = m_DlgFrame.getUserDlg();
-	if (!hwndDlg) {
-		return "";
-	}
-
-	RECT rcDlg;
-	::GetWindowRect(hwndDlg, &rcDlg);
-
-	TCHAR buf[32];
-	wsprintf(buf, "%d,%d", rcDlg.right - rcDlg.left, rcDlg.bottom - rcDlg.top);
-	return buf;
-}
-
-int
-SessionInstance::si_setdlgimestate(int nState)
-{
-	return m_DlgFrame.setImeState(nState);
-}
-
-StringBuffer
-SessionInstance::si_getdlgimestate()
-{
-	int nState = m_DlgFrame.getImeState();
-	TCHAR buf[32];
-	wsprintf(buf, "%d", nState);
-	return buf;
 }
 

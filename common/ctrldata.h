@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.19 2005-01-16 11:07:48 sugiura Exp $
+//	$Id: ctrldata.h,v 1.16 2004-04-25 14:17:18 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -174,7 +174,6 @@ public:
 		COLORREF	 m_color;
 		BYTE		 m_fface;
 		StringBuffer m_fname;
-
 		CtrlFontProperty()
 			: m_hfont(NULL), m_bchanged(FALSE), m_color(0), m_fface(0), m_fname(nullStr)
 		{}
@@ -211,8 +210,6 @@ public:
 	void setRect(WORD x, WORD y, WORD cx, WORD cy);
 
 	int getItemNum() const { return m_item.ptr() != NULL ? m_item->itemNum() : 0; }
-
-	BOOL isEnabled() const { return m_bEnable; }
 
 	BOOL onInitCtrl(HWND hDlg);
 	BOOL onUninitCtrl();
@@ -280,7 +277,6 @@ public:
 		StringBuffer	m_text;	//	コントロールテキストバッファ
 		CtrlFontProperty	m_fontprop;		//	フォント属性
 		HBRUSH  m_hbrBackground; // 背景色のハンドル
-		HDC		m_hDC;			//	スタティックテキストの場合のみ用いるメモリDC
 
 		CtrlProperty(CtrlListItem* pCtrl = NULL);
 		~CtrlProperty();
@@ -482,7 +478,6 @@ public:
 	WORD getHeight();
 
 	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
-	BOOL initCtrl(HWND);
 	BOOL sendData();
 	BOOL receiveData();
 
@@ -499,7 +494,6 @@ public:
 
 protected:
 	DWORD m_imestate;
-	BOOL  m_bAlreadyFocused;
 };
 
 //	hline, vline
@@ -750,7 +744,6 @@ public:
 protected:
 	DWORD m_imestate;
 	BOOL  m_bEditable;
-	BOOL  m_bAlreadyFocused;
 
 	void getStateFromView();
 };

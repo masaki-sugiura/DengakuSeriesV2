@@ -1,4 +1,4 @@
-//	$Id: ds_handler.cpp,v 1.7 2005-01-16 07:38:33 sugiura Exp $
+//	$Id: ds_handler.cpp,v 1.4 2003-11-23 15:37:21 sugiura Exp $
 /*
  *	ds_handler.cpp
  *	ダイアログサービスの実装
@@ -178,12 +178,6 @@ ConvData::On_setdlgpos(CmdLineParser& params)
 	return this->si_setdlgpos(x, y, params.getArgvStr(2), params.getArgvStr(3));
 }
 
-int
-ConvData::On_setdlgimestate(CmdLineParser& params)
-{
-	return this->si_setdlgimestate(ival(params.getArgv(0)));
-}
-
 StringBuffer
 ConvData::On_getdlgtitle(CmdLineParser&)
 {
@@ -287,18 +281,6 @@ ConvData::On_getdlgpos(CmdLineParser&)
 	return this->si_getdlgpos();
 }
 
-StringBuffer
-ConvData::On_getdlgsize(CmdLineParser&)
-{
-	return this->si_getdlgsize();
-}
-
-StringBuffer
-ConvData::On_getdlgimestate(CmdLineParser&)
-{
-	return this->si_getdlgimestate();
-}
-
 int
 ConvData::On_newcontrol(CmdLineParser& params)
 {
@@ -385,11 +367,5 @@ ConvData::On_part(CmdLineParser& params)
 	if (params.getArgvStr(0).compareTo("half") == 0) width = (WORD)-1;
 	else width = ival(params.getArgv(0));
 	return this->si_setctrlwidth(nullStr,width);
-}
-
-int
-ConvData::On_dlgimestate(CmdLineParser& params)
-{
-	return this->si_setdlgimestate(ival(params.getArgv(0)));
 }
 

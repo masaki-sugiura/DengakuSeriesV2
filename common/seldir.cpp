@@ -1,4 +1,4 @@
-//	$Id: seldir.cpp,v 1.7 2004-11-16 17:03:50 sugiura Exp $
+//	$Id: seldir.cpp,v 1.6 2002-12-15 12:09:49 sugiura Exp $
 /*
  *	seldir.cpp
  *	ディレクトリ選択ダイアログの実装
@@ -371,31 +371,12 @@ SelectDirByDlg::getItemIDFromUNCPath(const StringBuffer& iniDir)
 
 	Auto_Ptr<LPIDLW_List> plParent(new LPIDLW_List(lpidlNetworkRoot));
 	plParent->m_lpsfFolder = lpsfNetworkRoot;
-
-	// Win2K/XP では「ネットワーク全体」「Microsoft Windows Network」
-	// 以下に「ワークグループ/ドメイン」「サーバ名」が来る
-	LPIDLW_List* plServer = plParent.ptr();
-
-	if (FindChildFolderByName(plServer, "ネットワーク全体", 0)) {
-		LPIDLW_List* plAllNetworks = plServer;
-		while (plAllNetworks->m_next != NULL) {
-			plAllNetworks = plAllNetworks->m_next;
-		}
-
-		if (FindChildFolderByName(plAllNetworks, "Microsoft Windows Network", 0)) {
-			LPIDLW_List* plMSWinNetwork = plAllNetworks;
-			while (plMSWinNetwork->m_next != NULL) {
-				plMSWinNetwork = plMSWinNetwork->m_next;
-			}
-			plServer = plMSWinNetwork;
-		}
-	}
-	
-	if (!FindChildFolderByName(plServer,
+	if (!FindChildFolderByName(plParent.ptr(),
 							   server,
 							   2)) {
 		return NULL;
 	}
+	LPIDLW_List* plServer = plParent.ptr();
 	while (plServer->m_next != NULL)
 		plServer = plServer->m_next;
 

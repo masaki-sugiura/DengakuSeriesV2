@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.19 2005-01-16 11:07:48 sugiura Exp $
+//	$Id: session.h,v 1.14 2003-11-23 15:37:21 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -67,9 +67,6 @@ public:
 	StringBuffer si_getlibversion();
 	StringBuffer si_getosinfo(CmdLineParser&);
 //	StringBuffer si_calc(const StringBuffer&, const StringBuffer&);
-	StringBuffer si_getcaretpos();
-	StringBuffer si_getcursorpos();
-	int si_sleep(int);
 
 	//	グローバル変数操作系
 	int si_setvar(const StringBuffer&, const StringBuffer&);
@@ -114,7 +111,6 @@ public:
 	StringBuffer si_findnext();
 	StringBuffer si_getdrives();
 	StringBuffer si_getlongname(const StringBuffer&, BOOL);
-	StringBuffer si_getshortname(const StringBuffer&, BOOL);
 
 	//	文字列処理系
 	int si_atoi(const StringBuffer&);
@@ -185,8 +181,6 @@ public:
 	int si_savedialog(const StringBuffer&, const StringBuffer&);
 	int si_loaddialog(const StringBuffer&, const StringBuffer&);
 	int si_setdlgtitle(const StringBuffer&);
-	int si_setdlgimestate(int);
-	StringBuffer si_getdlgimestate();
 	StringBuffer si_getdlgtitle();
 	StringBuffer si_getctrlstate(const StringBuffer&);
 	StringBuffer si_getctrlstring(const StringBuffer&);
@@ -211,7 +205,6 @@ public:
 	int si_newpage(WORD);
 	StringBuffer si_getdlgpos();
 	int si_setdlgpos(int, int, const StringBuffer&, const StringBuffer&);
-	StringBuffer si_getdlgsize();
 
 	// BRegexp系
 	int si_bregexp_load(const StringBuffer&);
