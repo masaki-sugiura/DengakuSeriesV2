@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.6 2002-02-17 08:00:41 sugiura Exp $
+//	$Id: ctrldata.h,v 1.7 2002-02-17 17:28:41 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -22,7 +22,7 @@
 		BtnCtrl : SimpleCtrl		button, defbutton
 			CheckCtrl : BtnCtrl		check, rdbtn
 		TextCtrl : SimpleCtrl		text
-		EditCtrl : SimpleCtrl		edit, mledit
+		EditCtrl : SimpleCtrl		edit, mledit, pwdedit
 		LineCtrl : SimpleCtrl		hline, vline
 		TrackCtrl : SimpleCtrl		track
 		TreeCtrl : SimpleCtrl		tree
@@ -31,7 +31,7 @@
 			RefBtnCtrl : HasListCtrl	reffilebutton, refdirbutton, refcolorbutton
 			RadioCtrl : HasListCtrl		radio
 			ListCtrl : HasListCtrl		list
-				ComboCtrl : ListCtrl	combo
+				ComboCtrl : ListCtrl	combo, cmblist
 			ChkListCtrl : HasListCtrl	chklist
 				LViewCtrl : ChkListCtrl	lview
 			FrameCtrl : HasListCtrl		frame, group
@@ -667,7 +667,8 @@ protected:
 class ComboCtrl : public ListCtrl {
 public:
 	ComboCtrl(const StringBuffer& name = nullStr,
-			const StringBuffer& text = nullStr);
+			const StringBuffer& text = nullStr,
+			CTRL_ID type = CTRLID_COMBO);
 
 	HWND getFocusedCtrl() const { return m_pcp->m_hwndCtrl; }
 
@@ -688,6 +689,7 @@ public:
 
 protected:
 	DWORD m_imestate;
+	BOOL  m_bEditable;
 };
 
 //	chklist

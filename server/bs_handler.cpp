@@ -1,4 +1,4 @@
-//	$Id: bs_handler.cpp,v 1.1 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: bs_handler.cpp,v 1.2 2002-02-17 17:28:41 sugiura Exp $
 /*
  *	bs_handler.cpp
  *	BRegExp サービスの実装
@@ -64,6 +64,12 @@ StringBuffer
 ConvData::On_bre_getnext(CmdLineParser& params)
 {
 	return this->si_bregexp_getnext();
+}
+
+StringBuffer
+ConvData::On_bre_postostr(CmdLineParser& params)
+{
+	return this->si_bregexp_postostr(params.getArgvStr(0));
 }
 
 StringBuffer

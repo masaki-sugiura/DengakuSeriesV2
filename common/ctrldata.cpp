@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.6 2002-02-17 08:00:41 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.7 2002-02-17 17:28:41 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -290,7 +290,8 @@ CtrlListItem::createCtrl(
 			nc = new ListCtrl(name,text);
 			break;
 		case CTRLID_COMBO:
-			nc = new ComboCtrl(name,text);
+		case CTRLID_CMBLIST:
+			nc = new ComboCtrl(name,text,static_cast<CTRL_ID>(ctrltype));
 			break;
 		case CTRLID_REFFILEBUTTON:
 		case CTRLID_REFDIRBUTTON:
@@ -1879,11 +1880,13 @@ ListCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 //	combo
 ComboCtrl::ComboCtrl(
 	const StringBuffer& name,
-	const StringBuffer& text)
-	: ListCtrl(name,text,CTRLID_COMBO)
+	const StringBuffer& text,
+	CTRL_ID type)
+	: ListCtrl(name,text,CTRLID_COMBO), m_bEditable(type == CTRLID_COMBO)
 {
-	m_pcp->m_style		= CBS_DROPDOWN|CBS_AUTOHSCROLL|WS_BORDER|WS_VSCROLL|
-							WS_CHILD|WS_VISIBLE|WS_TABSTOP|WS_VISIBLE|WS_GROUP;
+	m_pcp->m_style		= CBS_AUTOHSCROLL|WS_BORDER|WS_VSCROLL|
+							WS_CHILD|WS_VISIBLE|WS_TABSTOP|WS_VISIBLE|WS_GROUP|
+							(m_bEditable ? CBS_DROPDOWN : CBS_DROPDOWNLIST);
 	m_pcp->m_classname	= (LPSTR)0x85;
 	m_msg_setstr	= CB_INSERTSTRING;
 	m_msg_getstr	= CB_GETLBTEXT;
@@ -1959,7 +1962,7 @@ ComboCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 	case CBN_EDITCHANGE:	return m_notify[0];
 	case CBN_SELCHANGE:		return m_notify[1];
 	case CBN_SETFOCUS:
-		{
+		if (m_bEditable) {
 			HWND hwndEdit = ::GetTopWindow((HWND)lParam);
 			if (hwndEdit == NULL) break;
 			if (m_imestate > 0) {

@@ -1,4 +1,4 @@
-//	$Id: cmd.h,v 1.5 2002-02-17 08:00:41 sugiura Exp $
+//	$Id: cmd.h,v 1.6 2002-02-17 17:28:41 sugiura Exp $
 /*
  *	cmd.h
  *	ƒRƒ}ƒ“ƒh–¼ˆê——
@@ -124,6 +124,7 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_REQUEST(bre_trans)
 	DECLARE_DDECMD_REQUEST(bre_split)
 	DECLARE_DDECMD_REQUEST(bre_getnext)
+	DECLARE_DDECMD_REQUEST(bre_postostr)
 	DECLARE_DDECMD_REQUEST(bre_hasmoreresults)
 	DECLARE_DDECMD_REQUEST(clr_getrgb)
 	DECLARE_DDECMD_REQUEST(clr_getname)
