@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.11 2002-11-03 15:36:50 sugiura Exp $
+//	$Id: session.h,v 1.12 2003-02-15 18:37:02 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -117,6 +117,7 @@ public:
 	int si_strcount(const StringBuffer&, const StringBuffer&);
 	StringBuffer si_gsub(const StringBuffer&, const StringBuffer&,
 						const StringBuffer&, int);
+	StringBuffer si_reverse(const StringBuffer&);
 	StringBuffer si_tolower(const StringBuffer&);
 	StringBuffer si_toupper(const StringBuffer&);
 	int si_strstr(const StringBuffer&, const StringBuffer&);
@@ -125,6 +126,7 @@ public:
 	StringBuffer si_leftstr(const StringBuffer&, int);
 	StringBuffer si_midstr(const StringBuffer&, int, int);
 	StringBuffer si_rightstr(const StringBuffer&, int);
+	StringBuffer si_reverse2(const StringBuffer&);
 	StringBuffer si_tolower2(const StringBuffer&);
 	StringBuffer si_toupper2(const StringBuffer&);
 	int si_strstr2(const StringBuffer&, const StringBuffer&);

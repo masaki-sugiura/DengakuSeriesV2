@@ -1,4 +1,4 @@
-//	$Id: ss_handler.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: ss_handler.cpp,v 1.2 2003-02-15 18:37:02 sugiura Exp $
 /*
  *	ss_handler.cpp
  *	文字列サービスの実装
@@ -43,6 +43,12 @@ ConvData::On_gsub(CmdLineParser& params)
 						params.getArgvStr(1),
 						params.getArgvStr(2),
 						ival(params.getArgv(3)));
+}
+
+StringBuffer
+ConvData::On_reverse(CmdLineParser& params)
+{
+	return this->si_reverse(params.getArgvStr(0));
 }
 
 StringBuffer
@@ -98,6 +104,12 @@ StringBuffer
 ConvData::On_rightstr(CmdLineParser& params)
 {
 	return this->si_rightstr(params.getArgvStr(0),ival(params.getArgv(1)));
+}
+
+StringBuffer
+ConvData::On_reverse2(CmdLineParser& params)
+{
+	return this->si_reverse2(params.getArgvStr(0));
 }
 
 StringBuffer

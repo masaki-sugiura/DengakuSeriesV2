@@ -1,4 +1,4 @@
-//	$Id: strbuf.h,v 1.3 2002-02-19 15:34:22 sugiura Exp $
+//	$Id: strbuf.h,v 1.4 2003-02-15 18:37:02 sugiura Exp $
 /*
  *	strbuf.h
  *	文字列クラス
@@ -80,6 +80,12 @@ public:
 
 	//	指定文字列の置き換え
 	StringBuffer& replaceStr(LPCSTR ostr, LPCSTR dstr, int num = -1);
+
+	//	(２バイト文字を意識しない)文字列の反転
+	StringBuffer& reverse();
+
+	//	(２バイト文字を意識した)文字列の反転
+	StringBuffer& reverse2();
 
 	//	２バイト文字を意識しない文字列の変換
 	StringBuffer& toLower();

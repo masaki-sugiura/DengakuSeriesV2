@@ -1,4 +1,4 @@
-//	$Id: strutils.cpp,v 1.3 2002-06-16 14:56:09 sugiura Exp $
+//	$Id: strutils.cpp,v 1.4 2003-02-15 18:37:02 sugiura Exp $
 /*
  *	strutils.cpp
  *	C 文字列のためのユーティリティ関数群の実装
@@ -398,5 +398,50 @@ lstrninc(LPCSTR str, int num)
 	if (!IsValidPtr(str)) return NULL;
 	while (num-- > 0) str = ToNextChar(str);
 	return const_cast<LPSTR>(str);
+}
+
+LPSTR
+reverse(LPSTR str)
+{
+	if (!IsValidPtr(str)) return NULL;
+	int num = lstrlen(str);
+	if (num <= 1) return str;
+
+	int hnum = num / 2;
+	for (int i = 0; i < hnum; i++) {
+		TCHAR ch = str[i];
+		str[i] = str[num - i - 1];
+		str[num - i - 1] = ch;
+	}
+
+	return str;
+}
+
+LPSTR
+reverse2(LPSTR str)
+{
+	if (!IsValidPtr(str)) return NULL;
+	int num = lstrlen(str);
+	if (num <= 1) return str;
+
+	LPSTR buf = new TCHAR[num];
+	int offset = num;
+	LPCSTR ptr = str;
+	while (ptr - str < num) {
+		if (IsCharLeadByte(*ptr) && num - (ptr - str) >= 2) {
+			// ２バイト文字かつ残りが２バイト以上
+			offset -= 2;
+			buf[offset] = *ptr++;
+			buf[offset + 1] = *ptr++;
+		} else {
+			// １バイト文字または２バイト文字の先頭のみ
+			buf[--offset] = *ptr++;
+		}
+	}
+
+	::CopyMemory(str, buf, num);
+	delete [] buf;
+
+	return str;
 }
 

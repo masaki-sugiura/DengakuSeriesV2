@@ -1,4 +1,4 @@
-//	$Id: si_string.cpp,v 1.2 2002-06-16 14:56:09 sugiura Exp $
+//	$Id: si_string.cpp,v 1.3 2003-02-15 18:37:02 sugiura Exp $
 /*
  *	si_string.cpp
  *	文字列サービスの関数
@@ -71,6 +71,12 @@ SessionInstance::si_gsub(
 }
 
 StringBuffer
+SessionInstance::si_reverse(const StringBuffer& str)
+{
+	return StringBuffer(str).reverse();
+}
+
+StringBuffer
 SessionInstance::si_tolower(const StringBuffer& str)
 {
 	return StringBuffer(str).toLower();
@@ -121,6 +127,12 @@ SessionInstance::si_rightstr(const StringBuffer& str, int ext_size)
 {
 	int head = str.length() - ext_size;
 	return str.extract(~(head >> 31) & head, ext_size);
+}
+
+StringBuffer
+SessionInstance::si_reverse2(const StringBuffer& str)
+{
+	return StringBuffer(str).reverse2();
 }
 
 StringBuffer

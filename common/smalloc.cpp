@@ -1,4 +1,4 @@
-//	$Id: smalloc.cpp,v 1.3 2002-09-26 13:13:24 sugiura Exp $
+//	$Id: smalloc.cpp,v 1.4 2003-02-15 18:37:02 sugiura Exp $
 /*
  *	smalloc.cpp
  *	共有メモリ領域についての malloc, free インターフェイスの提供
@@ -44,6 +44,27 @@ FileMap::addr(UINT iptr)
 	return iptr < m_pagesize ? ((char*)m_header + iptr) : NULL;
 }
 
+#ifdef _DEBUG
+inline void
+DumpOneSMAHeader(SMAlloc* pAllocator, LPSMAHeader p)
+{
+	char buf[80];
+	wsprintf(buf, "index: %d, next: %d, size: %d\n",
+			 pAllocator->index(p), p->m_info.m_iptr, p->m_info.m_size);
+	::OutputDebugString(buf);
+}
+
+void
+DumpSMAHeader(SMAlloc* pAllocator, const char* strHeader, LPSMAHeader p)
+{
+	LPSMAHeader pend = p;
+	::OutputDebugString(strHeader);
+	do {
+		DumpOneSMAHeader(pAllocator, p);
+		p = (LPSMAHeader)pAllocator->addr(p->m_info.m_iptr);
+	} while (p != pend) ;
+}
+#endif
 
 SMAlloc::SMAlloc(const StringBuffer& name, UINT inipagenum)
 {
@@ -90,9 +111,17 @@ SMAlloc::initAllocator(PageHeader* pHeader)
 	UINT next_offset = allocate_offset() + sizeof(SMAHeader);
 	p->m_info.m_size = 1;
 	p->m_info.m_iptr = next_offset;
+#ifdef DEBUG_SMALLOC
+	p->m_dwPreMagic  = SMA_PRE_MAGIC;
+	p->m_dwPostMagic = SMA_POST_MAGIC;
+#endif
 	p++;
 	p->m_info.m_size = (m_pFileMap->m_pagesize - next_offset) / sizeof(SMAHeader);
 	p->m_info.m_iptr = allocate_offset();
+#ifdef DEBUG_SMALLOC
+	p->m_dwPreMagic  = SMA_PRE_MAGIC;
+	p->m_dwPostMagic = SMA_POST_MAGIC;
+#endif
 	pHeader->m_idxFreeP = allocate_offset(); // current freep index
 }
 
@@ -120,6 +149,10 @@ SMAlloc::alloc(UINT size)
 				p->m_info.m_size = nunits;
 			}
 			pHeader->m_idxFreeP = index(prevp);
+#ifdef DEBUG_SMALLOC
+			p->m_dwPreMagic  = SMA_PRE_MAGIC;
+			p->m_dwPostMagic = SMA_POST_MAGIC;
+#endif
 			return index((void*)(p + 1));
 		}
 		if (p == freep) break;
@@ -137,23 +170,41 @@ SMAlloc::free(UINT iptr)
 
 	LPSMAHeader bp = (LPSMAHeader)addr(iptr) - 1,
 				p = (LPSMAHeader)addr(pHeader->m_idxFreeP);
+
+#ifdef DEBUG_SMALLOC
+	if (bp->m_dwPreMagic != SMA_PRE_MAGIC) {
+		::MessageBox(NULL, "PreHeader is broken!!", NULL, MB_OK);
+	} else if (bp->m_dwPostMagic != SMA_POST_MAGIC) {
+		::MessageBox(NULL, "PostHeader is broken!!", NULL, MB_OK);
+	}
+#endif
+
 	for ( ;
 		!(bp > p && bp < addr(p->m_info.m_iptr));
 		p = (LPSMAHeader)addr(p->m_info.m_iptr)) {
-		if (p >= addr(p->m_info.m_iptr) &&
-			(bp > p || bp < addr(p->m_info.m_iptr)))
+		if (p >= addr(p->m_info.m_iptr) && p < bp) {
+			// bp が指す領域が現在の空き領域のどれよりも後ろにある
 			break;
+		}
 	}
-	if (bp + bp->m_info.m_size == addr(p->m_info.m_iptr)) {
-		bp->m_info.m_size
-			+= ((LPSMAHeader)addr(p->m_info.m_iptr))->m_info.m_size;
-		bp->m_info.m_iptr
-			= ((LPSMAHeader)addr(p->m_info.m_iptr))->m_info.m_iptr;
+
+	// この時点で p < bp (< p->next)
+
+	LPSMAHeader np = (LPSMAHeader)addr(p->m_info.m_iptr);
+	if (bp + bp->m_info.m_size == np) {
+		// free する領域が次の空き領域に連接
+		bp->m_info.m_size += np->m_info.m_size;
+		bp->m_info.m_iptr = np->m_info.m_iptr;
+	} else if (bp < np) {
+		// p < bp < p->next
+		bp->m_info.m_iptr = index(np);
 	} else {
-		bp->m_info.m_iptr
-			= ((LPSMAHeader)addr(p->m_info.m_iptr))->m_info.m_iptr;
+		// p < bp (last free region)
+		bp->m_info.m_iptr = p->m_info.m_iptr;
 	}
+
 	if (p + p->m_info.m_size == bp) {
+		// p が指す領域が bp が指す領域と隣接
 		p->m_info.m_size += bp->m_info.m_size;
 		p->m_info.m_iptr = bp->m_info.m_iptr;
 	} else {

@@ -1,4 +1,4 @@
-//	$Id: ss_func.cpp,v 1.3 2002-02-19 15:34:22 sugiura Exp $
+//	$Id: ss_func.cpp,v 1.4 2003-02-15 18:37:02 sugiura Exp $
 /*
  *	ss_func.cpp
  *	文字列サービスの関数
@@ -57,6 +57,18 @@ GSUB(LPCSTR str1, LPCSTR str2, LPCSTR str3, HIDEDLL_NUMTYPE num)
 {
 	try {
 		g_strBuffer = g_pSessionInstance->si_gsub(str1,str2,str3,num);
+		return g_strBuffer;
+	} catch (...) {
+		return "";
+	}
+}
+
+//	reverse
+DENGAKUDLL_API LPCSTR
+REVERSE(LPCSTR str)
+{
+	try {
+		g_strBuffer = g_pSessionInstance->si_reverse(str);
 		return g_strBuffer;
 	} catch (...) {
 		return "";
@@ -150,6 +162,18 @@ RIGHTSTR(LPCSTR str, HIDEDLL_NUMTYPE num)
 {
 	try {
 		g_strBuffer = g_pSessionInstance->si_rightstr(str,num);
+		return g_strBuffer;
+	} catch (...) {
+		return "";
+	}
+}
+
+//	全角文字を意識して reverse
+DENGAKUDLL_API LPCSTR
+REVERSE2(LPCSTR str)
+{
+	try {
+		g_strBuffer = g_pSessionInstance->si_reverse2(str);
 		return g_strBuffer;
 	} catch (...) {
 		return "";

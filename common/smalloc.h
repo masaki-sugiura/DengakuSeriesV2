@@ -1,4 +1,4 @@
-//	$Id: smalloc.h,v 1.3 2002-09-26 13:13:24 sugiura Exp $
+//	$Id: smalloc.h,v 1.4 2003-02-15 18:37:02 sugiura Exp $
 /*
  *	smalloc.h
  *	共有メモリ領域についての malloc, free インターフェイスの提供
@@ -11,7 +11,21 @@
 
 #define SMA_PAGESIZE     0x01000000  // 16MB
 
+//#define DEBUG_SMALLOC
+
 // allocation unit
+#ifdef DEBUG_SMALLOC
+struct SMAHeader {
+	DWORD m_dwPreMagic;
+	struct {
+		UINT m_iptr;
+		UINT m_size;
+	} m_info;
+	DWORD m_dwPostMagic;
+};
+#define SMA_PRE_MAGIC  0xDCDCCDCD
+#define SMA_POST_MAGIC 0xFEFEEFEF
+#else
 union SMAHeader {
 	struct {
 		UINT m_iptr; // index of next header
@@ -19,8 +33,9 @@ union SMAHeader {
 	} m_info;
 	ULONG m_align;
 };
+#endif
 
-typedef union SMAHeader* LPSMAHeader;
+typedef SMAHeader* LPSMAHeader;
 
 struct PageHeader {
 	UINT m_nShareCount;

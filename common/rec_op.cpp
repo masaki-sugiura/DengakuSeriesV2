@@ -1,4 +1,4 @@
-//	$Id: rec_op.cpp,v 1.6 2003-01-19 05:59:33 sugiura Exp $
+//	$Id: rec_op.cpp,v 1.7 2003-02-15 18:37:02 sugiura Exp $
 /*
  *	rec_op.cpp
  *	再帰ファイル操作クラス群
@@ -11,6 +11,8 @@
 #include "dirlist.h"
 #include "auto_ptr.h"
 
+#define IDERROR  IDABORT
+
 int
 ConfirmOverRide(const PathName &org, const PathName &dest, DWORD flag)
 {
@@ -21,11 +23,11 @@ ConfirmOverRide(const PathName &org, const PathName &dest, DWORD flag)
 
 	//	ファイル・ディレクトリ属性の整合性チェック
 	if (org.isDirectory() != ((attr&FILE_ATTRIBUTE_DIRECTORY) != 0))
-		return IDNO;
+		return IDERROR;
 
 	//	上書き対象と元オブジェクトが同じかどうかのチェック
 	//	（注：名前のチェックしか行っていない）
-	if (!org.compareTo(dest, FALSE)) return IDNO;
+	if (!org.compareTo(dest, FALSE)) return IDERROR;
 
 	//	全ての場合について上書きするかどうか確認
 	if ((flag & FLAG_OVERRIDE_CONFIRM) != 0) {
@@ -42,12 +44,12 @@ ConfirmOverRide(const PathName &org, const PathName &dest, DWORD flag)
 		//	上書きできるように属性値を変更
 		attr &= ~(FILE_ATTRIBUTE_READONLY|FILE_ATTRIBUTE_SYSTEM);
 
-		return ::SetFileAttributes(dest, attr) ? IDYES : IDNO;
+		return ::SetFileAttributes(dest, attr) ? IDYES : IDERROR;
 	}
 
 	//	古いファイルのみを上書き
 	if ((flag & FLAG_OVERRIDE_NOTNEWER) != 0 &&
-		::CompareFileTime(org.getTime(), dest.getTime()) <= 0) return IDNO;
+		::CompareFileTime(org.getTime(), dest.getTime()) <= 0) return IDERROR;
 
 	//	読取専用またはシステムファイルの上書きを確認
 	if ((attr&(FILE_ATTRIBUTE_READONLY|FILE_ATTRIBUTE_SYSTEM)) != 0) {
@@ -63,7 +65,7 @@ ConfirmOverRide(const PathName &org, const PathName &dest, DWORD flag)
 		//	上書きできるように属性値を変更
 		attr &= ~(FILE_ATTRIBUTE_READONLY|FILE_ATTRIBUTE_SYSTEM);
 
-		return ::SetFileAttributes(dest, attr) ? IDYES : IDNO;
+		return ::SetFileAttributes(dest, attr) ? IDYES : IDERROR;
 	}
 
 	return IDYES;	//	上書きＯＫ
@@ -92,7 +94,7 @@ ConfirmRemove(const PathName &file, DWORD flag)
 		//	上書きできるように属性値を変更
 		attr &= ~(FILE_ATTRIBUTE_READONLY|FILE_ATTRIBUTE_SYSTEM);
 
-		return ::SetFileAttributes(file, attr) ? IDYES : IDNO;
+		return ::SetFileAttributes(file, attr) ? IDYES : IDERROR;
 	}
 
 	//	読取専用またはシステムファイルの削除を確認
@@ -109,7 +111,7 @@ ConfirmRemove(const PathName &file, DWORD flag)
 		//	削除できるように属性値を変更
 		attr &= ~(FILE_ATTRIBUTE_READONLY|FILE_ATTRIBUTE_SYSTEM);
 
-		return ::SetFileAttributes(file, attr) ? IDYES : IDNO;
+		return ::SetFileAttributes(file, attr) ? IDYES : IDERROR;
 	}
 
 	return IDYES;	//	削除ＯＫ
@@ -119,10 +121,12 @@ int
 SafetyCopyFile(const PathName &orgfile, const PathName &destfile, DWORD flags)
 {
 	switch (ConfirmOverRide(orgfile,destfile,flags)) {
+	case IDERROR:
+		return RO_FAILED;
 	case IDCANCEL:
 		return RO_STOP;
 	case IDNO:
-		return RO_FAILED;
+		return RO_CANCELED;
 	}
 	return ::CopyFile(orgfile,destfile,FALSE) ? RO_SUCCESS : RO_FAILED;
 }
@@ -131,10 +135,12 @@ int
 SafetyMoveFile(const PathName &orgfile, const PathName &destfile, DWORD flags)
 {
 	switch (ConfirmOverRide(orgfile,destfile,flags)) {
+	case IDERROR:
+		return RO_FAILED;
 	case IDCANCEL:
 		return RO_STOP;
 	case IDNO:
-		return RO_FAILED;
+		return RO_CANCELED;
 	}
 	if (destfile.isValid()) {
 		//	delete old dest file
@@ -160,10 +166,12 @@ int
 SafetyRemoveFile(const PathName &file, DWORD flags)
 {
 	switch (ConfirmRemove(file,flags)) {
+	case IDERROR:
+		return RO_FAILED;
 	case IDCANCEL:
 		return RO_STOP;
 	case IDNO:
-		return RO_FAILED;
+		return RO_CANCELED;
 	}
 	return ::DeleteFile(file) ? RO_SUCCESS : RO_FAILED;
 }
@@ -172,10 +180,12 @@ int
 SafetyRemoveDirectory(const PathName &dir, DWORD flags)
 {
 	switch (ConfirmRemove(dir,flags)) {
+	case IDERROR:
+		return RO_FAILED;
 	case IDCANCEL:
 		return RO_STOP;
 	case IDNO:
-		return RO_FAILED;
+		return RO_CANCELED;
 	}
 	return ::RemoveDirectory(dir) ? RO_SUCCESS : RO_FAILED;
 }
@@ -245,7 +255,7 @@ CopyPath(const PathName &file, const PathName &dest, DWORD flags, SeqOpResult* p
 		}
 	} else {
 		int ret = SafetyCopyFile(file,dest,flags);
-		if (ret & RO_STOP) {
+		if ((ret & RO_STOP) || (ret & RO_CANCELED)) {
 			AddCancel(psor, file, dest);
 		} else if (ret & RO_FAILED) {
 			AddFailure(psor, file, dest);
@@ -273,7 +283,7 @@ MovePath(const PathName &file, const PathName &dest, DWORD flags, SeqOpResult* p
 		}
 	}
 	int ret = SafetyMoveFile(file,dest,flags);
-	if (ret & RO_STOP) {
+	if ((ret & RO_STOP) || (ret & RO_CANCELED)) {
 		AddCancel(psor, file, dest);
 	} else if (ret & RO_FAILED) {
 		AddFailure(psor, file, dest);
@@ -300,7 +310,7 @@ RemovePath(const PathName &file, DWORD flags, SeqOpResult* psor)
 		}
 	} else {
 		int ret = SafetyRemoveFile(file,flags);
-		if (ret & RO_STOP) {
+		if ((ret & RO_STOP) || (ret & RO_CANCELED)) {
 			AddCancel(psor, file);
 		} else if (ret & RO_FAILED) {
 			AddFailure(psor, file);
@@ -324,7 +334,7 @@ SetPathAttributes(const PathName &file, DWORD flags, SeqOpResult* psor)
 		}
 	} else {
 		int ret = SetAttributes(file,flags);
-		if (ret & RO_STOP) {
+		if ((ret & RO_STOP) || (ret & RO_CANCELED)) {
 			AddCancel(psor, file);
 		} else if (ret & RO_FAILED) {
 			AddFailure(psor, file);
@@ -348,7 +358,7 @@ SetPathTime(const PathName &file, const FILETIME *pft, DWORD flags, SeqOpResult*
 		}
 	} else {
 		int ret = SetTime(file,pft,flags);
-		if (ret & RO_STOP) {
+		if ((ret & RO_STOP) || (ret & RO_CANCELED)) {
 			AddCancel(psor, file);
 		} else if (ret & RO_FAILED) {
 			AddFailure(psor, file);
@@ -487,7 +497,7 @@ int
 RecursiveCopyDir::FiletoFile()
 {
 	int ret = SafetyCopyFile(m_OrgPathBuf,m_DestDirBuf,m_fConfirm);
-	if (ret & RO_STOP) {
+	if ((ret & RO_STOP) || (ret & RO_CANCELED)) {
 		AddCancel(m_psor, m_OrgPathBuf, m_DestDirBuf);
 	} else if (ret & RO_FAILED) {
 		AddFailure(m_psor, m_OrgPathBuf, m_DestDirBuf);
@@ -527,7 +537,7 @@ int
 RecursiveMoveDir::FiletoFile()
 {
 	int ret = SafetyMoveFile(m_OrgPathBuf,m_DestDirBuf,m_fConfirm);
-	if (ret & RO_STOP) {
+	if ((ret & RO_STOP) || (ret & RO_CANCELED)) {
 		AddCancel(m_psor, m_OrgPathBuf, m_DestDirBuf);
 	} else if (ret & RO_FAILED) {
 		AddFailure(m_psor, m_OrgPathBuf, m_DestDirBuf);
@@ -553,7 +563,7 @@ RecursiveRemoveDir::postDirOp()
 	if (!m_OrgPathBuf.isValid()) ret = RO_SUCCESS;
 	else if (!m_OrgPathBuf.isDirectory()) ret = RO_FAILED;
 	else ret = SafetyRemoveDirectory(m_OrgPathBuf,m_fConfirm);
-	if (ret & RO_STOP) {
+	if ((ret & RO_STOP) || (ret & RO_CANCELED)) {
 		AddCancel(m_psor, m_OrgPathBuf);
 	} else if (ret & RO_FAILED) {
 		AddFailure(m_psor, m_OrgPathBuf);
@@ -567,7 +577,7 @@ int
 RecursiveRemoveDir::FiletoFile()
 {
 	int ret = SafetyRemoveFile(m_OrgPathBuf,m_fConfirm);
-	if (ret & RO_STOP) {
+	if ((ret & RO_STOP) || (ret & RO_CANCELED)) {
 		AddCancel(m_psor, m_OrgPathBuf);
 	} else if (ret & RO_FAILED) {
 		AddFailure(m_psor, m_OrgPathBuf);
@@ -590,7 +600,7 @@ int
 RecursiveSetAttributes::postDirOp()
 {
 	int ret = SetAttributes(m_OrgPathBuf,m_fConfirm);
-	if (ret & RO_STOP) {
+	if ((ret & RO_STOP) || (ret & RO_CANCELED)) {
 		AddCancel(m_psor, m_OrgPathBuf);
 	} else if (ret & RO_FAILED) {
 		AddFailure(m_psor, m_OrgPathBuf);
@@ -604,7 +614,7 @@ int
 RecursiveSetAttributes::FiletoFile()
 {
 	int ret = SetAttributes(m_OrgPathBuf,m_fConfirm);
-	if (ret & RO_STOP) {
+	if ((ret & RO_STOP) || (ret & RO_CANCELED)) {
 		AddCancel(m_psor, m_OrgPathBuf);
 	} else if (ret & RO_FAILED) {
 		AddFailure(m_psor, m_OrgPathBuf);
@@ -628,7 +638,7 @@ int
 RecursiveSetTime::FiletoFile()
 {
 	int ret = SetTime(m_OrgPathBuf,&m_ft,m_fConfirm);
-	if (ret & RO_STOP) {
+	if ((ret & RO_STOP) || (ret & RO_CANCELED)) {
 		AddCancel(m_psor, m_OrgPathBuf);
 	} else if (ret & RO_FAILED) {
 		AddFailure(m_psor, m_OrgPathBuf);

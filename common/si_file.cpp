@@ -1,4 +1,4 @@
-//	$Id: si_file.cpp,v 1.16 2003-01-19 05:59:33 sugiura Exp $
+//	$Id: si_file.cpp,v 1.17 2003-02-15 18:37:02 sugiura Exp $
 /*
  *	si_file.cpp
  *	SessionInstance: ファイルサービスの関数
@@ -474,7 +474,7 @@ public:
 	DWORD do_op(PathName& file, SeqOpResult* psor)
 	{
 		int ret = SafetyRemoveDirectory(file,m_flags);
-		if (ret & RO_STOP) {
+		if ((ret & RO_STOP) || (ret & RO_CANCELED)) {
 			AddCancel(psor, file);
 		} else if (ret & RO_FAILED) {
 			AddFailure(psor, file);
@@ -488,8 +488,8 @@ private:
 	DWORD m_flags;
 };
 
-static DWORD flagsRmDir[] = { FLAG_REMOVE_FORCED, FLAG_RETURNNUM };
-static OptMap optMapRmDir("fn", flagsRmDir);
+static DWORD flagsRmDir[] = { FLAG_REMOVE_CONFIRM, FLAG_REMOVE_FORCED, FLAG_RETURNNUM };
+static OptMap optMapRmDir("ifn", flagsRmDir);
 
 int
 SessionInstance::si_rmdir(CmdLineParser& params)

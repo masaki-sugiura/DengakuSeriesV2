@@ -1,4 +1,4 @@
-//	$Id: strutils.h,v 1.2 2002-06-16 14:56:09 sugiura Exp $
+//	$Id: strutils.h,v 1.3 2003-02-15 18:37:02 sugiura Exp $
 /*
  *	strutils.h
  *	C 文字列のためのユーティリティ関数群
@@ -24,6 +24,8 @@ LPSTR	lstrrchr(LPCSTR, TCHAR);
 LPSTR	lstrstr(LPCSTR, LPCSTR);
 int		lstrlen2(LPCSTR);
 LPSTR	lstrninc(LPCSTR, int);
+LPSTR	reverse(LPSTR);
+LPSTR	reverse2(LPSTR);
 
 #define	lval(num)	((long)ival(num))
 

@@ -1,4 +1,4 @@
-//	$Id: strbuf.cpp,v 1.8 2002-06-16 14:56:09 sugiura Exp $
+//	$Id: strbuf.cpp,v 1.9 2003-02-15 18:37:02 sugiura Exp $
 /*
  *	strbuf.cpp
  *	•¶Žš—ñƒNƒ‰ƒX
@@ -359,6 +359,28 @@ StringBuffer::replaceStr(LPCSTR ostr, LPCSTR dstr, int num)
 	lstrcpy(ptop, t);
 	newbuf->m_len = lstrlen(newbuf->m_buf);
 	m_sbuf = newbuf;	//	RCPtr<StringBuffer> ‚Ö‚Ì‘ã“ü
+	return *this;
+}
+
+StringBuffer&
+StringBuffer::reverse()
+{
+	if (!m_sbuf->isShareable()) m_sbuf->recalc();
+	this->dup();
+
+	::reverse(m_sbuf->m_buf);
+
+	return *this;
+}
+
+StringBuffer&
+StringBuffer::reverse2()
+{
+	if (!m_sbuf->isShareable()) m_sbuf->recalc();
+	this->dup();
+
+	::reverse2(m_sbuf->m_buf);
+
 	return *this;
 }
 
