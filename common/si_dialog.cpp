@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.18 2005-01-24 15:27:51 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.17 2005-01-16 07:38:33 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -147,7 +147,7 @@ SessionInstance::si_showdialog(HWND hwndOwner, BOOL bOnTop)
 	}
 
 	StringBuffer buf(nullStr);
-	while (!this->SessionInstance::getNotify(buf, 1)) {
+	while (!this->SessionInstance::getNotify(buf, 100)) {
 		/* no op. */;
 	}
 	if (buf.compareTo(okStr) != 0) {
