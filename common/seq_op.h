@@ -1,4 +1,4 @@
-//	$Id: seq_op.h,v 1.4 2002-02-19 15:34:22 sugiura Exp $
+//	$Id: seq_op.h,v 1.5 2002-03-05 14:09:40 sugiura Exp $
 /*
  *	seq_op.h
  *	ˆø”‚ğ‚È‚ß‚È‚ª‚çˆ—‚ğs‚¤‚½‚ß‚Ì’ŠÛŠî’êƒNƒ‰ƒX
@@ -121,6 +121,6 @@ private:
 };
 
 extern OptMap defOptMap;
-void GetFlags(const StringBuffer&, DWORD&, const OptMap& omap = defOptMap);
+BOOL GetFlags(const StringBuffer&, DWORD&, const OptMap& omap = defOptMap);
 
 #endif

@@ -1,4 +1,4 @@
-//	$Id: si_file.cpp,v 1.6 2002-02-19 15:34:22 sugiura Exp $
+//	$Id: si_file.cpp,v 1.7 2002-03-05 14:09:40 sugiura Exp $
 /*
  *	si_file.cpp
  *	SessionInstance: ファイルサービスの関数
@@ -471,7 +471,7 @@ private:
 };
 
 static DWORD flagsGetAttr[] = { ATTRIBUTE_RECURSIVE, FLAG_RETURNNUM };
-static OptMap optMapGetAttr("rn", flagsGetAttr);
+static OptMap optMapGetAttr("Rn", flagsGetAttr);
 
 static int
 GetAttrFlags(CmdLineParser& params, DWORD& mask, DWORD& attrflags)
@@ -481,8 +481,8 @@ GetAttrFlags(CmdLineParser& params, DWORD& mask, DWORD& attrflags)
 	int optnum = 0;
 	while (optnum < pnum) {
 		const StringBuffer& av = params.getNextArgvStr();
-		if (!isopthead(av.charAt(0))) break;
-		GetFlags(av, attrflags, optMapGetAttr);
+		if (!isopthead(av[0]) ||
+			!GetFlags(av, attrflags, optMapGetAttr)) break;
 		optnum++;
 	}
 	if (optnum == pnum) return 0;

@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.13 2002-03-02 12:26:12 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.14 2002-03-05 14:09:40 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -1019,7 +1019,7 @@ EditCtrl::EditCtrl(
 	: SimpleCtrl(name,text,type),
 	  m_imestate(0L)
 {
-	m_pcp->m_style		= ES_AUTOHSCROLL|
+	m_pcp->m_style		= /*ES_AUTOHSCROLL|*/
 							WS_BORDER|WS_CHILD|WS_TABSTOP|WS_VISIBLE|WS_GROUP;
 	switch (type) {
 	case CTRLID_MLEDIT:

@@ -1,4 +1,4 @@
-//	$Id: cmdline.cpp,v 1.2 2002-02-19 15:34:21 sugiura Exp $
+//	$Id: cmdline.cpp,v 1.3 2002-03-05 14:09:40 sugiura Exp $
 /*
  *	cmdline.cpp
  *	文字列のパース＆リスト化
@@ -113,7 +113,7 @@ RemoveQuote(const StringBuffer& str)
 {
 	if (str.find('"') >= 0 || str.find('\'') >= 0) {
 		//	引用符の除去…面倒(^^;なんで汎用パーサに処理を任す
-		return CmdLineParser(str).getArgvStr(0);
+		return RealCmdLineParser(str).getArgvStr(0);
 	}
 	return str;
 }

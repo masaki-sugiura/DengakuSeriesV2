@@ -1,4 +1,4 @@
-//	$Id: rec_op.cpp,v 1.4 2002-02-19 15:34:22 sugiura Exp $
+//	$Id: rec_op.cpp,v 1.5 2002-03-05 14:09:40 sugiura Exp $
 /*
  *	rec_op.cpp
  *	再帰ファイル操作クラス群
@@ -10,8 +10,6 @@
 #include "file.h"
 #include "dirlist.h"
 #include "auto_ptr.h"
-
-static StringBuffer	msg = nullStr;	//	メッセージのバッファ
 
 int
 ConfirmOverRide(const PathName &org, const PathName &dest, DWORD flag)
@@ -30,28 +28,27 @@ ConfirmOverRide(const PathName &org, const PathName &dest, DWORD flag)
 	if (!org.compareTo(dest, FALSE)) return IDNO;
 
 	//	全ての場合について上書きするかどうか確認
-	if ((flag&FLAG_OVERRIDE_CONFIRM) != 0) {
-		msg = org;
+	if ((flag & FLAG_OVERRIDE_CONFIRM) != 0) {
+		StringBuffer msg(org);
 		msg.append(" で\n").append(dest).append("を\n上書きしますか？");
-		return ::MessageBox(NULL,msg,"上書きの確認",
+		return ::MessageBox(NULL, msg, "上書きの確認",
 				MB_YESNOCANCEL|MB_DEFBUTTON2|MB_ICONQUESTION|MB_SETFOREGROUND);
 	}
 
 	//	古いファイルのみを上書き
-	if ((flag&FLAG_OVERRIDE_NOTNEWER) != 0 &&
-		::CompareFileTime(org.getTime(),dest.getTime()) <= 0) return IDNO;
-
-	//	強制的に上書き
-	if ((flag&FLAG_OVERRIDE_FORCED) != 0) return IDYES;
+	if ((flag & FLAG_OVERRIDE_NOTNEWER) != 0 &&
+		::CompareFileTime(org.getTime(), dest.getTime()) <= 0) return IDNO;
 
 	//	読取専用またはシステムファイルの上書きを確認
 	if ((attr&(FILE_ATTRIBUTE_READONLY|FILE_ATTRIBUTE_SYSTEM)) != 0) {
-		msg = dest;
-		msg.append("\nは読取専用またはシステムファイルです。\n"
-				"上書きしますか？");
-		int	ret = ::MessageBox(NULL,msg,"上書きの確認",
-				MB_YESNOCANCEL|MB_DEFBUTTON2|MB_ICONQUESTION|MB_SETFOREGROUND);
-		if (ret != IDYES) return ret;	//	上書きしないまたはキャンセル
+		if ((flag & FLAG_OVERRIDE_FORCED) == 0) {
+			StringBuffer msg(dest);
+			msg.append("\nは読取専用またはシステムファイルです。\n"
+					"上書きしますか？");
+			int	ret = ::MessageBox(NULL, msg, "上書きの確認",
+					MB_YESNOCANCEL|MB_DEFBUTTON2|MB_ICONQUESTION|MB_SETFOREGROUND);
+			if (ret != IDYES) return ret;	//	上書きしないまたはキャンセル
+		}
 
 		//	上書きできるように属性値を変更
 		attr &= ~(FILE_ATTRIBUTE_READONLY|FILE_ATTRIBUTE_SYSTEM);
@@ -72,23 +69,22 @@ ConfirmRemove(const PathName &file, DWORD flag)
 
 	//	全ての場合について上書きするかどうか確認
 	if ((flag&FLAG_REMOVE_CONFIRM) != 0) {
-		msg = file;
+		StringBuffer msg(file);
 		msg.append(" を\n削除しますか？");
-		return ::MessageBox(NULL,msg,"削除の確認",
+		return ::MessageBox(NULL, msg, "削除の確認",
 				MB_YESNOCANCEL|MB_DEFBUTTON2|MB_ICONQUESTION|MB_SETFOREGROUND);
 	}
 
-	//	強制的に削除
-	if ((flag&FLAG_REMOVE_FORCED) != 0) return IDYES;
-
 	//	読取専用またはシステムファイルの削除を確認
 	if ((attr&(FILE_ATTRIBUTE_READONLY|FILE_ATTRIBUTE_SYSTEM)) != 0) {
-		msg = file;
-		msg.append(" は\n読取専用またはシステムファイルです。\n"
-				"削除しますか？");
-		int ret = ::MessageBox(NULL,msg,"削除の確認",
-				MB_YESNOCANCEL|MB_DEFBUTTON2|MB_ICONQUESTION|MB_SETFOREGROUND);
-		if (ret != IDYES) return ret;	//	削除しないまたはキャンセル
+		if ((flag&FLAG_REMOVE_FORCED) == 0) {
+			StringBuffer msg(file);
+			msg.append(" は\n読取専用またはシステムファイルです。\n"
+					"削除しますか？");
+			int ret = ::MessageBox(NULL, msg, "削除の確認",
+					MB_YESNOCANCEL|MB_DEFBUTTON2|MB_ICONQUESTION|MB_SETFOREGROUND);
+			if (ret != IDYES) return ret;	//	削除しないまたはキャンセル
+		}
 
 		//	削除できるように属性値を変更
 		attr &= ~(FILE_ATTRIBUTE_READONLY|FILE_ATTRIBUTE_SYSTEM);
@@ -401,11 +397,11 @@ RecursiveOperation::recursiveDirOp()
 {
 	if (!m_OrgPathBuf.isValid()) return RO_FAILED;
 
-	int	ret;
 	if (!m_OrgPathBuf.isDirectory()) {
-		ret = this->FiletoFile();
+		return this->FiletoFile();
 	} else {
-		if ((ret = this->preDirOp()) != RO_SUCCESS) return ret;
+		int ret = this->preDirOp();
+		if (ret != RO_SUCCESS) return ret;
 		m_OrgPathBuf.addPath(anyPathName);
 		HANDLE hFindFile = ::FindFirstFile(m_OrgPathBuf,m_pFindData);
 		LPCSTR name;
@@ -414,15 +410,14 @@ RecursiveOperation::recursiveDirOp()
 			if (IsPathNameDots(name)) continue;
 			m_OrgPathBuf.setBaseName(name);
 			m_DestDirBuf.addPath(name);
-			ret = this->recursiveDirOp();
+			ret |= this->recursiveDirOp();
 			m_DestDirBuf.delPath(1);
 		} while ((ret&RO_STOP) == 0 && ::FindNextFile(hFindFile,m_pFindData));
 		::FindClose(hFindFile);
 		m_OrgPathBuf.delPath(1);
 		if ((ret&RO_STOP) == 0) ret |= this->postDirOp();
+		return ret;
 	}
-
-	return ret;
 }
 
 int

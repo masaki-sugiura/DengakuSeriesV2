@@ -1,4 +1,4 @@
-//	$Id: seq_op.cpp,v 1.4 2002-02-17 08:00:41 sugiura Exp $
+//	$Id: seq_op.cpp,v 1.5 2002-03-05 14:09:40 sugiura Exp $
 /*
  *	seq_op.cpp
  *	SequentialOp クラスの実装
@@ -245,13 +245,15 @@ OptMap defOptMap("rnfiu", defFlags);
 
 //	オプションの解析
 //	copy, move, remove で使用
-void
+BOOL
 GetFlags(const StringBuffer& av, DWORD& fFlags, const OptMap& optMap)
 {
 	int len = av.length();
 	for (int i = 1; i < len; i++) { // 最初の文字はオプション指定子
-		DWORD fl = optMap.getFlag(av.charAt(i));
+		DWORD fl = optMap.getFlag(av[i]);
 		if (fl != OPT_INVALID) fFlags |= fl;
+		else return FALSE;
 	}
+	return TRUE;
 }
 
