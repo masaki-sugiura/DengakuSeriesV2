@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.22 2002-12-18 13:20:08 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.23 2002-12-23 14:34:52 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -2103,6 +2103,35 @@ ListCtrl::loadData(DlgDataFile& ddfile)
 }
 
 
+static LRESULT CALLBACK
+ComboChildCtrlProc(HWND hCtrl, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	ChildCtrlSubClassInfo*
+		pCCSci = (ChildCtrlSubClassInfo*)::GetWindowLong(hCtrl, GWL_USERDATA);
+	HWND hwndCombo = pCCSci->m_pCtrl->getCtrlHWND();
+	switch (uMsg) {
+	case WM_GET_CTRL_PTR:
+		return (LRESULT)pCCSci->m_pCtrl;
+	case WM_KEYDOWN:
+		if (wParam == VK_DOWN &&
+			!::SendMessage(hwndCombo, CB_GETDROPPEDSTATE, 0, 0)) {
+			::SendMessage(hwndCombo, CB_SHOWDROPDOWN, TRUE, 0);
+			int cursel = ::SendMessage(hwndCombo, CB_GETCURSEL, 0, 0);
+			if (cursel == CB_ERR) cursel = 0;
+			::SendMessage(hwndCombo, CB_SETCURSEL, cursel, 0);
+		} else {
+			return ::CallWindowProc(pCCSci->m_pfnDefCallback, hCtrl, uMsg, wParam, lParam);
+		}
+		break;
+	case WM_DESTROY:
+		delete pCCSci;
+		// fall down
+	default:
+		return ::CallWindowProc(pCCSci->m_pfnDefCallback, hCtrl, uMsg, wParam, lParam);
+	}
+	return 0;
+}
+
 //	combo
 ComboCtrl::ComboCtrl(
 	const StringBuffer& name,
@@ -2160,7 +2189,7 @@ ComboCtrl::initCtrl(HWND hDlg)
 		pCCSci->m_pfnDefCallback
 			= (WNDPROC)::SetWindowLong(hwndEdit,
 									   GWL_WNDPROC,
-									   (LONG)ChildCtrlProc);
+									   (LONG)ComboChildCtrlProc);
 		::SetWindowLong(hwndEdit, GWL_USERDATA, (LONG)pCCSci);
 	}
 	::SetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text);
