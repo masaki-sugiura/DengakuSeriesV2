@@ -1,4 +1,4 @@
-//	$Id: si_file.cpp,v 1.4 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: si_file.cpp,v 1.5 2002-02-17 08:00:41 sugiura Exp $
 /*
  *	si_file.cpp
  *	SessionInstance: ファイルサービスの関数
@@ -215,7 +215,7 @@ SessionInstance::si_copy(CmdLineParser& params)
 	int ret = FileToFileOperation(CopyPath, FLAG_OVERRIDE_DEFAULT,
 								  m_DirList, params, psor);
 	if (psor) {
-		m_pEnumerator = psor;
+		m_pFileOpResult = psor;
 		return psor->m_nSuccess;
 	} else {
 		return ret;
@@ -304,7 +304,7 @@ SessionInstance::si_remove(CmdLineParser& params)
 	if (fFlags & FLAG_RETURNNUM) psor = new SeqOpResult();
 	int ret = SeqRemove(optnum, params, m_DirList, fFlags, psor).doOp();
 	if (psor) {
-		m_pEnumerator = psor;
+		m_pFileOpResult = psor;
 		return psor->m_nSuccess;
 	} else {
 		return ret;
@@ -323,7 +323,7 @@ SessionInstance::si_move(CmdLineParser& params)
 					psor
 				);
 	if (psor) {
-		m_pEnumerator = psor;
+		m_pFileOpResult = psor;
 		return psor->m_nSuccess;
 	} else {
 		return ret;
@@ -378,7 +378,7 @@ SessionInstance::si_mkdir(CmdLineParser& params)
 	}
 
 	if (psor) {
-		m_pEnumerator = psor;
+		m_pFileOpResult = psor;
 		return psor->m_nSuccess;
 	} else {
 		return ret;
@@ -445,7 +445,7 @@ SessionInstance::si_rmdir(CmdLineParser& params)
 	if (flags & FLAG_RETURNNUM) psor = new SeqOpResult();
 	int ret = SeqRmDir(optnum, params, m_DirList, flags, psor).doOp();
 	if (psor) {
-		m_pEnumerator = psor;
+		m_pFileOpResult = psor;
 		return psor->m_nSuccess;
 	} else {
 		return ret;
@@ -541,7 +541,7 @@ SessionInstance::si_setattribute(CmdLineParser& params)
 	if (attrflags & FLAG_RETURNNUM) psor = new SeqOpResult();
 	int ret = SeqSetAttr(optnum, params, m_DirList, attrflags, psor).doOp();
 	if (psor) {
-		m_pEnumerator = psor;
+		m_pFileOpResult = psor;
 		return psor->m_nSuccess;
 	} else {
 		return ret;
@@ -658,11 +658,19 @@ SessionInstance::si_touch(CmdLineParser& params)
 
 	int ret = SeqTouch(optnum, params, m_DirList, &ft, flags, psor).doOp();
 	if (psor) {
-		m_pEnumerator = psor;
+		m_pFileOpResult = psor;
 		return psor->m_nSuccess;
 	} else {
 		return ret;
 	}
+}
+
+StringBuffer
+SessionInstance::si_fileopresult()
+{
+	if (m_pFileOpResult.ptr() && m_pFileOpResult->findNext())
+		return m_pFileOpResult->getValue();
+	return nullStr;
 }
 
 int
@@ -795,9 +803,7 @@ SessionInstance::si_isreadonly(CmdLineParser& params)
 		if (m_DirList.getPathName(params.getArgvStr(0), file, TRUE))
 			bReadOnly = file.isReadOnly();
 	} else if (m_pEnumerator.ptr() && m_pEnumerator->isValid()) {
-		FindData* ptr = dynamic_cast<FindData*>(m_pEnumerator.ptr());
-		if (ptr != NULL)
-			bReadOnly = (ptr->getAttributes()&FILE_ATTRIBUTE_READONLY) != 0;
+		bReadOnly = (m_pEnumerator->getAttributes()&FILE_ATTRIBUTE_READONLY) != 0;
 	}
 	return bReadOnly ? errorStr : nullStr;
 }
@@ -812,8 +818,7 @@ SessionInstance::si_sizeof(CmdLineParser& params)
 		else
 			return nullStr;
 	} else if (m_pEnumerator.ptr() && m_pEnumerator->isValid()) {
-		FindData* ptr = dynamic_cast<FindData*>(m_pEnumerator.ptr());
-		if (ptr != NULL) return StringBuffer(16).append(ptr->getSize());
+		return StringBuffer(16).append(m_pEnumerator->getSize());
 	}
 	return nullStr;
 }
@@ -838,9 +843,7 @@ SessionInstance::si_timestampof(CmdLineParser& params)
 			return nullStr;
 		time = *pfile.getTime();
 	} else if (m_pEnumerator.ptr() && m_pEnumerator->isValid()) {
-		FindData* ptr = dynamic_cast<FindData*>(m_pEnumerator.ptr());
-		if (ptr == NULL) return nullStr;
-		const FILETIME* ptime = ptr->getTime();
+		const FILETIME* ptime = m_pEnumerator->getTime();
 		if (ptime == NULL) return nullStr; // root drive has no timestamp.
 		time = *ptime;
 	} else {
@@ -878,9 +881,7 @@ SessionInstance::si_timecountof(CmdLineParser& params)
 			return nullStr;
 		time = *file.getTime();
 	} else if (m_pEnumerator.ptr() && m_pEnumerator->isValid()) {
-		FindData* ptr = dynamic_cast<FindData*>(m_pEnumerator.ptr());
-		if (ptr == NULL) return nullStr;
-		const FILETIME* ptime = ptr->getTime();
+		const FILETIME* ptime = m_pEnumerator->getTime();
 		if (ptime == NULL) return nullStr; // root drive has no timestamp.
 		time = *ptime;
 	} else {
@@ -904,8 +905,7 @@ SessionInstance::si_attributeof(CmdLineParser& params)
 			return nullStr;
 		attr = file.getAttributes();
 	} else if (m_pEnumerator.ptr() && m_pEnumerator->isValid()) {
-		FindData* ptr = dynamic_cast<FindData*>(m_pEnumerator.ptr());
-		if (ptr != NULL) attr = ptr->getAttributes();
+		attr = m_pEnumerator->getAttributes();
 	}
 	if (attr == 0xFFFFFFFF) return nullStr;
 

@@ -1,4 +1,4 @@
-//	$Id: fs_handler.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: fs_handler.cpp,v 1.2 2002-02-17 08:00:41 sugiura Exp $
 /*
  *	fs_handler.cpp
  *	ファイルサービスの実装
@@ -9,6 +9,7 @@
 #include "convdata.h"
 #include "cmdline.h"
 #include "common.h"
+#include "pathname.h"
 
 int
 ConvData::On_setcurdir(CmdLineParser& params)
@@ -97,6 +98,12 @@ int
 ConvData::On_touch(CmdLineParser& params)
 {
 	return this->si_touch(params);
+}
+
+StringBuffer
+ConvData::On_fileopresult(CmdLineParser&)
+{
+	return this->si_fileopresult();
 }
 
 int

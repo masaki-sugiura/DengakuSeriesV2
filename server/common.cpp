@@ -1,4 +1,4 @@
-//	$Id: common.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: common.cpp,v 1.3 2002-02-17 08:05:31 sugiura Exp $
 /*
  *	common.cpp
  *	その他サーバ特有の定義
@@ -24,6 +24,8 @@ LPCSTR svr_strings[] = {
 		"ComDlgService\n"
 		"SusieService\n"
 		"GlobVarService\n"
+		"BregexpService\n"
+		"ColorService\n"
 };
 
 LPCSTR msg_strings[] = {

@@ -1,4 +1,4 @@
-//	$Id: fs_func.cpp,v 1.2 2002-01-16 16:31:04 sugiura Exp $
+//	$Id: fs_func.cpp,v 1.3 2002-02-17 08:00:41 sugiura Exp $
 /*
  *	fs_func.cpp
  *	ファイルサービスの関数
@@ -86,6 +86,14 @@ TOUCH(LPCSTR str)
 {
 	RealCmdLineParser argv(str);
 	return g_pSessionInstance->si_touch(argv);
+}
+
+//	ファイル操作系関数の結果(-n オプション指定時のみ)を返す
+DENGAKUDLL_API LPCSTR
+FILEOPRESULT()
+{
+	g_strBuffer = g_pSessionInstance->si_fileopresult();
+	return g_strBuffer;
 }
 
 //	普通に run app

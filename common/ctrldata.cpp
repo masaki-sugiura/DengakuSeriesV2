@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.5 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.6 2002-02-17 08:00:41 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -60,7 +60,7 @@ CtrlListItem::CtrlProperty::CtrlProperty(CtrlListItem* pCtrl)
 		m_bufsize(0),
 		m_text(32)
 {
-	::ZeroMemory(&m_fontprop,sizeof(CtrlFontProperty));
+//	::ZeroMemory(&m_fontprop, sizeof(CtrlFontProperty));
 }
 
 CtrlListItem::CtrlProperty::~CtrlProperty()
@@ -970,6 +970,7 @@ EditCtrl::sendData()
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
 	::SetWindowText(m_pcp->m_hwndCtrl,
 					StringBuffer(m_pcp->m_text).replaceStr("\n", "\r\n",-1));
+	if (m_pcp->m_fontprop.m_bchanged) m_pcp->changeFont();
 	return TRUE;
 }
 
@@ -1153,7 +1154,7 @@ TrackCtrl::TrackCtrl(
 	m_pcp->m_classname	= TRACKBAR_CLASS;
 	m_pcp->m_bufsize	= lstrlen(m_pcp->m_classname) + 1;
 	m_pcp->m_text.reset();
-	m_pcp->m_text.append(m_val);
+	m_pcp->m_text.append((DWORD)m_val);
 }
 
 WORD
@@ -1189,6 +1190,7 @@ TrackCtrl::sendData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
 	::SendMessage(m_pcp->m_hwndCtrl, TBM_SETPOS, TRUE, (LPARAM)m_val);
+//	if (m_pcp->m_fontprop.m_bchanged) m_pcp->changeFont();
 	return TRUE;
 }
 
@@ -1217,7 +1219,7 @@ TrackCtrl::onGetState()
 {
 	this->receiveData();
 	m_pcp->m_text.reset();
-	m_pcp->m_text.append((int)m_val);
+	m_pcp->m_text.append((DWORD)m_val);
 	return m_pcp->m_text;
 }
 
@@ -1625,6 +1627,7 @@ RadioCtrl::showCtrl(BOOL bVisible)
 BOOL
 RadioCtrl::sendData()
 {
+	BOOL bFontChanged = m_pcp->m_fontprop.m_bchanged;
 	if (!HasListCtrl::sendData()) return FALSE;
 	HWND hDlg = m_pDlgPage->gethwndPage(), hwndBtn;
 	int num = m_item->initSequentialGet();
@@ -1632,6 +1635,8 @@ RadioCtrl::sendData()
 	for (int i = 1; i <= num; i++) {
 		id = m_item->getNextItem();
 		hwndBtn = ::GetDlgItem(hDlg, m_pcp->m_id + i);
+		if (bFontChanged)
+			::SendMessage(hwndBtn, WM_SETFONT, (WPARAM)m_pcp->m_fontprop.m_hfont, NULL);
 		::SetWindowText(hwndBtn,id->getText());
 		::SendMessage(hwndBtn,BM_SETCHECK,
 					(i == m_state) ? BST_CHECKED : BST_UNCHECKED, 0L);
@@ -2180,6 +2185,8 @@ ChkListCtrl::sendData()
 		lvi.iImage	= lvi.lParam != 0;
 		ListView_SetItem(m_pcp->m_hwndCtrl, &lvi);
 	}
+	if (m_pcp->m_fontprop.m_bchanged) m_pcp->changeFont();
+	ListView_SetColumnWidth(m_pcp->m_hwndCtrl, 0, LVSCW_AUTOSIZE);
 	ListView_RedrawItems(m_pcp->m_hwndCtrl, 0, num);
 	::UpdateWindow(m_pcp->m_hwndCtrl);
 	return TRUE;
@@ -2521,6 +2528,7 @@ LViewCtrl::sendData()
 		lvi.state = m_states.getState(lvi.iItem) ? LVIS_SELECTED : 0;
 		ListView_SetItem(m_pcp->m_hwndCtrl, &lvi);
 	}
+	if (m_pcp->m_fontprop.m_bchanged) m_pcp->changeFont();
 	ListView_RedrawItems(m_pcp->m_hwndCtrl, 0, num);
 	::UpdateWindow(m_pcp->m_hwndCtrl);
 	return TRUE;
@@ -3572,6 +3580,7 @@ MultipleCtrl::sendData()
 {
 	for (int i = 0; i < m_cnum; i++) {
 		if (m_pcp[i].m_hwndCtrl == NULL) return FALSE;
+		if (m_pcp[i].m_fontprop.m_bchanged) m_pcp->changeFont();
 	}
 	return TRUE;
 }

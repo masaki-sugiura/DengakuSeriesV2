@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.3 2002-02-10 09:27:32 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.4 2002-02-17 08:00:41 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -468,82 +468,61 @@ DlgPage::getFocusedCtrl()
 	return NULL;
 }
 
+static CtrlListItem*
+GetCtrlListItemByHWND(HWND hwndCtrl)
+{
+	if (hwndCtrl == NULL) return NULL;
+	CtrlListItem*
+		cli = (CtrlListItem*)::SendMessage(hwndCtrl, WM_GET_CTRL_PTR, 0, 0);
+	if (cli == NULL || !cli->isValid()) return NULL;
+	return cli;
+}
+
+static inline CtrlListItem*
+GetCtrlListItemByID(HWND hwndPage, WORD id)
+{
+	if (hwndPage == NULL) return NULL;
+	return GetCtrlListItemByHWND(::GetDlgItem(hwndPage, id));
+}
+
 //	WM_COMMAND ハンドラ
 WORD
 DlgPage::onCommand(WPARAM wParam, LPARAM lParam)
 {
-	if (m_hwndPage != NULL) {
-		CtrlListItem* cli;
-		m_pCtrlList->initSequentialGet();
-		while ((cli = m_pCtrlList->getNextItem()) != NULL) {
-			if (cli->isCommand(LOWORD(wParam)))
-				return cli->onWmCommand(wParam,lParam);
-		}
-	}
-	return 0xFFFF;
+	CtrlListItem* cli = GetCtrlListItemByID(m_hwndPage, LOWORD(wParam));
+	return cli ? cli->onWmCommand(wParam, lParam) : 0xFFFF;
 }
 
 //	WM_NOTIFY ハンドラ
 WORD
 DlgPage::onNotify(WPARAM wParam, LPARAM lParam)
 {
-	if (m_hwndPage != NULL) {
-		NMHDR* nmhdr = reinterpret_cast<NMHDR*>(lParam);
-		CtrlListItem* cli;
-		m_pCtrlList->initSequentialGet();
-		while ((cli = m_pCtrlList->getNextItem()) != NULL) {
-			if (cli->isCommand(nmhdr->idFrom))
-				return cli->onWmNotify(wParam,lParam);
-		}
-	}
-	return 0xFFFF;
+	NMHDR* pnmh = reinterpret_cast<NMHDR*>(lParam);
+	CtrlListItem* cli = GetCtrlListItemByID(m_hwndPage, pnmh->idFrom);
+	return cli ? cli->onWmNotify(wParam, lParam) : 0xFFFF;
 }
 
 //	WM_HSCROLL ハンドラ(トラックバーのためにのみ存在する)
 WORD
 DlgPage::onHScroll(WPARAM wParam, LPARAM lParam)
 {
-	if (m_hwndPage != NULL) {
-		WORD id = ::GetDlgCtrlID((HWND)lParam);
-		CtrlListItem* cli;
-		m_pCtrlList->initSequentialGet();
-		while ((cli = m_pCtrlList->getNextItem()) != NULL) {
-			if (cli->isCommand(id))
-				return cli->onWmCommand(wParam,lParam);
-		}
-	}
-	return 0xFFFF;
+	CtrlListItem* cli = GetCtrlListItemByHWND((HWND)lParam);
+	return cli ? cli->onWmCommand(wParam, lParam) : 0xFFFF;
 }
 
 //	WM_CTLCOLOR ハンドラ
 HBRUSH
 DlgPage::onCtlColor(WPARAM wParam, LPARAM lParam)
 {
-	if (m_hwndPage != NULL) {
-		WORD id = ::GetDlgCtrlID((HWND)lParam);
-		CtrlListItem* cli;
-		m_pCtrlList->initSequentialGet();
-		while ((cli = m_pCtrlList->getNextItem()) != NULL) {
-			if (cli->isCommand(id))
-				return cli->onWmCtlColor(wParam,lParam);
-		}
-	}
-	return 0;
+	CtrlListItem* cli = GetCtrlListItemByHWND((HWND)lParam);
+	return cli ? cli->onWmCtlColor(wParam, lParam) : NULL;
 }
 
 WORD
 DlgPage::onImeNotify(WPARAM wParam, LPARAM lParam)
 {
-	if (m_hwndPage != NULL) {
-		WORD id = ::GetDlgCtrlID((HWND)lParam);
-		CtrlListItem* cli;
-		m_pCtrlList->initSequentialGet();
-		while ((cli = m_pCtrlList->getNextItem()) != NULL) {
-			if (cli->isCommand(id))
-				return cli->onWmImeNotify(wParam,lParam);
-		}
-	}
-	return 0xFFFF;
+	CtrlListItem* cli = GetCtrlListItemByHWND((HWND)lParam);
+	return cli ? cli->onWmImeNotify(wParam, lParam) : 0xFFFF;
 }
 
 //	ダイアログデータの書き込み

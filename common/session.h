@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.6 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: session.h,v 1.7 2002-02-17 08:00:41 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -13,6 +13,7 @@
 #include "dirlist.h"
 #include "menu.h"
 #include "enumerator.h"
+#include "recfind.h"
 #include "env_var.h"
 #include "spi_mngr.h"
 #include "sharedbuf.h"
@@ -93,6 +94,7 @@ public:
 	int si_rmdir(CmdLineParser&);
 	int si_setattribute(CmdLineParser&);
 	int si_touch(CmdLineParser&);
+	StringBuffer si_fileopresult();
 	int si_run(CmdLineParser&, int);
 	int si_enumpath(CmdLineParser&);
 	int si_enumfile(CmdLineParser&);
@@ -222,7 +224,8 @@ protected:
 	ColorTable m_ColorTbl; // 色名と COLORREF との対応表
 	Auto_Ptr<SPI_Manager> m_pSPIManager; // Susie Plugin をコントロールするクラス
 	Auto_Ptr<EnvManager> m_pEnvManager; // 共有変数をコントロールするクラス
-	Auto_Ptr< Enumerator<StringBuffer> > m_pEnumerator; // "enum*" コマンドで使うクラス
+	Auto_Ptr< Enumerator<StringBuffer> > m_pFileOpResult; // ファイル系関数の結果を格納するクラス
+	Auto_Ptr< FindData > m_pEnumerator; // "enum*" コマンドで使うクラス
 	Auto_Ptr<Tokenizer> m_pStrToken; // gettoken コマンドで使うクラス
 	Auto_Ptr<Thread> m_pMenuThread; // メニュー表示で使うスレッド
 	Auto_Ptr<Thread> m_pDlgThread; // ダイアログ表示で使うスレッド

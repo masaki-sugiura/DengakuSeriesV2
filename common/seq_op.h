@@ -1,4 +1,4 @@
-//	$Id: seq_op.h,v 1.2 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: seq_op.h,v 1.3 2002-02-17 08:00:41 sugiura Exp $
 /*
  *	seq_op.h
  *	ˆø”‚ð‚È‚ß‚È‚ª‚çˆ—‚ðs‚¤‚½‚ß‚Ì’ŠÛŠî’êƒNƒ‰ƒX
@@ -43,25 +43,34 @@ private:
 	int m_head;
 };
 
-void AddEnumResult(SeqOpResult*, const StringBuffer&, TCHAR);
+void AddEnumResult(SeqOpResult*, const StringBuffer&, const StringBuffer&, TCHAR);
 
 inline void
-AddSuccess(SeqOpResult* psor, const StringBuffer& path)
+AddSuccess(
+	SeqOpResult* psor,
+	const StringBuffer& path,
+	const StringBuffer& path2 = nullStr)
 {
 	if (psor) psor->m_nSuccess++;
-	AddEnumResult(psor, path, SEQ_OP_RESULT_SUCCESS);
+	AddEnumResult(psor, path, path2, SEQ_OP_RESULT_SUCCESS);
 }
 
 inline void
-AddFailure(SeqOpResult* psor, const StringBuffer& path)
+AddFailure(
+	SeqOpResult* psor,
+	const StringBuffer& path,
+	const StringBuffer& path2 = nullStr)
 {
-	AddEnumResult(psor, path, SEQ_OP_RESULT_FAILURE);
+	AddEnumResult(psor, path, path2, SEQ_OP_RESULT_FAILURE);
 }
 
 inline void
-AddCancel(SeqOpResult* psor, const StringBuffer& path)
+AddCancel(
+	SeqOpResult* psor,
+	const StringBuffer& path,
+	const StringBuffer& path2 = nullStr)
 {
-	AddEnumResult(psor, path, SEQ_OP_RESULT_CANCEL);
+	AddEnumResult(psor, path, path2, SEQ_OP_RESULT_CANCEL);
 }
 
 

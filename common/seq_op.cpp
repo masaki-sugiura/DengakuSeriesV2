@@ -1,4 +1,4 @@
-//	$Id: seq_op.cpp,v 1.3 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: seq_op.cpp,v 1.4 2002-02-17 08:00:41 sugiura Exp $
 /*
  *	seq_op.cpp
  *	SequentialOp クラスの実装
@@ -25,13 +25,19 @@ void
 AddEnumResult(
 	SeqOpResult* psor,
 	const StringBuffer& path,
+	const StringBuffer& path2,
 	TCHAR result)
 {
 	if (psor) {
-		StringBuffer* pstr = new StringBuffer(path.length() + 4);
+		StringBuffer*
+			pstr = new StringBuffer(path.length() + path2.length() + 4);
 		pstr->append(result);
 		pstr->append(SEQ_OP_RESULT_SEPCHAR);
 		pstr->append(path);
+		if (path2.length() > 0) {
+			pstr->append(SEQ_OP_RESULT_SEPCHAR);
+			pstr->append(path2);
+		}
 		psor->addItem(pstr);
 	}
 }
@@ -170,7 +176,7 @@ FileToFileOperation(
 			if (IsPathWildCard(av)) {
 				if (!DirList.getPathName(av, file, FALSE)) {
 					ret = FALSE;
-					AddFailure(psor, av);
+					AddFailure(psor, av, dest);
 					continue;
 				}
 				WIN32_FIND_DATA fd;
@@ -182,7 +188,7 @@ FileToFileOperation(
 					if (!file.isValid()) {
 						// dirname is invalid
 						ret = FALSE;
-						AddFailure(psor, av);
+						AddFailure(psor, av, dest);
 						continue;
 					}
 					// else no match file for the specified wildcard
@@ -213,7 +219,7 @@ FileToFileOperation(
 			} else {
 				//	コピー元ファイル・フォルダがない
 				ret = FALSE;
-				AddFailure(psor, av);
+				AddFailure(psor, av, dest);
 			}
 		}
 		return ret;
@@ -221,7 +227,7 @@ FileToFileOperation(
 		//	移動先は存在しない、またはファイル
 		return ((*pfnFTF)(file, dest, fFlags, psor) == RO_SUCCESS);
 	} else {
-		AddFailure(psor, params.getArgvStr(optnum));
+		AddFailure(psor, params.getArgvStr(optnum), dest);
 		return FALSE;
 	}
 	// not reached.

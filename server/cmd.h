@@ -1,4 +1,4 @@
-//	$Id: cmd.h,v 1.4 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: cmd.h,v 1.5 2002-02-17 08:00:41 sugiura Exp $
 /*
  *	cmd.h
  *	ƒRƒ}ƒ“ƒh–¼ˆê——
@@ -73,6 +73,7 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_REQUEST(attributeof)
 	DECLARE_DDECMD_REQUEST(existfile)
 	DECLARE_DDECMD_REQUEST(findnext)
+	DECLARE_DDECMD_REQUEST(fileopresult)
 	DECLARE_DDECMD_REQUEST(getdrives)
 	DECLARE_DDECMD_REQUEST(getlongname)
 	DECLARE_DDECMD_REQUEST(atoi)

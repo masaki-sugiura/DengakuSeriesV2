@@ -1,4 +1,4 @@
-//	$Id: rec_op.cpp,v 1.2 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: rec_op.cpp,v 1.3 2002-02-17 08:00:41 sugiura Exp $
 /*
  *	rec_op.cpp
  *	再帰ファイル操作クラス群
@@ -217,11 +217,11 @@ CopyPath(const PathName &file, const PathName &dest, DWORD flags, SeqOpResult* p
 {
 	DWORD attr = file.getAttributes();
 	if (attr == 0xFFFFFFFF) {
-		AddFailure(psor, file);
+		AddFailure(psor, file, dest);
 		return RO_FAILED;
 	} else if ((attr&FILE_ATTRIBUTE_DIRECTORY) != 0) {
 		if ((flags&FLAG_RECURSIVE) == 0) {
-			AddFailure(psor, file);
+			AddFailure(psor, file, dest);
 			return RO_FAILED;
 		} else {
 			RecursiveCopyDir rcd(file,dest,flags,psor);
@@ -230,11 +230,11 @@ CopyPath(const PathName &file, const PathName &dest, DWORD flags, SeqOpResult* p
 	} else {
 		int ret = SafetyCopyFile(file,dest,flags);
 		if (ret & RO_STOP) {
-			AddCancel(psor, file);
+			AddCancel(psor, file, dest);
 		} else if (ret & RO_FAILED) {
-			AddFailure(psor, file);
+			AddFailure(psor, file, dest);
 		} else {
-			AddSuccess(psor, file);
+			AddSuccess(psor, file, dest);
 		}
 		return ret;
 	}
@@ -245,11 +245,11 @@ MovePath(const PathName &file, const PathName &dest, DWORD flags, SeqOpResult* p
 {
 	DWORD attr = file.getAttributes();
 	if (attr == 0xFFFFFFFF) {
-		AddFailure(psor, file);
+		AddFailure(psor, file, dest);
 		return RO_FAILED;
 	} else if ((attr&FILE_ATTRIBUTE_DIRECTORY) != 0) {
 		if ((flags&FLAG_RECURSIVE) == 0) {
-			AddFailure(psor, file);
+			AddFailure(psor, file, dest);
 			return RO_FAILED;
 		} else if (file[0] != dest[0] || !ISDRIVELETTER(file[0])) {
 			RecursiveMoveDir rmd(file,dest,flags,psor);
@@ -258,11 +258,11 @@ MovePath(const PathName &file, const PathName &dest, DWORD flags, SeqOpResult* p
 	}
 	int ret = SafetyMoveFile(file,dest,flags);
 	if (ret & RO_STOP) {
-		AddCancel(psor, file);
+		AddCancel(psor, file, dest);
 	} else if (ret & RO_FAILED) {
-		AddFailure(psor, file);
+		AddFailure(psor, file, dest);
 	} else {
-		AddSuccess(psor, file);
+		AddSuccess(psor, file, dest);
 	}
 	return ret;
 }
@@ -421,13 +421,6 @@ RecursiveOperation::recursiveDirOp()
 	int	ret;
 	if (!m_OrgPathBuf.isDirectory()) {
 		ret = this->FiletoFile();
-		if (ret & RO_STOP) {
-			AddCancel(m_psor, m_OrgPathBuf);
-		} else if (ret & RO_FAILED) {
-			AddFailure(m_psor, m_OrgPathBuf);
-		} else {
-			AddSuccess(m_psor, m_OrgPathBuf);
-		}
 	} else {
 		if ((ret = this->preDirOp()) != RO_SUCCESS) return ret;
 		m_OrgPathBuf.addPath(anyPathName);
@@ -495,7 +488,15 @@ RecursiveCopyDir::preDirOp()
 int
 RecursiveCopyDir::FiletoFile()
 {
-	return SafetyCopyFile(m_OrgPathBuf,m_DestDirBuf,m_fConfirm);
+	int ret = SafetyCopyFile(m_OrgPathBuf,m_DestDirBuf,m_fConfirm);
+	if (ret & RO_STOP) {
+		AddCancel(m_psor, m_OrgPathBuf, m_DestDirBuf);
+	} else if (ret & RO_FAILED) {
+		AddFailure(m_psor, m_OrgPathBuf, m_DestDirBuf);
+	} else {
+		AddSuccess(m_psor, m_OrgPathBuf, m_DestDirBuf);
+	}
+	return ret;
 }
 
 RecursiveMoveDir::RecursiveMoveDir(
@@ -527,7 +528,15 @@ RecursiveMoveDir::postDirOp()
 int
 RecursiveMoveDir::FiletoFile()
 {
-	return SafetyMoveFile(m_OrgPathBuf,m_DestDirBuf,m_fConfirm);
+	int ret = SafetyMoveFile(m_OrgPathBuf,m_DestDirBuf,m_fConfirm);
+	if (ret & RO_STOP) {
+		AddCancel(m_psor, m_OrgPathBuf, m_DestDirBuf);
+	} else if (ret & RO_FAILED) {
+		AddFailure(m_psor, m_OrgPathBuf, m_DestDirBuf);
+	} else {
+		AddSuccess(m_psor, m_OrgPathBuf, m_DestDirBuf);
+	}
+	return ret;
 }
 
 RecursiveRemoveDir::RecursiveRemoveDir(
@@ -559,7 +568,15 @@ RecursiveRemoveDir::postDirOp()
 int
 RecursiveRemoveDir::FiletoFile()
 {
-	return SafetyRemoveFile(m_OrgPathBuf,m_fConfirm);
+	int ret = SafetyRemoveFile(m_OrgPathBuf,m_fConfirm);
+	if (ret & RO_STOP) {
+		AddCancel(m_psor, m_OrgPathBuf);
+	} else if (ret & RO_FAILED) {
+		AddFailure(m_psor, m_OrgPathBuf);
+	} else {
+		AddSuccess(m_psor, m_OrgPathBuf);
+	}
+	return ret;
 }
 
 RecursiveSetAttributes::RecursiveSetAttributes(
@@ -588,7 +605,15 @@ RecursiveSetAttributes::postDirOp()
 int
 RecursiveSetAttributes::FiletoFile()
 {
-	return SetAttributes(m_OrgPathBuf,m_fConfirm);
+	int ret = SetAttributes(m_OrgPathBuf,m_fConfirm);
+	if (ret & RO_STOP) {
+		AddCancel(m_psor, m_OrgPathBuf);
+	} else if (ret & RO_FAILED) {
+		AddFailure(m_psor, m_OrgPathBuf);
+	} else {
+		AddSuccess(m_psor, m_OrgPathBuf);
+	}
+	return ret;
 }
 
 RecursiveSetTime::RecursiveSetTime(
@@ -604,6 +629,14 @@ RecursiveSetTime::RecursiveSetTime(
 int
 RecursiveSetTime::FiletoFile()
 {
-	return SetTime(m_OrgPathBuf,&m_ft,m_fConfirm);
+	int ret = SetTime(m_OrgPathBuf,&m_ft,m_fConfirm);
+	if (ret & RO_STOP) {
+		AddCancel(m_psor, m_OrgPathBuf);
+	} else if (ret & RO_FAILED) {
+		AddFailure(m_psor, m_OrgPathBuf);
+	} else {
+		AddSuccess(m_psor, m_OrgPathBuf);
+	}
+	return ret;
 }
 

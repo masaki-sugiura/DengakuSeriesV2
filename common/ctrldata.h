@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.5 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: ctrldata.h,v 1.6 2002-02-17 08:00:41 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -161,13 +161,17 @@ public:
 	} CtrlTemplateArgs;
 
 	//	フォント属性を表す構造体
-	typedef	struct {
+	class CtrlFontProperty {
+	public:
 		HFONT		 m_hfont;
 		BOOL		 m_bchanged;
 		COLORREF	 m_color;
 		BYTE		 m_fface;
 		StringBuffer m_fname;
-	} CtrlFontProperty;
+		CtrlFontProperty()
+			: m_hfont(NULL), m_bchanged(FALSE), m_color(0), m_fface(0), m_fname(nullStr)
+		{}
+	};
 
 	CtrlListItem(
 			CTRL_ID type = CTRLID_UNKNOWN,
