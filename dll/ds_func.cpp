@@ -1,4 +1,4 @@
-//	$Id: ds_func.cpp,v 1.6 2003-11-23 15:37:21 sugiura Exp $
+//	$Id: ds_func.cpp,v 1.7 2005-01-15 19:54:47 sugiura Exp $
 /*
  *	ds_func.cpp
  *	ダイアログ操作関数
@@ -465,6 +465,28 @@ SETDLGPOS(HIDEDLL_NUMTYPE x, HIDEDLL_NUMTYPE y, LPCSTR pszOrigin, LPCSTR pszUnit
 		return g_pSessionInstance->si_setdlgpos(x, y, pszOrigin, pszUnit);
 	} catch (...) {
 		return 0;
+	}
+}
+
+DENGAKUDLL_API LPCSTR
+GETDLGSIZE()
+{
+	try {
+		g_strBuffer = g_pSessionInstance->si_getdlgsize();
+		return g_strBuffer;
+	} catch (...) {
+		return "";
+	}
+}
+
+DENGAKUDLL_API LPCSTR
+GETCARETPOS(HIDEDLL_NUMTYPE nHWND)
+{
+	try {
+		g_strBuffer = g_pSessionInstance->si_getcaretpos(nHWND);
+		return g_strBuffer;
+	} catch (...) {
+		return "";
 	}
 }
 

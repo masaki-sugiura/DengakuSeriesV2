@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.37 2005-01-15 09:25:08 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.38 2005-01-15 19:54:47 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -3929,9 +3929,16 @@ FrameCtrl::initCtrl(HWND hDlg)
 
 	// グループボックス内のダイアログのオフセットを文字の大きさから決定
 	if (m_type == CTRLID_GROUP) {
-		DWORD unit = GetDialogBaseUnits(hDlg, NULL);
-		m_poffset.x = LOWORD(unit) / 2;
-		m_poffset.y = HIWORD(unit) * 3 / 2;
+		DWORD fontsize = m_pDlgPage->getDlgFrame().getFontSize();
+		HDC hDC = ::GetDC(hDlg);
+		DWORD dwLPX = ::GetDeviceCaps(hDC, LOGPIXELSX),
+			  dwLPY = ::GetDeviceCaps(hDC, LOGPIXELSY);
+		TEXTMETRIC tm;
+		::GetTextMetrics(hDC, &tm);
+		::ReleaseDC(hDlg, hDC);
+
+		m_poffset.x = dwLPX * fontsize * 4 / (72 * 2 * tm.tmAveCharWidth);
+		m_poffset.y = dwLPY * fontsize * 8 * 4 / (72 * 3 * tm.tmHeight);
 	}
 	
 	num = 0;
@@ -3951,6 +3958,7 @@ FrameCtrl::initCtrl(HWND hDlg)
 			return FALSE;
 		}
 	}
+
 	return TRUE;
 }
 
@@ -4126,6 +4134,18 @@ BOOL
 TabCtrl::initCtrl(HWND hDlg)
 {
 	if (!HasListCtrl::initCtrl(hDlg)) return FALSE;
+
+	DWORD fontsize = m_pDlgPage->getDlgFrame().getFontSize();
+	HDC hDC = ::GetDC(hDlg);
+	DWORD dwLPX = ::GetDeviceCaps(hDC, LOGPIXELSX),
+		  dwLPY = ::GetDeviceCaps(hDC, LOGPIXELSY);
+	TEXTMETRIC tm;
+	::GetTextMetrics(hDC, &tm);
+	::ReleaseDC(hDlg, hDC);
+
+	m_poffset.x = dwLPX * fontsize * 4 / (72 * 2 * tm.tmAveCharWidth);
+	m_poffset.y = dwLPY * fontsize * 8 * 2 / (72 * tm.tmHeight);
+	
 	TC_ITEM	tci;
 	tci.mask = TCIF_TEXT|TCIF_PARAM;
 	DlgFrame& rDlgFrame = m_pDlgPage->getDlgFrame();

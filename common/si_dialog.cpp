@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.14 2004-11-16 17:03:51 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.15 2005-01-15 19:54:47 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -594,6 +594,22 @@ SessionInstance::si_setdlgpos(int x, int y,
 	return 1;
 }
 
+StringBuffer
+SessionInstance::si_getdlgsize()
+{
+	HWND hwndDlg = m_DlgFrame.getUserDlg();
+	if (!hwndDlg) {
+		return "";
+	}
+
+	RECT rcDlg;
+	::GetWindowRect(hwndDlg, &rcDlg);
+
+	TCHAR buf[32];
+	wsprintf(buf, "%d,%d", rcDlg.right - rcDlg.left, rcDlg.bottom - rcDlg.top);
+	return buf;
+}
+
 int
 SessionInstance::si_setdlgimestate(int nState)
 {
@@ -606,6 +622,17 @@ SessionInstance::si_getdlgimestate()
 	int nState = m_DlgFrame.getImeState();
 	TCHAR buf[32];
 	wsprintf(buf, "%d", nState);
+	return buf;
+}
+
+StringBuffer
+SessionInstance::si_getcaretpos(int nHWND)
+{
+	POINT ptCaret;
+	::GetCaretPos(&ptCaret);
+	::ClientToScreen((HWND)nHWND, &ptCaret);
+	TCHAR buf[32];
+	wsprintf(buf, "%d,%d", ptCaret.x, ptCaret.y);
 	return buf;
 }
 
