@@ -1,4 +1,4 @@
-//	$Id: BRE_Wrapper.cpp,v 1.2 2002-01-16 16:31:04 sugiura Exp $
+//	$Id: BRE_Wrapper.cpp,v 1.3 2002-01-22 15:31:28 sugiura Exp $
 /*
  *	bs_func.cpp
  *	BRegexp に関するクラス
@@ -7,13 +7,14 @@
 #include "BRE_Wrapper.h"
 #include "BRegExp_Mngr.h"
 
+//	BRE_Wrapper のバージョン文字列
+LPCSTR lpszBRE_Wrapper_Version = "1.00";
+
 //	DLL のインスタンスハンドル
 Auto_Ptr<BRegExp_Manager> g_pBRegExp_Manager = NULL;
 
 //	LPSTR を返す関数が使用する文字列バッファ
 StringBuffer g_strBuffer;
-
-HINSTANCE g_hInstance;
 
 //	DLL エントリポイント
 extern "C" BOOL APIENTRY
@@ -25,9 +26,9 @@ DllMain(HINSTANCE hInstance, DWORD ul_reason_for_call, LPVOID)
 			//	有り得ないと思うけど一応
 			return FALSE;
 		}
-		g_hInstance = hInstance;
 		try {
-			//	LPSTR を返す関数のために文字列バッファを確保
+			//	コンストラクタ内で BREGEXP DLL を LoadLibrary() する
+			//	MSDN には「危険なのでやるな！」と書いてあるが…
 			g_pBRegExp_Manager = new BRegExp_Manager(BREGEXP_FILENAME);
 		} catch (...) {
 			return FALSE;
@@ -35,13 +36,8 @@ DllMain(HINSTANCE hInstance, DWORD ul_reason_for_call, LPVOID)
 		break;
 
 	case DLL_PROCESS_DETACH:
-		if (g_pBRegExp_Manager.ptr() == NULL) {
-			//	有り得ないと思うけど一応
-			return FALSE;
-		}
-		//	セッションインスタンスの削除
-		g_pBRegExp_Manager = NULL;
-		g_hInstance = NULL;
+		if (g_pBRegExp_Manager.ptr() != NULL)
+			g_pBRegExp_Manager = NULL; // 内部で FreeLibrary() を…(同上)
 		break;
 
 /*
@@ -52,6 +48,12 @@ DllMain(HINSTANCE hInstance, DWORD ul_reason_for_call, LPVOID)
 */
     }
     return TRUE;
+}
+
+BRE_WRAPPER_API LPCSTR
+BRE_BREWVERSION()
+{
+	return lpszBRE_Wrapper_Version;
 }
 
 BRE_WRAPPER_API LPCSTR
