@@ -1,4 +1,4 @@
-//	$Id: dlltest.cpp,v 1.5 2003-12-15 15:20:44 sugiura Exp $
+//	$Id: dlltest.cpp,v 1.6 2004-08-14 16:21:18 sugiura Exp $
 /*
  *	dlltest.cpp
  *	テスト用アプリ
@@ -198,6 +198,12 @@ DENGAKUDLL_API LPCSTR TOLOWER2(LPCSTR);
 DENGAKUDLL_API LPCSTR TOUPPER(LPCSTR);
 DENGAKUDLL_API LPCSTR TOUPPER2(LPCSTR);
 
+DENGAKUDLL_API int NEWDIALOG(LPCSTR, int, LPCSTR);
+DENGAKUDLL_API int NEWCONTROL(LPCSTR, LPCSTR, LPCSTR);
+DENGAKUDLL_API int SHOWDIALOG(int, int);
+DENGAKUDLL_API int WAITCTRLNOTIFY(int);
+DENGAKUDLL_API int ENDDIALOG();
+
 #define NO_OUTPUT
 #define PROF_FILE
 //#define PROF_STR
@@ -283,6 +289,25 @@ CREATE_FILE(LPCSTR filename)
 
 #endif
 
+#include <string>
+using std::string;
+
+void enumtest(const char* parent)
+{
+	int n = ENUMDIR((string(parent) + "\\*.*").c_str());
+	if (n == 0) {
+		MessageBox(NULL, NULL, "Error: 検索失敗", MB_OK);
+	} else if (n == 1) {
+		const char* child = FINDNEXT();
+		while (strlen(child) != 0) {
+//			MessageBox("$$parent = [" + $$parent + "]\n$$child = [" + $$child + "]");
+			child = FINDNEXT();
+		}
+	} else {
+//		message("Error: 不明");
+	}
+}
+
 
 #ifdef _WINDOWS
 int WINAPI
@@ -291,8 +316,8 @@ WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pszCmdLine, int nCmdShow)
 int main(int ac, char** av)
 #endif
 {
-	initDll();
-#if 0
+//	initDll();
+#if 1
 #if 0
 	static FARPROC lpfnGetDirName = ::GetProcAddress(hModule,"GETDIRNAME");
 	LPCSTR ret = (*(LPFNSTRFUNC)lpfnGetDirName)((PVOID)NULL,"フォルダの選択","C:\\hidemaru",1);
@@ -369,6 +394,7 @@ int main(int ac, char** av)
 	TOUCH("foo1.txt");
 #endif
 
+#if 0
 	ASSERT_NUM(MKDIR("foodir1\\foodir2"), ==, 0);
 	ASSERT_NUM(MKDIR("-p foodir1\\foodir2"), ==, 1);
 
@@ -380,22 +406,32 @@ int main(int ac, char** av)
 	ASSERT_NUM(MOVE("foo1.txt", "foo3.txt"), ==, 1);
 	ASSERT_NUM(MOVE("foo3.txt", "foodir1"), ==, 1);
 	ASSERT_NUM(MOVE("foodir2", "foodir3"), ==, 1);
+#endif
 
-	ASSERT_NUM(ENUMFILE("C:\\*.*"), ==, 1);
-	SHOW_FINDNEXT_RESULTS();
-	ASSERT_NUM(ENUMFILE("C:\\usertemp\\*.txt"), ==, 1);
-	SHOW_FINDNEXT_RESULTS();
-
-	ASSERT_NUM(ENUMDIR("C:\\*.*"), ==, 1);
-	SHOW_FINDNEXT_RESULTS();
-	ASSERT_NUM(ENUMDIR("C:\\usertemp\\*.*"), ==, 1);
+#if 0
+//	ASSERT_NUM(ENUMFILE("C:\\*.*"), ==, 1);
+//	SHOW_FINDNEXT_RESULTS();
+	ASSERT_NUM(ENUMFILE("C:\\temp\\*.txt"), ==, 1);
 	SHOW_FINDNEXT_RESULTS();
 
-	ASSERT_NUM(ENUMPATH("-f C:\\*.doc"), ==, 1);
-	SHOW_FINDNEXT_RESULTS();
-	ASSERT_NUM(ENUMPATH("C:\\usertemp\\*.txt"), ==, 1);
+//	ASSERT_NUM(ENUMDIR("C:\\*.*"), ==, 1);
+//	SHOW_FINDNEXT_RESULTS();
+	ASSERT_NUM(ENUMDIR("C:\\temp\\*.*"), ==, 1);
 	SHOW_FINDNEXT_RESULTS();
 
+//	ASSERT_NUM(ENUMPATH("-f C:\\*.doc"), ==, 1);
+//	SHOW_FINDNEXT_RESULTS();
+	ASSERT_NUM(ENUMPATH("C:\\temp\\*.txt"), ==, 1);
+	SHOW_FINDNEXT_RESULTS();
+#endif
+
+#if 0
+	enumtest("C:\\temp\\work\\00_Folder");
+	enumtest("C:\\temp\\work\\01 Folder");
+	enumtest("C:\\temp\\work\\02,Folder");
+#endif
+
+#if 0
 	ASSERT_NUM(RMDIR("foodir1"), ==, 0);
 	ASSERT_NUM(RMDIR("foodir1\\foodir2"), ==, 1);
 
@@ -403,6 +439,7 @@ int main(int ac, char** av)
 	ASSERT_NUM(REMOVE("foodir1\\foo?.txt"), ==, 1);
 	ASSERT_NUM(REMOVE("-r foodir?"), ==, 1);
 	ASSERT_NUM(REMOVE("foo?.txt"), ==, 1);
+#endif
 
 #endif
 
@@ -574,6 +611,13 @@ int main(int ac, char** av)
 #endif
 //	ASSERT(uninitDll());
 #endif
+
+	NEWDIALOG("Dialog Test", 40, "");
+	NEWCONTROL("text","","ダイアログテスト");
+//	NEWCONTROL("edit","","");
+	SHOWDIALOG(0, 1);
+	WAITCTRLNOTIFY(1000);
+	ENDDIALOG();
 
 	return 0;
 }

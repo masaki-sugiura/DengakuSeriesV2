@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.12 2004-01-15 15:44:40 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.13 2004-08-14 16:21:18 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -55,15 +55,16 @@ ShowDlgProc(LPDWORD pThreadArgs)
 
 	DWORD ret = 1;
 //	StringBuffer* ntf = new StringBuffer(okStr);
+	const StringBuffer okStr("OK"), ngStr("NG");
 	HWND hwndDlg;
 	if ((hwndDlg = df.createFrame(psdpa->m_hwndOwner,psdpa->m_bOnTop))
 		== NULL) {
 //		*ntf = ngStr;
-//		psi->SessionInstance::setNotify(*ntf);
+		psi->SessionInstance::setNotify(ngStr);
 	} else {
 //		psi->SessionInstance::setNotify(*ntf);
-		::SetForegroundWindow(hwndDlg);
-		df.showFrame();
+
+		psi->SessionInstance::setNotify(okStr);
 
 		MSG	msg;
 		while (::GetMessage(&msg,NULL,0,0)) {
@@ -146,12 +147,17 @@ SessionInstance::si_showdialog(HWND hwndOwner, BOOL bOnTop)
 	}
 
 	StringBuffer buf(nullStr);
-	while (!this->SessionInstance::getNotify(buf,10))
+	while (!this->SessionInstance::getNotify(buf, 100)) {
 		/* no op. */;
+	}
 	if (buf.compareTo(okStr) != 0) {
 		m_pDlgThread = NULL;
 		return FALSE;
 	}
+
+	::SetForegroundWindow(m_DlgFrame.getUserDlg());
+	m_DlgFrame.setFocusedCtrl(m_DlgFrame.getFocusedCtrlName());
+	m_DlgFrame.showFrame();
 
 	return TRUE;
 }

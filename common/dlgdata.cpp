@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.23 2004-05-31 15:52:54 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.24 2004-08-14 16:21:18 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -1047,9 +1047,11 @@ DlgFrame::showFrame()
 	if (pdproot != NULL) {
 		pdproot->showPage(TRUE);
 	}
-	::ShowWindow(m_hwndFrame, SW_SHOW);
+
 	// デフォルトフォーカスの設定
-	this->setFocusedCtrl(m_sbFocusedCtrl);
+//	this->setFocusedCtrl(m_sbFocusedCtrl);
+
+	::ShowWindow(m_hwndFrame, SW_SHOW);
 
 	return TRUE;
 }
@@ -1059,7 +1061,7 @@ BOOL
 DlgFrame::closeFrame()
 {
 	if (m_hwndFrame == NULL) return FALSE;
-	BOOL ret = !::SendMessage(m_hwndFrame,WM_DESTROY,0,0);
+	BOOL ret = !::SendMessage(m_hwndFrame, WM_DESTROY, 0, 0);
 	m_hwndFrame = NULL;
 	return ret;
 }
@@ -1092,7 +1094,7 @@ DlgFrame::initFrame(HWND hDlg)
 									 m_width-2,m_height - 1,
 									 false);
 
-#if 1
+#if 0
 	if (hwndRoot) {
 		// 初期化完了を親スレッドに通知
 		// (このタイミングで行わないと SetFocus() でハングする)
@@ -1196,7 +1198,10 @@ DlgFrame::setFocusedCtrl(const StringBuffer& name)
 		if (m_hwndFrame != NULL) {
 			DlgPage* pdproot = this->getPage(strRootPageName);
 			if (pdproot == NULL) return FALSE;
-			::SetFocus(pdproot->getFocusedCtrl());
+			HWND hwndFocused = pdproot->getFocusedCtrl();
+			if (hwndFocused) {
+				::SetFocus(hwndFocused);
+			}
 		}
 	} else {
 		CtrlListItem* pctrl = this->getCtrl(name);
