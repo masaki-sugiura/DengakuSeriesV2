@@ -1,4 +1,4 @@
-// $Id: convdata.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+// $Id: convdata.h,v 1.2 2002-02-20 16:48:40 sugiura Exp $
 /*
  *	convdata.h
  *	DDE 通信毎に用意するリソース管理とコマンド処理を行うクラスの定義
@@ -67,9 +67,6 @@ public:
 #undef	DECLARE_DDECMD_POKE
 #undef	DECLARE_DDECMD_FINAL
 #undef	DECLARE_DDECMD_FOOTER
-
-protected:
-	void reorderArgv_getfilename(StringBuffer&, StringBuffer&) const;
 
 private:
 	DWORD m_ddeInst; //	DDE サーバのインスタンスハンドル

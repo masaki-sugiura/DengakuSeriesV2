@@ -1,4 +1,4 @@
-//	$Id: main.cpp,v 1.2 2002-02-19 15:34:22 sugiura Exp $
+//	$Id: main.cpp,v 1.3 2002-02-20 16:48:40 sugiura Exp $
 /*
  *	main.cpp
  *	田楽サーバ本体
@@ -8,6 +8,7 @@
 #include "common.h"
 #include "ddeserv.h"
 #include "ddesinfo.h"
+#include "misc.h"
 
 #include <commctrl.h>
 
@@ -156,18 +157,10 @@ InitMainWindow(DDEServerInfo* pdsi)
 	lstrcpy(lptnid->szTip,pdsi->m_sbWndTitle);
 
 	//	ウィンドウを画面中央に移動
-	RECT rect;
-	POINT pos;
-	::GetWindowRect(::GetDesktopWindow(),&rect);
-	pos.x = rect.left + rect.right;
-	pos.y = rect.top + rect.bottom;
-	::GetWindowRect(pdsi->m_hwndMain,&rect);
-	pos.x -= rect.right - rect.left;
-	pos.y -= rect.bottom - rect.top;
-	::SetWindowPos(pdsi->m_hwndMain,
-					HWND_TOPMOST,
-					pos.x/2,pos.y/2,0,0,
+	CenteringWindow(pdsi->m_hwndMain, ::GetDesktopWindow(),
 					SWP_NOACTIVATE|SWP_NOREDRAW|SWP_NOSIZE|SWP_HIDEWINDOW);
+	::SetWindowPos(pdsi->m_hwndMain, HWND_TOPMOST, 0, 0, 0, 0,
+					SWP_NOACTIVATE|SWP_NOREDRAW|SWP_NOSIZE|SWP_NOMOVE|SWP_HIDEWINDOW);
 
 	return TRUE;
 }

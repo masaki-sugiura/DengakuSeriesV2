@@ -1,4 +1,4 @@
-// $Id: si_comdlg.cpp,v 1.3 2002-02-19 15:34:22 sugiura Exp $
+// $Id: si_comdlg.cpp,v 1.4 2002-02-20 16:48:40 sugiura Exp $
 /*
  *	si_comdlg.cpp
  *	コモンダイアログ表示関数
@@ -13,21 +13,22 @@
 
 #define FILEDLG_BUFSIZE (11 * MAX_PATH)
 
-//	ＤＬＬとサーバの引数の順序の違いを吸収するためのメソッド
-//	あぁキタナイ(ToT)
-void
-SessionInstance::reorderArgv_getfilename(
-	StringBuffer& argv0,
-	StringBuffer& argv1) const
+static UINT CALLBACK
+GetFileNameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	//	nothing to do (for DLL)
+	if (uMsg == WM_INITDIALOG) {
+		CenteringWindow(::GetParent(hDlg),
+						(HWND)((LPOPENFILENAME)lParam)->lCustData,
+						SWP_NOSIZE);
+	}
+	return FALSE;
 }
 
 StringBuffer
 SessionInstance::getFileNameByDlg(
 	HWND hwndOwner,
-	const StringBuffer& _title,
-	const StringBuffer& _inifile,
+	const StringBuffer& title,
+	const StringBuffer& inifile,
 	CmdLineParser& filters)
 {
 	Array<TCHAR> buf(sizeof(OPENFILENAME) + FILEDLG_BUFSIZE);
@@ -35,10 +36,6 @@ SessionInstance::getFileNameByDlg(
 
 	LPSTR pszFileName = buf + sizeof(OPENFILENAME),
 		  pszFilter	  = buf + sizeof(OPENFILENAME) + MAX_PATH;
-
-	//	このメソッドの意味は…上記参照
-	StringBuffer title = _title, inifile = _inifile;
-	this->reorderArgv_getfilename(title,inifile);
 
 	PathName inipath;
 	if (inifile.length() <= 0) {	//	フォルダ指定なし
@@ -109,7 +106,9 @@ SessionInstance::getFileNameByDlg(
 	pofn->nMaxFile			=	FILEDLG_BUFSIZE - MAX_PATH;
 	pofn->lpstrTitle		=	title;
 	pofn->Flags				=	OFN_HIDEREADONLY|OFN_EXPLORER|OFN_NOCHANGEDIR|
-								OFN_ALLOWMULTISELECT;
+								OFN_ALLOWMULTISELECT|OFN_ENABLEHOOK;
+	pofn->lpfnHook          =   (LPOFNHOOKPROC)GetFileNameProc;
+	pofn->lCustData         =   (DWORD)hwndOwner;
 	pofn->lpstrInitialDir	=	inipath;
 
 	//	ダイアログの表示
@@ -151,6 +150,7 @@ ChooseColorProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	if (uMsg == WM_INITDIALOG) {
 		CHOOSECOLOR* pcc = reinterpret_cast<CHOOSECOLOR*>(lParam);
 		::SetWindowText(hDlg,(LPCSTR)pcc->lCustData);
+		CenteringWindow(hDlg, pcc->hwndOwner, SWP_NOSIZE);
 	}
 	return 0;
 }
@@ -205,6 +205,7 @@ ChooseFontProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	if (uMsg == WM_INITDIALOG) {
 		CHOOSEFONT* pcf = reinterpret_cast<CHOOSEFONT*>(lParam);
 		::SetWindowText(hDlg,(LPCSTR)pcf->lCustData);
+		CenteringWindow(hDlg, pcf->hwndOwner, SWP_NOSIZE);
 	}
 	return 0;
 }

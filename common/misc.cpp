@@ -1,4 +1,4 @@
-//	$Id: misc.cpp,v 1.3 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: misc.cpp,v 1.4 2002-02-20 16:48:40 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数
@@ -25,6 +25,22 @@ GetDialogBaseUnits(HWND hDlg, LPCSTR str)
 	::GetTextExtentPoint32(hDc,str,1,&sz);
 	::ReleaseDC(hDlg,hDc);
 	return (DWORD)MAKELONG((WORD)sz.cx,(WORD)sz.cy);
+}
+
+void
+CenteringWindow(HWND hWnd, HWND hwndOwner, DWORD swparam)
+{
+	//	ウィンドウを画面中央に移動
+	RECT rectOwner, rect;
+	::GetWindowRect(hwndOwner, &rectOwner);
+	::GetWindowRect(hWnd, &rect);
+	POINT pos;
+	pos.x = (rectOwner.left + rectOwner.right + rect.left - rect.right) >> 1;
+	pos.y = (rectOwner.top + rectOwner.bottom + rect.top - rect.bottom) >> 1;
+//	::ScreenToClient(hwndOwner, &pos);
+	::SetWindowPos(hWnd, hwndOwner,
+				   pos.x, pos.y, 0, 0,
+				   swparam);
 }
 
 void

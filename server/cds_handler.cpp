@@ -1,4 +1,4 @@
-//	$Id: cds_handler.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: cds_handler.cpp,v 1.2 2002-02-20 16:48:40 sugiura Exp $
 /*
  *	cds_handler.cpp
  *	コモンダイアログサービスの実装
@@ -96,17 +96,6 @@ OpenComDlgProc(LPVOID pParam)
 	::ExitThread(ret);
 
 	return (DWORD)-1; // not reached
-}
-
-//	getfilename のＤＬＬとサーバの引数の違いを吸収するメソッド
-void
-ConvData::reorderArgv_getfilename(
-	StringBuffer& argv0,
-	StringBuffer& argv1) const
-{
-	StringBuffer tmp = argv0;
-	argv0 = argv1;
-	argv1 = tmp;
 }
 
 int

@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.7 2002-02-17 08:00:41 sugiura Exp $
+//	$Id: session.h,v 1.8 2002-02-20 16:48:40 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -235,11 +235,6 @@ protected:
 
 	SessionInstance(const SessionInstance&);
 	SessionInstance& operator=(const SessionInstance&);
-
-	//	田楽ＤＬＬとサーバの違い(引数の順序)をそれぞれの実装で
-	//	吸収できないため、しかたなく用意するメソッド
-	virtual void reorderArgv_getfilename(StringBuffer& title,
-										StringBuffer& inipath) const;
 };
 
 //	メニューの返り値
