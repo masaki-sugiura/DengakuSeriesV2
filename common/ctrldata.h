@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.3 2002-02-10 09:27:32 sugiura Exp $
+//	$Id: ctrldata.h,v 1.4 2002-02-10 18:25:36 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -268,6 +268,8 @@ public:
 	};
 	typedef CtrlProperty* LPCtrlProperty;
 
+	virtual LRESULT dispatchRawMsg(CtrlProperty*, HWND, UINT, WPARAM, LPARAM);
+
 protected:
 	//	グローバル名前空間に置いておきたくないクラス
 
@@ -377,8 +379,6 @@ public:
 	HBRUSH onCtlColor(HDC);
 
 	BOOL isCommand(WORD);
-
-	WNDPROC getDefCallback() const { return m_pcp->m_pfnDefCallback; }
 
 protected:
 	BOOL setFont(const StringBuffer& fface = nullStr,

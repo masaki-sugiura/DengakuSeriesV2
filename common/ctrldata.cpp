@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.3 2002-02-10 09:27:32 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.4 2002-02-10 18:25:36 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -123,13 +123,7 @@ CtrlListItemProc(HWND hCtrl, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	CtrlListItem::CtrlProperty*
 		pCProp = (CtrlListItem::CtrlProperty*)::GetWindowLong(hCtrl, GWL_USERDATA);
-	switch (uMsg) {
-	case WM_GET_CTRL_PTR:
-		return (LRESULT)pCProp->m_pCtrl;
-	default:
-		return ::CallWindowProc(pCProp->m_pfnDefCallback, hCtrl, uMsg, wParam, lParam);
-	}
-	return 0;
+	return pCProp->m_pCtrl->dispatchRawMsg(pCProp, hCtrl, uMsg, wParam, lParam);
 }
 
 BOOL
@@ -561,6 +555,20 @@ BOOL
 CtrlListItem::isCommand(WORD)
 {
 	return FALSE;
+}
+
+LRESULT
+CtrlListItem::dispatchRawMsg(
+	CtrlListItem::CtrlProperty* pCProp,
+	HWND hCtrl, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMsg) {
+	case WM_GET_CTRL_PTR:
+		return (LRESULT)pCProp->m_pCtrl;
+	default:
+		return ::CallWindowProc(pCProp->m_pfnDefCallback, hCtrl, uMsg, wParam, lParam);
+	}
+	return 0;
 }
 
 WORD

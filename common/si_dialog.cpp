@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.3 2002-02-10 09:27:32 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.4 2002-02-10 18:25:36 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -16,6 +16,32 @@
 
 static const StringBuffer okStr = "OK";
 static const StringBuffer ngStr = "NG";
+
+static BOOL
+PreDispatchKeyPress(HWND hDlg, MSG* lpMsg)
+{
+	if (lpMsg->message != WM_KEYDOWN ||
+		lpMsg->wParam != VK_TAB ||
+		(GetKeyState(VK_CONTROL) & 0x80000000) == 0) return FALSE;
+
+	HWND hFocusedCtrl = ::GetFocus();
+	if (hFocusedCtrl == NULL) return FALSE;
+	CtrlListItem*
+		pCtrl = (CtrlListItem*)::SendMessage(hFocusedCtrl, WM_GET_CTRL_PTR, 0, 0);
+	if (!pCtrl->isValid() || pCtrl->getCtrlType() != CTRLID_TAB) return FALSE;
+
+	// tab コントロールにメッセージを転送
+	NMTCKEYDOWN nm;
+	nm.hdr.code = TCN_KEYDOWN;
+	nm.hdr.hwndFrom = hDlg;
+	nm.hdr.idFrom = 0; // not used
+	nm.wVKey = VK_TAB;
+	nm.flags = lpMsg->lParam;
+	pCtrl->onWmNotify(0, (LPARAM)&nm);
+
+	return TRUE;
+}
+
 
 DWORD WINAPI
 ShowDlgProc(LPDWORD pThreadArgs)
@@ -42,7 +68,8 @@ ShowDlgProc(LPDWORD pThreadArgs)
 		::SetForegroundWindow(hwndDlg);
 		MSG	msg;
 		while (::GetMessage(&msg,NULL,0,0)) {
-			if (!::IsDialogMessage(hwndDlg,&msg)) {
+			if (!PreDispatchKeyPress(hwndDlg, &msg) &&
+				!::IsDialogMessage(hwndDlg, &msg)) {
 				::TranslateMessage(&msg);
 				::DispatchMessage(&msg);
 			}
