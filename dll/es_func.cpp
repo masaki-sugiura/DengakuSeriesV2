@@ -1,4 +1,4 @@
-//	$Id: es_func.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: es_func.cpp,v 1.2 2002-01-16 16:31:04 sugiura Exp $
 /*
  *	es_func.cpp
  *	環境変数サービスの関数
@@ -17,8 +17,8 @@ SETVAR(LPCSTR env_name, LPCSTR env_var)
 DENGAKUDLL_API LPCSTR
 GETVAR(LPCSTR env_name)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_getvar(env_name);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_getvar(env_name);
+	return g_strBuffer;
 }
 
 //	変数を削除する
@@ -46,8 +46,8 @@ ENUMVAR()
 DENGAKUDLL_API LPCSTR
 NEXTVAR()
 {
-	*g_pStrBuffer = g_pSessionInstance->si_nextvar();
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_nextvar();
+	return g_strBuffer;
 }
 
 //	ENUMVAR(), NEXTVAR() で列挙した変数がまだあるかどうかを返す

@@ -1,4 +1,4 @@
-//	$Id: ds_func.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: ds_func.cpp,v 1.2 2002-01-16 16:31:04 sugiura Exp $
 /*
  *	ds_func.cpp
  *	ダイアログ操作関数
@@ -12,10 +12,10 @@ DENGAKUDLL_API LPCSTR
 WAITCTRLNOTIFY(HIDEDLL_NUMTYPE num)
 {
 	if (num < 0) num = 0;
-	*g_pStrBuffer = nullStr;
+	g_strBuffer = nullStr;
 	if (g_pSessionInstance->getDlgFrame().getUserDlg() != NULL)
-		g_pSessionInstance->getNotify(*g_pStrBuffer,(DWORD)num);
-	return *g_pStrBuffer;
+		g_pSessionInstance->getNotify(g_strBuffer,(DWORD)num);
+	return g_strBuffer;
 }
 
 //	ダイアログの表示
@@ -139,56 +139,56 @@ SETDLGTITLE(LPCSTR str1)
 DENGAKUDLL_API LPCSTR
 GETDLGTITLE()
 {
-	*g_pStrBuffer = g_pSessionInstance->si_getdlgtitle();
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_getdlgtitle();
+	return g_strBuffer;
 }
 
 //	コントロールの状態を返す
 DENGAKUDLL_API LPCSTR
 GETCTRLSTATE(LPCSTR str1)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_getctrlstate(str1);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_getctrlstate(str1);
+	return g_strBuffer;
 }
 
 //	コントロールのテキストを返す
 DENGAKUDLL_API LPCSTR
 GETCTRLSTRING(LPCSTR str1)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_getctrlstring(str1);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_getctrlstring(str1);
+	return g_strBuffer;
 }
 
 //	コントロールの IME の状態を返す
 DENGAKUDLL_API LPCSTR
 GETCTRLIMESTATE(LPCSTR str1)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_getctrlimestate(str1);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_getctrlimestate(str1);
+	return g_strBuffer;
 }
 
 //	コントロールのフォント情報を返す
 DENGAKUDLL_API LPCSTR
 GETCTRLFONT(LPCSTR str1)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_getctrlfont(str1);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_getctrlfont(str1);
+	return g_strBuffer;
 }
 
 //	コントロールの項目テキストを返す
 DENGAKUDLL_API LPCSTR
 GETCTRLITEM(LPCSTR str1, LPCSTR str2)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_getctrlitem(str1,str2);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_getctrlitem(str1,str2);
+	return g_strBuffer;
 }
 
 //	ダイアログデータファイルのシグネチャを返す
 DENGAKUDLL_API LPCSTR
 GETDLGSIGNATURE(LPCSTR str1)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_getdlgsignature(str1);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_getdlgsignature(str1);
+	return g_strBuffer;
 }
 
 //	新規ダイアログテンプレートの作成
@@ -217,8 +217,8 @@ SETCURDLGPAGE(LPCSTR str1)
 DENGAKUDLL_API LPCSTR
 GETCURDLGPAGE()
 {
-	*g_pStrBuffer = g_pSessionInstance->si_getcurdlgpage();
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_getcurdlgpage();
+	return g_strBuffer;
 }
 
 //	新規コントロールの作成

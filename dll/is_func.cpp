@@ -1,4 +1,4 @@
-//	$Id: is_func.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: is_func.cpp,v 1.2 2002-01-16 16:31:04 sugiura Exp $
 /*
  *	is_func.cpp
  *	画像の管理に関するクラス
@@ -24,8 +24,8 @@ FREESPI()
 DENGAKUDLL_API LPCSTR
 GETSPIINFO(HIDEDLL_NUMTYPE type)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_getspiinfo(type);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_getspiinfo(type);
+	return g_strBuffer;
 }
 
 //	指定された画像ファイルが Plug-in でサポートされているかどうかを返す
@@ -39,7 +39,7 @@ ISSUPPORTEDPIC(LPCSTR filename)
 DENGAKUDLL_API LPCSTR
 GETPICINFO(LPCSTR filename)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_getpicinfo(filename);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_getpicinfo(filename);
+	return g_strBuffer;
 }
 

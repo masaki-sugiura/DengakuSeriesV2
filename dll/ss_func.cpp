@@ -1,4 +1,4 @@
-//	$Id: ss_func.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: ss_func.cpp,v 1.2 2002-01-16 16:31:04 sugiura Exp $
 /*
  *	ss_func.cpp
  *	文字列サービスの関数
@@ -17,8 +17,8 @@ ATOI(LPCSTR val)
 DENGAKUDLL_API LPCSTR
 ITOA(HIDEDLL_NUMTYPE val, HIDEDLL_NUMTYPE radix)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_itoa(val,radix);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_itoa(val,radix);
+	return g_strBuffer;
 }
 
 //	stricmp()
@@ -39,24 +39,24 @@ STRCOUNT(LPCSTR str1, LPCSTR str2)
 DENGAKUDLL_API LPCSTR
 GSUB(LPCSTR str1, LPCSTR str2, LPCSTR str3, HIDEDLL_NUMTYPE num)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_gsub(str1,str2,str3,num);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_gsub(str1,str2,str3,num);
+	return g_strBuffer;
 }
 
 //	tolower
 DENGAKUDLL_API LPCSTR
 TOLOWER(LPCSTR str)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_tolower(str);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_tolower(str);
+	return g_strBuffer;
 }
 
 //	toupper
 DENGAKUDLL_API LPCSTR
 TOUPPER(LPCSTR str)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_toupper(str);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_toupper(str);
+	return g_strBuffer;
 }
 
 //	strstr
@@ -84,40 +84,40 @@ STRLEN(LPCSTR str)
 DENGAKUDLL_API LPCSTR
 LEFTSTR(LPCSTR str, HIDEDLL_NUMTYPE num)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_leftstr(str,num);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_leftstr(str,num);
+	return g_strBuffer;
 }
 
 //	midstr
 DENGAKUDLL_API LPCSTR
 MIDSTR(LPCSTR str, HIDEDLL_NUMTYPE num1, HIDEDLL_NUMTYPE num2)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_midstr(str,num1,num2);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_midstr(str,num1,num2);
+	return g_strBuffer;
 }
 
 //	rightstr
 DENGAKUDLL_API LPCSTR
 RIGHTSTR(LPCSTR str, HIDEDLL_NUMTYPE num)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_rightstr(str,num);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_rightstr(str,num);
+	return g_strBuffer;
 }
 
 //	全角文字も含めて tolower
 DENGAKUDLL_API LPCSTR
 TOLOWER2(LPCSTR str)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_tolower2(str);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_tolower2(str);
+	return g_strBuffer;
 }
 
 //	全角文字も含めて toupper
 DENGAKUDLL_API LPCSTR
 TOUPPER2(LPCSTR str)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_toupper2(str);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_toupper2(str);
+	return g_strBuffer;
 }
 
 //	出現位置を strlen2 風に数える strstr
@@ -145,48 +145,48 @@ STRLEN2(LPCSTR str)
 DENGAKUDLL_API LPCSTR
 LEFTSTR2(LPCSTR str, HIDEDLL_NUMTYPE num)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_leftstr2(str,num);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_leftstr2(str,num);
+	return g_strBuffer;
 }
 
 //	文字数を strlen2 風に数える midstr
 DENGAKUDLL_API LPCSTR
 MIDSTR2(LPCSTR str, HIDEDLL_NUMTYPE num1, HIDEDLL_NUMTYPE num2)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_midstr2(str,num1,num2);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_midstr2(str,num1,num2);
+	return g_strBuffer;
 }
 
 //	文字数を strlen2 風に数える rightstr
 DENGAKUDLL_API LPCSTR
 RIGHTSTR2(LPCSTR str, HIDEDLL_NUMTYPE num)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_rightstr2(str,num);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_rightstr2(str,num);
+	return g_strBuffer;
 }
 
 //	文字列の左側の空白を除去する
 DENGAKUDLL_API LPCSTR
 LTRIM(LPCSTR str)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_ltrim(str);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_ltrim(str);
+	return g_strBuffer;
 }
 
 //	文字列の右側の空白を除去する
 DENGAKUDLL_API LPCSTR
 RTRIM(LPCSTR str)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_rtrim(str);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_rtrim(str);
+	return g_strBuffer;
 }
 
 //	str1 を str2 に含まれる文字で分割する strtok
 DENGAKUDLL_API LPCSTR
 GETTOKEN(LPCSTR str1, LPCSTR str2)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_gettoken(str1,str2);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_gettoken(str1,str2);
+	return g_strBuffer;
 }
 
 //	GETTOKEN() でまだトークンがあるかどうかを返す

@@ -174,7 +174,8 @@ BRegExp_Manager::getNextResult()
 StringBuffer
 BRegExp_Manager::posToString(DWORD pos) const
 {
-	if (pos == (DWORD)-1 || m_strSplitted.length() == 0) return nullStr;
+	if (pos == BREGEXP_RESULT_FAILED || m_strSplitted.length() == 0)
+		return nullStr;
 	return m_strSplitted.extract(LOWORD(pos), HIWORD(pos));
 }
 

@@ -1,4 +1,4 @@
-//	$Id: si_bregexp.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: si_bregexp.cpp,v 1.3 2002-01-16 16:31:04 sugiura Exp $
 /*
  *	si_bregexp.cpp
  *	BRegexp ‚ÉŠÖ‚·‚éƒNƒ‰ƒX
@@ -83,6 +83,13 @@ SessionInstance::si_bregexp_getnext()
 {
 	if (m_pBRegExp_Manager.ptr() == NULL) return nullStr;
 	return make_result(m_pBRegExp_Manager->getNextResult());
+}
+
+StringBuffer
+SessionInstance::si_bregexp_postostr(const StringBuffer& pos)
+{
+	if (m_pBRegExp_Manager.ptr() == NULL) return nullStr;
+	return m_pBRegExp_Manager->posToString(make_dword_from_pos(pos));
 }
 
 int

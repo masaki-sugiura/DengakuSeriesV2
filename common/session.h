@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.3 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: session.h,v 1.4 2002-01-16 16:31:04 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -199,6 +199,7 @@ public:
 	StringBuffer si_bregexp_trans(const StringBuffer&, const StringBuffer&);
 	int si_bregexp_split(const StringBuffer&, const StringBuffer&, int);
 	StringBuffer si_bregexp_getnext();
+	StringBuffer si_bregexp_postostr(const StringBuffer&);
 	int si_bregexp_hasmoreresults();
 
 protected:

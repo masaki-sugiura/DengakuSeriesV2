@@ -1,4 +1,4 @@
-//	$Id: ms_func.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: ms_func.cpp,v 1.2 2002-01-16 16:31:04 sugiura Exp $
 /*
  *	ms_func.cpp
  *	メニュー表示関数
@@ -36,15 +36,15 @@ MENU(LPCSTR menuname, HIDEDLL_NUMTYPE hWndHavingCaret)
 	g_pSessionInstance->waitMenuThread();
 
 	//	返り値の取得
-	*g_pStrBuffer = nullStr;
-	g_pSessionInstance->getNotify(*g_pStrBuffer,INFINITE);
+	g_strBuffer = nullStr;
+	g_pSessionInstance->getNotify(g_strBuffer,INFINITE);
 
 	//	スレッドの破棄
 	g_pSessionInstance->stopMenuThread();
 
 	::SetForegroundWindow(hwndTop);
 
-	return *g_pStrBuffer;
+	return g_strBuffer;
 }
 
 //	新規メニューの構築

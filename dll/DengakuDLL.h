@@ -1,4 +1,4 @@
-//	$Id: DengakuDLL.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: DengakuDLL.h,v 1.2 2002-01-16 16:31:04 sugiura Exp $
 /*
  *	DengakuDLL.h
  *	メインヘッダーファイル
@@ -9,12 +9,6 @@
 
 #include "session.h"
 
-// 以下の ifdef ブロックは DLL から簡単にエクスポートさせるマクロを作成する標準的な方法です。 
-// この DLL 内のすべてのファイルはコマンドラインで定義された DENGAKUDLL_EXPORTS シンボル
-// でコンパイルされます。このシンボルはこの DLL が使用するどのプロジェクト上でも未定義でなけ
-// ればなりません。この方法ではソースファイルにこのファイルを含むすべてのプロジェクトが DLL 
-// からインポートされたものとして DENGAKUDLL_API 関数を参照し、そのためこの DLL はこのマク 
-// ロで定義されたシンボルをエクスポートされたものとして参照します。
 #ifdef DENGAKUDLL_EXPORTS
 
 #ifdef __cplusplus
@@ -44,9 +38,9 @@ typedef double HIDEDLL_NUMTYPE;
 #define HIDEDLL_FALSE static_cast<HIDEDLL_NUMTYPE>(FALSE)
 
 //	DLL では唯一のセッションインスタンスへのポインタ
-extern SessionInstance*	g_pSessionInstance;
+extern Auto_Ptr<SessionInstance> g_pSessionInstance;
 //	LPSTR を返す関数が使用する文字列バッファへのポインタ
-extern class StringBuffer *g_pStrBuffer;
+extern StringBuffer g_strBuffer;
 //	DLL のバージョン文字列
 extern const StringBuffer g_versionStr;
 

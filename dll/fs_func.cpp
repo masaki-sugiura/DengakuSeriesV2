@@ -1,4 +1,4 @@
-//	$Id: fs_func.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: fs_func.cpp,v 1.2 2002-01-16 16:31:04 sugiura Exp $
 /*
  *	fs_func.cpp
  *	ファイルサービスの関数
@@ -148,8 +148,8 @@ ENUMDIR(LPCSTR str)
 DENGAKUDLL_API LPCSTR
 GETCURDIR()
 {
-	*g_pStrBuffer = g_pSessionInstance->si_getcurdir();
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_getcurdir();
+	return g_strBuffer;
 }
 
 //	ファイルが読取専用かどうかを返す
@@ -157,8 +157,8 @@ DENGAKUDLL_API LPCSTR
 ISREADONLY(LPCSTR str)
 {
 	RealCmdLineParser argv(str);
-	*g_pStrBuffer = g_pSessionInstance->si_isreadonly(argv);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_isreadonly(argv);
+	return g_strBuffer;
 }
 
 //	ファイルのサイズを返す
@@ -166,8 +166,8 @@ DENGAKUDLL_API LPCSTR
 SIZEOF(LPCSTR str)
 {
 	RealCmdLineParser argv(str);
-	*g_pStrBuffer = g_pSessionInstance->si_sizeof(argv);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_sizeof(argv);
+	return g_strBuffer;
 }
 
 //	タイムスタンプを返す
@@ -175,8 +175,8 @@ DENGAKUDLL_API LPCSTR
 TIMESTAMPOF(LPCSTR str)
 {
 	RealCmdLineParser argv(str);
-	*g_pStrBuffer = g_pSessionInstance->si_timestampof(argv);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_timestampof(argv);
+	return g_strBuffer;
 }
 
 //	タイムスタンプをあるルールで数値にしたものを返す
@@ -184,8 +184,8 @@ DENGAKUDLL_API LPCSTR
 TIMECOUNTOF(LPCSTR str)
 {
 	RealCmdLineParser argv(str);
-	*g_pStrBuffer = g_pSessionInstance->si_timecountof(argv);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_timecountof(argv);
+	return g_strBuffer;
 }
 
 //	ファイルの属性値を返す
@@ -193,38 +193,38 @@ DENGAKUDLL_API LPCSTR
 ATTRIBUTEOF(LPCSTR str)
 {
 	RealCmdLineParser argv(str);
-	*g_pStrBuffer = g_pSessionInstance->si_attributeof(argv);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_attributeof(argv);
+	return g_strBuffer;
 }
 
 DENGAKUDLL_API LPCSTR
 EXISTFILE(LPSTR str)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_getlongname(RemoveQuote(str),TRUE);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_getlongname(RemoveQuote(str),TRUE);
+	return g_strBuffer;
 }
 
 //	ENUM***() で取得したファイル・ディレクトリ名を返す
 DENGAKUDLL_API LPCSTR
 FINDNEXT()
 {
-	*g_pStrBuffer = g_pSessionInstance->si_findnext();
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_findnext();
+	return g_strBuffer;
 }
 
 //	現在使用可能なドライブを返す
 DENGAKUDLL_API LPCSTR
 GETDRIVES()
 {
-	*g_pStrBuffer = g_pSessionInstance->si_getdrives();
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_getdrives();
+	return g_strBuffer;
 }
 
 //	ファイル名をロングファイル名に変換する
 DENGAKUDLL_API LPCSTR
 GETLONGNAME(LPCSTR str)
 {
-	*g_pStrBuffer = g_pSessionInstance->si_getlongname(RemoveQuote(str),FALSE);
-	return *g_pStrBuffer;
+	g_strBuffer = g_pSessionInstance->si_getlongname(RemoveQuote(str),FALSE);
+	return g_strBuffer;
 }
 

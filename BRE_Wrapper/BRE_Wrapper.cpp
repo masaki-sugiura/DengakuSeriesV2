@@ -1,4 +1,4 @@
-//	$Id: BRE_Wrapper.cpp,v 1.1 2002-01-16 15:49:15 sugiura Exp $
+//	$Id: BRE_Wrapper.cpp,v 1.2 2002-01-16 16:31:04 sugiura Exp $
 /*
  *	bs_func.cpp
  *	BRegexp に関するクラス
@@ -6,9 +6,6 @@
 
 #include "BRE_Wrapper.h"
 #include "BRegExp_Mngr.h"
-#include "strutils.h"
-
-#include <commctrl.h>
 
 //	DLL のインスタンスハンドル
 Auto_Ptr<BRegExp_Manager> g_pBRegExp_Manager = NULL;
@@ -17,16 +14,6 @@ Auto_Ptr<BRegExp_Manager> g_pBRegExp_Manager = NULL;
 StringBuffer g_strBuffer;
 
 HINSTANCE g_hInstance;
-
-static DWORD
-make_dword_from_pos(const StringBuffer& pos)
-{
-	int sep = pos.find(':');
-	if (sep == -1 || sep == 0 || sep >= pos.length() - 1)
-		return (DWORD)-1;
-	return make_dword(ival(pos.extract(0, sep)),
-					  ival(pos.extract(sep + 1, -1)));
-}
 
 //	DLL エントリポイント
 extern "C" BOOL APIENTRY
@@ -45,8 +32,6 @@ DllMain(HINSTANCE hInstance, DWORD ul_reason_for_call, LPVOID)
 		} catch (...) {
 			return FALSE;
 		}
-		//	よく忘れるので(^^;最初に呼び出しておく
-		::InitCommonControls();
 		break;
 
 	case DLL_PROCESS_DETACH:
