@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.13 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: session.h,v 1.14 2003-11-23 15:37:21 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -203,6 +203,8 @@ public:
 	StringBuffer si_getctrlsort(const StringBuffer&);
 	int si_newcolumn(WORD);
 	int si_newpage(WORD);
+	StringBuffer si_getdlgpos();
+	int si_setdlgpos(int, int, const StringBuffer&, const StringBuffer&);
 
 	// BRegexp系
 	int si_bregexp_load(const StringBuffer&);

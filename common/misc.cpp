@@ -1,4 +1,4 @@
-//	$Id: misc.cpp,v 1.7 2003-11-16 15:04:50 sugiura Exp $
+//	$Id: misc.cpp,v 1.8 2003-11-23 15:37:21 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数
@@ -21,11 +21,13 @@ GetDialogBaseUnits(HWND hDlg, LPCSTR str)
 {
 	if (!::IsWindow(hDlg)) return 0L;
 	HDC hDc = ::GetDC(hDlg);
-	SIZE sz;
-	::GetTextExtentPoint32(hDc,str,1,&sz);
+//	SIZE sz;
+//	::GetTextExtentPoint32(hDc,str,1,&sz);
 //	sz.cx -= ::GetTextCharacterExtra(hDc);
+	TEXTMETRIC tm;
+	::GetTextMetrics(hDc, &tm);
 	::ReleaseDC(hDlg,hDc);
-	return (DWORD)MAKELONG((WORD)sz.cx,(WORD)sz.cy);
+	return (DWORD)MAKELONG((WORD)tm.tmAveCharWidth,(WORD)tm.tmHeight);
 }
 
 void

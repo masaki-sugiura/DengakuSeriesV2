@@ -1,4 +1,4 @@
-//	$Id: dlgdata.h,v 1.7 2003-11-16 16:24:57 sugiura Exp $
+//	$Id: dlgdata.h,v 1.8 2003-11-23 15:37:21 sugiura Exp $
 /*
  *	dlgdata.h
  *	ダイアログを扱うクラス
@@ -187,6 +187,9 @@ public:
 		return m_pFontProp->m_fontsize;
 	}
 	WORD getDefID() const;
+
+	POINTS getDlgPos() const;
+	void setDlgPos(const POINTS& pos, WORD wOrigin, WORD wPosUnit);
 
 //	ダイアログの構築・初期化・破棄
 	HWND createFrame(HWND hwndOwner, BOOL bOnTop = FALSE); // ダイアログの構築

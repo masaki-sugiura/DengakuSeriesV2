@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.14 2003-11-16 16:24:57 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.15 2003-11-23 15:37:21 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -29,6 +29,94 @@ GetDefFontProperty(LPFontProperty pfp)
 	::SelectObject(hDc,hOrgFont);
 	::ReleaseDC(::GetDesktopWindow(),hDc);
 	return TRUE;
+}
+
+static POINTS
+GetDlgPosOrigin(WORD wPosOrigin, HWND hwndFrame)
+{
+	HWND hwndParent = ::GetParent(hwndFrame);
+
+	RECT crect, drect;
+	::GetWindowRect(hwndFrame, &drect);
+	::GetClientRect(hwndParent, &crect);
+	POINT cs = { 0, 0 };
+	::ClientToScreen(hwndParent, &cs);
+	crect.left += cs.x;  crect.right  += cs.x;
+	crect.top  += cs.y;  crect.bottom += cs.y;
+
+	POINT pos;
+	switch (wPosOrigin) {
+	case DLGPOS_SCREEN_CENTER:
+		/*	Screen Center	*/
+		::GetWindowRect(::GetDesktopWindow(), &crect);
+		pos.x = ((crect.left + crect.right) >> 1)
+				- ((drect.right - drect.left) >> 1);
+		pos.y = ((crect.top + crect.bottom) >> 1)
+				- ((drect.bottom - drect.top) >> 1);
+		break;
+	case DLGPOS_CLIENT_COORD:
+		/*	Window Coordinate	*/
+		pos.x = crect.left;
+		pos.y = crect.top;
+		break;
+	case DLGPOS_SCREEN_COORD:
+		pos.x = pos.y = 0;
+		break;
+	case DLGPOS_CARET_COORD:
+		/*  Caret Coordinate  */
+		::GetCaretPos(&pos);
+		::ClientToScreen(hwndParent, &pos);
+		break;
+	case DLGPOS_CURSOR_COORD:
+		/*  Cursor Coordinate  */
+		::GetCursorPos(&pos);
+		break;
+	case DLGPOS_CLIENT_CENTER:
+	default:
+		pos.x = ((crect.left + crect.right) >> 1)
+				- ((drect.right - drect.left) >> 1);
+		pos.y = ((crect.top + crect.bottom) >> 1)
+				- ((drect.bottom - drect.top) >> 1);
+		break;
+	}
+
+	POINTS rpos;
+	rpos.x = (WORD)pos.x;
+	rpos.y = (WORD)pos.y;
+
+	return rpos;
+}
+
+static POINTS
+GetDlgPosByPixel(const POINTS& pos, WORD wPosUnit, HWND hwndFrame)
+{
+	DWORD dlgbaseunit = GetDialogBaseUnits(hwndFrame, "M");
+	POINTS ppos;
+	if (wPosUnit == DLGPOS_UNIT_FONTSIZE) {
+		ppos.x = (pos.x * LOWORD(dlgbaseunit)) >> 2;
+		ppos.y = (pos.y * HIWORD(dlgbaseunit)) >> 3;
+	} else {
+		// ピクセル単位
+		ppos = pos;
+	}
+
+	return ppos;
+}
+
+static POINTS
+GetDlgPosByUnit(const POINTS& pos, WORD wPosUnit, HWND hwndFrame)
+{
+	DWORD dlgbaseunit = GetDialogBaseUnits(hwndFrame, "M");
+	POINTS rpos;
+	if (wPosUnit == DLGPOS_UNIT_FONTSIZE) {
+		rpos.x = pos.x * 4 / LOWORD(dlgbaseunit);
+		rpos.y = pos.y * 8 / HIWORD(dlgbaseunit);
+	} else {
+		// ピクセル単位
+		rpos = pos;
+	}
+
+	return rpos;
 }
 
 //	DLGTEMPLATE の構築
@@ -859,19 +947,25 @@ DlgFrame::showFrame()
 	if (m_hwndFrame == NULL) return FALSE;
 
 	//	ダイアログの位置の変更
-	DWORD dlgbaseunit = GetDialogBaseUnits(m_hwndFrame, "M");
-	POINT pos, cpos;
-	if (m_wPosUnit == DLGPOS_UNIT_FONTSIZE) {
-		pos.x = (m_pos.x * LOWORD(dlgbaseunit)) >> 2;
-		pos.y = (m_pos.y * HIWORD(dlgbaseunit)) >> 3;
-	} else {
-		// ピクセル単位
-		pos.x = m_pos.x;
-		pos.y = m_pos.y;
-	}
-//	pos.x = (m_pos.x * LOWORD(dlgbaseunit));
-//	pos.y = (m_pos.y * HIWORD(dlgbaseunit));
+	POINTS pos = GetDlgPosByPixel(m_pos, m_wPosUnit, m_hwndFrame);
+	POINTS org = GetDlgPosOrigin(m_flags & 0x000F, m_hwndFrame);
 
+	switch (m_flags & 0x000F) {
+	case DLGPOS_SCREEN_COORD:
+	case DLGPOS_CLIENT_COORD:
+	case DLGPOS_CARET_COORD:
+	case DLGPOS_CURSOR_COORD:
+		pos.x += org.x;
+		pos.y += org.y;
+		break;
+	case DLGPOS_SCREEN_CENTER:
+	case DLGPOS_CLIENT_CENTER:
+	default:
+		pos = org;
+		break;
+	}
+
+#if 0
 	RECT rect, drect;
 	::GetWindowRect(m_hwndFrame, &rect);
 
@@ -916,6 +1010,8 @@ DlgFrame::showFrame()
 		pos.y = ((drect.top + drect.bottom) >> 1)
 				- ((rect.bottom - rect.top) >> 1);
 	}
+#endif
+
 	HWND hwndIA = HWND_TOP;
 	UINT uFlag = SWP_NOSIZE;
 	if ((m_flags & 0x10) != 0) hwndIA = HWND_TOPMOST;	//	alwaysontop
@@ -1107,6 +1203,49 @@ DlgFrame::getDefID() const
 	if (pdpRoot == NULL) return 0xFFFF;
 
 	return pdpRoot->getDefID();
+}
+
+POINTS
+DlgFrame::getDlgPos() const
+{
+	if (!m_hwndFrame) {
+		return m_pos;
+	}
+
+	RECT rcFrame;
+	::GetWindowRect(m_hwndFrame, &rcFrame);
+
+	POINTS pos;
+	pos.x = (WORD)rcFrame.left;  pos.y = (WORD)rcFrame.top;
+
+	POINTS org = GetDlgPosOrigin(m_flags & 0x000F, m_hwndFrame);
+	pos.x -= org.x;  pos.y -= org.y;
+
+	TCHAR buf[80];
+	wsprintf(buf, "%d: %d,%d;%d,%d\n", (m_flags & 0x0F), pos.x, pos.y, org.x, org.y);
+	::OutputDebugString(buf);
+
+	pos = GetDlgPosByUnit(pos, m_wPosUnit, m_hwndFrame);
+
+	return pos;
+}
+
+void
+DlgFrame::setDlgPos(const POINTS& pos, WORD wOrigin, WORD wUnit)
+{
+	m_pos = pos;
+	m_wPosUnit = wUnit;
+	m_flags = (m_flags & 0xF0) | wOrigin;
+
+	if (m_hwndFrame) {
+		POINTS newpos = GetDlgPosByPixel(m_pos, m_wPosUnit, m_hwndFrame);
+		POINTS org = GetDlgPosOrigin(m_flags & 0xF, m_hwndFrame);
+		newpos.x += org.x;  newpos.y += org.y;
+		HWND hwndIA = HWND_TOP;
+		UINT uFlag = SWP_NOSIZE;
+		if ((m_flags & 0x10) != 0) hwndIA = HWND_TOPMOST;	//	alwaysontop
+		::SetWindowPos(m_hwndFrame, hwndIA, newpos.x, newpos.y, 0, 0, uFlag);
+	}
 }
 
 //	ダイアログデータの書き込み

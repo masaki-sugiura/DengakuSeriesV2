@@ -1,4 +1,4 @@
-//	$Id: ds_handler.cpp,v 1.3 2002-11-03 15:36:50 sugiura Exp $
+//	$Id: ds_handler.cpp,v 1.4 2003-11-23 15:37:21 sugiura Exp $
 /*
  *	ds_handler.cpp
  *	ダイアログサービスの実装
@@ -169,6 +169,15 @@ ConvData::On_setdlgtitle(CmdLineParser& params)
 	return this->si_setdlgtitle(params.getArgvStr(0));
 }
 
+int
+ConvData::On_setdlgpos(CmdLineParser& params)
+{
+	int x, y;
+	x = ival(params.getArgv(0));
+	y = ival(params.getArgv(1));
+	return this->si_setdlgpos(x, y, params.getArgvStr(2), params.getArgvStr(3));
+}
+
 StringBuffer
 ConvData::On_getdlgtitle(CmdLineParser&)
 {
@@ -264,6 +273,12 @@ StringBuffer
 ConvData::On_getfocusedctrl(CmdLineParser&)
 {
 	return this->si_getfocusedctrl();
+}
+
+StringBuffer
+ConvData::On_getdlgpos(CmdLineParser&)
+{
+	return this->si_getdlgpos();
 }
 
 int

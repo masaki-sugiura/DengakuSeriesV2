@@ -1,4 +1,4 @@
-//	$Id: cmd.h,v 1.11 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: cmd.h,v 1.12 2003-11-23 15:37:21 sugiura Exp $
 /*
  *	cmd.h
  *	ƒRƒ}ƒ“ƒh–¼ˆê——
@@ -49,6 +49,7 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_EXECUTE(setdlgtitle)
 	DECLARE_DDECMD_EXECUTE(setcurdlgpage)
 	DECLARE_DDECMD_EXECUTE(setfocusedctrl)
+	DECLARE_DDECMD_EXECUTE(setdlgpos)
 	DECLARE_DDECMD_EXECUTE(menu)
 	DECLARE_DDECMD_EXECUTE(changemenuitemex)
 	DECLARE_DDECMD_EXECUTE(deletemenuitemex)
@@ -117,6 +118,7 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_REQUEST(getctrlfont)
 	DECLARE_DDECMD_REQUEST(getitem)
 	DECLARE_DDECMD_REQUEST(getsignature)
+	DECLARE_DDECMD_REQUEST(getdlgpos)
 	DECLARE_DDECMD_REQUEST(getvar)
 	DECLARE_DDECMD_REQUEST(existvar)
 	DECLARE_DDECMD_REQUEST(nextvar)

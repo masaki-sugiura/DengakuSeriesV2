@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.9 2003-11-16 16:24:57 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.10 2003-11-23 15:37:21 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -82,6 +82,38 @@ ShowDlgProc(LPDWORD pThreadArgs)
 	::ExitThread(ret);
 
 	return (DWORD)-1;	//	有り得ない！！
+}
+
+static WORD
+ParseDlgPosOrigin(const StringBuffer& sflag)
+{
+	WORD wflags = DLGPOS_CLIENT_CENTER;
+	if (sflag.length() > 0) {
+		if (sflag.compareTo("screen", FALSE) == 0) {
+			wflags = DLGPOS_SCREEN_COORD;
+		} else if (sflag.compareTo("window", FALSE) == 0) {
+			wflags = DLGPOS_CLIENT_COORD;
+		} else if (sflag.compareTo("center", FALSE) == 0) {
+			wflags = DLGPOS_SCREEN_CENTER;
+		} else if (sflag.compareTo("caret", FALSE)  == 0) {
+			wflags = DLGPOS_CARET_COORD;
+		} else if (sflag.compareTo("cursor", FALSE) == 0) {
+			wflags = DLGPOS_CURSOR_COORD;
+		} else {
+			wflags = DLGPOS_CLIENT_CENTER;
+		}
+	}
+	return wflags;
+}
+
+static WORD
+ParseDlgPosUnit(const StringBuffer& str)
+{
+	//	offset unit
+	if (str.compareTo("px", FALSE) == 0) {
+		return DLGPOS_UNIT_PIXEL;
+	}
+	return DLGPOS_UNIT_FONTSIZE;
 }
 
 int
@@ -390,22 +422,7 @@ SessionInstance::si_newdialog(
 		pt.y = ival(pstr);
 
 		//	frame position flag
-		const StringBuffer& sflag = argv.getNextArgvStr();
-		if (sflag.length() > 0) {
-			if (sflag.compareTo("screen", FALSE) == 0) {
-				wflags = DLGPOS_SCREEN_COORD;
-			} else if (sflag.compareTo("window", FALSE) == 0) {
-				wflags = DLGPOS_CLIENT_COORD;
-			} else if (sflag.compareTo("center", FALSE) == 0) {
-				wflags = DLGPOS_SCREEN_CENTER;
-			} else if (sflag.compareTo("caret", FALSE)  == 0) {
-				wflags = DLGPOS_CARET_COORD;
-			} else if (sflag.compareTo("cursor", FALSE) == 0) {
-				wflags = DLGPOS_CURSOR_COORD;
-			} else {
-				wflags = DLGPOS_CLIENT_CENTER;
-			}
-		}
+		wflags = ParseDlgPosOrigin(argv.getNextArgvStr());
 
 		//	font properties
 		strFont = argv.getNextArgvStr();
@@ -413,12 +430,7 @@ SessionInstance::si_newdialog(
 		wFontSize = ival(pstr);
 
 		//	offset unit
-		pstr = argv.getNextArgv();
-		if (pstr) {
-			if (lstrcmp(pstr, "px") == 0) {
-				wPosUnit = DLGPOS_UNIT_PIXEL;
-			}
-		}
+		wPosUnit = ParseDlgPosUnit(argv.getNextArgvStr());
 	}
 	m_DlgFrame.setFrameProperty(str1,&pt,wflags,strFont,wFontSize,wPosUnit);
 
@@ -552,5 +564,27 @@ SessionInstance::si_newpage(WORD width)
 
 	return pCurPage->addCtrl(CTRLID_NEWPAGE,nullStr,
 							StringBuffer(4).append(width)) > 0;
+}
+
+StringBuffer
+SessionInstance::si_getdlgpos()
+{
+	POINTS pos = m_DlgFrame.getDlgPos();
+	TCHAR buf[32];
+	wsprintf(buf, "%d,%d", pos.x, pos.y);
+	return buf;
+}
+
+int
+SessionInstance::si_setdlgpos(int x, int y,
+							  const StringBuffer& strOrigin,
+							  const StringBuffer& strUnit)
+{
+	POINTS pos;
+	pos.x = x;  pos.y = y;
+	m_DlgFrame.setDlgPos(pos,
+						 ParseDlgPosOrigin(strOrigin),
+						 ParseDlgPosUnit(strUnit));
+	return 1;
 }
 
