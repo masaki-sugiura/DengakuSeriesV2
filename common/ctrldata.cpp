@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.19 2002-11-03 15:36:50 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.20 2002-11-10 08:52:04 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -2078,6 +2078,22 @@ ListCtrl::getStateFromView()
 	}
 }
 
+BOOL
+ListCtrl::dumpData(DlgDataFile& ddfile)
+{
+	if (!HasListCtrl::dumpData(ddfile)) return FALSE;
+	ddfile.write(m_bSorted, GetString(STR_DLGDATA_SORT));
+	return TRUE;
+}
+
+BOOL
+ListCtrl::loadData(DlgDataFile& ddfile)
+{
+	if (!HasListCtrl::loadData(ddfile)) return FALSE;
+	ddfile.read(&m_bSorted, GetString(STR_DLGDATA_SORT));
+	return TRUE;
+}
+
 
 //	combo
 ComboCtrl::ComboCtrl(
@@ -2734,6 +2750,7 @@ BOOL
 ChkListCtrl::dumpData(DlgDataFile& ddfile)
 {
 	if (!HasListCtrl::dumpData(ddfile)) return FALSE;
+	ddfile.write(m_bSorted, GetString(STR_DLGDATA_SORT));
 	return m_states.dumpData(ddfile);
 }
 
@@ -2741,6 +2758,7 @@ BOOL
 ChkListCtrl::loadData(DlgDataFile& ddfile)
 {
 	if (!HasListCtrl::loadData(ddfile)) return FALSE;
+	ddfile.read(&m_bSorted, GetString(STR_DLGDATA_SORT));
 	return m_states.loadData(ddfile);
 }
 
@@ -2811,6 +2829,23 @@ setlvitem(
 		ListView_SetColumnWidth(hwndCtrl, lvi.iSubItem, cwidth);
 }
 
+struct SortParam {
+	int m_nColumn;
+	BOOL m_bAscending;
+};
+
+static int CALLBACK
+CompareItem(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	SortParam* pSp = (SortParam*)lParamSort;
+	LViewItemData* lvid1 = (LViewItemData*)lParam1;
+	LViewItemData* lvid2 = (LViewItemData*)lParam2;
+	ItemData* id1 = lvid1->getItemByIndex(pSp->m_nColumn);
+	ItemData* id2 = lvid2->getItemByIndex(pSp->m_nColumn);
+	int sgn = pSp->m_bAscending ? 1 : -1;
+	return sgn * lstrcmp(id1->getText(), id2->getText());
+}
+
 BOOL
 LViewCtrl::initCtrl(HWND hDlg)
 {
@@ -2823,8 +2858,16 @@ LViewCtrl::initCtrl(HWND hDlg)
 	for ( ; i < (int)m_colnum; i++) {
 		lvc.iSubItem = i;
 		lvc.cx = 12;
+		StringBuffer text(nullStr);
 		if (m_hdr) {
-			lvc.pszText = m_hdr->getItemByIndex(i)->getText().getBufPtr();
+			ItemData* id = m_hdr->getItemByIndex(i);
+			text = id->getText();
+			if (i == m_lastSortKey) {
+				StringBuffer tmp(m_bAscending ? "▲" : "▼");
+				tmp.append(text);
+				text = tmp;
+			}
+			lvc.pszText = text.getBufPtr();
 			lvc.cx += ListView_GetStringWidth(m_pcp->m_hwndCtrl, lvc.pszText);
 		}
 		if (ListView_InsertColumn(m_pcp->m_hwndCtrl, i, &lvc) < 0)
@@ -2843,6 +2886,15 @@ LViewCtrl::initCtrl(HWND hDlg)
 						lvi.iSubItem > 0 ? LVM_SETITEM : LVM_INSERTITEM, 0);
 		}
 	}
+
+	if (m_bSorted && m_lastSortKey >= 0 && m_lastSortKey < m_colnum) {
+		SortParam sp;
+		sp.m_nColumn = m_lastSortKey;
+		sp.m_bAscending = m_bAscending;
+		::SendMessage(m_pcp->m_hwndCtrl, LVM_SORTITEMS,
+					  (WPARAM)&sp, (LPARAM)CompareItem);
+	}
+
 	this->setViewIndex();
 
 	m_lastSortKey = -1;
@@ -2915,6 +2967,45 @@ LViewCtrl::getStateFromView()
 }
 
 BOOL
+LViewCtrl::onSetSort(CmdLineParser& sstate)
+{
+	if (m_pcp->m_hwndCtrl) return FALSE;
+	if (sstate.itemNum() > 0 &&
+		sstate.getArgvStr(0).compareTo("yes") == 0) {
+		m_bSorted = TRUE;
+		if (sstate.itemNum() > 1) {
+			m_lastSortKey = ival(sstate.getArgv(1)) - 1;
+			if (sstate.itemNum() > 2) {
+				m_bAscending = (sstate.getArgvStr(2).compareTo("a") == 0);
+			} else {
+				m_bAscending = TRUE;
+			}
+		} else {
+			m_lastSortKey = 0;
+			m_bAscending = TRUE;
+		}
+	} else {
+		m_bSorted = FALSE;
+		m_lastSortKey = -1;
+		m_bAscending = TRUE;
+	}
+	return TRUE;
+}
+
+StringBuffer
+LViewCtrl::onGetSort()
+{
+	if (m_bSorted) {
+		StringBuffer ret("yes,");
+		ret.append(m_lastSortKey + 1);
+		ret.append(m_bAscending ? ",a" : ",d");
+		return ret;
+	} else {
+		return "no";
+	}
+}
+
+BOOL
 LViewCtrl::onSetItem(CmdLineParser& argv, const StringBuffer& pos)
 {
 	this->receiveData();
@@ -2923,6 +3014,9 @@ LViewCtrl::onSetItem(CmdLineParser& argv, const StringBuffer& pos)
 	if (pos.length() > 0) {
 		int	tmp = ival(pos) - 1;
 		switch (tmp) {
+		case -3:
+			return setHeader(argv);
+			break;
 		case -2:
 			ind = num - 1;
 			break;
@@ -3005,6 +3099,19 @@ LViewCtrl::onGetItem(const StringBuffer& pos)
 	if (pos.length() > 0) {
 		int	tmp = ival(pos) - 1;
 		switch (tmp) {
+		case -3:
+			{
+				if (!m_hdr) return nullStr;
+				StringBuffer ret(nullStr);
+				int cnum = m_hdr->itemNum();
+				for (int i = 0; i < cnum; i++) {
+					if (ret.length() > 0) ret.append((TCHAR)',');
+					ItemData* id = m_hdr->getItemByIndex(i);
+					ret.append(id->getText());
+				}
+				return ret;
+			}
+			break;
 		case -2:
 			ind = num - 1;
 			break;
@@ -3028,23 +3135,6 @@ LViewCtrl::onGetItem(const StringBuffer& pos)
 		buf.append(id->getText());
 	}
 	return buf;
-}
-
-struct SortParam {
-	int m_nColumn;
-	BOOL m_bAscending;
-};
-
-static int CALLBACK
-CompareItem(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
-{
-	SortParam* pSp = (SortParam*)lParamSort;
-	LViewItemData* lvid1 = (LViewItemData*)lParam1;
-	LViewItemData* lvid2 = (LViewItemData*)lParam2;
-	ItemData* id1 = lvid1->getItemByIndex(pSp->m_nColumn);
-	ItemData* id2 = lvid2->getItemByIndex(pSp->m_nColumn);
-	int sgn = pSp->m_bAscending ? 1 : -1;
-	return sgn * lstrcmp(id1->getText(), id2->getText());
 }
 
 WORD
@@ -3082,6 +3172,7 @@ LViewCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 				sp.m_bAscending = m_bAscending;
 				::SendMessage(m_pcp->m_hwndCtrl, LVM_SORTITEMS,
 							  (WPARAM)&sp, (LPARAM)CompareItem);
+				this->setHeaderView();
 			}
 			pos += 2;
 			if (pos >= sizeof(m_notify) / sizeof(m_notify[0])) break;
@@ -3117,6 +3208,41 @@ LViewCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 		break;
 	}
 	return 0xFFFF;
+}
+
+BOOL
+LViewCtrl::setHeader(CmdLineParser& argv)
+{
+	if (!m_hdr) return FALSE;
+	int num = m_hdr->itemNum();
+	for (int i = 0; i < num; i++) {
+		ItemData* id = m_hdr->getItemByIndex(i);
+		const char* av = argv.getArgv(i);
+		if (av) id->getText() = argv.getArgvStr(i);
+	}
+	this->setHeaderView();
+	return TRUE;
+}
+
+void
+LViewCtrl::setHeaderView()
+{
+	if (!m_hdr || !m_pcp->m_hwndCtrl) return;
+	int num = m_hdr->itemNum();
+	LVCOLUMN lvc;
+	lvc.mask = LVCF_TEXT;
+	for (int i = 0; i < num; i++) {
+		lvc.iSubItem = i;
+		ItemData* id = m_hdr->getItemByIndex(i);
+		StringBuffer text(id->getText());
+		if (i == m_lastSortKey) {
+			StringBuffer tmp(m_bAscending ? "▲" : "▼");
+			tmp.append(text);
+			text = tmp;
+		}
+		lvc.pszText = text.getBufPtr();
+		ListView_SetColumn(m_pcp->m_hwndCtrl, i, &lvc);
+	}
 }
 
 BOOL
@@ -3408,6 +3534,7 @@ TreeCtrl::dumpData(DlgDataFile& ddfile)
 {
 	if (!SimpleCtrl::dumpData(ddfile)) return FALSE;
 	ddfile.write(m_state, GetString(STR_DLGDATA_STATE));
+	ddfile.write(m_bSorted, GetString(STR_DLGDATA_SORT));
 	int	num = m_item->initSequentialGet();
 	StringBuffer keybuf(GetString(STR_DLGDATA_ROOT), -1, 32);
 	keybuf.append((TCHAR)':').append(GetString(STR_DLGDATA_CHILD))
@@ -3433,6 +3560,7 @@ TreeCtrl::loadData(DlgDataFile& ddfile)
 {
 	if (!SimpleCtrl::loadData(ddfile)) return FALSE;
 	ddfile.read(m_state, GetString(STR_DLGDATA_STATE));
+	ddfile.read(&m_bSorted, GetString(STR_DLGDATA_SORT));
 	int	num;
 	StringBuffer keybuf(GetString(STR_DLGDATA_ROOT), -1, 32), namebuf(32);
 	keybuf.append((TCHAR)':').append(GetString(STR_DLGDATA_ITEMNUM));

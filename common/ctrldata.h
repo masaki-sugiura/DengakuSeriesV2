@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.11 2002-11-03 15:36:50 sugiura Exp $
+//	$Id: ctrldata.h,v 1.12 2002-11-10 08:52:05 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -685,6 +685,9 @@ public:
 
 	WORD onCommand(WPARAM, LPARAM);
 
+	BOOL dumpData(DlgDataFile&);
+	BOOL loadData(DlgDataFile&);
+
 protected:
 	UINT m_style_sort;
 	UINT m_msg_addstr;
@@ -788,6 +791,9 @@ public:
 	BOOL sendData();
 	BOOL receiveData();
 
+	BOOL onSetSort(CmdLineParser&);
+	StringBuffer onGetSort();
+
 	BOOL onSetItem(CmdLineParser&,const StringBuffer&);
 	BOOL onInsertItem(CmdLineParser&,const StringBuffer&);
 	StringBuffer onGetItem(const StringBuffer&);
@@ -805,6 +811,9 @@ protected:
 	BOOL m_bAscending;
 
 	void getStateFromView();
+
+	BOOL setHeader(CmdLineParser&);
+	void setHeaderView();
 };
 
 

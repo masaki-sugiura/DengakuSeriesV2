@@ -1,4 +1,4 @@
-//	$Id: str_tbl.h,v 1.4 2002-02-28 15:32:30 sugiura Exp $
+//	$Id: str_tbl.h,v 1.5 2002-11-10 08:52:05 sugiura Exp $
 /*
  *	str_tbl.h
  *	文字列テーブルの定義
@@ -69,6 +69,7 @@ enum StrTableIndex {
 	STR_DLGDATA_USERSIGNATURE,
 	STR_DLGDATA_STATES,
 	STR_DLGDATA_IMESTATE,
+	STR_DLGDATA_SORT,
 	STR_COLORTBL_SECTION,
 	STR_LAST
 };
