@@ -1,4 +1,4 @@
-//	$Id: strbuf.cpp,v 1.4 2002-02-19 15:34:22 sugiura Exp $
+//	$Id: strbuf.cpp,v 1.5 2002-04-03 16:13:14 sugiura Exp $
 /*
  *	strbuf.cpp
  *	•¶Žš—ñƒNƒ‰ƒX
@@ -439,7 +439,7 @@ StringBuffer::rfind(LPCSTR lpstr) const
 		 s > t;
 		 s--) {
 		if (*s == *lpstr && !IsCharLeadByte(*(s-1)) &&
-			lstrcmpn(s + 1, lpstr + 1, len - 1) == 0)
+			(len == 1 || lstrcmpn(s + 1, lpstr + 1, len - 1) == 0))
 			return s - t;
 	}
 	return (lstrcmpn(s, lpstr, len) == 0) - 1;

@@ -1,4 +1,4 @@
-// $Id: pdparser.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+// $Id: pdparser.cpp,v 1.2 2002-04-03 16:13:14 sugiura Exp $
 /*
  *	pdparser.cpp
  *	PokeDataParser ƒNƒ‰ƒX‚ÌŽÀ‘•
@@ -23,7 +23,7 @@ PokeDataParser::mergeArgv(const StringBuffer& sbCmdLine)
 	if (cmdlen >= MAX_CMDLINE) {
 		try {
 			pBuf = new TCHAR[cmdlen + 4];
-		} catch (exception&) {
+		} catch (...) {
 			return -1;
 		}
 	} else {
@@ -77,7 +77,7 @@ PokeDataParser::mergeArgv(const StringBuffer& sbCmdLine)
 		this->addItem(new CmdArgv(pt,head,size));
 	}
 
-	} catch (exception&) {
+	} catch (...) {
 		// nothing to do.
 	}
 

@@ -1,4 +1,4 @@
-//	$Id: main.cpp,v 1.4 2002-02-25 07:26:01 sugiura Exp $
+//	$Id: main.cpp,v 1.5 2002-04-03 16:13:14 sugiura Exp $
 /*
  *	main.cpp
  *	田楽サーバ本体
@@ -72,7 +72,7 @@ extern char** _argv;
 					try {
 						dsi.m_psbServerLogFileName
 							= new StringBuffer(nullStr);
-					} catch (exception&) {
+					} catch (...) {
 						//	no operation.
 					}
 				}
