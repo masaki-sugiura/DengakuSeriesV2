@@ -1,4 +1,4 @@
-//	$Id: dlltest.cpp,v 1.4 2002-06-22 13:55:45 sugiura Exp $
+//	$Id: dlltest.cpp,v 1.5 2003-12-15 15:20:44 sugiura Exp $
 /*
  *	dlltest.cpp
  *	テスト用アプリ
@@ -291,7 +291,8 @@ WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pszCmdLine, int nCmdShow)
 int main(int ac, char** av)
 #endif
 {
-//	initDll();
+	initDll();
+#if 0
 #if 0
 	static FARPROC lpfnGetDirName = ::GetProcAddress(hModule,"GETDIRNAME");
 	LPCSTR ret = (*(LPFNSTRFUNC)lpfnGetDirName)((PVOID)NULL,"フォルダの選択","C:\\hidemaru",1);
@@ -572,6 +573,7 @@ int main(int ac, char** av)
 
 #endif
 //	ASSERT(uninitDll());
+#endif
 
 	return 0;
 }

@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.16 2003-11-23 15:43:45 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.17 2003-12-15 15:20:44 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -769,16 +769,22 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case DM_GETDEFID:
-		::SetWindowLong(hDlg, DWL_MSGRESULT, (DC_HASDEFID << 16) | pdf->getDefID());
+		{
+			WORD wDefID = pdf->getDefID();
+#if 1
+			if (wDefID == 0xFFFF) {
+				// デフォルトプッシュボタンが存在しない
+				wDefID = IDOK;
+			}
+#endif
+			::SetWindowLong(hDlg, DWL_MSGRESULT, (DC_HASDEFID << 16) | wDefID);
+		}
 		break;
 
 	case WM_COMMAND:
 		{
 			//	リターンキーを押した時、DlgFrame に DM_GETDEFID が送られ、
 			//	その後送られてくる WM_COMMAND を正しい DlgPage に渡す
-			//	(DM_GETDEFID への応答はちゃんと子ダイアログの
-			//	コントロールのIDを返すにも関わらず(^^;、その後の WM_COMMAND は
-			//	自前で処理する必要がある…何でやねん？＞DefDlgProc())
 			int	index = HIBYTE(LOWORD(wParam));	//	ctrlID の HIBYTE は
 												//	DlgPage の index
 			if (index > 0) {
