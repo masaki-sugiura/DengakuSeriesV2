@@ -1,4 +1,4 @@
-//	$Id: smalloc.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: smalloc.cpp,v 1.2 2002-09-10 12:33:10 sugiura Exp $
 /*
  *	smalloc.cpp
  *	共有メモリ領域についての malloc, free インターフェイスの提供
@@ -106,6 +106,27 @@ SMAPage::free(UINT iptr)
 	*(int*)m_header = index(p);
 }
 
+struct MasterPageHeader {
+	UINT m_nShareCount;
+	UINT m_nPageNum;
+	UINT m_nMasterIndex;
+};
+
+class SMA_AutoLock {
+public:
+	SMA_AutoLock(SMAlloc& sma)
+		: m_sma(sma)
+	{
+		m_sma.lock();
+	}
+	~SMA_AutoLock()
+	{
+		m_sma.release();
+	}
+private:
+	SMAlloc& m_sma;
+};
+
 SMAlloc::SMAlloc(const StringBuffer& name, UINT pagesize, UINT inipagenum)
 	: m_name(name), m_page_size(pagesize)
 {
@@ -120,38 +141,40 @@ SMAlloc::SMAlloc(const StringBuffer& name, UINT pagesize, UINT inipagenum)
 	m_hMutex = ::CreateMutex(NULL,FALSE,m_name.append("_mutex"));
 	if (m_hMutex == NULL) throw InvalidObjectNameException();
 	m_name.append("_parent"); // master page
-	lock();
+
+	SMA_AutoLock lock(*this);
+
 	//	master page の作成
 	m_pmaster = new FileMap(m_name, SMA_MASTERPAGE_SIZE);
 	m_name.setlength(len);
+	MasterPageHeader* pHeader = (MasterPageHeader*)m_pmaster->m_header;
 	if (!m_pmaster->m_bAlreadyExist) {
-		*(UINT*)m_pmaster->m_header = 1; // 共有数
-		*((UINT*)m_pmaster->m_header + 1) = inipagenum; // ページ数
+		pHeader->m_nShareCount = 1; // 共有数
+		pHeader->m_nPageNum = inipagenum; // ページ数
 		setMasterIndex(0);
 	} else {
-		*(UINT*)m_pmaster->m_header += 1; // 共有数のインクリメント
-		if (*((UINT*)m_pmaster->m_header + 1) > inipagenum)
-			inipagenum = *((UINT*)m_pmaster->m_header + 1);
+		pHeader->m_nShareCount += 1; // 共有数のインクリメント
+		if (pHeader->m_nPageNum > inipagenum)
+			inipagenum = pHeader->m_nPageNum;
 	}
-	::ZeroMemory(m_ppage_list,sizeof(LPSMAPage)*SMA_MAXPAGENUM);
+	::ZeroMemory(m_ppage_list, sizeof(LPSMAPage) * SMA_MAXPAGENUM);
 	for (UINT i = 0; i < inipagenum; i++) {
 		m_name.append((TCHAR)'_').append((ULONG)i);
-		m_ppage_list[i] = new SMAPage(m_name,m_page_size);
+		m_ppage_list[i] = new SMAPage(m_name, m_page_size);
 		m_name.setlength(len);
 	}
-	release();
 }
 
 SMAlloc::~SMAlloc()
 {
-	lock();
-	--*(UINT*)m_pmaster->m_header;
+	SMA_AutoLock lock(*this);
+	MasterPageHeader* pHeader = (MasterPageHeader*)m_pmaster->m_header;
+	pHeader->m_nShareCount--;
 	for (int i = 0; i < (int)SMA_MAXPAGENUM; i++) {
 		if (m_ppage_list[i] == NULL) break;
 		delete m_ppage_list[i];
 	}
 	delete m_pmaster;
-	release();
 	::CloseHandle(m_hMutex);
 }
 
@@ -159,39 +182,40 @@ UINT
 SMAlloc::alloc(UINT size)
 {
 	if (size >= m_page_size) return 0;
-	lock();
+
 	int len = m_name.length();
+	MasterPageHeader* pHeader = (MasterPageHeader*)m_pmaster->m_header;
+
+	SMA_AutoLock lock(*this);
+
 	for (UINT iptr = 0; iptr < SMA_MAXPAGENUM; iptr++) {
 		if (m_ppage_list[iptr] == NULL) {
 			// no memory in current alloc pages
 			m_name.append((TCHAR)'_').append((ULONG)iptr);
-			m_ppage_list[iptr] = new SMAPage(m_name,m_page_size);
+			m_ppage_list[iptr] = new SMAPage(m_name, m_page_size);
 			m_name.setlength(len);
 			if (m_ppage_list[iptr] == NULL) break;
-			if (*(UINT*)m_pmaster->m_header < iptr + 1)
-				*(UINT*)m_pmaster->m_header = iptr + 1;
+			if (pHeader->m_nPageNum < iptr + 1)
+				pHeader->m_nPageNum = iptr + 1;
 		}
 		UINT index = m_ppage_list[iptr]->alloc(size);
 		if (index != 0) {
-			release();
-			return makeIndex(++iptr,index);
+			return makeIndex(++iptr, index);
 		}
 	}
-	release();
 	return 0;
 }
 
 void
 SMAlloc::free(UINT iptr)
 {
-	lock();
+	SMA_AutoLock lock(*this);
 	LPSMAPage ppage = this->getSMAPagePtr(iptr);
 	if (ppage != NULL) ppage->free(getBlockIndex(iptr));
-	release();
 }
 
 void*
-SMAlloc::addr(UINT iptr) const
+SMAlloc::addr(UINT iptr)
 {
 	LPSMAPage ppage = this->getSMAPagePtr(iptr);
 	return ppage != NULL ? ppage->addr(getBlockIndex(iptr)) : NULL;
@@ -214,25 +238,40 @@ SMAlloc::index(void* ptr) const
 UINT
 SMAlloc::getMasterIndex() const
 {
-	return *((UINT*)m_pmaster->m_header + 2);
+	return ((MasterPageHeader*)m_pmaster->m_header)->m_nMasterIndex;
 }
 
 UINT
 SMAlloc::setMasterIndex(UINT index)
 {
-	lock();
-	UINT oldindex = *((UINT*)m_pmaster->m_header + 2);
-	*((UINT*)m_pmaster->m_header + 2) = index;
-	release();
+	MasterPageHeader* pHeader = (MasterPageHeader*)m_pmaster->m_header;
+	SMA_AutoLock lock(*this);
+	UINT oldindex = pHeader->m_nMasterIndex;
+	pHeader->m_nMasterIndex = index;
 	return oldindex;
 }
 
 LPSMAPage
-SMAlloc::getSMAPagePtr(UINT iptr) const
+SMAlloc::getSMAPagePtr(UINT iptr)
 {
+	SMA_AutoLock lock(*this);
+
 	UINT pnumber = getPageNumber(iptr),
 		 index = getBlockIndex(iptr);
 	if (pnumber == 0 || index == 0) return NULL;
-	return m_ppage_list[--pnumber];
+	if (!m_ppage_list[pnumber - 1]) {
+		int len = m_name.length();
+
+		// ローカルのポインタテーブルが共有メモリのそれに追いついていない
+		// →新しく SMAPage を作成
+		for (UINT i = 0; i < pnumber; i++) {
+			if (m_ppage_list[i]) continue;
+			m_name.append((TCHAR)'_').append((ULONG)i);
+			m_ppage_list[i] = new SMAPage(m_name, m_page_size);
+			m_name.setlength(len);
+		}
+	}
+
+	return m_ppage_list[pnumber - 1];
 }
 

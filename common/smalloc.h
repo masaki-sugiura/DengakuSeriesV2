@@ -1,4 +1,4 @@
-//	$Id: smalloc.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: smalloc.h,v 1.2 2002-09-10 12:33:10 sugiura Exp $
 /*
  *	smalloc.h
  *	共有メモリ領域についての malloc, free インターフェイスの提供
@@ -73,7 +73,7 @@ public:
 	UINT alloc(UINT size);
 	void free(UINT iptr);
 
-	void* addr(UINT iptr) const;
+	void* addr(UINT iptr);
 	UINT index(void* ptr) const;
 
 	UINT getMasterIndex() const;
@@ -95,7 +95,7 @@ private:
 	SMAlloc(const SMAlloc&);
 	SMAlloc& operator=(const SMAlloc&);
 
-	LPSMAPage getSMAPagePtr(UINT iptr) const;
+	LPSMAPage getSMAPagePtr(UINT iptr);
 	UINT getPageNumber(UINT iptr) const
 	{
 		return (iptr >> SMA_PAGENUMBER_OFFSET);
