@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.29 2003-11-16 16:36:52 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.30 2003-12-03 17:17:58 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -361,16 +361,12 @@ CtrlListItem::createCtrl(
 	try {
 		switch (ctrltype) {
 		case CTRLID_BUTTON:
-			nc = new BtnCtrl(name,text,CTRLID_BUTTON);
-			break;
 		case CTRLID_DEFBUTTON:
-			nc = new BtnCtrl(name,text,CTRLID_DEFBUTTON);
+			nc = new BtnCtrl(name,text,static_cast<CTRL_ID>(ctrltype));
 			break;
 		case CTRLID_CHECK:
-			nc = new CheckCtrl(name,text);
-			break;
 		case CTRLID_RDBTN:
-			nc = new CheckCtrl(name,text,CTRLID_RDBTN);
+			nc = new CheckCtrl(name,text,static_cast<CTRL_ID>(ctrltype));
 			break;
 		case CTRLID_RADIO:
 			nc = new RadioCtrl(name,text);
@@ -1010,14 +1006,13 @@ BtnCtrl::BtnCtrl(
 	CTRL_ID type)
 	: SimpleCtrl(name,text,type)
 {
-	m_pcp->m_style		= BS_PUSHBUTTON|
-							WS_CHILD|WS_TABSTOP|WS_VISIBLE|WS_GROUP;
+	m_pcp->m_style		= WS_CHILD|WS_TABSTOP|WS_VISIBLE|WS_GROUP;
 	m_pcp->m_exstyle	= 0x0;
 	m_pcp->m_bufsize	= 1;
 	m_pcp->m_classname	= (LPSTR)0x80;
 
 	m_pcp->m_style |= (m_type == (DWORD)CTRLID_DEFBUTTON) ?
-						BS_DEFPUSHBUTTON : 0;
+						BS_DEFPUSHBUTTON : BS_PUSHBUTTON;
 }
 
 WORD
@@ -1032,7 +1027,15 @@ BtnCtrl::getDefID() const
 {
 //	DWORD dwStyle = ::GetWindowLong(m_pcp->m_hwndCtrl, GWL_STYLE);
 //	if (dwStyle & BS_DEFPUSHBUTTON) return m_pcp->m_id;
-	if (m_pcp->m_style & BS_DEFPUSHBUTTON) return m_pcp->m_id;
+#if 0
+	TCHAR buf[80];
+	wsprintf(buf, "id[%d]::getDefID() is invoked!! (%x, %x)\n",
+			 m_notify[0], (m_pcp->m_style & BS_TYPEMASK), m_type);
+	::OutputDebugString(buf);
+#endif
+	if ((m_pcp->m_style & BS_TYPEMASK) == BS_DEFPUSHBUTTON) {
+		return m_pcp->m_id;
+	}
 	return 0xFFFF;
 }
 

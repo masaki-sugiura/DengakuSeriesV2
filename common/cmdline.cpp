@@ -1,4 +1,4 @@
-//	$Id: cmdline.cpp,v 1.4 2002-06-16 14:56:09 sugiura Exp $
+//	$Id: cmdline.cpp,v 1.5 2003-12-03 17:17:58 sugiura Exp $
 /*
  *	cmdline.cpp
  *	文字列のパース＆リスト化
@@ -140,7 +140,7 @@ RealCmdLineParser::mergeArgv(const StringBuffer& sbCmdLine)
 StringBuffer
 RemoveQuote(const StringBuffer& str)
 {
-	if (str.find('"') >= 0 || str.find('\'') >= 0) {
+	if (str.find('"') == 0 || str.find('\'') == 0) {
 		//	引用符の除去…面倒(^^;なんで汎用パーサに処理を任す
 		return RealCmdLineParser(str).getArgvStr(0);
 	}

@@ -1,4 +1,4 @@
-// $Id: ctrlname.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+// $Id: ctrlname.cpp,v 1.3 2003-12-03 17:17:58 sugiura Exp $
 /*
  *	コントロール名テーブル
  */
@@ -27,8 +27,9 @@ CtrlListItem::getCtrlTypeFromName(const StringBuffer& name)
 	for (int i = 0; ; i++) {
 		if (ctrlname[i].m_nCtrlNameLength == 0) break;
 		else if (ctrlname[i].m_nCtrlNameLength == len &&
-				lstrcmpn(name2,ctrlname[i].m_pszCtrlName,len) == 0)
+				 lstrcmpn(name2,ctrlname[i].m_pszCtrlName,len) == 0) {
 			return ctrlname[i].m_ctrlID;
+		}
 	}
 	return CTRLID_UNKNOWN;
 }

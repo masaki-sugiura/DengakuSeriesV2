@@ -139,6 +139,10 @@ SOURCE=.\hashtbl.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\hmjre_mngr.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\linklist.cpp
 # End Source File
 # Begin Source File
@@ -340,6 +344,14 @@ SOURCE=.\file.h
 # Begin Source File
 
 SOURCE=.\hashtbl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\hmjre_mngr.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\JREUSR.H
 # End Source File
 # Begin Source File
 

@@ -64,6 +64,8 @@ CLEAN :
 	-@erase "$(INTDIR)\file.sbr"
 	-@erase "$(INTDIR)\hashtbl.obj"
 	-@erase "$(INTDIR)\hashtbl.sbr"
+	-@erase "$(INTDIR)\hmjre_mngr.obj"
+	-@erase "$(INTDIR)\hmjre_mngr.sbr"
 	-@erase "$(INTDIR)\linklist.obj"
 	-@erase "$(INTDIR)\linklist.sbr"
 	-@erase "$(INTDIR)\menu.obj"
@@ -180,7 +182,8 @@ BSC32_SBRS= \
 	"$(INTDIR)\strbuf.sbr" \
 	"$(INTDIR)\strutils.sbr" \
 	"$(INTDIR)\thread.sbr" \
-	"$(INTDIR)\tokenizer.sbr"
+	"$(INTDIR)\tokenizer.sbr" \
+	"$(INTDIR)\hmjre_mngr.sbr"
 
 "$(OUTDIR)\common.bsc" : "$(OUTDIR)" $(BSC32_SBRS)
     $(BSC32) @<<
@@ -232,7 +235,8 @@ LIB32_OBJS= \
 	"$(INTDIR)\strbuf.obj" \
 	"$(INTDIR)\strutils.obj" \
 	"$(INTDIR)\thread.obj" \
-	"$(INTDIR)\tokenizer.obj"
+	"$(INTDIR)\tokenizer.obj" \
+	"$(INTDIR)\hmjre_mngr.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -263,6 +267,7 @@ CLEAN :
 	-@erase "$(INTDIR)\env_var.obj"
 	-@erase "$(INTDIR)\file.obj"
 	-@erase "$(INTDIR)\hashtbl.obj"
+	-@erase "$(INTDIR)\hmjre_mngr.obj"
 	-@erase "$(INTDIR)\linklist.obj"
 	-@erase "$(INTDIR)\menu.obj"
 	-@erase "$(INTDIR)\misc.obj"
@@ -352,7 +357,8 @@ LIB32_OBJS= \
 	"$(INTDIR)\strbuf.obj" \
 	"$(INTDIR)\strutils.obj" \
 	"$(INTDIR)\thread.obj" \
-	"$(INTDIR)\tokenizer.obj"
+	"$(INTDIR)\tokenizer.obj" \
+	"$(INTDIR)\hmjre_mngr.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -590,6 +596,22 @@ SOURCE=.\hashtbl.cpp
 
 
 "$(INTDIR)\hashtbl.obj" : $(SOURCE) "$(INTDIR)"
+
+
+!ENDIF 
+
+SOURCE=.\hmjre_mngr.cpp
+
+!IF  "$(CFG)" == "common - Win32 Release"
+
+
+"$(INTDIR)\hmjre_mngr.obj"	"$(INTDIR)\hmjre_mngr.sbr" : $(SOURCE) "$(INTDIR)"
+
+
+!ELSEIF  "$(CFG)" == "common - Win32 Debug"
+
+
+"$(INTDIR)\hmjre_mngr.obj" : $(SOURCE) "$(INTDIR)"
 
 
 !ENDIF 
