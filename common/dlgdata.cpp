@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.29 2005-01-18 13:52:08 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.28 2005-01-16 11:07:48 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -674,11 +674,6 @@ DlgPage::dumpData(DlgDataFile& ddfile)
 		secname.setlength(len);
 		secname.append(i);
 		ddfile.setSecName(secname);
-#ifdef _DEBUG
-		char buf[80];
-		wsprintf(buf, "dump:%s\n", (LPCSTR)secname);
-		::OutputDebugString(buf);
-#endif
 		cli = m_pCtrlList->getNextItem();
 		cli->dumpData(ddfile);
 	}
@@ -709,11 +704,6 @@ DlgPage::loadData(DlgDataFile& ddfile)
 		m_pCurCtrlData = CtrlListItem::createCtrl(type,namebuf,textbuf);
 		if (m_pCurCtrlData == NULL) continue;
 		ddfile.setSecName(secname);
-#ifdef _DEBUG
-		char buf[80];
-		wsprintf(buf, "load:%s\n", (LPCSTR)secname);
-		::OutputDebugString(buf);
-#endif
 		if (m_pCurCtrlData->loadData(ddfile)) this->addCtrl(m_pCurCtrlData);
 		else {
 			delete m_pCurCtrlData;

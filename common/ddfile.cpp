@@ -1,4 +1,4 @@
-//	$Id: ddfile.cpp,v 1.4 2005-01-18 13:52:08 sugiura Exp $
+//	$Id: ddfile.cpp,v 1.3 2002-02-28 15:32:30 sugiura Exp $
 /*
  *	ddfile.cpp
  *	ダイアログデータのデータファイルを扱うクラス
@@ -79,12 +79,6 @@ DlgDataFile::write(int buf, const StringBuffer& key, const StringBuffer& sec)
 	if (key.length() == 0) return FALSE;
 	TCHAR ibuf[16];
 	wsprintf(ibuf, "%d", buf);
-#ifdef _DEBUG
-	char msgbuf[256];
-	wsprintf(msgbuf, "sec=%s, key=%s, value=%s\n", (LPCSTR)(sec.length() > 0 ? sec : m_secname),
-			 (LPCSTR)key, ibuf);
-	::OutputDebugString(msgbuf);
-#endif
 	return ::WritePrivateProfileString(sec.length() > 0 ? sec : m_secname,
 									   key,
 									   ibuf,
@@ -112,12 +106,6 @@ DlgDataFile::write(
 	if (key.length() == 0) return FALSE;
 	StringBuffer sbuf(buf, -1, 20);
 	sbuf.replaceStr("\n", "\\n");
-#ifdef _DEBUG
-	char msgbuf[256];
-	wsprintf(msgbuf, "sec=%s, key=%s, value=%s\n", (LPCSTR)(sec.length() > 0 ? sec : m_secname),
-			 (LPCSTR)key, (LPCSTR)sbuf);
-	::OutputDebugString(msgbuf);
-#endif
 	return ::WritePrivateProfileString(sec.length() > 0 ? sec : m_secname,
 									   key,
 									   sbuf,
