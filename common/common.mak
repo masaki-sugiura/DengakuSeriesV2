@@ -41,6 +41,7 @@ ALL : "$(OUTDIR)\common.lib"
 
 
 CLEAN :
+	-@erase "$(INTDIR)\bregexp_mngr.obj"
 	-@erase "$(INTDIR)\cmdline.obj"
 	-@erase "$(INTDIR)\ctrldata.obj"
 	-@erase "$(INTDIR)\ctrlname.obj"
@@ -62,6 +63,7 @@ CLEAN :
 	-@erase "$(INTDIR)\seq_op.obj"
 	-@erase "$(INTDIR)\session.obj"
 	-@erase "$(INTDIR)\shicons.obj"
+	-@erase "$(INTDIR)\si_bregexp.obj"
 	-@erase "$(INTDIR)\si_comdlg.obj"
 	-@erase "$(INTDIR)\si_common.obj"
 	-@erase "$(INTDIR)\si_dialog.obj"
@@ -126,7 +128,9 @@ LIB32_OBJS= \
 	"$(INTDIR)\str_tbl.obj" \
 	"$(INTDIR)\strbuf.obj" \
 	"$(INTDIR)\thread.obj" \
-	"$(INTDIR)\tokenizer.obj"
+	"$(INTDIR)\tokenizer.obj" \
+	"$(INTDIR)\bregexp_mngr.obj" \
+	"$(INTDIR)\si_bregexp.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -145,6 +149,7 @@ ALL : "$(OUTDIR)\common.lib"
 
 
 CLEAN :
+	-@erase "$(INTDIR)\bregexp_mngr.obj"
 	-@erase "$(INTDIR)\cmdline.obj"
 	-@erase "$(INTDIR)\ctrldata.obj"
 	-@erase "$(INTDIR)\ctrlname.obj"
@@ -166,6 +171,7 @@ CLEAN :
 	-@erase "$(INTDIR)\seq_op.obj"
 	-@erase "$(INTDIR)\session.obj"
 	-@erase "$(INTDIR)\shicons.obj"
+	-@erase "$(INTDIR)\si_bregexp.obj"
 	-@erase "$(INTDIR)\si_comdlg.obj"
 	-@erase "$(INTDIR)\si_common.obj"
 	-@erase "$(INTDIR)\si_dialog.obj"
@@ -231,7 +237,9 @@ LIB32_OBJS= \
 	"$(INTDIR)\str_tbl.obj" \
 	"$(INTDIR)\strbuf.obj" \
 	"$(INTDIR)\thread.obj" \
-	"$(INTDIR)\tokenizer.obj"
+	"$(INTDIR)\tokenizer.obj" \
+	"$(INTDIR)\bregexp_mngr.obj" \
+	"$(INTDIR)\si_bregexp.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -295,6 +303,11 @@ LIB32_OBJS= \
 
 
 !IF "$(CFG)" == "common - Win32 Release" || "$(CFG)" == "common - Win32 Debug"
+SOURCE=.\bregexp_mngr.cpp
+
+"$(INTDIR)\bregexp_mngr.obj" : $(SOURCE) "$(INTDIR)"
+
+
 SOURCE=.\cmdline.cpp
 
 "$(INTDIR)\cmdline.obj" : $(SOURCE) "$(INTDIR)"
@@ -398,6 +411,11 @@ SOURCE=.\session.cpp
 SOURCE=.\shicons.cpp
 
 "$(INTDIR)\shicons.obj" : $(SOURCE) "$(INTDIR)"
+
+
+SOURCE=.\si_bregexp.cpp
+
+"$(INTDIR)\si_bregexp.obj" : $(SOURCE) "$(INTDIR)"
 
 
 SOURCE=.\si_comdlg.cpp

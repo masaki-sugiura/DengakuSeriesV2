@@ -1,4 +1,4 @@
-//	$Id: si_file.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: si_file.cpp,v 1.2 2001-11-22 13:37:09 sugiura Exp $
 /*
  *	si_file.cpp
  *	SessionInstance: ファイルサービスの関数
@@ -143,8 +143,18 @@ RunCmd(CmdLineParser& rCmdLine, const StringBuffer& curdir, int nCmdShow)
 	int	num = rCmdLine.itemNum();
 	if (num < 1) return FALSE;
 
+	StringBuffer strFile(rCmdLine.getRawData());
+	LPCSTR lpParam = NULL;
+	if (num > 1) {
+		strFile = rCmdLine.getArgv(0);
+		rCmdLine.delArgv(0);
+		lpParam = rCmdLine.getRawData();
+	}
 	BOOL bRet = (int)::ShellExecute(NULL,NULL,
-								rCmdLine.getRawData(),"",curdir,nCmdShow) > 32;
+								strFile,
+								lpParam,
+								curdir,
+								nCmdShow) > 32;
 	if (bRet) ::SetLastError(0L);	//	関数が成功しても
 									//	エラー値をセットされる場合がある！！
 	return bRet;

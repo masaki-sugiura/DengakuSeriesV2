@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: session.h,v 1.2 2001-11-22 13:37:09 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -18,6 +18,7 @@
 #include "sharedbuf.h"
 #include "tokenizer.h"
 #include "thread.h"
+#include "bregexp_mngr.h"
 
 class PathName;
 class CmdLineParser;
@@ -188,6 +189,18 @@ public:
 	int si_newcolumn(WORD);
 	int si_newpage(WORD);
 
+	// BRegexp系
+	int si_bregexp_load(const StringBuffer&);
+	int si_bregexp_free();
+	StringBuffer si_bregexp_errormsg();
+	StringBuffer si_bregexp_version();
+	StringBuffer si_bregexp_match(const StringBuffer&, const StringBuffer&);
+	StringBuffer si_bregexp_subst(const StringBuffer&, const StringBuffer&);
+	StringBuffer si_bregexp_trans(const StringBuffer&, const StringBuffer&);
+	int si_bregexp_split(const StringBuffer&, const StringBuffer&, int);
+	StringBuffer si_bregexp_getnext();
+	int si_bregexp_hasmoreresults();
+
 protected:
 	HINSTANCE m_hInstance; // インスタンスハンドル
 	DWORD m_dwLastError; // 最後の Execute コマンドのエラー値
@@ -200,6 +213,7 @@ protected:
 	Auto_Ptr<Tokenizer> m_pStrToken; // gettoken コマンドで使うクラス
 	Auto_Ptr<Thread> m_pMenuThread; // メニュー表示で使うスレッド
 	Auto_Ptr<Thread> m_pDlgThread; // ダイアログ表示で使うスレッド
+	Auto_Ptr<BRegExp_Manager> m_pBRegExp_Manager; // BRegexp をコントロールするクラス
 
 	SharedBuffer<StringBuffer> m_sharedBuf;
 

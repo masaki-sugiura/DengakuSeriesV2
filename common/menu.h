@@ -1,4 +1,4 @@
-//	$Id: menu.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: menu.h,v 1.2 2001-11-22 13:37:08 sugiura Exp $
 /*
  *	menu.h
  *	メニュー表示に関するクラス
@@ -23,6 +23,7 @@ typedef struct {
 	POINT m_mnPosInfo; // メニュー表示位置を表す構造体
 	BOOL m_bShowAtCursor; // マウスカーソルの位置にメニューを表示するか
 	WORD m_wSelectedID;	//	選択されたメニュー項目
+	WORD m_wFirstShow; // 初めて WM_INITMENUPOPUP が呼ばれたときにフラグを下ろす
 } SHOWMENUPROCARGS, *LPSHOWMENUPROCARGS;
 
 class MenuItem {

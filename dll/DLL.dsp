@@ -97,6 +97,10 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\bs_func.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\cds_func.cpp
 # End Source File
 # Begin Source File
@@ -147,7 +151,7 @@ SOURCE=.\DengakuDLL.h
 
 SOURCE=.\seldir.rc
 # ADD BASE RSC /l 0x411
-# ADD RSC /l 0x411 /i "..\common"
+# ADD RSC /l 0x411
 # End Source File
 # End Group
 # End Target

@@ -90,6 +90,10 @@ LIB32=link.exe -lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat;f90;for;f;fpp"
 # Begin Source File
 
+SOURCE=.\bregexp_mngr.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\cmdline.cpp
 # End Source File
 # Begin Source File
@@ -174,6 +178,10 @@ SOURCE=.\shicons.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\si_bregexp.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\si_comdlg.cpp
 # End Source File
 # Begin Source File
@@ -235,6 +243,14 @@ SOURCE=.\tokenizer.cpp
 # Begin Source File
 
 SOURCE=.\auto_ptr.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\BREGEXP.H
+# End Source File
+# Begin Source File
+
+SOURCE=.\bregexp_mngr.h
 # End Source File
 # Begin Source File
 

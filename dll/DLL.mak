@@ -53,6 +53,7 @@ CLEAN :"common - Win32 ReleaseCLEAN"
 !ELSE 
 CLEAN :
 !ENDIF 
+	-@erase "$(INTDIR)\bs_func.obj"
 	-@erase "$(INTDIR)\cds_func.obj"
 	-@erase "$(INTDIR)\cs_func.obj"
 	-@erase "$(INTDIR)\DengakuDLL.obj"
@@ -93,6 +94,7 @@ LINK32_OBJS= \
 	"$(INTDIR)\ms_func.obj" \
 	"$(INTDIR)\ss_func.obj" \
 	"$(INTDIR)\seldir.res" \
+	"$(INTDIR)\bs_func.obj" \
 	"..\common\Release\common.lib"
 
 "$(OUTDIR)\DengakuDLL.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
@@ -123,6 +125,7 @@ CLEAN :"common - Win32 DebugCLEAN"
 !ELSE 
 CLEAN :
 !ENDIF 
+	-@erase "$(INTDIR)\bs_func.obj"
 	-@erase "$(INTDIR)\cds_func.obj"
 	-@erase "$(INTDIR)\cs_func.obj"
 	-@erase "$(INTDIR)\DengakuDLL.obj"
@@ -166,6 +169,7 @@ LINK32_OBJS= \
 	"$(INTDIR)\ms_func.obj" \
 	"$(INTDIR)\ss_func.obj" \
 	"$(INTDIR)\seldir.res" \
+	"$(INTDIR)\bs_func.obj" \
 	"..\common\Debug\common.lib"
 
 "$(OUTDIR)\DengakuDLL.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
@@ -230,6 +234,11 @@ LINK32_OBJS= \
 
 
 !IF "$(CFG)" == "DLL - Win32 Release" || "$(CFG)" == "DLL - Win32 Debug"
+SOURCE=.\bs_func.cpp
+
+"$(INTDIR)\bs_func.obj" : $(SOURCE) "$(INTDIR)"
+
+
 SOURCE=.\cds_func.cpp
 
 "$(INTDIR)\cds_func.obj" : $(SOURCE) "$(INTDIR)"
@@ -296,24 +305,24 @@ SOURCE=.\seldir.rc
 !IF  "$(CFG)" == "DLL - Win32 Release"
 
 "common - Win32 Release" : 
-   cd "\Program Files\DevStudio\MyProjects\DengakuSeriesV1\common"
+   cd "\Program Files\DevStudio\MyProjects\DengakuSeriesV2\common"
    $(MAKE) /$(MAKEFLAGS) /F ".\common.mak" CFG="common - Win32 Release" 
    cd "..\DLL"
 
 "common - Win32 ReleaseCLEAN" : 
-   cd "\Program Files\DevStudio\MyProjects\DengakuSeriesV1\common"
+   cd "\Program Files\DevStudio\MyProjects\DengakuSeriesV2\common"
    $(MAKE) /$(MAKEFLAGS) /F ".\common.mak" CFG="common - Win32 Release" RECURSE=1 CLEAN 
    cd "..\DLL"
 
 !ELSEIF  "$(CFG)" == "DLL - Win32 Debug"
 
 "common - Win32 Debug" : 
-   cd "\Program Files\DevStudio\MyProjects\DengakuSeriesV1\common"
+   cd "\Program Files\DevStudio\MyProjects\DengakuSeriesV2\common"
    $(MAKE) /$(MAKEFLAGS) /F ".\common.mak" CFG="common - Win32 Debug" 
    cd "..\DLL"
 
 "common - Win32 DebugCLEAN" : 
-   cd "\Program Files\DevStudio\MyProjects\DengakuSeriesV1\common"
+   cd "\Program Files\DevStudio\MyProjects\DengakuSeriesV2\common"
    $(MAKE) /$(MAKEFLAGS) /F ".\common.mak" CFG="common - Win32 Debug" RECURSE=1 CLEAN 
    cd "..\DLL"
 

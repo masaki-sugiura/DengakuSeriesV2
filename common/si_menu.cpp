@@ -1,4 +1,4 @@
-//	$Id: si_menu.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: si_menu.cpp,v 1.2 2001-11-22 13:37:09 sugiura Exp $
 /*
  *	si_menu.cpp
  *	メニュー表示関数
@@ -39,6 +39,7 @@ UserMenuProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			//	ポップアップメニューの表示
 			if (lpsmpa->m_bShowAtCursor)
 				::GetCursorPos(&lpsmpa->m_mnPosInfo);
+			lpsmpa->m_wFirstShow = TRUE; // WM_INITMENUPOPUP 参照
 			HWND hwndTop = ::GetForegroundWindow();
 			//	ウィンドウを可視化(透明だけど(^^;)
 			::SetWindowPos(hWnd,HWND_TOPMOST,0,0,0,0,
@@ -67,6 +68,13 @@ UserMenuProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if (lpsmpa != NULL) {
 			lpsmpa->m_pSessionInstance->getUserMenu()
 					.createMenu(reinterpret_cast<HMENU>(wParam));
+			if (lpsmpa->m_wFirstShow) {
+				// メニューが表示されて最初の項目を選択状態にする
+				// (下カーソルキーのエミュレーション(苦笑))
+				::PostMessage(hWnd, WM_KEYDOWN, VK_DOWN, 1);
+				::PostMessage(hWnd, WM_KEYUP, VK_DOWN, 1);
+				lpsmpa->m_wFirstShow = FALSE;
+			}
 		}
 		break;
 
