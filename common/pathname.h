@@ -1,4 +1,4 @@
-//	$Id: pathname.h,v 1.3 2002-02-10 09:27:32 sugiura Exp $
+//	$Id: pathname.h,v 1.4 2002-02-21 12:55:58 sugiura Exp $
 /*
  *	pathname.h
  *	パス名を扱うクラス
@@ -38,6 +38,28 @@ ISDRIVELETTER(TCHAR ch)
 class PathName : public StringBuffer {
 public:
 	PathName(const StringBuffer& name = nullStr);
+	PathName(const PathName& pname)
+		: StringBuffer(pname),
+		  m_fd(pname.m_fd),
+		  m_node(pname.m_node),
+		  m_type(pname.m_type)
+	{}
+	PathName& operator=(const PathName& rhs)
+	{
+		if (this != &rhs) {
+			this->StringBuffer::operator=(rhs);
+			m_fd   = rhs.m_fd;
+			m_node = rhs.m_node;
+			m_type = rhs.m_type;
+		}
+		return *this;
+	}
+	PathName& operator=(const StringBuffer& rhs)
+	{
+		this->StringBuffer::operator=(rhs);
+		this->refresh();
+		return *this;
+	}
 
 	void refresh();
 	void reset(const StringBuffer& name = nullStr, int head = 0, int num = -1);

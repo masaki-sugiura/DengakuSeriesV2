@@ -1,4 +1,4 @@
-//	$Id: array.h,v 1.1 2002-02-20 16:50:33 sugiura Exp $
+//	$Id: array.h,v 1.2 2002-02-21 12:55:58 sugiura Exp $
 /*
  *	array.h
  *	(primitive 型限定)配列クラス
@@ -10,7 +10,7 @@
 #include <windows.h>
 
 // 最小の割り当ての単位（２の累乗）
-#define MIN_ALLOC_UNIT  4
+#define MIN_ALLOC_UNIT  8
 
 inline int
 clip(int size)

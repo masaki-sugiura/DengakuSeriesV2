@@ -1,4 +1,4 @@
-// $Id: si_comdlg.cpp,v 1.4 2002-02-20 16:48:40 sugiura Exp $
+// $Id: si_comdlg.cpp,v 1.5 2002-02-21 12:55:58 sugiura Exp $
 /*
  *	si_comdlg.cpp
  *	コモンダイアログ表示関数
@@ -40,7 +40,7 @@ SessionInstance::getFileNameByDlg(
 	PathName inipath;
 	if (inifile.length() <= 0) {	//	フォルダ指定なし
 		//	現在のフォルダを使用
-		inipath.reset(m_DirList.getCurrentDir());
+		inipath = m_DirList.getCurrentDir();
 	} else if (m_DirList.getPathName(inifile,inipath,TRUE)) {
 		if (!inipath.isDirectory()) {	//	パス名はファイル
 			lstrcpy(pszFileName,inipath.getBaseName());
@@ -51,7 +51,7 @@ SessionInstance::getFileNameByDlg(
 		inipath.delPath(1);
 		if (!inipath.isDirectory()) {
 			*pszFileName = '\0';
-			inipath.reset(m_DirList.getCurrentDir());
+			inipath = m_DirList.getCurrentDir();
 		}
 	}
 
@@ -135,7 +135,7 @@ SessionInstance::getDirNameByDlg(
 	PathName pnInidir;
 	if (!m_DirList.getPathName(inidir,pnInidir,TRUE)) {
 		//	不正なパス名が渡された->現在のフォルダ名を使用
-		pnInidir.reset(m_DirList.getCurrentDir());
+		pnInidir = m_DirList.getCurrentDir();
 	} else if (!pnInidir.isDirectory()) {
 		//	パス名はファイル名だった->ファイル名の削除
 		pnInidir.delPath(1);

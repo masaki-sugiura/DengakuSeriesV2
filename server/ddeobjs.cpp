@@ -1,4 +1,4 @@
-// $Id: ddeobjs.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+// $Id: ddeobjs.cpp,v 1.2 2002-02-21 12:55:58 sugiura Exp $
 /*
  *	ddeobjs.cpp
  *	DdeString ƒNƒ‰ƒX‚ÌŽÀ‘•
@@ -40,7 +40,7 @@ DdeString::operator=(const DdeString& ds)
 		::DdeFreeStringHandle(m_ddeInst,m_Handle);
 		m_Handle = ds.m_Handle;
 		::DdeKeepStringHandle(m_ddeInst,m_Handle);
-		m_str.reset(ds.m_str);
+		m_str = ds.m_str;
 	}
 	return *this;
 }

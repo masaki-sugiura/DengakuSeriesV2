@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.5 2002-02-19 15:34:22 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.6 2002-02-21 12:55:58 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -61,7 +61,7 @@ ShowDlgProc(LPDWORD pThreadArgs)
 	HWND hwndDlg;
 	if ((hwndDlg = df.createFrame(psdpa->m_hwndOwner,psdpa->m_bOnTop))
 		== NULL) {
-		ntf->reset(ngStr);
+		*ntf = ngStr;
 		psi->SessionInstance::setNotify(*ntf);
 	} else {
 		psi->SessionInstance::setNotify(*ntf);

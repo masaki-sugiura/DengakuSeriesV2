@@ -1,4 +1,4 @@
-//	$Id: seldir.cpp,v 1.2 2002-02-10 09:27:32 sugiura Exp $
+//	$Id: seldir.cpp,v 1.3 2002-02-21 12:55:58 sugiura Exp $
 /*
  *	seldir.cpp
  *	ディレクトリ選択ダイアログの実装
@@ -142,6 +142,7 @@ SelectDirByDlg::setImgListToTreeView()
 	TreeView_SetImageList(m_hTreeView,m_hImgList,TVSIL_NORMAL);
 }
 
+#ifdef _DEBUG
 static void
 ShowShellErrorMsg(DWORD num, LPCSTR fname, DWORD ret, DWORD index, int size)
 {
@@ -153,6 +154,9 @@ ShowShellErrorMsg(DWORD num, LPCSTR fname, DWORD ret, DWORD index, int size)
 	if (size > 0) msg.append("\nsize = ").append(size);
 	ShowErrorMsg(msg);
 }
+#else
+#define ShowShellErrorMsg(n,f,r,i,s)  /* do nothing */
+#endif
 
 static BOOL
 GetIconAndAddEntry(ShellIcons* pShellIcons,

@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.6 2002-02-20 15:16:53 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.7 2002-02-21 12:55:58 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -743,7 +743,7 @@ DlgFrame::setFrameProperty(
 	const StringBuffer& fontname,
 	WORD fontsize)
 {
-	m_DlgTitle.reset(title);
+	m_DlgTitle = title;
 	if (ppt != NULL) m_pos = *ppt;
 	m_flags = wflags;
 	if (fontname.length() > 0) m_pFontProp->m_fontname = fontname;
