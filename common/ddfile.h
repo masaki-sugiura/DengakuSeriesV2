@@ -1,4 +1,4 @@
-//	$Id: ddfile.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: ddfile.h,v 1.2 2002-02-28 15:32:30 sugiura Exp $
 /*
  *	ddfile.h
  *	ダイアログデータのデータファイルを扱うクラス
@@ -21,14 +21,14 @@ public:
 	void setSecName(const StringBuffer&);
 
 	//	2nd and 3rd args of all of functions are keyname and secname.
-	BOOL read(int*, LPCSTR, LPCSTR sec = NULL);
-	BOOL read(WORD*, LPCSTR, LPCSTR sec = NULL);
-	BOOL read(DWORD*, LPCSTR, LPCSTR sec = NULL);
-	BOOL read(StringBuffer&, LPCSTR, LPCSTR sec = NULL);
-	BOOL write(int, LPCSTR, LPCSTR sec = NULL);
-	BOOL write(WORD, LPCSTR, LPCSTR sec = NULL);
-	BOOL write(DWORD, LPCSTR, LPCSTR sec = NULL);
-	BOOL write(LPCSTR, LPCSTR, LPCSTR sec = NULL);
+	BOOL read(int*, const StringBuffer&, const StringBuffer& sec = nullStr);
+	BOOL read(WORD*, const StringBuffer&, const StringBuffer& sec = nullStr);
+	BOOL read(DWORD*, const StringBuffer&, const StringBuffer& sec = nullStr);
+	BOOL read(StringBuffer&, const StringBuffer&, const StringBuffer& sec = nullStr);
+	BOOL write(int, const StringBuffer&, const StringBuffer& sec = nullStr);
+	BOOL write(WORD, const StringBuffer&, const StringBuffer& sec = nullStr);
+	BOOL write(DWORD, const StringBuffer&, const StringBuffer& sec = nullStr);
+	BOOL write(const StringBuffer&, const StringBuffer&, const StringBuffer& sec = nullStr);
 
 private:
 	const StringBuffer m_filename;

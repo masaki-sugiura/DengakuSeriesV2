@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.7 2002-02-21 12:55:58 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.8 2002-02-28 15:32:30 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -123,6 +123,7 @@ DlgPageProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_CTLCOLORSTATIC:
 	case WM_CTLCOLORBTN:
+	case WM_CTLCOLOREDIT:
 		//	コントロールのフォントの色を変更
 		return reinterpret_cast<BOOL>(pdp->onCtlColor(wParam,lParam));
 

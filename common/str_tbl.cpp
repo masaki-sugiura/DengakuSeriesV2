@@ -1,4 +1,4 @@
-//	$Id: str_tbl.cpp,v 1.3 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: str_tbl.cpp,v 1.4 2002-02-28 15:32:30 sugiura Exp $
 /*
  *	str_tbl.cpp
  *	•¶š—ñƒe[ƒuƒ‹
@@ -35,6 +35,11 @@ LPCSTR	const_strings[] = {
 	"Height",
 	"Ctrl",
 	"ID",
+	"Style",
+	"ExStyle",
+	"FontProperty",
+	"Color",
+	"Face",
 	"State",
 	"Min",
 	"Max",

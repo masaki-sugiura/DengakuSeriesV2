@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.9 2002-02-20 15:16:53 sugiura Exp $
+//	$Id: ctrldata.h,v 1.10 2002-02-28 15:32:30 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -151,18 +151,17 @@ protected:
 //	最も基本的なコントロールを表す基底クラス
 class CtrlListItem {
 public:
-	typedef	struct {
+	struct CtrlTemplateArgs {
 		WORD*	m_hdr;	//	DLGITEMTEMPLATE 構造体のヘッダアドレス
 		WORD	m_id;	//	コントロールＩＤ
 		WORD	m_x;	//	コントロールの左上の x 座標
 		WORD	m_y;	//	コントロールの左上の y 座標
 		WORD	m_cx;	//	コントロールの幅
 		WORD	m_cy;	//	コントロールの高さ
-	} CtrlTemplateArgs;
+	};
 
 	//	フォント属性を表す構造体
-	class CtrlFontProperty {
-	public:
+	struct CtrlFontProperty {
 		HFONT		 m_hfont;
 		BOOL		 m_bchanged;
 		COLORREF	 m_color;
@@ -171,6 +170,9 @@ public:
 		CtrlFontProperty()
 			: m_hfont(NULL), m_bchanged(FALSE), m_color(0), m_fface(0), m_fname(nullStr)
 		{}
+
+		BOOL dumpData(DlgDataFile&, StringBuffer& key);
+		BOOL loadData(DlgDataFile&, StringBuffer& key);
 	};
 
 	CtrlListItem(
@@ -253,8 +255,7 @@ public:
 	virtual	BOOL loadData(DlgDataFile&);	//	データの読込み
 
 	//	コントロールの属性を表すクラス
-	class CtrlProperty {
-	public:
+	struct CtrlProperty {
 		CtrlListItem* m_pCtrl;  // 所属先 CtrlListItem へのポインタ
 		HWND	m_hwndCtrl;		//	コントロールのウィンドウハンドル
 		LPSTR	m_classname;	//	コントロールクラス名
@@ -265,12 +266,16 @@ public:
 		WORD	m_bufsize;		//	クラス名の長さ+1
 		StringBuffer	m_text;	//	コントロールテキストバッファ
 		CtrlFontProperty	m_fontprop;		//	フォント属性
+		HBRUSH  m_hbrBackground; // 背景色のハンドル
 
 		CtrlProperty(CtrlListItem* pCtrl = NULL);
 		~CtrlProperty();
 		void setCtrlTemplate(CtrlTemplateArgs&);
 		void changeFont();
 		BOOL init(HWND);
+
+		BOOL dumpData(DlgDataFile&, StringBuffer& key);
+		BOOL loadData(DlgDataFile&, StringBuffer& key);
 	};
 	typedef CtrlProperty* LPCtrlProperty;
 
@@ -315,8 +320,8 @@ protected:
 	//	クラスメンバ・メソッド
 	DWORD m_dwMagic;    //  マジックナンバー
 	DWORD m_type;		//	コントロール識別ＩＤ
-	const StringBuffer m_name;		//	コントロールの名前
-	const StringBuffer m_text;		//	newcontrol の３番目の引数
+	const StringBuffer m_name;	//	コントロールの名前
+	const StringBuffer m_text;	//	newcontrol の３番目の引数
 	class DlgPage* m_pDlgPage;	//	所属先 DlgPage へのポインタ
 	int m_cnum;		//	コントロールウィンドウの数
 	CtrlListItem::CtrlProperty* m_pcp;	//	コントロール属性構造体へのポインタ
@@ -350,8 +355,7 @@ protected:
 
 //	コントロールの子(または兄弟)コントロールをサブクラス化する時
 //	GWL_USERDATA で渡すクラス
-class ChildCtrlSubClassInfo {
-public:
+struct ChildCtrlSubClassInfo {
 	WNDPROC m_pfnDefCallback;
 	CtrlListItem* m_pCtrl;
 };
@@ -412,6 +416,9 @@ public:
 	WORD getHeight();
 
 	WORD onCommand(WPARAM, LPARAM);
+
+protected:
+//	BOOL onCtlColor(HDC);
 };
 
 //	check, rdbtn
@@ -443,6 +450,9 @@ public:
 			const StringBuffer& text = nullStr);
 
 	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
+
+protected:
+//	BOOL onCtlColor(HDC);
 };
 
 //	edit, mledit

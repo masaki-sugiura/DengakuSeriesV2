@@ -1,4 +1,4 @@
-//	$Id: ddfile.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: ddfile.cpp,v 1.3 2002-02-28 15:32:30 sugiura Exp $
 /*
  *	ddfile.cpp
  *	ダイアログデータのデータファイルを扱うクラス
@@ -28,75 +28,87 @@ DlgDataFile::setSecName(const StringBuffer& secname)
 }
 
 BOOL
-DlgDataFile::read(int* buf, LPCSTR key, LPCSTR sec)
+DlgDataFile::read(int* buf, const StringBuffer& key, const StringBuffer& sec)
 {
-	if (key == NULL || *key == '\0') return FALSE;
-	if (sec == NULL || *sec == '\0') sec = m_secname;
+	if (key.length() == 0) return FALSE;
 	TCHAR ibuf[16];
-	::GetPrivateProfileString(sec,key,"",ibuf,16,m_filename);
-	*buf = (*ibuf != '\0') ? ival(ibuf) : 0;
+	::GetPrivateProfileString(sec.length() > 0 ? sec : m_secname,
+							  key,
+							  "",
+							  ibuf,
+							  16,
+							  m_filename);
+	*buf = ival(ibuf);
 	return TRUE;
 }
 
 BOOL
-DlgDataFile::read(WORD* buf, LPCSTR key, LPCSTR sec)
+DlgDataFile::read(WORD* buf, const StringBuffer& key, const StringBuffer& sec)
 {
 	int	ret;
-	if (!this->read(&ret,key,sec)) return FALSE;
+	if (!this->read(&ret, key, sec)) return FALSE;
 	*buf = (WORD)ret;
 	return TRUE;
 }
 
 BOOL
-DlgDataFile::read(DWORD* buf, LPCSTR key, LPCSTR sec)
+DlgDataFile::read(DWORD* buf, const StringBuffer& key, const StringBuffer& sec)
 {
-	int	ret;
-	if (!this->read(&ret,key,sec)) return FALSE;
-	*buf = (DWORD)ret;
-	return TRUE;
+	return this->read((int*)buf, key, sec);
 }
 
 BOOL
-DlgDataFile::read(StringBuffer& buf, LPCSTR key, LPCSTR sec)
+DlgDataFile::read(StringBuffer& buf, const StringBuffer& key, const StringBuffer& sec)
 {
-	if (key == NULL || *key == '\0') return FALSE;
-	if (sec == NULL || *sec == '\0') sec = m_secname;
+	if (key.length() == 0) return FALSE;
 	TCHAR sbuf[MAX_PATH];
-	::GetPrivateProfileString(sec,key,"",sbuf,MAX_PATH,m_filename);
+	::GetPrivateProfileString(sec.length() > 0 ? sec : m_secname,
+							  key,
+							  "",
+							  sbuf,
+							  MAX_PATH,
+							  m_filename);
 	buf.reset(sbuf);
-	buf.replaceStr("\\n","\n");
+	buf.replaceStr("\\n", "\n");
 	return TRUE;
 }
 
 BOOL
-DlgDataFile::write(int buf, LPCSTR key, LPCSTR sec)
+DlgDataFile::write(int buf, const StringBuffer& key, const StringBuffer& sec)
 {
-	if (key == NULL || *key == '\0') return FALSE;
-	if (sec == NULL || *sec == '\0') sec = m_secname;
+	if (key.length() == 0) return FALSE;
 	TCHAR ibuf[16];
-	wsprintf(ibuf,"%d",buf);
-	return ::WritePrivateProfileString(sec,key,ibuf,m_filename);
+	wsprintf(ibuf, "%d", buf);
+	return ::WritePrivateProfileString(sec.length() > 0 ? sec : m_secname,
+									   key,
+									   ibuf,
+									   m_filename);
 }
 
 BOOL
-DlgDataFile::write(WORD buf, LPCSTR key, LPCSTR sec)
+DlgDataFile::write(WORD buf, const StringBuffer& key, const StringBuffer& sec)
 {
-	return this->write((int)buf,key,sec);
+	return this->write((int)buf, key, sec);
 }
 
 BOOL
-DlgDataFile::write(DWORD buf, LPCSTR key, LPCSTR sec)
+DlgDataFile::write(DWORD buf, const StringBuffer& key, const StringBuffer& sec)
 {
-	return this->write((int)buf,key,sec);
+	return this->write((int)buf, key, sec);
 }
 
 BOOL
-DlgDataFile::write(LPCSTR buf, LPCSTR key, LPCSTR sec)
+DlgDataFile::write(
+	const StringBuffer& buf,
+	const StringBuffer& key,
+	const StringBuffer& sec)
 {
-	if (key == NULL || *key == '\0') return FALSE;
-	if (sec == NULL || *sec == '\0') sec = m_secname;
-	StringBuffer sbuf(buf,-1,20);
-	sbuf.replaceStr("\n","\\n");
-	return ::WritePrivateProfileString(sec,key,sbuf,m_filename);
+	if (key.length() == 0) return FALSE;
+	StringBuffer sbuf(buf, -1, 20);
+	sbuf.replaceStr("\n", "\\n");
+	return ::WritePrivateProfileString(sec.length() > 0 ? sec : m_secname,
+									   key,
+									   sbuf,
+									   m_filename);
 }
 
