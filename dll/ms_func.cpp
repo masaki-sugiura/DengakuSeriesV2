@@ -1,4 +1,4 @@
-//	$Id: ms_func.cpp,v 1.2 2002-01-16 16:31:04 sugiura Exp $
+//	$Id: ms_func.cpp,v 1.3 2002-02-10 09:27:32 sugiura Exp $
 /*
  *	ms_func.cpp
  *	メニュー表示関数
@@ -21,6 +21,7 @@ MENU(LPCSTR menuname, HIDEDLL_NUMTYPE hWndHavingCaret)
 	//	showMenuThread() 内でも同じコードがあるが、
 	//	効いてないようなのでここにも入れる...何で？
 	HWND hwndTop = ::GetForegroundWindow();
+	if (hwndTop != NULL) ::UpdateWindow(hwndTop);
 
 	//	メニューを表示するスレッドの開始
 	//	メニューの表示を別スレッドのウィンドウに任せる理由：
@@ -42,7 +43,7 @@ MENU(LPCSTR menuname, HIDEDLL_NUMTYPE hWndHavingCaret)
 	//	スレッドの破棄
 	g_pSessionInstance->stopMenuThread();
 
-	::SetForegroundWindow(hwndTop);
+	if (hwndTop != NULL) ::SetForegroundWindow(hwndTop);
 
 	return g_strBuffer;
 }

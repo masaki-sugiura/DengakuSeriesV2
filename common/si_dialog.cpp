@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.2 2001-11-26 13:29:26 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.3 2002-02-10 09:27:32 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -409,11 +409,26 @@ SessionInstance::si_setcurdlgpage(const StringBuffer& name)
 	return m_DlgFrame.setCurrentPage(name);
 }
 
+int
+SessionInstance::si_setfocusedctrl(const StringBuffer& name)
+{
+	return m_DlgFrame.setFocusedCtrl(name);
+}
+
 StringBuffer
 SessionInstance::si_getcurdlgpage()
 {
 	DlgPage* pdp = m_DlgFrame.getPage();
 	return pdp != NULL ? pdp->getName() : nullStr;
+}
+
+StringBuffer
+SessionInstance::si_getfocusedctrl()
+{
+//	return m_DlgFrame.getFocusedCtrl();
+	return (LPCSTR)::SendMessage(m_DlgFrame.getUserDlg(),
+								 WM_USER_GETFOCUSEDCTRL,
+								 0, 0);
 }
 
 int

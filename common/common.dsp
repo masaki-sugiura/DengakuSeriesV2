@@ -178,6 +178,10 @@ SOURCE=.\shicons.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\shobj_wrapper.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\si_bregexp.cpp
 # End Source File
 # Begin Source File
@@ -359,6 +363,10 @@ SOURCE=.\sharedbuf.h
 # Begin Source File
 
 SOURCE=.\shicons.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\shobj_wrapper.h
 # End Source File
 # Begin Source File
 

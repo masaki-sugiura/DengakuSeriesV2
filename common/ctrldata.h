@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: ctrldata.h,v 1.3 2002-02-10 09:27:32 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -80,6 +80,8 @@ class CmdLineParser;
 #define	NARROWHEIGHT	3	//	縦幅が少ないコントロールの高さ
 #define	NORMALHEIGHT	4	//	普通のコントロールの高さ
 
+#define WM_GET_CTRL_PTR  (WM_USER + 2000)
+#define CTRL_PTR_MAGIC   0x5A5AA5A5
 
 //	項目を表すクラス
 class ItemData {
@@ -180,6 +182,8 @@ public:
 	static CTRL_ID getCtrlTypeFromName(const StringBuffer&);
 
 	//	仮想でないメソッド
+	//	マジックナンバーのチェック
+	DWORD isValid() const { return m_dwMagic == CTRL_PTR_MAGIC; }
 	//	コントロールの（ユーザー定義の）名前を返す
 	const StringBuffer&	getName() const { return m_name; }
 	//	コントロールの種類を表すＩＤ
@@ -242,13 +246,13 @@ public:
 	virtual	BOOL dumpData(DlgDataFile&);	//	データの書き込み
 	virtual	BOOL loadData(DlgDataFile&);	//	データの読込み
 
-protected:
-	//	グローバル名前空間に置いておきたくないクラス
-
 	//	コントロールの属性を表すクラス
-	struct CtrlProperty	{
+	class CtrlProperty {
+	public:
+		CtrlListItem* m_pCtrl;  // 所属先 CtrlListItem へのポインタ
 		HWND	m_hwndCtrl;		//	コントロールのウィンドウハンドル
 		LPSTR	m_classname;	//	コントロールクラス名
+		WNDPROC m_pfnDefCallback; // デフォルトコールバック関数
 		DWORD	m_style;		//	ウィンドウスタイルフラグ
 		DWORD	m_exstyle;		//	extra ウィンドウスタイルフラグ
 		WORD	m_id;			//	コントロールＩＤ
@@ -256,12 +260,16 @@ protected:
 		StringBuffer	m_text;	//	コントロールテキストバッファ
 		CtrlFontProperty	m_fontprop;		//	フォント属性
 
-		CtrlProperty();
+		CtrlProperty(CtrlListItem* pCtrl = NULL);
 		~CtrlProperty();
 		void setCtrlTemplate(CtrlTemplateArgs&);
 		void changeFont();
+		BOOL init(HWND);
 	};
 	typedef CtrlProperty* LPCtrlProperty;
+
+protected:
+	//	グローバル名前空間に置いておきたくないクラス
 
 	//	複数の選択項目を持つコントロールのための状態管理クラス
 	class States {
@@ -297,6 +305,7 @@ protected:
 	};
 
 	//	クラスメンバ・メソッド
+	DWORD m_dwMagic;    //  マジックナンバー
 	DWORD m_type;		//	コントロール識別ＩＤ
 	const StringBuffer m_name;		//	コントロールの名前
 	const StringBuffer m_text;		//	newcontrol の３番目の引数
@@ -368,6 +377,8 @@ public:
 	HBRUSH onCtlColor(HDC);
 
 	BOOL isCommand(WORD);
+
+	WNDPROC getDefCallback() const { return m_pcp->m_pfnDefCallback; }
 
 protected:
 	BOOL setFont(const StringBuffer& fface = nullStr,
@@ -574,11 +585,18 @@ protected:
 	StringBuffer m_exbuffer;
 };
 
+class RadioItemSubClassInfo {
+public:
+	WNDPROC m_pfnDefCallback;
+	CtrlListItem* m_pCtrl;
+};
+
 //	radio
 class RadioCtrl : public HasListCtrl {
 public:
 	RadioCtrl(const StringBuffer& name = nullStr,
 			const StringBuffer& text = nullStr);
+	~RadioCtrl();
 
 	WORD getHeight();
 	int getCtrlNum() const;
@@ -586,6 +604,7 @@ public:
 	int getDataSize();
 
 	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
+	BOOL initCtrl(HWND);
 	BOOL enableCtrl(BOOL, BOOL);
 	BOOL showCtrl(BOOL);
 	BOOL sendData();
@@ -601,6 +620,9 @@ public:
 	BOOL isCommand(WORD);
 
 	WORD onCommand(WPARAM, LPARAM);
+
+private:
+	RadioItemSubClassInfo* m_pRiSci;
 };
 
 //	list

@@ -6,15 +6,17 @@
 --------------------構成: common - Win32 Release--------------------
 </h3>
 <h3>ｺﾏﾝﾄﾞ ﾗｲﾝ</h3>
-一時ﾌｧｲﾙ "D:\TEMP\RSP28.tmp" を作成し、次の内容を記録します
+一時ﾌｧｲﾙ "D:\TEMP\RSP40.tmp" を作成し、次の内容を記録します
 [
 /nologo /MT /W3 /GX /O2 /I "..\common" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /Fp"Release/common.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
-"D:\Program Files\DevStudio\MyProjects\DengakuSeriesV1\common\ctrldata.cpp"
+"D:\Program Files\DevStudio\MyProjects\DengakuSeriesV2\common\shobj_wrapper.cpp"
+"D:\Program Files\DevStudio\MyProjects\DengakuSeriesV2\common\si_comdlg.cpp"
 ]
-Creating command line "cl.exe @D:\TEMP\RSP28.tmp" 
-一時ﾌｧｲﾙ "D:\TEMP\RSP29.tmp" を作成し、次の内容を記録します
+Creating command line "cl.exe @D:\TEMP\RSP40.tmp" 
+一時ﾌｧｲﾙ "D:\TEMP\RSP41.tmp" を作成し、次の内容を記録します
 [
 /nologo /out:"Release\common.lib" 
+".\Release\bregexp_mngr.obj"
 ".\Release\cmdline.obj"
 ".\Release\ctrldata.obj"
 ".\Release\ctrlname.obj"
@@ -23,7 +25,6 @@ Creating command line "cl.exe @D:\TEMP\RSP28.tmp"
 ".\Release\dlgdata.obj"
 ".\Release\enumpath.obj"
 ".\Release\env_var.obj"
-".\Release\evalexpr.obj"
 ".\Release\file.obj"
 ".\Release\hashtbl.obj"
 ".\Release\linklist.obj"
@@ -37,6 +38,8 @@ Creating command line "cl.exe @D:\TEMP\RSP28.tmp"
 ".\Release\seq_op.obj"
 ".\Release\session.obj"
 ".\Release\shicons.obj"
+".\Release\shobj_wrapper.obj"
+".\Release\si_bregexp.obj"
 ".\Release\si_comdlg.obj"
 ".\Release\si_common.obj"
 ".\Release\si_dialog.obj"
@@ -49,13 +52,15 @@ Creating command line "cl.exe @D:\TEMP\RSP28.tmp"
 ".\Release\spi_mngr.obj"
 ".\Release\str_tbl.obj"
 ".\Release\strbuf.obj"
+".\Release\strutils.obj"
 ".\Release\thread.obj"
 ".\Release\tokenizer.obj"
 ]
-ｺﾏﾝﾄﾞ ﾗｲﾝ "link.exe -lib @D:\TEMP\RSP29.tmp" の作成中
+ｺﾏﾝﾄﾞ ﾗｲﾝ "link.exe -lib @D:\TEMP\RSP41.tmp" の作成中
 <h3>ｱｳﾄﾌﾟｯﾄ ｳｨﾝﾄﾞｳ</h3>
 ｺﾝﾊﾟｲﾙ中...
-ctrldata.cpp
+shobj_wrapper.cpp
+si_comdlg.cpp
 ﾗｲﾌﾞﾗﾘを作成中...
 
 

@@ -1,4 +1,4 @@
-//	$Id: ds_func.cpp,v 1.2 2002-01-16 16:31:04 sugiura Exp $
+//	$Id: ds_func.cpp,v 1.3 2002-02-10 09:27:32 sugiura Exp $
 /*
  *	ds_func.cpp
  *	ダイアログ操作関数
@@ -213,11 +213,26 @@ SETCURDLGPAGE(LPCSTR str1)
 	return g_pSessionInstance->si_setcurdlgpage(str1);
 }
 
+//	フォーカスを得るコントロールの変更
+DENGAKUDLL_API HIDEDLL_NUMTYPE
+SETFOCUSEDCTRL(LPCSTR str1)
+{
+	return g_pSessionInstance->si_setfocusedctrl(str1);
+}
+
 //	現在変更対象となっている子ダイアログの名前を返す
 DENGAKUDLL_API LPCSTR
 GETCURDLGPAGE()
 {
 	g_strBuffer = g_pSessionInstance->si_getcurdlgpage();
+	return g_strBuffer;
+}
+
+//	現在フォーカスを得ているコントロールの名前を返す
+DENGAKUDLL_API LPCSTR
+GETFOCUSEDCTRL()
+{
+	g_strBuffer = g_pSessionInstance->si_getfocusedctrl();
 	return g_strBuffer;
 }
 

@@ -1,4 +1,4 @@
-//	$Id: pathname.h,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: pathname.h,v 1.3 2002-02-10 09:27:32 sugiura Exp $
 /*
  *	pathname.h
  *	パス名を扱うクラス
@@ -87,6 +87,10 @@ public:
 		return (m_fd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) != 0;
 	}
 
+	BOOL isRootPath() const;
+
+	int getPathType() const { return m_type; }
+
 	//	与えられたパスの種類を返す
 	static int getPathType(LPCSTR, LPCSTR* pphead = NULL);
 
@@ -94,8 +98,6 @@ protected:
 	mutable WIN32_FIND_DATA	m_fd;
 	mutable int m_node;
 	mutable int m_type;
-
-	BOOL isRootPath() const;
 
 	void getFileType() const;
 };

@@ -1,4 +1,4 @@
-//	$Id: ds_handler.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: ds_handler.cpp,v 1.2 2002-02-10 09:27:32 sugiura Exp $
 /*
  *	ds_handler.cpp
  *	ダイアログサービスの実装
@@ -234,10 +234,22 @@ ConvData::On_setcurdlgpage(CmdLineParser& params)
 	return this->si_setcurdlgpage(params.getArgvStr(0));
 }
 
+int
+ConvData::On_setfocusedctrl(CmdLineParser& params)
+{
+	return this->si_setfocusedctrl(params.getArgvStr(0));
+}
+
 StringBuffer
 ConvData::On_getcurdlgpage(CmdLineParser&)
 {
 	return this->si_getcurdlgpage();
+}
+
+StringBuffer
+ConvData::On_getfocusedctrl(CmdLineParser&)
+{
+	return this->si_getfocusedctrl();
 }
 
 int

@@ -1,4 +1,4 @@
-//	$Id: str_tbl.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: str_tbl.h,v 1.2 2002-02-10 09:27:32 sugiura Exp $
 /*
  *	str_tbl.h
  *	文字列テーブルの定義
@@ -14,7 +14,8 @@
 #define	WM_USER_MESSAGEBOX		(WM_USER+1003)
 #define	WM_USER_QUESTIONBOX		(WM_USER+1004)
 #define	WM_USER_NOTIFY			(WM_USER+1005)
-#define WM_USER_MAX				(WM_USER_NOTIFY + 1)
+#define WM_USER_GETFOCUSEDCTRL  (WM_USER+1006)
+#define WM_USER_MAX				(WM_USER_GETFOCUSEDCTRL + 1)
 
 #define	STR_HEAD						(-9)
 #define	STR_UNKNOWNSTR					0

@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.3 2002-02-10 09:27:32 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -49,9 +49,11 @@ CtrlListItem::States::loadData(DlgDataFile& ddfile)
 }
 
 
-CtrlListItem::CtrlProperty::CtrlProperty()
-	:	m_hwndCtrl(NULL),
+CtrlListItem::CtrlProperty::CtrlProperty(CtrlListItem* pCtrl)
+	:	m_pCtrl(pCtrl),
+		m_hwndCtrl(NULL),
 		m_classname(NULL),
+		m_pfnDefCallback(NULL),
 		m_style(0), m_exstyle(0),
 		m_id(0),
 		m_bufsize(0),
@@ -114,6 +116,32 @@ CtrlListItem::CtrlProperty::changeFont()
 	m_fontprop.m_hfont = ::CreateFontIndirect(&lf);
 	::SendMessage(m_hwndCtrl,WM_SETFONT,(WPARAM)m_fontprop.m_hfont,TRUE);
 	m_fontprop.m_bchanged = FALSE;
+}
+
+LRESULT CALLBACK
+CtrlListItemProc(HWND hCtrl, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	CtrlListItem::CtrlProperty*
+		pCProp = (CtrlListItem::CtrlProperty*)::GetWindowLong(hCtrl, GWL_USERDATA);
+	switch (uMsg) {
+	case WM_GET_CTRL_PTR:
+		return (LRESULT)pCProp->m_pCtrl;
+	default:
+		return ::CallWindowProc(pCProp->m_pfnDefCallback, hCtrl, uMsg, wParam, lParam);
+	}
+	return 0;
+}
+
+BOOL
+CtrlListItem::CtrlProperty::init(HWND hDlg)
+{
+	m_hwndCtrl = ::GetDlgItem(hDlg, m_id);
+	if (m_hwndCtrl == NULL) return FALSE;
+	m_pfnDefCallback = (WNDPROC)::SetWindowLong(m_hwndCtrl,
+												GWL_WNDPROC,
+												(LONG)CtrlListItemProc);
+	::SetWindowLong(m_hwndCtrl, GWL_USERDATA, (LONG)this);
+	return TRUE;
 }
 
 
@@ -204,7 +232,8 @@ CtrlListItem::CtrlListItem(
 	CTRL_ID type,
 	const StringBuffer& name,
 	const StringBuffer& text)
-	:	m_type((DWORD)type),
+	:	m_dwMagic(CTRL_PTR_MAGIC),
+		m_type((DWORD)type),
 		m_name(name),
 		m_text(text),
 		m_cnum(0),
@@ -635,7 +664,7 @@ SimpleCtrl::SimpleCtrl(
 {
 	m_cnum = 1;
 	m_cy = 1;
-	m_pcp = new CtrlListItem::CtrlProperty();
+	m_pcp = new CtrlListItem::CtrlProperty(this);
 	m_pcp->m_text = text;
 }
 
@@ -699,10 +728,7 @@ SimpleCtrl::createCtrlTemplate(CtrlTemplateArgs& cta)
 BOOL
 SimpleCtrl::initCtrl(HWND hDlg)
 {
-	if (!CtrlListItem::initCtrl(hDlg)) return FALSE;
-	m_pcp->m_hwndCtrl = ::GetDlgItem(hDlg,m_pcp->m_id);
-	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
-	return TRUE;
+	return CtrlListItem::initCtrl(hDlg) && m_pcp->init(hDlg);
 }
 
 BOOL
@@ -717,7 +743,7 @@ SimpleCtrl::enableCtrl(BOOL bEnable, BOOL bChange)
 {
 	if (bChange) m_bEnable = bEnable;
 	if (m_pcp->m_hwndCtrl != NULL) {
-		::EnableWindow(m_pcp->m_hwndCtrl,m_bEnable && bEnable);
+		::EnableWindow(m_pcp->m_hwndCtrl, m_bEnable && bEnable);
 	}
 	return TRUE;
 }
@@ -736,7 +762,7 @@ SimpleCtrl::sendData()
 {
 	//	on default, set text of first control
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
-	::SetWindowText(m_pcp->m_hwndCtrl,m_pcp->m_text);
+	::SetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text);
 	if (m_pcp->m_fontprop.m_bchanged) m_pcp->changeFont();
 	return TRUE;
 }
@@ -746,9 +772,9 @@ SimpleCtrl::receiveData()
 {
 	//	on default, get text of first control
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
-	int	len = ::SendMessage(m_pcp->m_hwndCtrl,WM_GETTEXTLENGTH,0,0);
+	int	len = ::SendMessage(m_pcp->m_hwndCtrl, WM_GETTEXTLENGTH, 0, 0);
 	m_pcp->m_text.resize(len);
-	::GetWindowText(m_pcp->m_hwndCtrl,m_pcp->m_text.getBufPtr(),len + 1);
+	::GetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text.getBufPtr(), len + 1);
 	return (m_pcp->m_text.length() == len);
 }
 
@@ -909,7 +935,7 @@ EditCtrl::sendData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
 	::SetWindowText(m_pcp->m_hwndCtrl,
-					StringBuffer(m_pcp->m_text).replaceStr("\n","\r\n",-1));
+					StringBuffer(m_pcp->m_text).replaceStr("\n", "\r\n",-1));
 	return TRUE;
 }
 
@@ -917,9 +943,9 @@ BOOL
 EditCtrl::receiveData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
-	int	len = ::SendMessage(m_pcp->m_hwndCtrl,WM_GETTEXTLENGTH,0,0);
+	int	len = ::SendMessage(m_pcp->m_hwndCtrl, WM_GETTEXTLENGTH, 0, 0);
 	m_pcp->m_text.resize(len + 1);
-	::GetWindowText(m_pcp->m_hwndCtrl,m_pcp->m_text.getBufPtr(),len + 1);
+	::GetWindowText(m_pcp->m_hwndCtrl,m_pcp->m_text.getBufPtr(), len + 1);
 	m_pcp->m_text.replaceStr("\r\n","\n",-1);
 	return TRUE;
 }
@@ -1009,8 +1035,8 @@ CheckCtrl::CheckCtrl(
 	CTRL_ID type)
 	: BtnCtrl(name,text,type)
 {
-	m_pcp->m_style = (type==CTRLID_CHECK?BS_AUTOCHECKBOX:BS_AUTORADIOBUTTON)|
-						WS_CHILD|WS_TABSTOP|WS_VISIBLE|WS_GROUP;
+	m_pcp->m_style = (type == CTRLID_CHECK ? BS_AUTOCHECKBOX : BS_AUTORADIOBUTTON) |
+						WS_CHILD | WS_TABSTOP | WS_VISIBLE | WS_GROUP;
 
 	m_state = FALSE;
 }
@@ -1020,7 +1046,7 @@ CheckCtrl::sendData()
 {
 	if (!BtnCtrl::sendData()) return FALSE;
 	if (m_pcp->m_hwndCtrl != NULL)
-		::SendMessage(m_pcp->m_hwndCtrl,BM_SETCHECK,
+		::SendMessage(m_pcp->m_hwndCtrl, BM_SETCHECK,
 					m_state ? BST_CHECKED : BST_UNCHECKED, 0L);
 	return TRUE;
 }
@@ -1030,7 +1056,7 @@ CheckCtrl::receiveData()
 {
 	if (!BtnCtrl::receiveData()) return FALSE;
 	if (m_pcp->m_hwndCtrl != NULL)
-		m_state = (::SendMessage(m_pcp->m_hwndCtrl,BM_GETCHECK,0,0L)
+		m_state = (::SendMessage(m_pcp->m_hwndCtrl, BM_GETCHECK, 0, 0L)
 					== BST_CHECKED);
 	return TRUE;
 }
@@ -1117,10 +1143,10 @@ BOOL
 TrackCtrl::initCtrl(HWND hDlg)
 {
 	if (!SimpleCtrl::initCtrl(hDlg)) return FALSE;
-	::SendMessage(m_pcp->m_hwndCtrl,TBM_SETRANGE,
+	::SendMessage(m_pcp->m_hwndCtrl, TBM_SETRANGE,
 					(WPARAM)FALSE, MAKELPARAM(m_min,m_max));
-	::SendMessage(m_pcp->m_hwndCtrl,TBM_SETTICFREQ,(WPARAM)m_tic,0L);
-	::SendMessage(m_pcp->m_hwndCtrl,TBM_SETPOS,TRUE,(LPARAM)m_val);
+	::SendMessage(m_pcp->m_hwndCtrl, TBM_SETTICFREQ, (WPARAM)m_tic, 0L);
+	::SendMessage(m_pcp->m_hwndCtrl, TBM_SETPOS, TRUE, (LPARAM)m_val);
 	return TRUE;
 }
 
@@ -1128,7 +1154,7 @@ BOOL
 TrackCtrl::sendData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
-	::SendMessage(m_pcp->m_hwndCtrl,TBM_SETPOS,TRUE,(LPARAM)m_val);
+	::SendMessage(m_pcp->m_hwndCtrl, TBM_SETPOS, TRUE, (LPARAM)m_val);
 	return TRUE;
 }
 
@@ -1136,7 +1162,7 @@ BOOL
 TrackCtrl::receiveData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
-	m_val = (WORD)::SendMessage(m_pcp->m_hwndCtrl,TBM_GETPOS,0,0);
+	m_val = (WORD)::SendMessage(m_pcp->m_hwndCtrl, TBM_GETPOS, 0, 0);
 	return TRUE;
 }
 
@@ -1188,10 +1214,10 @@ BOOL
 TrackCtrl::dumpData(DlgDataFile& ddfile)
 {
 	if (!SimpleCtrl::dumpData(ddfile)) return FALSE;
-	ddfile.write(m_min,GetString(STR_DLGDATA_MIN));
-	ddfile.write(m_max,GetString(STR_DLGDATA_MAX));
-	ddfile.write(m_val,GetString(STR_DLGDATA_VAL));
-	ddfile.write(m_tic,GetString(STR_DLGDATA_TIC));
+	ddfile.write(m_min, GetString(STR_DLGDATA_MIN));
+	ddfile.write(m_max, GetString(STR_DLGDATA_MAX));
+	ddfile.write(m_val, GetString(STR_DLGDATA_VAL));
+	ddfile.write(m_tic, GetString(STR_DLGDATA_TIC));
 	return TRUE;
 }
 
@@ -1199,10 +1225,10 @@ BOOL
 TrackCtrl::loadData(DlgDataFile& ddfile)
 {
 	if (!SimpleCtrl::loadData(ddfile)) return FALSE;
-	ddfile.read(&m_min,GetString(STR_DLGDATA_MIN));
-	ddfile.read(&m_max,GetString(STR_DLGDATA_MAX));
-	ddfile.read(&m_val,GetString(STR_DLGDATA_VAL));
-	ddfile.read(&m_tic,GetString(STR_DLGDATA_TIC));
+	ddfile.read(&m_min, GetString(STR_DLGDATA_MIN));
+	ddfile.read(&m_max, GetString(STR_DLGDATA_MAX));
+	ddfile.read(&m_val, GetString(STR_DLGDATA_VAL));
+	ddfile.read(&m_tic, GetString(STR_DLGDATA_TIC));
 	return TRUE;
 }
 
@@ -1430,12 +1456,17 @@ HasListCtrl::loadData(DlgDataFile& ddfile)
 RadioCtrl::RadioCtrl(
 	const StringBuffer& name,
 	const StringBuffer& text)
-	: HasListCtrl(name,text,CTRLID_RADIO)
+	: HasListCtrl(name,text,CTRLID_RADIO), m_pRiSci(NULL)
 {
 	m_pcp->m_style		= BS_GROUPBOX|BS_NOTIFY|WS_CHILD|WS_VISIBLE|WS_TABSTOP;
 	m_pcp->m_bufsize	= 1;
 	m_pcp->m_classname	= (LPSTR)0x80;
 	m_pcp->m_text = text;
+}
+
+RadioCtrl::~RadioCtrl()
+{
+	delete [] m_pRiSci;
 }
 
 WORD
@@ -1493,6 +1524,39 @@ RadioCtrl::createCtrlTemplate(CtrlTemplateArgs& cta)
 	return TRUE;
 }
 
+LRESULT CALLBACK
+RadioCtrlProc(HWND hCtrl, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	RadioItemSubClassInfo*
+		pRiSci = (RadioItemSubClassInfo*)::GetWindowLong(hCtrl, GWL_USERDATA);
+	switch (uMsg) {
+	case WM_GET_CTRL_PTR:
+		return (LRESULT)pRiSci->m_pCtrl;
+	default:
+		return ::CallWindowProc(pRiSci->m_pfnDefCallback, hCtrl, uMsg, wParam, lParam);
+	}
+	return 0;
+}
+
+BOOL
+RadioCtrl::initCtrl(HWND hDlg)
+{
+	if (!HasListCtrl::initCtrl(hDlg)) return FALSE;
+	int num = m_item->itemNum();
+	if (m_pRiSci != NULL) delete [] m_pRiSci;
+	m_pRiSci = new RadioItemSubClassInfo[num];
+	for (int i = 1; i <= num; i++) {
+		HWND hCtrl = ::GetDlgItem(hDlg, m_pcp->m_id + i);
+		m_pRiSci[i-1].m_pCtrl = this;
+		m_pRiSci[i-1].m_pfnDefCallback
+			= (WNDPROC)::SetWindowLong(hCtrl,
+									   GWL_WNDPROC,
+									   (LONG)RadioCtrlProc);
+		::SetWindowLong(hCtrl, GWL_USERDATA, (LONG)(m_pRiSci + i - 1));
+	}
+	return TRUE;
+}
+
 BOOL
 RadioCtrl::enableCtrl(BOOL bEnable, BOOL bChange)
 {
@@ -1501,7 +1565,7 @@ RadioCtrl::enableCtrl(BOOL bEnable, BOOL bChange)
 		if (hDlg != NULL) {
 			int num = m_item->itemNum();
 			for (int i = 1; i <= num; i++)
-				::EnableWindow(::GetDlgItem(hDlg,m_pcp->m_id + i),
+				::EnableWindow(::GetDlgItem(hDlg, m_pcp->m_id + i),
 								m_bEnable && bEnable);
 		}
 	}
@@ -1533,7 +1597,7 @@ RadioCtrl::sendData()
 	ItemData* id;
 	for (int i = 1; i <= num; i++) {
 		id = m_item->getNextItem();
-		hwndBtn = ::GetDlgItem(hDlg,m_pcp->m_id + i);
+		hwndBtn = ::GetDlgItem(hDlg, m_pcp->m_id + i);
 		::SetWindowText(hwndBtn,id->getText());
 		::SendMessage(hwndBtn,BM_SETCHECK,
 					(i == m_state) ? BST_CHECKED : BST_UNCHECKED, 0L);
@@ -1552,12 +1616,12 @@ RadioCtrl::receiveData()
 	for (int i = 1; i <= num; i++) {
 		id = m_item->getNextItem();
 		StringBuffer& buf = id->getText();
-		hwndBtn = ::GetDlgItem(hDlg,m_pcp->m_id + i);
-		len = ::SendMessage(hwndBtn,WM_GETTEXTLENGTH,0,0);
+		hwndBtn = ::GetDlgItem(hDlg, m_pcp->m_id + i);
+		len = ::SendMessage(hwndBtn, WM_GETTEXTLENGTH, 0, 0);
 		buf.resize(len);
-		::GetWindowText(hwndBtn,buf.getBufPtr(),len + 1);
+		::GetWindowText(hwndBtn, buf.getBufPtr(), len + 1);
 		if (buf.length() != len) return FALSE;
-		if (::SendMessage(hwndBtn,BM_GETCHECK,0,0L)) m_state = i;
+		if (::SendMessage(hwndBtn, BM_GETCHECK, 0, 0L)) m_state = i;
 	}
 	return TRUE;
 }
@@ -1625,7 +1689,7 @@ RadioCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 	if (LOWORD(wParam) == m_pcp->m_id) {
 		if (HIWORD(wParam) == BN_SETFOCUS) {
 			WORD id = m_pcp->m_id + ((m_state > 0) ? m_state : 1);
-			::SetFocus(::GetDlgItem(m_pDlgPage->gethwndPage(),id));
+			::SetFocus(::GetDlgItem(m_pDlgPage->gethwndPage(), id));
 		}
 	} else if (HIWORD(wParam) == BN_CLICKED) {
 		WORD old_state = m_state;
@@ -1676,13 +1740,13 @@ ListCtrl::initCtrl(HWND hDlg)
 	ItemData* id;
 	int num = m_item->initSequentialGet();
 	while ((id = m_item->getNextItem()) != NULL) {
-		::SendMessage(m_pcp->m_hwndCtrl,m_msg_setstr,
-						(UINT)-1,(LPARAM)id->getText().getBufPtr());
+		::SendMessage(m_pcp->m_hwndCtrl, m_msg_setstr,
+						(UINT)-1, (LPARAM)id->getText().getBufPtr());
 	}
 	if (m_state > num) m_state = 0;
 	if (m_state > 0) {
-		::SendMessage(m_pcp->m_hwndCtrl,m_msg_setsel,(WPARAM)(m_state-1),0);
-		::SendMessage(m_pcp->m_hwndCtrl,LB_SETTOPINDEX,(WPARAM)(m_state-1),0);
+		::SendMessage(m_pcp->m_hwndCtrl, m_msg_setsel, (WPARAM)(m_state-1), 0);
+		::SendMessage(m_pcp->m_hwndCtrl, LB_SETTOPINDEX, (WPARAM)(m_state-1), 0);
 	}
 	return TRUE;
 }
@@ -1691,7 +1755,7 @@ BOOL
 ListCtrl::sendData()
 {
 	if (!SimpleCtrl::sendData()) return FALSE;
-	::SendMessage(m_pcp->m_hwndCtrl,m_msg_setsel,(WPARAM)(m_state-1),0);
+	::SendMessage(m_pcp->m_hwndCtrl, m_msg_setsel, (WPARAM)(m_state-1), 0);
 	return TRUE;
 }
 
@@ -1699,7 +1763,7 @@ BOOL
 ListCtrl::receiveData()
 {
 	if (!SimpleCtrl::receiveData()) return FALSE;
-	DWORD i = (DWORD)::SendMessage(m_pcp->m_hwndCtrl,m_msg_getsel,0,0);
+	DWORD i = (DWORD)::SendMessage(m_pcp->m_hwndCtrl, m_msg_getsel, 0, 0);
 	m_state = (i != m_msg_err) ? (i + 1) : 0;
 	if (m_state > 0) {
 		ItemData* id = m_item->getItemByIndex(m_state-1);
@@ -1715,9 +1779,9 @@ ListCtrl::onSetItem(CmdLineParser& text, const StringBuffer& pos)
 	if (ind < 0) return FALSE;
 	if (m_pcp->m_hwndCtrl != NULL) {
 		ItemData* id = m_item->getItemByIndex(ind);
-		::SendMessage(m_pcp->m_hwndCtrl,m_msg_delstr,ind,0);
-		::SendMessage(m_pcp->m_hwndCtrl,m_msg_setstr,
-						ind,(LPARAM)id->getText().getBufPtr());
+		::SendMessage(m_pcp->m_hwndCtrl, m_msg_delstr, ind, 0);
+		::SendMessage(m_pcp->m_hwndCtrl, m_msg_setstr,
+						ind, (LPARAM)id->getText().getBufPtr());
 		this->sendData();
 	}
 	return TRUE;
@@ -1730,8 +1794,8 @@ ListCtrl::onInsertItem(CmdLineParser& text, const StringBuffer& pos)
 	if (ind < 0) return FALSE;
 	if (m_pcp->m_hwndCtrl != NULL) {
 		ItemData* id = m_item->getItemByIndex(ind);
-		::SendMessage(m_pcp->m_hwndCtrl,m_msg_setstr,
-					ind,(LPARAM)id->getText().getBufPtr());
+		::SendMessage(m_pcp->m_hwndCtrl, m_msg_setstr,
+					ind, (LPARAM)id->getText().getBufPtr());
 		this->sendData();
 	}
 	return TRUE;
@@ -1743,7 +1807,7 @@ ListCtrl::onDeleteItem(const StringBuffer& pos)
 	int	ind = HasListCtrl::onDeleteItem(pos) - 1;
 	if (ind < 0) return FALSE;
 	if (m_pcp->m_hwndCtrl != NULL) {
-		::SendMessage(m_pcp->m_hwndCtrl,m_msg_delstr,ind,0);
+		::SendMessage(m_pcp->m_hwndCtrl, m_msg_delstr, ind, 0);
 		this->sendData();
 	}
 	return TRUE;
@@ -1753,7 +1817,7 @@ BOOL
 ListCtrl::onResetList()
 {
 	if (m_pcp->m_hwndCtrl != NULL) {
-		::SendMessage(m_pcp->m_hwndCtrl,m_msg_delall,0,0);
+		::SendMessage(m_pcp->m_hwndCtrl, m_msg_delall, 0, 0);
 	}
 	return HasListCtrl::onResetList();
 }
@@ -1765,8 +1829,8 @@ ListCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 	case LBN_DBLCLK: return m_notify[0];
 	case LBN_SELCHANGE:
 		if (m_state > 0) {
-			int sel = ::SendMessage(m_pcp->m_hwndCtrl,LB_GETCURSEL,0,0);
-			::SendMessage(m_pcp->m_hwndCtrl,LB_SETTOPINDEX,(WPARAM)sel,0);
+			int sel = ::SendMessage(m_pcp->m_hwndCtrl, LB_GETCURSEL, 0, 0);
+			::SendMessage(m_pcp->m_hwndCtrl, LB_SETTOPINDEX, (WPARAM)sel, 0);
 		}
 		return m_notify[1];
 	}
@@ -1814,7 +1878,7 @@ BOOL
 ComboCtrl::initCtrl(HWND hDlg)
 {
 	if (!ListCtrl::initCtrl(hDlg)) return FALSE;
-	::SetWindowText(m_pcp->m_hwndCtrl,m_pcp->m_text);
+	::SetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text);
 	return TRUE;
 }
 
@@ -1823,7 +1887,7 @@ ComboCtrl::sendData()
 {
 	if (!SimpleCtrl::sendData()) return FALSE;
 	if (m_state > 0)
-		::SendMessage(m_pcp->m_hwndCtrl,m_msg_setsel,(WPARAM)(m_state-1),0);
+		::SendMessage(m_pcp->m_hwndCtrl, m_msg_setsel, (WPARAM)(m_state-1), 0);
 	return TRUE;
 }
 
@@ -1831,7 +1895,7 @@ BOOL
 ComboCtrl::receiveData()
 {
 	if (!SimpleCtrl::receiveData()) return FALSE;
-	DWORD i = (DWORD)::SendMessage(m_pcp->m_hwndCtrl,m_msg_getsel,0,0);
+	DWORD i = (DWORD)::SendMessage(m_pcp->m_hwndCtrl, m_msg_getsel, 0, 0);
 	m_state = (i != m_msg_err) ? (i + 1) : 0;
 	return TRUE;
 }
@@ -1864,14 +1928,14 @@ ComboCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 				switch (m_imestate) {
 				case 1:
 					if (!::ImmGetOpenStatus(hImc))
-						::ImmSetOpenStatus(hImc,TRUE);
+						::ImmSetOpenStatus(hImc, TRUE);
 					break;
 				default:
 					if (::ImmGetOpenStatus(hImc))
-						::ImmSetOpenStatus(hImc,FALSE);
+						::ImmSetOpenStatus(hImc, FALSE);
 					break;
 				}
-				::ImmReleaseContext((HWND)lParam,hImc);
+				::ImmReleaseContext((HWND)lParam, hImc);
 			}
 			::SendMessage(hwndEdit,EM_SETSEL,0,-1);
 		}
@@ -1884,7 +1948,7 @@ BOOL
 ComboCtrl::dumpData(DlgDataFile& ddfile)
 {
 	if (!ListCtrl::dumpData(ddfile)) return FALSE;
-	ddfile.write(m_imestate,GetString(STR_DLGDATA_IMESTATE));
+	ddfile.write(m_imestate, GetString(STR_DLGDATA_IMESTATE));
 	return TRUE;
 }
 
@@ -1892,7 +1956,7 @@ BOOL
 ComboCtrl::loadData(DlgDataFile& ddfile)
 {
 	if (!ListCtrl::loadData(ddfile)) return FALSE;
-	ddfile.read(&m_imestate,GetString(STR_DLGDATA_IMESTATE));
+	ddfile.read(&m_imestate, GetString(STR_DLGDATA_IMESTATE));
 	return TRUE;
 }
 
@@ -1954,7 +2018,7 @@ RefBtnCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 				}
 			}
 			strRet = psi->getFileNameByDlg(m_pDlgPage->gethwndPage(),
-											pszTitle,pszIniDir,filters);
+											pszTitle, pszIniDir, filters);
 		}
 		break;
 	case CTRLID_REFDIRBUTTON:
@@ -1965,7 +2029,7 @@ RefBtnCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 			if (ac > 1) pszIniDir = m_item->getNextItem()->getText();
 			if (ac > 2) flag = ival(m_item->getNextItem()->getText());
 			strRet = psi->getDirNameByDlg(m_pDlgPage->gethwndPage(),
-											pszTitle,pszIniDir,flag);
+											pszTitle, pszIniDir, flag);
 		}
 		break;
 	case CTRLID_REFCOLORBUTTON:
@@ -1975,7 +2039,7 @@ RefBtnCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 			if (ac > 0) pszTitle = m_item->getNextItem()->getText();
 			if (ac > 1) pszIniColor = m_item->getNextItem()->getText();
 			strRet = psi->getColorByDlg(m_pDlgPage->gethwndPage(),
-										pszTitle,pszIniColor);
+										pszTitle, pszIniColor);
 		}
 		break;
 	case CTRLID_REFFONTBUTTON:
@@ -1993,7 +2057,7 @@ RefBtnCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 				}
 			}
 			strRet = psi->getFontByDlg(m_pDlgPage->gethwndPage(),
-										pszTitle,fontspecs);
+										pszTitle, fontspecs);
 		}
 		break;
 	}
@@ -2008,7 +2072,7 @@ BOOL
 RefBtnCtrl::dumpData(DlgDataFile& ddfile)
 {
 	if (!HasListCtrl::dumpData(ddfile)) return FALSE;
-	ddfile.write(m_exbuffer,secname);
+	ddfile.write(m_exbuffer, secname);
 	return TRUE;
 }
 
@@ -2016,7 +2080,7 @@ BOOL
 RefBtnCtrl::loadData(DlgDataFile& ddfile)
 {
 	if (!HasListCtrl::loadData(ddfile)) return FALSE;
-	ddfile.read(m_exbuffer,secname);
+	ddfile.read(m_exbuffer, secname);
 	return TRUE;
 }
 
@@ -2024,7 +2088,7 @@ ChkListCtrl::ChkListCtrl(
 	const StringBuffer& name,
 	const StringBuffer& text,
 	CTRL_ID type)
-	: HasListCtrl(name,text,type)
+	: HasListCtrl(name, text, type)
 {
 	m_pcp->m_style		= LVS_REPORT|LVS_NOCOLUMNHEADER/*|LVS_SINGLESEL*/|
 							WS_CHILD|WS_BORDER|WS_TABSTOP|WS_VISIBLE|WS_GROUP;
@@ -2037,31 +2101,31 @@ BOOL
 ChkListCtrl::initCtrl(HWND hDlg)
 {
 	if (!HasListCtrl::initCtrl(hDlg)) return FALSE;
-	HANDLE hbmp = ::LoadImage(NULL,MAKEINTRESOURCE(OBM_CHECKBOXES),
-								IMAGE_BITMAP,0,0,LR_DEFAULTCOLOR|LR_SHARED);
+	HANDLE hbmp = ::LoadImage(NULL, MAKEINTRESOURCE(OBM_CHECKBOXES),
+								IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_SHARED);
 	DWORD dlgbu = (DWORD)LOWORD(GetDialogBaseUnits(hDlg)) * 9 / 10;
-	hbmp = ::CopyImage(hbmp,IMAGE_BITMAP,dlgbu*4,dlgbu*3,0);
-	HIMAGELIST hImage = ImageList_Create((int)dlgbu,(int)dlgbu,ILC_COLOR,2,1);
-	ImageList_Add(hImage,(HBITMAP)hbmp,NULL);
-	ListView_SetImageList(m_pcp->m_hwndCtrl,hImage,LVSIL_SMALL);
+	hbmp = ::CopyImage(hbmp, IMAGE_BITMAP, dlgbu*4, dlgbu*3, 0);
+	HIMAGELIST hImage = ImageList_Create((int)dlgbu, (int)dlgbu, ILC_COLOR, 2, 1);
+	ImageList_Add(hImage, (HBITMAP)hbmp, NULL);
+	ListView_SetImageList(m_pcp->m_hwndCtrl, hImage, LVSIL_SMALL);
 	::DeleteObject(hbmp);
 	LV_COLUMN lvc;
 	lvc.mask		= LVCF_FMT|LVCF_SUBITEM;
 	lvc.fmt			= LVCFMT_LEFT;
 	lvc.iSubItem	= 0;
-	if (ListView_InsertColumn(m_pcp->m_hwndCtrl,0,&lvc) < 0) return FALSE;
+	if (ListView_InsertColumn(m_pcp->m_hwndCtrl, 0, &lvc) < 0) return FALSE;
 	LV_ITEM	lvi;
 	lvi.mask		= LVIF_TEXT|LVIF_IMAGE;
 	lvi.iSubItem	= 0;
 	ItemData* id;
-	ListView_SetItemCount(m_pcp->m_hwndCtrl,m_item->initSequentialGet());
+	ListView_SetItemCount(m_pcp->m_hwndCtrl, m_item->initSequentialGet());
 	for (int i = 0; (id = m_item->getNextItem()) != NULL; i++) {
 		lvi.iItem	= i;
 		lvi.pszText = id->getText().getBufPtr();
 		lvi.iImage	= 0;
-		ListView_InsertItem(m_pcp->m_hwndCtrl,&lvi);
+		ListView_InsertItem(m_pcp->m_hwndCtrl, &lvi);
 	}
-	ListView_SetColumnWidth(m_pcp->m_hwndCtrl,0,LVSCW_AUTOSIZE);
+	ListView_SetColumnWidth(m_pcp->m_hwndCtrl, 0, LVSCW_AUTOSIZE);
 	return TRUE;
 }
 
@@ -2070,7 +2134,7 @@ ChkListCtrl::sendData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
 	if (m_state > 0 && !m_states.getState(m_state-1))
-		m_states.setState(m_state-1,TRUE);
+		m_states.setState(m_state-1, TRUE);
 	LV_ITEM	lvi;
 	lvi.mask		= LVIF_IMAGE|LVIF_PARAM;
 	lvi.iSubItem	= 0;
@@ -2078,9 +2142,9 @@ ChkListCtrl::sendData()
 	for (lvi.iItem = 0; lvi.iItem < num; lvi.iItem++) {
 		lvi.lParam	= m_states.getState(lvi.iItem);
 		lvi.iImage	= lvi.lParam != 0;
-		ListView_SetItem(m_pcp->m_hwndCtrl,&lvi);
+		ListView_SetItem(m_pcp->m_hwndCtrl, &lvi);
 	}
-	ListView_RedrawItems(m_pcp->m_hwndCtrl,0,num);
+	ListView_RedrawItems(m_pcp->m_hwndCtrl, 0, num);
 	::UpdateWindow(m_pcp->m_hwndCtrl);
 	return TRUE;
 }
@@ -2094,8 +2158,8 @@ ChkListCtrl::receiveData()
 	lvi.iSubItem	= 0;
 	int	num = m_item->itemNum();
 	for (lvi.iItem = 0; lvi.iItem < num; lvi.iItem++) {
-		ListView_GetItem(m_pcp->m_hwndCtrl,&lvi);
-		m_states.setState(lvi.iItem,lvi.lParam);
+		ListView_GetItem(m_pcp->m_hwndCtrl, &lvi);
+		m_states.setState(lvi.iItem, lvi.lParam);
 	}
 	m_state = m_states.getFirstIndex(num) + 1;
 	return TRUE;
@@ -2108,7 +2172,7 @@ ChkListCtrl::onSetState(CmdLineParser& state)
 	state.initSequentialGet();
 	LPCSTR av;
 	while ((av = state.getNextArgv()) != NULL) {
-		m_states.setState(ival(av) - 1,TRUE);
+		m_states.setState(ival(av) - 1, TRUE);
 	}
 	m_state = m_states.getFirstIndex(m_item->itemNum()) + 1;
 	this->sendData();
@@ -2118,7 +2182,7 @@ ChkListCtrl::onSetState(CmdLineParser& state)
 BOOL
 ChkListCtrl::onSetItem(CmdLineParser& text, const StringBuffer& pos)
 {
-	int	ind = HasListCtrl::onSetItem(text,pos) - 1;
+	int	ind = HasListCtrl::onSetItem(text, pos) - 1;
 	if (ind < 0) return FALSE;
 	if (m_pcp->m_hwndCtrl != NULL) {
 		ItemData* id = m_item->getItemByIndex(ind);
@@ -2128,7 +2192,7 @@ ChkListCtrl::onSetItem(CmdLineParser& text, const StringBuffer& pos)
 		lvi.iItem		= ind;
 		lvi.iSubItem	= 0;
 		lvi.pszText		= id->getText().getBufPtr();
-		ListView_SetItem(m_pcp->m_hwndCtrl,&lvi);
+		ListView_SetItem(m_pcp->m_hwndCtrl, &lvi);
 	}
 	return TRUE;
 }
@@ -2136,16 +2200,16 @@ ChkListCtrl::onSetItem(CmdLineParser& text, const StringBuffer& pos)
 BOOL
 ChkListCtrl::onInsertItem(CmdLineParser& text, const StringBuffer& pos)
 {
-	int	ind = HasListCtrl::onInsertItem(text,pos) - 1;
+	int	ind = HasListCtrl::onInsertItem(text, pos) - 1;
 	if (ind < 0) return FALSE;
 	int	num = m_item->itemNum();
 	if (ind != num - 1) {
 		BOOL btmp = FALSE;
 		while (ind < --num) {
 			btmp = m_states.getState(num-1);
-			m_states.setState(num,btmp);
+			m_states.setState(num, btmp);
 		}
-		m_states.setState(ind,FALSE);
+		m_states.setState(ind, FALSE);
 		m_state = m_states.getFirstIndex(num) + 1;
 	}
 	if (m_pcp->m_hwndCtrl != NULL) {
@@ -2158,8 +2222,8 @@ ChkListCtrl::onInsertItem(CmdLineParser& text, const StringBuffer& pos)
 		lvi.iImage		= 0;
 		lvi.lParam		= 0;
 		lvi.pszText		= id->getText().getBufPtr();
-		ListView_InsertItem(m_pcp->m_hwndCtrl,&lvi);
-		ListView_SetColumnWidth(m_pcp->m_hwndCtrl,0,LVSCW_AUTOSIZE);
+		ListView_InsertItem(m_pcp->m_hwndCtrl, &lvi);
+		ListView_SetColumnWidth(m_pcp->m_hwndCtrl, 0, LVSCW_AUTOSIZE);
 	}
 	return TRUE;
 }
@@ -2177,7 +2241,7 @@ ChkListCtrl::onDeleteItem(const StringBuffer& pos)
 		m_state = m_states.getFirstIndex(num);
 	}
 	if (m_pcp->m_hwndCtrl != NULL)
-		ListView_DeleteItem(m_pcp->m_hwndCtrl,ind);
+		ListView_DeleteItem(m_pcp->m_hwndCtrl, ind);
 	return TRUE;
 }
 
@@ -2219,7 +2283,7 @@ ChkListCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 			if (index >= 0) {
 				ListView_SetItemState(m_pcp->m_hwndCtrl,
 									index,
-									LVIS_FOCUSED,LVIS_FOCUSED);
+									LVIS_FOCUSED, LVIS_FOCUSED);
 			}
 		}
 		break;
@@ -2230,14 +2294,14 @@ ChkListCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 			lvi.mask  = LVIF_PARAM;
 			lvi.iItem = (reinterpret_cast<NM_LISTVIEW*>(lParam))->iItem;
 			lvi.iSubItem = 0;
-			ListView_GetItem(m_pcp->m_hwndCtrl,&lvi);
+			ListView_GetItem(m_pcp->m_hwndCtrl, &lvi);
 			lvi.lParam = !lvi.lParam;
 			lvi.mask |= LVIF_STATE|LVIF_IMAGE;
 			lvi.stateMask	= LVIS_SELECTED;
 			lvi.state		= LVIS_SELECTED;
 			lvi.iImage		= lvi.lParam != 0;
-			ListView_SetItem(m_pcp->m_hwndCtrl,&lvi);
-			ListView_Update(m_pcp->m_hwndCtrl,lvi.iItem);
+			ListView_SetItem(m_pcp->m_hwndCtrl, &lvi);
+			ListView_Update(m_pcp->m_hwndCtrl, lvi.iItem);
 		}
 		return m_notify[1];
 	case LVN_KEYDOWN:
@@ -2255,11 +2319,11 @@ ChkListCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 				BOOL bAllSet = TRUE;
 				int i;
 				for (i = 0; i < num; i++) {
-					if (ListView_GetItemState(hwndCtrl,i,LVIS_SELECTED)
+					if (ListView_GetItemState(hwndCtrl, i, LVIS_SELECTED)
 						== LVIS_SELECTED) {
 						selected[i] = TRUE;
 						lvi.iItem = i;
-						ListView_GetItem(hwndCtrl,&lvi);
+						ListView_GetItem(hwndCtrl, &lvi);
 						if (lvi.lParam != 0) bAllSet = FALSE;
 					}
 				}
@@ -2271,8 +2335,8 @@ ChkListCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 				for (i = 0; i < num; i++) {
 					if (selected[i]) {
 						lvi.iItem = i;
-						ListView_SetItem(hwndCtrl,&lvi);
-						ListView_Update(hwndCtrl,i);
+						ListView_SetItem(hwndCtrl, &lvi);
+						ListView_Update(hwndCtrl, i);
 					}
 				}
 				delete [] selected;
@@ -2323,13 +2387,13 @@ const StringBuffer sep = ":";
 LViewCtrl::LViewCtrl(
 	const StringBuffer& name,
 	const StringBuffer& text)
-	: ChkListCtrl(name,text,CTRLID_LVIEW)
+	: ChkListCtrl(name, text, CTRLID_LVIEW)
 {
 	m_pcp->m_style = LVS_REPORT|LVS_SHOWSELALWAYS|//LVS_NOSORTHEADER|
 						WS_CHILD|WS_BORDER|WS_TABSTOP|WS_VISIBLE|WS_GROUP;
 
 	m_hdr = NULL;
-	Tokenizer tkn(text,sep);
+	Tokenizer tkn(text, sep);
 	m_pcp->m_text = tkn.getNextToken();
 	if (tkn.hasMoreTokens()) {
 		m_hdr = new LViewItemData();
@@ -2364,11 +2428,11 @@ setlvitem(
 	UINT msg, WPARAM wParam)
 {
 	lvi.pszText = lvid->getItemByIndex(lvi.iSubItem)->getText().getBufPtr();
-	::SendMessage(hwndCtrl,msg,wParam,(LPARAM)&lvi);
-	int cwidth = ListView_GetStringWidth(hwndCtrl,lvi.pszText) + 
+	::SendMessage(hwndCtrl, msg, wParam, (LPARAM)&lvi);
+	int cwidth = ListView_GetStringWidth(hwndCtrl, lvi.pszText) + 
 					(lvi.iSubItem ? 12 : 10);
-	if (cwidth > ListView_GetColumnWidth(hwndCtrl,lvi.iSubItem))
-		ListView_SetColumnWidth(hwndCtrl,lvi.iSubItem,cwidth);
+	if (cwidth > ListView_GetColumnWidth(hwndCtrl, lvi.iSubItem))
+		ListView_SetColumnWidth(hwndCtrl, lvi.iSubItem, cwidth);
 }
 
 BOOL
@@ -2385,9 +2449,9 @@ LViewCtrl::initCtrl(HWND hDlg)
 		lvc.cx = 12;
 		if (m_hdr) {
 			lvc.pszText = m_hdr->getItemByIndex(i)->getText().getBufPtr();
-			lvc.cx += ListView_GetStringWidth(m_pcp->m_hwndCtrl,lvc.pszText);
+			lvc.cx += ListView_GetStringWidth(m_pcp->m_hwndCtrl, lvc.pszText);
 		}
-		if (ListView_InsertColumn(m_pcp->m_hwndCtrl,i,&lvc) < 0)
+		if (ListView_InsertColumn(m_pcp->m_hwndCtrl, i, &lvc) < 0)
 			return FALSE;
 	}
 	LV_ITEM	lvi;
@@ -2399,7 +2463,7 @@ LViewCtrl::initCtrl(HWND hDlg)
 		i++) {
 		lvi.iItem = i;
 		for (lvi.iSubItem = 0; lvi.iSubItem < (int)m_colnum; lvi.iSubItem++) {
-			setlvitem(lvi,lvid,m_pcp->m_hwndCtrl,
+			setlvitem(lvi, lvid, m_pcp->m_hwndCtrl,
 						lvi.iSubItem > 0 ? LVM_SETITEM : LVM_INSERTITEM, 0);
 		}
 	}
@@ -2411,7 +2475,7 @@ LViewCtrl::sendData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
 	if (m_state > 0 && !m_states.getState(m_state-1))
-		m_states.setState(m_state-1,TRUE);
+		m_states.setState(m_state-1, TRUE);
 	LV_ITEM	lvi;
 	lvi.mask		= LVIF_STATE;
 	lvi.stateMask	= LVIS_SELECTED;
@@ -2419,9 +2483,9 @@ LViewCtrl::sendData()
 	int	num = m_item->itemNum();
 	for (lvi.iItem = 0; lvi.iItem < num; lvi.iItem++) {
 		lvi.state = m_states.getState(lvi.iItem) ? LVIS_SELECTED : 0;
-		ListView_SetItem(m_pcp->m_hwndCtrl,&lvi);
+		ListView_SetItem(m_pcp->m_hwndCtrl, &lvi);
 	}
-	ListView_RedrawItems(m_pcp->m_hwndCtrl,0,num);
+	ListView_RedrawItems(m_pcp->m_hwndCtrl, 0, num);
 	::UpdateWindow(m_pcp->m_hwndCtrl);
 	return TRUE;
 }
@@ -2436,8 +2500,8 @@ LViewCtrl::receiveData()
 	lvi.iSubItem	= 0;
 	int	num = m_item->itemNum();
 	for (lvi.iItem = 0; lvi.iItem < num; lvi.iItem++) {
-		ListView_GetItem(m_pcp->m_hwndCtrl,&lvi);
-		m_states.setState(lvi.iItem,(lvi.state&LVIS_SELECTED) != 0);
+		ListView_GetItem(m_pcp->m_hwndCtrl, &lvi);
+		m_states.setState(lvi.iItem, (lvi.state & LVIS_SELECTED) != 0);
 	}
 	m_state = m_states.getFirstIndex(num) + 1;
 	return TRUE;
@@ -2467,7 +2531,7 @@ LViewCtrl::onSetItem(CmdLineParser& argv, const StringBuffer& pos)
 	lvi.mask = LVIF_TEXT;
 	lvi.iItem = ind;
 	for (lvi.iSubItem = 0; lvi.iSubItem < (int)m_colnum; lvi.iSubItem++) {
-		setlvitem(lvi,lvid,m_pcp->m_hwndCtrl,LVM_SETITEMTEXT,lvi.iItem);
+		setlvitem(lvi, lvid, m_pcp->m_hwndCtrl, LVM_SETITEMTEXT, lvi.iItem);
 	}
 	return TRUE;
 }
@@ -2497,9 +2561,9 @@ LViewCtrl::onInsertItem(CmdLineParser& argv, const StringBuffer& pos)
 		BOOL btmp = FALSE;
 		while (ind <= --num) {
 			btmp = m_states.getState(num);
-			m_states.setState(num+1,btmp);
+			m_states.setState(num+1, btmp);
 		}
-		m_states.setState(ind,FALSE);
+		m_states.setState(ind, FALSE);
 		m_state = m_states.getFirstIndex(num);
 	} else ind = num;
 	if (m_pcp->m_hwndCtrl == NULL) return TRUE;
@@ -2509,7 +2573,7 @@ LViewCtrl::onInsertItem(CmdLineParser& argv, const StringBuffer& pos)
 	for (lvi.iSubItem = 0;
 		lvi.iSubItem < (int)(DWORD)m_colnum;
 		lvi.iSubItem++) {
-		setlvitem(lvi,lvid,m_pcp->m_hwndCtrl,
+		setlvitem(lvi, lvid, m_pcp->m_hwndCtrl,
 					lvi.iSubItem ? LVM_SETITEMTEXT : LVM_INSERTITEM,
 					lvi.iSubItem ? lvi.iItem : 0);
 	}
@@ -2585,7 +2649,7 @@ LViewCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 		}
 		return 0xFFFF;
 	case LVN_DELETEALLITEMS:
-		::SetWindowLong(m_pDlgPage->gethwndPage(),DWL_MSGRESULT,(LONG)TRUE);
+		::SetWindowLong(m_pDlgPage->gethwndPage(), DWL_MSGRESULT, (LONG)TRUE);
 	}
 	return 0xFFFF;
 }
@@ -2594,10 +2658,10 @@ BOOL
 LViewCtrl::dumpData(DlgDataFile& ddfile)
 {
 	if (!SimpleCtrl::dumpData(ddfile)) return FALSE;
-	ddfile.write(m_colnum,GetString(STR_DLGDATA_COLNUM));
+	ddfile.write(m_colnum, GetString(STR_DLGDATA_COLNUM));
 	m_states.dumpData(ddfile);
 	ddfile.write((int)(m_hdr != 0),GetString(STR_DLGDATA_USEHEADER));
-	StringBuffer keybuf(GetString(STR_DLGDATA_HEADER),-1,32);
+	StringBuffer keybuf(GetString(STR_DLGDATA_HEADER), -1, 32);
 	keybuf.append((TCHAR)'_');
 	int	keylen = keybuf.length();
 	ItemData* id;
@@ -2607,7 +2671,7 @@ LViewCtrl::dumpData(DlgDataFile& ddfile)
 			if ((id = m_hdr->getNextItem()) == NULL) break;
 			keybuf.setlength(keylen);
 			keybuf.append(i);
-			ddfile.write(id->getText(),keybuf);
+			ddfile.write(id->getText(), keybuf);
 		}
 	}
 	LViewItemData* lvid;
@@ -2626,7 +2690,7 @@ LViewCtrl::dumpData(DlgDataFile& ddfile)
 			if ((id = lvid->getNextItem()) != NULL) continue;
 			keybuf.setlength(len);
 			keybuf.append(j);
-			ddfile.write(id->getText(),keybuf);
+			ddfile.write(id->getText(), keybuf);
 		}
 	}
 	ddfile.write(num,GetString(STR_DLGDATA_ITEMNUM));
@@ -2637,12 +2701,12 @@ BOOL
 LViewCtrl::loadData(DlgDataFile& ddfile)
 {
 	if (!SimpleCtrl::loadData(ddfile)) return FALSE;
-	ddfile.read(&m_colnum,GetString(STR_DLGDATA_COLNUM));
+	ddfile.read(&m_colnum, GetString(STR_DLGDATA_COLNUM));
 	m_states.loadData(ddfile);
 	int	num, usehdr;
-	ddfile.read(&num,GetString(STR_DLGDATA_ITEMNUM));
-	ddfile.read(&usehdr,GetString(STR_DLGDATA_USEHEADER));
-	StringBuffer keybuf(GetString(STR_DLGDATA_HEADER),-1,32);
+	ddfile.read(&num, GetString(STR_DLGDATA_ITEMNUM));
+	ddfile.read(&usehdr, GetString(STR_DLGDATA_USEHEADER));
+	StringBuffer keybuf(GetString(STR_DLGDATA_HEADER), -1, 32);
 	keybuf.append((TCHAR)'_');
 	int	keylen = keybuf.length();
 	ItemData* id;
@@ -2653,7 +2717,7 @@ LViewCtrl::loadData(DlgDataFile& ddfile)
 				keybuf.setlength(keylen);
 				keybuf.append(i);
 				id = new ItemData(nullStr);
-				ddfile.read(id->getText(),keybuf);
+				ddfile.read(id->getText(), keybuf);
 				m_hdr->addItem(id);
 			}
 		} catch (exception&) {
@@ -2674,7 +2738,7 @@ LViewCtrl::loadData(DlgDataFile& ddfile)
 				keybuf.setlength(len);
 				keybuf.append(j);
 				id = new ItemData(nullStr);
-				ddfile.read(id->getText(),keybuf);
+				ddfile.read(id->getText(), keybuf);
 				lvid->addItem(id);
 			}
 		} catch (exception&) {
@@ -2688,7 +2752,7 @@ LViewCtrl::loadData(DlgDataFile& ddfile)
 TreeCtrl::TreeCtrl(
 	const StringBuffer& name,
 	const StringBuffer& text)
-	: SimpleCtrl(name,text,CTRLID_TREE), m_state(nullStr,0,32)
+	: SimpleCtrl(name, text, CTRLID_TREE), m_state(nullStr, 0, 32)
 {
 	m_pcp->m_style		= TVS_HASBUTTONS|TVS_LINESATROOT|TVS_HASLINES|
 							TVS_DISABLEDRAGDROP|TVS_SHOWSELALWAYS|
@@ -2714,7 +2778,7 @@ TreeCtrl::initCtrl(HWND hDlg)
 	m_item->initSequentialGet();
 	TreeItemData* tid;
 	while ((tid = static_cast<TreeItemData*>(m_item->getNextItem())) != NULL)
-		if (!tid->initItem(m_pcp->m_hwndCtrl,TVI_ROOT)) return FALSE;
+		if (!tid->initItem(m_pcp->m_hwndCtrl, TVI_ROOT)) return FALSE;
 	return TRUE;
 }
 
@@ -2725,8 +2789,8 @@ TreeCtrl::sendData()
 	if (m_state.length() > 0) {
 		TreeItemData* tid = m_pHashItem->getValue(m_state);
 		if (tid != NULL) {
-			TreeView_EnsureVisible(m_pcp->m_hwndCtrl,tid->m_hItem);
-			TreeView_SelectItem(m_pcp->m_hwndCtrl,tid->m_hItem);
+			TreeView_EnsureVisible(m_pcp->m_hwndCtrl, tid->m_hItem);
+			TreeView_SelectItem(m_pcp->m_hwndCtrl, tid->m_hItem);
 		}
 	}
 	return TRUE;
@@ -2739,7 +2803,7 @@ TreeCtrl::receiveData()
 	TV_ITEM	tvi;
 	tvi.mask	= TVIF_HANDLE|TVIF_PARAM;
 	tvi.hItem	= TreeView_GetSelection(m_pcp->m_hwndCtrl);
-	if (!TreeView_GetItem(m_pcp->m_hwndCtrl,&tvi)	||
+	if (!TreeView_GetItem(m_pcp->m_hwndCtrl, &tvi)	||
 		!tvi.lParam) return FALSE;
 	m_state.reset((reinterpret_cast<TreeItemData*>(tvi.lParam))->getName());
 	return TRUE;
@@ -2767,7 +2831,7 @@ TreeCtrl::onSetItem(CmdLineParser& text, const StringBuffer& pos)
 		tvi.mask	= TVIF_TEXT;
 		tvi.pszText	= tid->getText().getBufPtr();
 		tvi.hItem	= tid->m_hItem;
-		return TreeView_SetItem(m_pcp->m_hwndCtrl,&tvi) + 1;
+		return TreeView_SetItem(m_pcp->m_hwndCtrl, &tvi) + 1;
 	}
 	return TRUE;
 }
@@ -2781,7 +2845,7 @@ TreeCtrl::onInsertItem(CmdLineParser& argv, const StringBuffer& pos)
 	if (m_pHashItem->getValue(name) != NULL) return FALSE; // already exist
 	TreeItemData* tid;
 	try {
-		tid = new TreeItemData(name,argv.getNextArgvStr());
+		tid = new TreeItemData(name, argv.getNextArgvStr());
 	} catch (exception&) {
 		return FALSE;
 	}
@@ -2798,8 +2862,8 @@ TreeCtrl::onInsertItem(CmdLineParser& argv, const StringBuffer& pos)
 		}
 	}
 	if (m_pcp->m_hwndCtrl != NULL) {
-		tid->initItem(m_pcp->m_hwndCtrl,hItem);
-		::InvalidateRect(m_pcp->m_hwndCtrl,NULL,FALSE);
+		tid->initItem(m_pcp->m_hwndCtrl, hItem);
+		::InvalidateRect(m_pcp->m_hwndCtrl, NULL, FALSE);
 		::UpdateWindow(m_pcp->m_hwndCtrl);
 	}
 	return TRUE;
@@ -2813,9 +2877,9 @@ TreeCtrl::onDeleteItem(const StringBuffer& pos)
 		tid = m_pHashItem->getValue(pos.length() > 0 ? pos : m_state);
 	if (tid == NULL) return FALSE;
 	if (m_pcp->m_hwndCtrl != NULL) {
-		TreeView_DeleteItem(m_pcp->m_hwndCtrl,tid->m_hItem);
+		TreeView_DeleteItem(m_pcp->m_hwndCtrl, tid->m_hItem);
 	}
-	m_pHashItem->setValue(tid->getName(),0);
+	m_pHashItem->setValue(tid->getName(), 0);
 	TreeItemData* ptid = tid->getParent();
 	if (ptid == NULL) m_item->delItemByPtr(tid);
 	else ptid->delItemByPtr(tid);
@@ -2875,7 +2939,7 @@ TreeCtrl::dumpData(DlgDataFile& ddfile)
 	ddfile.write(m_state,GetString(STR_DLGDATA_STATE));
 	int	num = m_item->initSequentialGet();
 	TreeItemData* tid;
-	StringBuffer keybuf(GetString(STR_DLGDATA_ROOT),-1,32);
+	StringBuffer keybuf(GetString(STR_DLGDATA_ROOT), -1, 32);
 	keybuf.append((TCHAR)':').append(GetString(STR_DLGDATA_CHILD))
 			.append((TCHAR)'_');
 	int	keylen = keybuf.length();
@@ -2884,7 +2948,7 @@ TreeCtrl::dumpData(DlgDataFile& ddfile)
 			continue;
 		keybuf.setlength(keylen);
 		keybuf.append(i);
-		ddfile.write(tid->getName(),keybuf);
+		ddfile.write(tid->getName(), keybuf);
 		tid->dumpData(ddfile);
 	}
 	keybuf.reset(GetString(STR_DLGDATA_ROOT));
@@ -2897,9 +2961,9 @@ BOOL
 TreeCtrl::loadData(DlgDataFile& ddfile)
 {
 	if (!SimpleCtrl::loadData(ddfile)) return FALSE;
-	ddfile.read(m_state,GetString(STR_DLGDATA_STATE));
+	ddfile.read(m_state, GetString(STR_DLGDATA_STATE));
 	int	num;
-	StringBuffer keybuf(GetString(STR_DLGDATA_ROOT),-1,32), namebuf(32);
+	StringBuffer keybuf(GetString(STR_DLGDATA_ROOT), -1, 32), namebuf(32);
 	keybuf.append((TCHAR)':').append(GetString(STR_DLGDATA_ITEMNUM));
 	ddfile.read(&num,keybuf);
 	keybuf.reset(GetString(STR_DLGDATA_ROOT));
@@ -2910,16 +2974,16 @@ TreeCtrl::loadData(DlgDataFile& ddfile)
 	for (int i = 0; i < num; i++) {
 		keybuf.setlength(keylen);
 		keybuf.append(i);
-		ddfile.read(namebuf,keybuf);
+		ddfile.read(namebuf, keybuf);
 		if (namebuf.length() <= 0) continue;
 		try {
-			tid = new TreeItemData(namebuf,nullStr);
+			tid = new TreeItemData(namebuf, nullStr);
 		} catch (exception&) {
 			return FALSE;
 		}
-		if (tid->loadData(ddfile,*m_pHashItem)) {
+		if (tid->loadData(ddfile, *m_pHashItem)) {
 			m_item->addItem(tid);
-			m_pHashItem->setValue(tid->getName(),tid);
+			m_pHashItem->setValue(tid->getName(), tid);
 		}
 	}
 	return TRUE;
@@ -2929,7 +2993,7 @@ FrameCtrl::FrameCtrl(
 	const StringBuffer& name,
 	const StringBuffer& text,
 	CTRL_ID type)
-	: HasListCtrl(name,text,type), m_page(NULL)
+	: HasListCtrl(name, text, type), m_page(NULL)
 {
 	if (type == CTRLID_FRAME) {
 		m_pcp->m_style		= BS_FLAT;
@@ -3004,7 +3068,7 @@ FrameCtrl::initCtrl(HWND hDlg)
 		return FALSE;
 	}
 	::ZeroMemory(m_page,sizeof(DlgPage*)*num);
-	if (!m_bVisible) ::ShowWindow(m_pcp->m_hwndCtrl,SW_HIDE);
+	if (!m_bVisible) ::ShowWindow(m_pcp->m_hwndCtrl, SW_HIDE);
 	num = 0;
 	DlgFrame& rDlgFrame = m_pDlgPage->getDlgFrame();
 	m_item->initSequentialGet();
@@ -3015,7 +3079,7 @@ FrameCtrl::initCtrl(HWND hDlg)
 		if (!m_pDlgPage->addShowPageQueue(
 								id->getText(),
 								m_pcp->m_hwndCtrl,
-								m_poffset.x,m_poffset.y,
+								m_poffset.x, m_poffset.y,
 								m_cx - m_pmargin.x,
 								m_cy - m_pmargin.y)) {
 			return FALSE;
@@ -3081,14 +3145,14 @@ BOOL
 FrameCtrl::onSetItem(CmdLineParser& text, const StringBuffer& pos)
 {
 	if (m_pcp->m_hwndCtrl != NULL) return FALSE;
-	return HasListCtrl::onSetItem(text,pos);
+	return HasListCtrl::onSetItem(text, pos);
 }
 
 BOOL
 FrameCtrl::onInsertItem(CmdLineParser& text, const StringBuffer& pos)
 {
 	if (m_pcp->m_hwndCtrl != NULL) return FALSE;
-	return HasListCtrl::onInsertItem(text,pos);
+	return HasListCtrl::onInsertItem(text, pos);
 }
 
 BOOL
@@ -3181,12 +3245,12 @@ TabCtrl::initCtrl(HWND hDlg)
 		!= NULL) {
 		tci.pszText	= nid->getText().getBufPtr();
 		tci.lParam = (LPARAM)rDlgFrame.getPage(nid->getName());
-		TabCtrl_InsertItem(m_pcp->m_hwndCtrl,num++,&tci);
+		TabCtrl_InsertItem(m_pcp->m_hwndCtrl, num++, &tci);
 		if (tci.lParam == 0) continue;
 		m_pDlgPage->addShowPageQueue(
 							nid->getName(),
 							m_pcp->m_hwndCtrl,
-							m_poffset.x,m_poffset.y,
+							m_poffset.x, m_poffset.y,
 							m_cx - m_pmargin.x,
 							m_cy - m_pmargin.y);
 	}
@@ -3196,11 +3260,11 @@ TabCtrl::initCtrl(HWND hDlg)
 BOOL
 TabCtrl::enableCtrl(BOOL bEnable, BOOL bChange)
 {
-	if (!HasListCtrl::enableCtrl(bEnable,bChange)) return FALSE;
+	if (!HasListCtrl::enableCtrl(bEnable, bChange)) return FALSE;
 	if (m_state <= 0 || m_state > m_item->itemNum()) m_state = 1;
 	TC_ITEM	tci;
 	tci.mask = TCIF_PARAM;
-	TabCtrl_GetItem(m_pcp->m_hwndCtrl,m_state-1,&tci);
+	TabCtrl_GetItem(m_pcp->m_hwndCtrl, m_state-1, &tci);
 	if (tci.lParam != 0)
 		reinterpret_cast<DlgPage*>(tci.lParam)->enablePage(bEnable);
 	return TRUE;
@@ -3213,7 +3277,7 @@ TabCtrl::showCtrl(BOOL bVisible)
 	if (m_state <= 0 || m_state > m_item->itemNum()) m_state = 1;
 	TC_ITEM	tci;
 	tci.mask = TCIF_PARAM;
-	TabCtrl_GetItem(m_pcp->m_hwndCtrl,m_state-1,&tci);
+	TabCtrl_GetItem(m_pcp->m_hwndCtrl, m_state-1, &tci);
 	if (tci.lParam != 0)
 		reinterpret_cast<DlgPage*>(tci.lParam)->showPage(bVisible);
 	return TRUE;
@@ -3224,7 +3288,7 @@ TabCtrl::sendData()
 {
 	if (!HasListCtrl::sendData()) return FALSE;
 	if (m_state <= 0 || m_state > m_item->itemNum()) m_state = 1;
-	TabCtrl_SetCurSel(m_pcp->m_hwndCtrl,m_state-1);
+	TabCtrl_SetCurSel(m_pcp->m_hwndCtrl, m_state-1);
 	return TRUE;
 }
 
@@ -3243,7 +3307,7 @@ TabCtrl::onSetState(CmdLineParser& state)
 	TC_ITEM	tci;
 	if (m_pcp->m_hwndCtrl != NULL) {
 		tci.mask = TCIF_PARAM;
-		TabCtrl_GetItem(m_pcp->m_hwndCtrl,m_state-1,&tci);
+		TabCtrl_GetItem(m_pcp->m_hwndCtrl, m_state-1, &tci);
 		if (tci.lParam != 0)
 			reinterpret_cast<DlgPage*>(tci.lParam)->showPage(FALSE);
 	}
@@ -3251,7 +3315,7 @@ TabCtrl::onSetState(CmdLineParser& state)
 	if (m_state < 0 || m_state > m_item->itemNum()) m_state = 0;
 	this->sendData();
 	if (m_pcp->m_hwndCtrl != NULL) {
-		TabCtrl_GetItem(m_pcp->m_hwndCtrl,m_state-1,&tci);
+		TabCtrl_GetItem(m_pcp->m_hwndCtrl, m_state-1, &tci);
 		if (tci.lParam != 0) {
 			reinterpret_cast<DlgPage*>(tci.lParam)->enablePage(m_bEnable);
 			reinterpret_cast<DlgPage*>(tci.lParam)->showPage(TRUE);
@@ -3263,7 +3327,7 @@ TabCtrl::onSetState(CmdLineParser& state)
 BOOL
 TabCtrl::onSetItem(CmdLineParser& text, const StringBuffer& pos)
 {
-	int	ind = HasListCtrl::onSetItem(text,pos) - 1;
+	int	ind = HasListCtrl::onSetItem(text, pos) - 1;
 	if (ind < 0) return FALSE;
 	if (m_pcp->m_hwndCtrl != NULL) {
 		NamedItemData*
@@ -3272,7 +3336,7 @@ TabCtrl::onSetItem(CmdLineParser& text, const StringBuffer& pos)
 		TC_ITEM	tci;
 		tci.mask	= TCIF_TEXT;
 		tci.pszText	= nid->getText().getBufPtr();
-		TabCtrl_SetItem(m_pcp->m_hwndCtrl,ind,&tci);
+		TabCtrl_SetItem(m_pcp->m_hwndCtrl, ind, &tci);
 	}
 	return TRUE;
 }
@@ -3301,13 +3365,29 @@ WORD
 TabCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 {
 	switch ((reinterpret_cast<NMHDR*>(lParam))->code) {
+	case TCN_KEYDOWN:
+		{
+			NMTCKEYDOWN* pnm = reinterpret_cast<NMTCKEYDOWN*>(lParam);
+			if (pnm->wVKey != VK_TAB || !::GetKeyState(VK_CONTROL)) break;
+			int sel = TabCtrl_GetCurSel(m_pcp->m_hwndCtrl);
+			if (!::GetKeyState(VK_SHIFT)) {
+				sel += 1;
+				if (sel >= m_item->itemNum()) sel = 0;
+			} else {
+				sel -= 1;
+				if (sel < 0) sel = m_item->itemNum() - 1;
+			}
+			TabCtrl_SetCurFocus(m_pcp->m_hwndCtrl, sel);
+		}
+		break;
+
 	case TCN_SELCHANGE:
 		{
 			m_state = TabCtrl_GetCurSel(m_pcp->m_hwndCtrl) + 1;
 			TC_ITEM	tci;
 			tci.mask = TCIF_PARAM;
 			tci.lParam = 0;
-			TabCtrl_GetItem(m_pcp->m_hwndCtrl,m_state-1,&tci);
+			TabCtrl_GetItem(m_pcp->m_hwndCtrl, m_state-1, &tci);
 			if (tci.lParam != 0)
 				reinterpret_cast<DlgPage*>(tci.lParam)->showPage(TRUE);
 			return m_notify[0];
@@ -3320,7 +3400,7 @@ TabCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 			TC_ITEM	tci;
 			tci.mask = TCIF_PARAM;
 			tci.lParam = 0;
-			TabCtrl_GetItem(m_pcp->m_hwndCtrl,sel,&tci);
+			TabCtrl_GetItem(m_pcp->m_hwndCtrl, sel, &tci);
 			if (tci.lParam != 0)
 				reinterpret_cast<DlgPage*>(tci.lParam)->showPage(FALSE);
 		}
@@ -3335,7 +3415,7 @@ TabCtrl::dumpData(DlgDataFile& ddfile)
 	if (!SimpleCtrl::dumpData(ddfile)) return FALSE;
 	ddfile.write(m_state,GetString(STR_DLGDATA_STATE));
 	int	num = m_item->initSequentialGet();
-	StringBuffer keybuf(GetString(STR_DLGDATA_ITEM),-1,32);
+	StringBuffer keybuf(GetString(STR_DLGDATA_ITEM), -1, 32);
 	keybuf.append((TCHAR)'_');
 	int	keylen = keybuf.length();
 	NamedItemData* nid;
@@ -3344,11 +3424,11 @@ TabCtrl::dumpData(DlgDataFile& ddfile)
 			== NULL) continue;
 		keybuf.setlength(keylen);
 		keybuf.append(i);
-		ddfile.write(nid->getText(),keybuf);
+		ddfile.write(nid->getText(), keybuf);
 		keybuf.append((TCHAR)':').append(GetString(STR_DLGDATA_NAME));
-		ddfile.write(nid->getName(),keybuf);
+		ddfile.write(nid->getName(), keybuf);
 	}
-	ddfile.write(num,GetString(STR_DLGDATA_ITEMNUM));
+	ddfile.write(num, GetString(STR_DLGDATA_ITEMNUM));
 	return TRUE;
 }
 
@@ -3361,7 +3441,7 @@ TabCtrl::loadData(DlgDataFile& ddfile)
 	ddfile.read(&num,GetString(STR_DLGDATA_ITEMNUM));
 	if (m_state <= 0 || m_state > num) m_state = 1;
 	NamedItemData* nid;
-	StringBuffer keybuf(GetString(STR_DLGDATA_ITEM),-1,32), namebuf(32);
+	StringBuffer keybuf(GetString(STR_DLGDATA_ITEM), -1, 32), namebuf(32);
 	keybuf.append((TCHAR)'_');
 	int	keylen = keybuf.length(), len;
 	for (int i = 0; i < num; i++) {
@@ -3369,15 +3449,15 @@ TabCtrl::loadData(DlgDataFile& ddfile)
 		keybuf.append(i);
 		len = keybuf.length();
 		keybuf.append((TCHAR)':').append(GetString(STR_DLGDATA_NAME));
-		ddfile.read(namebuf,keybuf);
+		ddfile.read(namebuf, keybuf);
 		if (namebuf.length() <= 0) continue;
 		try {
-			nid = new NamedItemData(namebuf,nullStr);
+			nid = new NamedItemData(namebuf, nullStr);
 		} catch (exception&) {
 			return FALSE;
 		}
 		keybuf.setlength(len);
-		ddfile.read(nid->getText(),keybuf);
+		ddfile.read(nid->getText(), keybuf);
 		m_item->addItem(nid);
 	}
 	return TRUE;
@@ -3392,7 +3472,11 @@ MultipleCtrl::MultipleCtrl(
 	: CtrlListItem(type,name,text)
 {
 	m_cnum = cnum;
-	if (m_cnum > 0) m_pcp = new CtrlListItem::CtrlProperty[m_cnum];
+	if (m_cnum > 0) {
+		m_pcp = new CtrlListItem::CtrlProperty[m_cnum];
+		for (int i = 0; i < m_cnum; i++)
+			m_pcp[i].m_pCtrl = this;
+	}
 }
 
 MultipleCtrl::~MultipleCtrl()
@@ -3414,8 +3498,7 @@ MultipleCtrl::initCtrl(HWND hDlg)
 {
 	if (!CtrlListItem::initCtrl(hDlg)) return FALSE;
 	for (int i = 0; i < m_cnum; i++) {
-		m_pcp[i].m_hwndCtrl = ::GetDlgItem(hDlg,m_pcp[i].m_id);
-		if (m_pcp[i].m_hwndCtrl == NULL) return FALSE;
+		if (!m_pcp[i].init(hDlg)) return FALSE;
 	}
 	return TRUE;
 }
@@ -3433,7 +3516,7 @@ MultipleCtrl::enableCtrl(BOOL bEnable, BOOL bChange)
 	if (bChange) m_bEnable = bEnable;
 	for (int i = 0; i < m_cnum; i++) {
 		if (m_pcp[i].m_hwndCtrl == NULL) continue;
-		::EnableWindow(m_pcp[i].m_hwndCtrl,m_bEnable && bEnable);
+		::EnableWindow(m_pcp[i].m_hwndCtrl, m_bEnable && bEnable);
 	}
 	return TRUE;
 }
@@ -3443,7 +3526,7 @@ MultipleCtrl::showCtrl(BOOL bVisible)
 {
 	for (int i = 0; i < m_cnum; i++) {
 		if (m_pcp[i].m_hwndCtrl == NULL) continue;
-		::ShowWindow(m_pcp[i].m_hwndCtrl,bVisible ? SW_SHOW : SW_HIDE);
+		::ShowWindow(m_pcp[i].m_hwndCtrl, bVisible ? SW_SHOW : SW_HIDE);
 	}
 	return TRUE;
 }
@@ -3479,11 +3562,11 @@ MultipleCtrl::isCommand(WORD id)
 SpinCtrl::SpinCtrl(
 	const StringBuffer& name,
 	const StringBuffer& text)
-	: MultipleCtrl(name,text,CTRLID_SPIN,2)
+	: MultipleCtrl(name, text, CTRLID_SPIN, 2)
 {
 	m_min = ival(text);
 	m_max = m_min + 1;
-	LPCSTR ptr = lstrchr(text,':');
+	LPCSTR ptr = lstrchr(text, ':');
 	if (ptr != NULL) {
 		m_max = ival(++ptr);
 		if (m_max < m_min) {
@@ -3533,10 +3616,10 @@ SpinCtrl::initCtrl(HWND hDlg)
 {
 	if (!MultipleCtrl::initCtrl(hDlg)) return FALSE;
 	HWND hwndSpin = m_pcp[1].m_hwndCtrl;
-	::SendMessage(hwndSpin,UDM_SETBUDDY,(WPARAM)m_pcp[0].m_hwndCtrl,0L);
-	::SendMessage(hwndSpin,UDM_SETBASE,10,0L);
+	::SendMessage(hwndSpin, UDM_SETBUDDY, (WPARAM)m_pcp[0].m_hwndCtrl, 0L);
+	::SendMessage(hwndSpin, UDM_SETBASE, 10, 0L);
 	LPARAM lp = ((m_min << 16) & 0xFFFF0000) + (m_max & 0x0000FFFF);
-	::SendMessage(hwndSpin,UDM_SETRANGE,0,lp);
+	::SendMessage(hwndSpin, UDM_SETRANGE, 0, lp);
 	return TRUE;
 }
 
@@ -3546,9 +3629,9 @@ SpinCtrl::sendData()
 	if (!MultipleCtrl::sendData()) return FALSE;
 	m_pcp[0].m_text.reset();
 	m_pcp[0].m_text.append(m_val);
-	::SetWindowText(m_pcp[0].m_hwndCtrl,m_pcp[0].m_text);
-	::SendMessage(m_pcp[1].m_hwndCtrl,UDM_SETPOS,
-					0,(LPARAM)(0x0000FFFF&(short)m_val));
+	::SetWindowText(m_pcp[0].m_hwndCtrl, m_pcp[0].m_text);
+	::SendMessage(m_pcp[1].m_hwndCtrl, UDM_SETPOS,
+					0, (LPARAM)(0x0000FFFF&(short)m_val));
 	return TRUE;
 }
 
@@ -3557,7 +3640,7 @@ SpinCtrl::receiveData()
 {
 	if (!MultipleCtrl::receiveData()) return FALSE;
 	m_val = (int)(short)LOWORD(::SendMessage(m_pcp[1].m_hwndCtrl,
-											UDM_GETPOS,0,0));
+											UDM_GETPOS, 0, 0));
 	m_pcp[0].m_text.reset();
 	m_pcp[0].m_text.append(m_val);
 	return TRUE;
@@ -3621,9 +3704,9 @@ BOOL
 SpinCtrl::dumpData(DlgDataFile& ddfile)
 {
 	if (!MultipleCtrl::dumpData(ddfile)) return FALSE;
-	ddfile.write(m_min,GetString(STR_DLGDATA_MIN));
-	ddfile.write(m_max,GetString(STR_DLGDATA_MAX));
-	ddfile.write(m_val,GetString(STR_DLGDATA_VAL));
+	ddfile.write(m_min, GetString(STR_DLGDATA_MIN));
+	ddfile.write(m_max, GetString(STR_DLGDATA_MAX));
+	ddfile.write(m_val, GetString(STR_DLGDATA_VAL));
 	return TRUE;
 }
 
@@ -3631,9 +3714,9 @@ BOOL
 SpinCtrl::loadData(DlgDataFile& ddfile)
 {
 	if (!MultipleCtrl::loadData(ddfile)) return FALSE;
-	ddfile.read(&m_min,GetString(STR_DLGDATA_MIN));
-	ddfile.read(&m_max,GetString(STR_DLGDATA_MAX));
-	ddfile.read(&m_val,GetString(STR_DLGDATA_VAL));
+	ddfile.read(&m_min, GetString(STR_DLGDATA_MIN));
+	ddfile.read(&m_max, GetString(STR_DLGDATA_MAX));
+	ddfile.read(&m_val, GetString(STR_DLGDATA_VAL));
 	return TRUE;
 }
 

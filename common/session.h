@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.4 2002-01-16 16:31:04 sugiura Exp $
+//	$Id: session.h,v 1.5 2002-02-10 09:27:32 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -180,7 +180,9 @@ public:
 	int si_newdialog(const StringBuffer&, WORD, CmdLineParser&);
 	int si_newdlgpage(const StringBuffer&, WORD);
 	int si_setcurdlgpage(const StringBuffer&);
+	int si_setfocusedctrl(const StringBuffer&);
 	StringBuffer si_getcurdlgpage();
+	StringBuffer si_getfocusedctrl();
 	int si_newcontrol(const StringBuffer&, const StringBuffer&,
 						const StringBuffer&);
 	int si_setctrlwidth(const StringBuffer&, WORD);

@@ -1,4 +1,4 @@
-//	$Id: dlgdata.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: dlgdata.h,v 1.2 2002-02-10 09:27:32 sugiura Exp $
 /*
  *	dlgdata.h
  *	ダイアログを扱うクラス
@@ -185,6 +185,10 @@ public:
 	CtrlListItem* getCtrl(const StringBuffer& ctrlname = nullStr,
 						const StringBuffer& pagename = nullStr);
 
+//	フォーカスを得(てい)るコントロール
+	int setFocusedCtrl(const StringBuffer& name);
+	const StringBuffer& getFocusedCtrl() const;
+
 //	データの書き込み・読込み
 	BOOL dumpData(DlgDataFile&);
 	BOOL loadData(DlgDataFile&);
@@ -196,6 +200,7 @@ private:
 	NamedLinkList<DlgPage>* m_pPageList;	//	子ダイアログのリスト
 	DlgPage* m_pCurDlgPage;	//	現在処理対象の子ダイアログ
 	StringBuffer m_DlgTitle;	//	ダイアログのタイトル
+	StringBuffer m_sbFocusedCtrl; // フォーカスを得るコントロール名
 	LPFontProperty m_pFontProp;	//	ダイアログのフォント属性
 	POINTS m_pos;	//	ダイアログの表示位置
 	WORD m_width;	//	ダイアログの幅

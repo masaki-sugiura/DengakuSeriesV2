@@ -1,4 +1,4 @@
-//	$Id: cmd.h,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: cmd.h,v 1.3 2002-02-10 09:27:32 sugiura Exp $
 /*
  *	cmd.h
  *	ƒRƒ}ƒ“ƒh–¼ˆê——
@@ -47,6 +47,7 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_EXECUTE(loaddialog)
 	DECLARE_DDECMD_EXECUTE(setdlgtitle)
 	DECLARE_DDECMD_EXECUTE(setcurdlgpage)
+	DECLARE_DDECMD_EXECUTE(setfocusedctrl)
 	DECLARE_DDECMD_EXECUTE(menu)
 	DECLARE_DDECMD_EXECUTE(changemenuitemex)
 	DECLARE_DDECMD_EXECUTE(deletemenuitemex)
@@ -98,6 +99,7 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_REQUEST(hasmoretokens)
 	DECLARE_DDECMD_REQUEST(getdlgtitle)
 	DECLARE_DDECMD_REQUEST(getcurdlgpage)
+	DECLARE_DDECMD_REQUEST(getfocusedctrl)
 	DECLARE_DDECMD_REQUEST(getstate)
 	DECLARE_DDECMD_REQUEST(getstring)
 	DECLARE_DDECMD_REQUEST(getimestate)

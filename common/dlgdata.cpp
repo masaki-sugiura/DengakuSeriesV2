@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.2 2001-11-26 13:29:26 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.3 2002-02-10 09:27:32 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -665,6 +665,12 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 
+	case WM_USER_GETFOCUSEDCTRL:
+		{
+			::SetWindowLong(hDlg, DWL_MSGRESULT, (LONG)(LPCSTR)pdf->getFocusedCtrl());
+		}
+		break;
+
 	case WM_COMMAND:
 		{
 			//	リターンキーを押した時、DlgFrame に DM_GETDEFID が送られ、
@@ -874,12 +880,13 @@ DlgFrame::showFrame()
 //	HWND hwndOwner = ::GetParent(m_hwndFrame);
 //	if (hwndOwner != NULL) ::EnableWindow(hwndOwner,FALSE);
 
-	::ShowWindow(m_hwndFrame,SW_SHOW);
+	// デフォルトフォーカスの設定
+	this->setFocusedCtrl(m_sbFocusedCtrl);
 	DlgPage* pdproot = this->getPage(strRootPageName);
 	if (pdproot != NULL) {
-		::SetFocus(pdproot->getFocusedCtrl());
 		pdproot->showPage(TRUE);
 	}
+	::ShowWindow(m_hwndFrame, SW_SHOW);
 
 	return TRUE;
 }
@@ -1005,6 +1012,44 @@ DlgFrame::getCtrl(const StringBuffer& ctrlname, const StringBuffer& pagename)
 		return pdp->getCtrl(ctrlname);
 	}
 	//	not reached.
+}
+
+int
+DlgFrame::setFocusedCtrl(const StringBuffer& name)
+{
+	if (name.length() <= 0) {
+		m_sbFocusedCtrl = nullStr;
+		if (m_hwndFrame != NULL) {
+			DlgPage* pdproot = this->getPage(strRootPageName);
+			if (pdproot == NULL) return FALSE;
+			::SetFocus(pdproot->getFocusedCtrl());
+		}
+	} else {
+		CtrlListItem* pctrl = this->getCtrl(name);
+		if (pctrl == NULL) return FALSE;
+		m_sbFocusedCtrl = name;
+		if (m_hwndFrame != NULL) {
+			HWND hwndFocused = pctrl->getCtrlHWND();
+			if (hwndFocused == NULL) return FALSE;
+			::SetFocus(hwndFocused);
+		}
+	}
+	return TRUE;
+}
+
+const StringBuffer&
+DlgFrame::getFocusedCtrl() const
+{
+	if (m_hwndFrame == NULL) return m_sbFocusedCtrl;
+	HWND hCtrl = ::GetFocus();
+	if (hCtrl != NULL) {
+		CtrlListItem*
+			pCtrl = (CtrlListItem*)::SendMessage(hCtrl, WM_GET_CTRL_PTR, 0, 0);
+		if (pCtrl->isValid()) {
+			return pCtrl->getName();
+		}
+	}
+	return nullStr;
 }
 
 //	ダイアログデータの書き込み

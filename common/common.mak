@@ -63,6 +63,7 @@ CLEAN :
 	-@erase "$(INTDIR)\seq_op.obj"
 	-@erase "$(INTDIR)\session.obj"
 	-@erase "$(INTDIR)\shicons.obj"
+	-@erase "$(INTDIR)\shobj_wrapper.obj"
 	-@erase "$(INTDIR)\si_bregexp.obj"
 	-@erase "$(INTDIR)\si_comdlg.obj"
 	-@erase "$(INTDIR)\si_common.obj"
@@ -132,7 +133,8 @@ LIB32_OBJS= \
 	"$(INTDIR)\strbuf.obj" \
 	"$(INTDIR)\strutils.obj" \
 	"$(INTDIR)\thread.obj" \
-	"$(INTDIR)\tokenizer.obj"
+	"$(INTDIR)\tokenizer.obj" \
+	"$(INTDIR)\shobj_wrapper.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -173,6 +175,7 @@ CLEAN :
 	-@erase "$(INTDIR)\seq_op.obj"
 	-@erase "$(INTDIR)\session.obj"
 	-@erase "$(INTDIR)\shicons.obj"
+	-@erase "$(INTDIR)\shobj_wrapper.obj"
 	-@erase "$(INTDIR)\si_bregexp.obj"
 	-@erase "$(INTDIR)\si_comdlg.obj"
 	-@erase "$(INTDIR)\si_common.obj"
@@ -243,7 +246,8 @@ LIB32_OBJS= \
 	"$(INTDIR)\strbuf.obj" \
 	"$(INTDIR)\strutils.obj" \
 	"$(INTDIR)\thread.obj" \
-	"$(INTDIR)\tokenizer.obj"
+	"$(INTDIR)\tokenizer.obj" \
+	"$(INTDIR)\shobj_wrapper.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -415,6 +419,11 @@ SOURCE=.\session.cpp
 SOURCE=.\shicons.cpp
 
 "$(INTDIR)\shicons.obj" : $(SOURCE) "$(INTDIR)"
+
+
+SOURCE=.\shobj_wrapper.cpp
+
+"$(INTDIR)\shobj_wrapper.obj" : $(SOURCE) "$(INTDIR)"
 
 
 SOURCE=.\si_bregexp.cpp

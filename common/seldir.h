@@ -1,4 +1,4 @@
-//	$Id: seldir.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: seldir.h,v 1.2 2002-02-10 09:27:32 sugiura Exp $
 /*
  *	seldir.h
  *	ディレクトリ選択ダイアログ表示関数
@@ -7,30 +7,55 @@
 #ifndef DENGAKUSERIES_CLASSES_SELECTDIRBYDLG
 #define DENGAKUSERIES_CLASSES_SELECTDIRBYDLG
 
-#include "strbuf.h"
-#include <shlobj.h>
+#include "shobj_wrapper.h"
+#include "auto_ptr.h"
+#include "pathname.h"
 
 class ShellIcons;
 
 #define DBPA_DISABLEMODIFY 0x1
 #define TVITEMINFO_HASSUBFOLDER 0x02
 
-typedef struct {
-	LPSHELLFOLDER m_pShellFolder;
-	LPITEMIDLIST m_pItemIDList;
+class TVITEMINFO {
+public:
+	TVITEMINFO(const StringBuffer& str, const LPIDL_Wrapper& pidl, int inserted)
+		: m_pShellFolder(NULL),
+		  m_pItemIDList(pidl),
+		  m_inserted(inserted),
+		  m_sorted(FALSE),
+		  m_strbuf(str)
+	{}
+
+	LPSF_Wrapper  m_pShellFolder;
+	LPIDL_Wrapper m_pItemIDList;
 	int m_inserted;
-	TCHAR m_strbuf[MAX_PATH];
-} TVITEMINFO, *LPTVITEMINFO;
+	BOOL m_sorted;
+	StringBuffer m_strbuf;
+};
+
+typedef TVITEMINFO* LPTVITEMINFO;
+
+static inline LPTVITEMINFO
+GetLPTVITEMINFO(HWND hwndTreeView, HTREEITEM htItem)
+{
+	TVITEM tvItem;
+	tvItem.hItem = htItem;
+	tvItem.mask  = TVIF_PARAM;
+	TreeView_GetItem(hwndTreeView, &tvItem);
+	return (LPTVITEMINFO)tvItem.lParam;
+}
 
 class SelectDirByDlg {
 public:
 	SelectDirByDlg(HINSTANCE);
 	~SelectDirByDlg();
 
-	StringBuffer doModal(HWND, int, const StringBuffer&, const StringBuffer&);
+	StringBuffer doModal(HWND, int,
+						 const StringBuffer&,
+						 const StringBuffer&);
 
 	void setMenuState(DWORD);
-	BOOL getFullPathFolderName(HTREEITEM,LPSTR);
+	StringBuffer getFullPathFolderName(HTREEITEM);
 	BOOL initTreeView(HWND);
 	void uninitTreeView();
 	int addChildFolders(HTREEITEM,LPTVITEMINFO);
@@ -54,37 +79,31 @@ public:
 private:
 	//	getdirname で使うグローバルデータ
 	HINSTANCE m_hInstance;
-	ShellIcons* m_pShellIcons;
+	Auto_Ptr<ShellIcons> m_pShellIcons;
 	HIMAGELIST m_hImgList;
-	LPMALLOC m_pMAlloc;
-	LPSHELLFOLDER m_psfDesktop;
+	LPSF_Wrapper m_psfDesktop;
 	HMENU m_hPopupMenu;
 	HTREEITEM m_htiDesktop;
 	HWND m_hTreeView;
 	int m_flag;
 	BOOL m_bEditMode;
 	StringBuffer m_Title;
-	StringBuffer m_IniDir;
+	PathName m_IniDir; // attribute を得るため
 	StringBuffer m_SelectDir;
 
 	SelectDirByDlg(const SelectDirByDlg&);
 	SelectDirByDlg& operator=(const SelectDirByDlg&);
 
 	static HMENU createTreePopupMenu();
-	static LPCITEMIDLIST getNextItemID(LPCITEMIDLIST);
-	static int getIDListSize(LPCITEMIDLIST);
 	void setImgListToTreeView();
-	BOOL getIconFromInterface(IExtractIcon*,int*,int*);
-	BOOL getIconFromFileInfo(LPSHELLFOLDER,LPCITEMIDLIST,int*,int*);
-	BOOL getIconIndex(LPSHELLFOLDER,LPCITEMIDLIST,int*,int*);
-	LPITEMIDLIST copyIDList(LPCITEMIDLIST);
-	BOOL getDisplayNameToBuffer(const STRRET&,LPCITEMIDLIST,LPSTR);
-	void getSubFolderIDList(LPSHELLFOLDER,LPCSTR,LPITEMIDLIST&);
-	BOOL getItemIDFromFSPath(const StringBuffer&,int,LPITEMIDLIST&);
-	BOOL getItemIDFromUNCPath(const StringBuffer&,int,LPITEMIDLIST&);
-	HTREEITEM insertTreeItem(HTREEITEM,HTREEITEM,LPSHELLFOLDER,LPCITEMIDLIST);
-	LPSHELLFOLDER getParentFolder(HTREEITEM);
-	void setInitialFolder(const StringBuffer&);
+	BOOL getIconFromInterface(LPEI_Wrapper&, int*, int*);
+	BOOL getIconFromFileInfo(const LPSF_Wrapper&, const LPIDL_Wrapper&, int*, int*);
+	BOOL getIconIndex(const LPSF_Wrapper&, const LPIDL_Wrapper&, int*, int*);
+	LPIDL_Wrapper getItemIDFromFSPath(const StringBuffer&);
+	LPIDL_Wrapper getItemIDFromUNCPath(const StringBuffer&);
+	HTREEITEM insertTreeItem(HTREEITEM, HTREEITEM, LPSF_Wrapper&, LPIDL_Wrapper);
+	const LPSF_Wrapper& getParentFolder(HTREEITEM);
+	void setInitialFolder();
 	void freeResources(HTREEITEM);
 };
 
