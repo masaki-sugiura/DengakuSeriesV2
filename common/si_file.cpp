@@ -1,4 +1,4 @@
-//	$Id: si_file.cpp,v 1.12 2002-08-06 13:33:04 sugiura Exp $
+//	$Id: si_file.cpp,v 1.13 2002-12-15 12:09:49 sugiura Exp $
 /*
  *	si_file.cpp
  *	SessionInstance: ファイルサービスの関数
@@ -58,23 +58,22 @@ AppendCopy(const PathName& OrgFile, const PathName& DestFile, BOOL bText)
 					FILE_FLAG_SEQUENTIAL_SCAN);
 	if (!fFileOrg.isValid() || !fFileDest.isValid()) return FALSE;
 
-	DWORD	fptOrg = fFileOrg.setFilePointer(-1,0,FILE_END),
-			fptDest = fFileDest.setFilePointer(0,0,FILE_BEGIN);
-	if (fptOrg == 0xFFFFFFFF || fptDest == 0xFFFFFFFF) return FALSE;
-
-	TCHAR	ch;
+	LONGLONG fptOrg = fFileOrg.setFilePointer(-1, FILE_END),
+			 fptDest = fFileDest.setFilePointer(0, FILE_BEGIN);
+	if (fptOrg == -1 || fptDest == -1) return FALSE;
 
 	//	テキストモードの場合、最後の [EOF] を削除する
-	fFileOrg.readFile((BYTE*)&ch,1);
-	if (bText && ch == (TCHAR)0x1A) fFileOrg.setFilePointer(-1,0,FILE_END);
+	TCHAR ch;
+	fFileOrg.readFile((BYTE*)&ch, 1);
+	if (bText && ch == (TCHAR)0x1A) fFileOrg.setFilePointer(-1, FILE_END);
 
 	Array<BYTE> buf(READBUF_SIZE);
 	DWORD rnum = READBUF_SIZE;
 	while (rnum == READBUF_SIZE) {
-		if (!(rnum = fFileDest.readFile(buf,READBUF_SIZE))) break;
-		fFileDest.setFilePointer(0,0,FILE_CURRENT);	//	不必要？
-		if (!fFileOrg.writeFile(buf,rnum)) break;
-		fFileOrg.setFilePointer(0,0,FILE_CURRENT);	//	不必要？
+		if (!(rnum = fFileDest.readFile(buf, READBUF_SIZE))) break;
+		fFileDest.setFilePointer(0, FILE_CURRENT);	//	不必要？
+		if (!fFileOrg.writeFile(buf, rnum)) break;
+		fFileOrg.setFilePointer(0, FILE_CURRENT);	//	不必要？
 	}
 	fFileOrg.flushFileBuffers();
 

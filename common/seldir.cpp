@@ -1,4 +1,4 @@
-//	$Id: seldir.cpp,v 1.5 2002-08-05 16:06:17 sugiura Exp $
+//	$Id: seldir.cpp,v 1.6 2002-12-15 12:09:49 sugiura Exp $
 /*
  *	seldir.cpp
  *	ディレクトリ選択ダイアログの実装
@@ -276,8 +276,7 @@ CheckDisplayName(LPSF_Wrapper& lpsfParent, LPIDL_Wrapper& lpidlChild)
 	StringBuffer
 		sname(lpsfParent.getDisplayNameOf(lpidlChild,
 											SHGDN_INFOLDER |
-											SHGDN_FORPARSING |
-											SHGDN_INCLUDE_NONFILESYS));
+											SHGDN_FORPARSING));
 	return sname;
 }
 #else
@@ -339,8 +338,7 @@ FindChildFolderByName(
 		plChild->m_lpsfFolder = lpsfParent.bindTo(lpidlChild);
 		if (name.compareTo(lpsfParent.getDisplayNameOf(lpidlChild,
 													   SHGDN_INFOLDER |
-													   SHGDN_FORPARSING |
-													   SHGDN_INCLUDE_NONFILESYS),
+													   SHGDN_FORPARSING),
 						   FALSE) // case insensitive
 			== 0 ||
 			(depth > 0 &&
@@ -475,7 +473,7 @@ SelectDirByDlg::insertTreeItem(
 	//	移行している。
 	LPTVITEMINFO lptviInfo = new TVITEMINFO(
 				lpsfParent.getDisplayNameOf(lpilFolder,
-											SHGDN_INFOLDER|SHGDN_INCLUDE_NONFILESYS),
+											SHGDN_INFOLDER),
 				lpilFolder,
 				(mask & SFGAO_HASSUBFOLDER) ? TVITEMINFO_HASSUBFOLDER : 0);
 

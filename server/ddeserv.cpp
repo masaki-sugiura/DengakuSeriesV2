@@ -1,4 +1,4 @@
-// $Id: ddeserv.cpp,v 1.3 2002-06-16 14:56:09 sugiura Exp $
+// $Id: ddeserv.cpp,v 1.4 2002-12-15 12:09:49 sugiura Exp $
 /*
  *	ddeserv.cpp
  *	DdeServer ƒNƒ‰ƒX‚ÌŽÀ‘•
@@ -334,7 +334,7 @@ DdeServer::startLog(const StringBuffer *psbLogFileName)
 							OPEN_ALWAYS,
 							FILE_FLAG_SEQUENTIAL_SCAN);
 	if (!m_pfLogFile->isValid()) return FALSE;
-	m_pfLogFile->setFilePointer(0,0,FILE_END);
+	m_pfLogFile->setFilePointer(0, FILE_END);
 	return TRUE;
 }
 

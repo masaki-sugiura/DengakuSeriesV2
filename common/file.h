@@ -1,4 +1,4 @@
-//	$Id: file.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: file.h,v 1.2 2002-12-15 12:09:49 sugiura Exp $
 /*
  *	file.h
  *	ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‘‚«•‘®«‘€ì
@@ -16,7 +16,7 @@ public:
 
 	BOOL isValid() const { return m_hFile != INVALID_HANDLE_VALUE; }
 
-	DWORD setFilePointer(LONG, PLONG, DWORD) const;
+	LONGLONG setFilePointer(LONGLONG, DWORD) const;
 	DWORD readFile(BYTE*, DWORD) const;
 	DWORD writeFile(const BYTE*, DWORD) const;
 	void flushFileBuffers() const

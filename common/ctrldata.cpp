@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.20 2002-11-10 08:52:04 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.21 2002-12-15 12:09:49 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -1898,10 +1898,16 @@ ListCtrl::initCtrl(HWND hDlg)
 {
 	if (!SimpleCtrl::initCtrl(hDlg)) return FALSE;
 	ItemData* id;
-	int num = m_item->initSequentialGet();
+	int num = m_item->initSequentialGet(), ind = 0;
 	while ((id = m_item->getNextItem()) != NULL) {
-		int index = ::SendMessage(m_pcp->m_hwndCtrl, m_msg_addstr,
+		int index;
+		if (m_bSorted) {
+			index = ::SendMessage(m_pcp->m_hwndCtrl, m_msg_addstr,
 								  0, (LPARAM)id->getText().getBufPtr());
+		} else {
+			index = ::SendMessage(m_pcp->m_hwndCtrl, m_msg_setstr,
+								  ind++, (LPARAM)id->getText().getBufPtr());
+		}
 		::SendMessage(m_pcp->m_hwndCtrl, m_msg_setdata,
 						index, (LPARAM)id);
 	}
