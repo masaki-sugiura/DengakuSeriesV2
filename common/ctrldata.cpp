@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.40 2005-01-16 11:07:48 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.41 2005-01-18 13:52:08 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -784,7 +784,10 @@ CtrlListItem::onGetSort()
 BOOL
 CtrlListItem::dumpData(DlgDataFile& ddfile)
 {
-	if (!ddfile.isValid() || !this->receiveData()) return FALSE;
+	if (!ddfile.isValid()) return FALSE;
+	if (m_pcp && m_pcp->m_hwndCtrl) {
+		this->receiveData();
+	}
 	ddfile.write(m_type, GetString(STR_DLGDATA_TYPE));
 	ddfile.write(m_name, GetString(STR_DLGDATA_NAME));
 	ddfile.write(m_text, GetString(STR_DLGDATA_TEXT));
