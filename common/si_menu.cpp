@@ -1,4 +1,4 @@
-//	$Id: si_menu.cpp,v 1.3 2002-02-19 15:34:22 sugiura Exp $
+//	$Id: si_menu.cpp,v 1.4 2002-02-20 13:57:19 sugiura Exp $
 /*
  *	si_menu.cpp
  *	メニュー表示関数
@@ -41,6 +41,7 @@ UserMenuProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				::GetCursorPos(&lpsmpa->m_mnPosInfo);
 			lpsmpa->m_wFirstShow = TRUE; // WM_INITMENUPOPUP 参照
 			HWND hwndTop = ::GetForegroundWindow();
+			if (hwndTop != NULL) ::UpdateWindow(hwndTop);
 			//	ウィンドウを可視化(透明だけど(^^;)
 			::SetWindowPos(hWnd,HWND_TOPMOST,0,0,0,0,
 						SWP_SHOWWINDOW|SWP_NOREDRAW|SWP_NOSIZE|SWP_NOMOVE);
@@ -110,7 +111,7 @@ ShowMenuProc(LPVOID pThreadArgs)
 	wc.lpszClassName	=	pszClassName;
 	wc.style			=	CS_CLASSDC|CS_DBLCLKS;
 	wc.lpfnWndProc		=	(WNDPROC)UserMenuProc;
-	wc.hbrBackground	=	(HBRUSH)(COLOR_BTNFACE+1);
+	wc.hbrBackground	=	(HBRUSH)/*(COLOR_BTNFACE+1)*/ NULL;
 	::RegisterClass(&wc);
 
 	psmpa->m_wSelectedID = MENURESULT_ERR_ID_MASK; // error
