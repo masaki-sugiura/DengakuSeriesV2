@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.19 2003-12-27 14:27:55 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.20 2004-01-15 15:44:40 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -1094,11 +1094,11 @@ DlgFrame::initFrame(HWND hDlg)
 	if (hwndRoot) {
 		// 初期化完了を親スレッドに通知
 		// (このタイミングで行わないと SetFocus() でハングする)
-		m_pSessionInstance->setNotify(okStr);
+		m_pSessionInstance->SessionInstance::setNotify(okStr);
 		// デフォルトフォーカスの設定
 		this->setFocusedCtrl(m_sbFocusedCtrl);
 	} else {
-		m_pSessionInstance->setNotify(ngStr);
+		m_pSessionInstance->SessionInstance::setNotify(ngStr);
 	}
 #endif
 

@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.11 2003-12-27 14:27:55 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.12 2004-01-15 15:44:40 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -146,7 +146,7 @@ SessionInstance::si_showdialog(HWND hwndOwner, BOOL bOnTop)
 	}
 
 	StringBuffer buf(nullStr);
-	while (!this->getNotify(buf,10))
+	while (!this->SessionInstance::getNotify(buf,10))
 		/* no op. */;
 	if (buf.compareTo(okStr) != 0) {
 		m_pDlgThread = NULL;
