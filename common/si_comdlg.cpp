@@ -1,4 +1,4 @@
-// $Id: si_comdlg.cpp,v 1.6 2002-02-25 07:26:01 sugiura Exp $
+// $Id: si_comdlg.cpp,v 1.7 2002-03-02 09:39:46 sugiura Exp $
 /*
  *	si_comdlg.cpp
  *	コモンダイアログ表示関数
@@ -19,7 +19,7 @@ CenteringWindow(HWND hwndDlg, HWND hwndOwner)
 	RECT rect;
 	GetWindowCenter(hwndDlg, hwndOwner, rect);
 	::SetWindowPos(hwndDlg, hwndOwner,
-				   rect.left, rect.right, 0, 0,
+				   rect.left, rect.top, 0, 0,
 				   SWP_NOACTIVATE | SWP_NOREDRAW | SWP_NOZORDER | SWP_NOSIZE);
 }
 
