@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.32 2004-04-25 14:17:18 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.33 2004-04-30 15:27:18 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -983,7 +983,9 @@ SimpleCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDc)
 {
 	if (!m_pcp->m_hbrBackground) {
 		LOGBRUSH lbr;
-		lbr.lbColor = ::GetBkColor(hDc);
+		if (!m_pDlgPage->getDlgFrame().getThemeDialogBackgroundColor(&lbr.lbColor)) {
+			lbr.lbColor = ::GetBkColor(hDc);
+		}
 		lbr.lbStyle = BS_SOLID;
 		m_pcp->m_hbrBackground = ::CreateBrushIndirect(&lbr);
 	}
@@ -1083,8 +1085,9 @@ TextCtrl::createCtrlTemplate(CtrlTemplateArgs& cta)
 HBRUSH
 TextCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDc)
 {
-	SimpleCtrl::onCtlColor(hwndCtrl, uMsg, hDc);
-	return NULL;
+//	::SetBkMode(hDc, TRANSPARENT);
+	return SimpleCtrl::onCtlColor(hwndCtrl, uMsg, hDc);
+//	return NULL;
 }
 
 EditCtrl::EditCtrl(

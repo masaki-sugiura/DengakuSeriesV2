@@ -1,4 +1,4 @@
-// $Id: ThemeWrapper.h,v 1.1 2003-12-03 17:17:58 sugiura Exp $
+// $Id: ThemeWrapper.h,v 1.2 2004-04-30 15:27:18 sugiura Exp $
 /*
  *	stack.h
  *	スタッククラス(テンプレート)
@@ -9,6 +9,7 @@
 
 #include <windows.h>
 #include <UxTheme.h>
+#include <TmSchema.h>
 
 #define GET_ADDR(func) \
 	m_pfn##func = (pfn##func)::GetProcAddress(m_hmUxTheme, #func); \
@@ -31,9 +32,11 @@ public:
 		GET_ADDR(EnableThemeDialogTexture);
 		GET_ADDR(OpenThemeData);
 		GET_ADDR(CloseThemeData);
+		GET_ADDR(GetThemeColor);
 		GET_ADDR(DrawThemeBackground);
 		GET_ADDR(DrawThemeParentBackground);
 		GET_ADDR(GetThemeBackgroundContentRect);
+		GET_ADDR(GetWindowTheme);
 		GET_ADDR(SetWindowTheme);
 	}
 	~ThemeWrapper()
@@ -66,6 +69,13 @@ public:
 		return (*m_pfnCloseThemeData)(hTheme);
 	}
 
+	HRESULT STDAPICALLTYPE GetThemeColor(HTHEME hTheme,
+										 int iPart, int iState, int iProp,
+										 COLORREF* pCRef)
+	{
+		return (*m_pfnGetThemeColor)(hTheme, iPart, iState, iProp, pCRef);
+	}
+
 	HRESULT STDAPICALLTYPE DrawThemeBackground(HTHEME hTheme, HDC hDC,
 											   int iPart, int iState,
 											   const RECT* pRect,
@@ -87,6 +97,11 @@ public:
 	{
 		return (*m_pfnGetThemeBackgroundContentRect)(hTheme, hDC, iPart, iState,
 													 pRect, pContentRect);
+	}
+
+	HTHEME STDAPICALLTYPE GetWindowTheme(HWND hWnd)
+	{
+		return (*m_pfnGetWindowTheme)(hWnd);
 	}
 
 	HRESULT STDAPICALLTYPE SetWindowTheme(HWND hWnd,
@@ -121,6 +136,12 @@ private:
 	typedef HRESULT (STDAPICALLTYPE *pfnCloseThemeData)(HTHEME hTheme);
 	pfnCloseThemeData m_pfnCloseThemeData;
 
+	// GetThemeColor()
+	typedef HRESULT (STDAPICALLTYPE *pfnGetThemeColor)(HTHEME hTheme,
+													   int iPart, int iState, int iProp,
+													   COLORREF* pCRef);
+	pfnGetThemeColor m_pfnGetThemeColor;
+
 	// DrawThemeBackground()
 	typedef HRESULT (STDAPICALLTYPE *pfnDrawThemeBackground)(HTHEME hTheme, HDC hDC,
 													   int iPart, int iState,
@@ -139,6 +160,10 @@ private:
 																 const RECT* pRect,
 																 RECT* pContentRect);
 	pfnGetThemeBackgroundContentRect m_pfnGetThemeBackgroundContentRect;
+
+	// GetWindowTheme()
+	typedef HTHEME (STDAPICALLTYPE *pfnGetWindowTheme)(HWND hWnd);
+	pfnGetWindowTheme m_pfnGetWindowTheme;
 
 	// SetWindowTheme()
 	typedef HRESULT (STDAPICALLTYPE *pfnSetWindowTheme)(HWND hWnd,

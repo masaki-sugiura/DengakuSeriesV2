@@ -1,4 +1,4 @@
-// $Id: si_comdlg.cpp,v 1.11 2004-04-26 15:32:06 sugiura Exp $
+// $Id: si_comdlg.cpp,v 1.12 2004-04-30 15:27:18 sugiura Exp $
 /*
  *	si_comdlg.cpp
  *	コモンダイアログ表示関数
@@ -130,7 +130,7 @@ SessionInstance::getFileNameByDlg(
 	pofn->nMaxFile			=	FILEDLG_BUFSIZE - MAX_PATH;
 	pofn->lpstrTitle		=	title;
 	pofn->Flags				=	OFN_HIDEREADONLY|OFN_EXPLORER|OFN_NOCHANGEDIR|
-								OFN_ALLOWMULTISELECT|OFN_ENABLEHOOK;
+								OFN_ALLOWMULTISELECT|OFN_ENABLEHOOK|OFN_NODEREFERENCELINKS;
 	pofn->lpfnHook          =   (LPOFNHOOKPROC)GetFileNameProc;
 	pofn->lCustData         =   (DWORD)hwndOwner;
 	pofn->lpstrInitialDir	=	inipath;
