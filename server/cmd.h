@@ -1,4 +1,4 @@
-//	$Id: cmd.h,v 1.7 2002-08-05 16:06:17 sugiura Exp $
+//	$Id: cmd.h,v 1.8 2002-08-06 13:33:04 sugiura Exp $
 /*
  *	cmd.h
  *	ƒRƒ}ƒ“ƒh–¼ˆê——
@@ -128,9 +128,11 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_REQUEST(bre_hasmoreresults)
 	DECLARE_DDECMD_REQUEST(clr_getrgb)
 	DECLARE_DDECMD_REQUEST(clr_getname)
+#if 0
 	DECLARE_DDECMD_REQUEST(dt_format)
 	DECLARE_DDECMD_REQUEST(dt_gettime)
 	DECLARE_DDECMD_REQUEST(dt_filetime_to_time)
+#endif
 	DECLARE_DDECMD_POKE(newdialog)
 	DECLARE_DDECMD_POKE(newdialogex)
 	DECLARE_DDECMD_POKE(newdlgpage)

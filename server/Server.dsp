@@ -139,10 +139,6 @@ SOURCE=.\ds_handler.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\dts_handler.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\es_handler.cpp
 # End Source File
 # Begin Source File

@@ -206,10 +206,6 @@ SOURCE=.\si_common.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\si_datetime.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\si_dialog.cpp
 # End Source File
 # Begin Source File

@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.9 2002-08-05 16:06:17 sugiura Exp $
+//	$Id: session.h,v 1.10 2002-08-06 13:33:04 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -215,10 +215,12 @@ public:
 	int si_loadcolorrefs(const StringBuffer&);
 	int si_savecolorrefs(const StringBuffer&);
 
+#if 0
 	// 日付・時刻操作系
-	StringBuffer si_datetime_format(const StringBuffer&, int);
+	StringBuffer si_datetime_time_to_str(const StringBuffer&, int);
+	int si_datetime_str_to_time(const StringBuffer&);
 	int si_datetime_gettime();
-	int si_datetime_filetime(int);
+#endif
 
 protected:
 	HINSTANCE m_hInstance; // インスタンスハンドル

@@ -122,10 +122,6 @@ SOURCE=.\ds_func.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\dts_func.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\es_func.cpp
 # End Source File
 # Begin Source File
