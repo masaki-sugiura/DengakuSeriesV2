@@ -1,4 +1,4 @@
-//	$Id: si_variable.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: si_variable.cpp,v 1.2 2002-09-26 13:13:24 sugiura Exp $
 /*
  *	si_variable.cpp
  *	環境変数サービスの関数
@@ -18,7 +18,7 @@ SessionInstance::si_setvar(
 	if (m_pEnvManager.ptr() == NULL)
 		m_pEnvManager = new EnvManager(envmngr_name);
 	try {
-		m_pEnvManager->write(name,value);
+		m_pEnvManager->write(name, value);
 		return TRUE;
 	} catch (InvalidObjectNameException&) {
 	} catch (NoMemoryError&) {

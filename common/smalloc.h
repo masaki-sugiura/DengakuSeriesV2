@@ -1,4 +1,4 @@
-//	$Id: smalloc.h,v 1.2 2002-09-10 12:33:10 sugiura Exp $
+//	$Id: smalloc.h,v 1.3 2002-09-26 13:13:24 sugiura Exp $
 /*
  *	smalloc.h
  *	共有メモリ領域についての malloc, free インターフェイスの提供
@@ -9,15 +9,31 @@
 
 #include "strbuf.h"
 
+#define SMA_PAGESIZE     0x01000000  // 16MB
+
 // allocation unit
-typedef union SMAHeader_tag {
+union SMAHeader {
 	struct {
 		UINT m_iptr; // index of next header
 		UINT m_size; // size of block
 	} m_info;
 	ULONG m_align;
-} SMAHeader, *LPSMAHeader;
+};
 
+typedef union SMAHeader* LPSMAHeader;
+
+struct PageHeader {
+	UINT m_nShareCount;
+	UINT m_idxMaster;
+	UINT m_idxFreeP;
+};
+
+static inline int
+allocate_offset()
+{
+	return ((sizeof(PageHeader) + sizeof(SMAHeader) - 1) / sizeof(SMAHeader))
+			* sizeof(SMAHeader);
+}
 
 class FileMap {
 public:
@@ -27,6 +43,20 @@ public:
 	void* m_header;
 	UINT m_pagesize;
 	BOOL m_bAlreadyExist;
+	const StringBuffer m_name;
+
+	void* addr(UINT iptr);
+
+	UINT index(void* ptr) const
+	{
+		return isThisPtr(ptr) ? ((char*)ptr - (char*)m_header) : 0;
+	}
+
+	BOOL isThisPtr(void* ptr) const
+	{
+		return	(ptr >= (char*)m_header + allocate_offset()) &&
+				(ptr <  (char*)m_header + m_pagesize);
+	}
 
 private:
 	HANDLE m_hFileMap;
@@ -37,77 +67,60 @@ private:
 
 typedef FileMap* LPFileMap;
 
-// page manager
-class SMAPage : protected FileMap {
-public:
-	SMAPage(const StringBuffer& name, UINT pagesize);
-	~SMAPage();
-
-	UINT alloc(UINT size);
-	void free(UINT iptr);
-
-	BOOL isThisPtr(void* ptr) const
-	{
-		return	(ptr >= (LPSMAHeader)m_header + 2) &&
-				(ptr < (LPSMAHeader)m_header + m_pagesize);
-	}
-
-	void* addr(UINT index) const { return (void*)((BYTE*)m_header + index); }
-	UINT index(void* ptr) const { return (BYTE*)ptr - (BYTE*)m_header; }
-};
-
-typedef SMAPage* LPSMAPage;
-
-#define SMA_PAGENUMBER_OFFSET 20
-#define SMA_PAGENUMBER_MASK   0xFFF00000
-#define SMA_BLOCKINDEX_MASK   0x000FFFFF
-#define SMA_MAXPAGESIZE       SMA_BLOCKINDEX_MASK
-#define SMA_MAXPAGENUM        (((UINT)SMA_PAGENUMBER_MASK) >> SMA_PAGENUMBER_OFFSET)
-#define SMA_MASTERPAGE_SIZE   (4 * sizeof(UINT))
-
 class SMAlloc {
 public:
-	SMAlloc(const StringBuffer& name, UINT pagesize, UINT inipagenum = 1);
+	SMAlloc(const StringBuffer& name, UINT inipagenum = 1);
 	~SMAlloc();
 
 	UINT alloc(UINT size);
 	void free(UINT iptr);
 
-	void* addr(UINT iptr);
-	UINT index(void* ptr) const;
+	void* addr(UINT iptr)
+	{
+		return m_pFileMap->addr(iptr);
+	}
 
-	UINT getMasterIndex() const;
-	UINT setMasterIndex(UINT index);
+	UINT index(void* ptr)
+	{
+		return m_pFileMap->index(ptr);
+	}
 
-	void lock() const { ::WaitForSingleObject(m_hMutex,INFINITE); }
+	BOOL isThisPtr(void* ptr)
+	{
+		return m_pFileMap->isThisPtr(ptr);
+	}
+
+	void lock() const { ::WaitForSingleObject(m_hMutex, INFINITE); }
 	void release() const { ::ReleaseMutex(m_hMutex); }
 
-	UINT sharedNum() const { return *(UINT*)m_pmaster->m_header; }
-	BOOL isShared() const { return sharedNum() > 1; }
+	UINT sharedNum() { return getPageHeader()->m_nShareCount; }
+	BOOL isShared() { return sharedNum() > 1; }
+
+	UINT getMasterIndex() { return getPageHeader()->m_idxMaster; }
+	void setMasterIndex(UINT index);
 
 private:
-	StringBuffer m_name;
-	UINT m_page_size;
 	HANDLE m_hMutex;
-	LPFileMap m_pmaster;
-	LPSMAPage m_ppage_list[SMA_MAXPAGENUM];
+	FileMap* m_pFileMap;
 
-	SMAlloc(const SMAlloc&);
-	SMAlloc& operator=(const SMAlloc&);
+	PageHeader* getPageHeader() { return (PageHeader*)m_pFileMap->m_header; }
 
-	LPSMAPage getSMAPagePtr(UINT iptr);
-	UINT getPageNumber(UINT iptr) const
+	void initAllocator(PageHeader* pHeader);
+};
+
+class SMA_AutoLock {
+public:
+	SMA_AutoLock(SMAlloc& sma)
+		: m_sma(sma)
 	{
-		return (iptr >> SMA_PAGENUMBER_OFFSET);
+		m_sma.lock();
 	}
-	UINT getBlockIndex(UINT iptr) const
+	~SMA_AutoLock()
 	{
-		return (iptr & SMA_BLOCKINDEX_MASK);
+		m_sma.release();
 	}
-	UINT makeIndex(UINT pnumber, UINT bindex) const
-	{
-		return (pnumber << SMA_PAGENUMBER_OFFSET) | bindex;
-	}
+private:
+	SMAlloc& m_sma;
 };
 
 //	メモリ不足の時に投げられる例外クラス

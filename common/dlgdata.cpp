@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.9 2002-03-02 09:39:46 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.10 2002-09-26 13:13:24 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -805,29 +805,49 @@ DlgFrame::showFrame()
 
 	//	ダイアログの位置の変更
 	DWORD dlgbaseunit = GetDialogBaseUnits(m_hwndFrame);
-	RECT rect, drect;
-	POINT pos;
-	::GetWindowRect(m_hwndFrame,&rect);
+	POINT pos, cpos;
 	pos.x = (m_pos.x * LOWORD(dlgbaseunit)) >> 2;
 	pos.y = (m_pos.y * HIWORD(dlgbaseunit)) >> 3;
+
+	RECT rect, drect;
+	::GetWindowRect(m_hwndFrame, &rect);
+
+	HWND hwndParent = ::GetParent(m_hwndFrame);
+
 	switch (m_flags & 0x000F) {
-	case 0x01:
+	case DLGPOS_SCREEN_COORD:
 		/* Screen Coordinate */
 		break;
-	case 0x02:
+	case DLGPOS_CLIENT_COORD:
 		/*	Window Coordinate	*/
-		::ClientToScreen(::GetParent(m_hwndFrame),&pos);
+		::ClientToScreen(hwndParent, &pos);
 		break;
-	case 0x03:
+	case DLGPOS_SCREEN_CENTER:
 		/*	Screen Center	*/
-		::GetWindowRect(::GetDesktopWindow(),&drect);
+		::GetWindowRect(::GetDesktopWindow(), &drect);
 		pos.x = ((drect.left + drect.right) >> 1)
 				- ((rect.right - rect.left) >> 1);
 		pos.y = ((drect.top + drect.bottom) >> 1)
 				- ((rect.bottom - rect.top) >> 1);
 		break;
+	case DLGPOS_CARET_COORD:
+		/*  Caret Coordinate  */
+		if (::GetCaretPos(&cpos)) {
+			::ClientToScreen(hwndParent, &cpos);
+			pos.x += cpos.x;
+			pos.y += cpos.y;
+		}
+		break;
+	case DLGPOS_CURSOR_COORD:
+		/*  Cursor Coordinate  */
+		if (::GetCursorPos(&cpos)) {
+			pos.x += cpos.x;
+			pos.y += cpos.y;
+		}
+		break;
+	case DLGPOS_CLIENT_CENTER:
 	default:
-		::GetWindowRect(::GetParent(m_hwndFrame),&drect);
+		::GetWindowRect(hwndParent, &drect);
 		pos.x = ((drect.left + drect.right) >> 1)
 				- ((rect.right - rect.left) >> 1);
 		pos.y = ((drect.top + drect.bottom) >> 1)
@@ -836,7 +856,7 @@ DlgFrame::showFrame()
 	HWND hwndIA = HWND_TOP;
 	UINT uFlag = SWP_NOSIZE;
 	if ((m_flags & 0x10) != 0) hwndIA = HWND_TOPMOST;	//	alwaysontop
-	::SetWindowPos(m_hwndFrame,hwndIA,pos.x,pos.y,0,0,uFlag);
+	::SetWindowPos(m_hwndFrame, hwndIA, pos.x, pos.y, 0, 0, uFlag);
 
 //	モードレスダイアログと割り切って、以下のコードはばっさり(^^;削除。
 //	秀丸ウィンドウをクリックすると「マクロを終了しますか？」と出るけど

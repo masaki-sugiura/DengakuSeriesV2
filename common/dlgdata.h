@@ -1,4 +1,4 @@
-//	$Id: dlgdata.h,v 1.3 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: dlgdata.h,v 1.4 2002-09-26 13:13:24 sugiura Exp $
 /*
  *	dlgdata.h
  *	ダイアログを扱うクラス
@@ -38,6 +38,15 @@ typedef struct FontProperty_tag	{
 	StringBuffer	m_fontname;	//	フォント名のバッファ
 	FontProperty_tag() : m_fontsize(0), m_fontname(32) {}
 } FontProperty, *LPFontProperty;
+
+enum {
+	DLGPOS_CLIENT_CENTER = 0,
+	DLGPOS_SCREEN_CENTER = 1,
+	DLGPOS_CLIENT_COORD  = 2,
+	DLGPOS_SCREEN_COORD  = 3,
+	DLGPOS_CARET_COORD   = 4,
+	DLGPOS_CURSOR_COORD  = 5
+};
 
 //	コントロール名のリスト
 typedef	HashTable<CtrlListItem*,31>	CtrlHashTable;

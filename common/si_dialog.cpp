@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.6 2002-02-21 12:55:58 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.7 2002-09-26 13:13:24 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -391,11 +391,19 @@ SessionInstance::si_newdialog(
 		//	frame position flag
 		const StringBuffer& sflag = argv.getNextArgvStr();
 		if (sflag.length() > 0) {
-			wflags = sflag.compareTo("screen",FALSE) != 0 ?
-						sflag.compareTo("window",FALSE) != 0 ?
-							sflag.compareTo("center",FALSE) != 0 ? 0 : 3
-							: 2
-						: 1;
+			if (sflag.compareTo("screen", FALSE) == 0) {
+				wflags = DLGPOS_SCREEN_COORD;
+			} else if (sflag.compareTo("window", FALSE) == 0) {
+				wflags = DLGPOS_CLIENT_COORD;
+			} else if (sflag.compareTo("center", FALSE) == 0) {
+				wflags = DLGPOS_SCREEN_CENTER;
+			} else if (sflag.compareTo("caret", FALSE)  == 0) {
+				wflags = DLGPOS_CARET_COORD;
+			} else if (sflag.compareTo("cursor", FALSE) == 0) {
+				wflags = DLGPOS_CURSOR_COORD;
+			} else {
+				wflags = DLGPOS_CLIENT_CENTER;
+			}
 		}
 
 		//	font properties

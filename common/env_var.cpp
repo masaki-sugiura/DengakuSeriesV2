@@ -1,15 +1,16 @@
-//	$Id: env_var.cpp,v 1.2 2002-06-16 14:56:09 sugiura Exp $
+//	$Id: env_var.cpp,v 1.3 2002-09-26 13:13:24 sugiura Exp $
 /*
  *	env_var.cpp
  *	環境変数の管理に関するクラス
  */
 
 #include "env_var.h"
+#include <assert.h>
 
 EnvManager::EnvManager(const StringBuffer& env_name)
 	:	m_env_name(env_name,-1,8), m_enumindex(0)
 {
-	m_psma = new SMAlloc(env_name,ENV_PAGESIZE);
+	m_psma = new SMAlloc(env_name);
 	if (!m_psma->isShared()) {	//	新規にマッピングオブジェクトを作成した
 		m_psma->lock();
 		loadEnv();	//	永続的変数のロード
@@ -67,12 +68,15 @@ EnvManager::write(const StringBuffer& env_name, const StringBuffer& env_var)
 	LPENV_HEADER
 		pEnvHeader = (LPENV_HEADER)m_psma->addr(m_psma->getMasterIndex()),
 		pPrevEnvHeader = (LPENV_HEADER)m_psma->addr(0);
+	assert(!IsBadReadPtr(pEnvHeader, sizeof(ENV_HEADER)));
 	//	既に変数が定義されているかを調べる
 	while (m_psma->index(pEnvHeader) != 0) {
-		if (env_name.compareTo((LPCSTR)m_psma->addr(pEnvHeader->m_pEnvName))
-			== 0) break;
+		LPCSTR name = (LPCSTR)m_psma->addr(pEnvHeader->m_pEnvName);
+		assert(!IsBadStringPtr(name, 1));
+		if (env_name.compareTo(name) == 0) break;
 		pPrevEnvHeader = pEnvHeader;
 		pEnvHeader = (LPENV_HEADER)m_psma->addr(pEnvHeader->m_pNextHeader);
+		assert(!IsBadReadPtr(pEnvHeader, sizeof(ENV_HEADER)));
 	}
 	if (m_psma->index(pEnvHeader) == 0) {
 		//	変数は未定義…新たに定義する
@@ -287,16 +291,21 @@ EnvManager::saveEnv()
 			pHeader = (LPENV_HEADER)m_psma->addr(m_psma->getMasterIndex());
 		 m_psma->index(pHeader) != 0;
 		 pHeader = (LPENV_HEADER)m_psma->addr(pHeader->m_pNextHeader)) {
-		if (*(LPCSTR)m_psma->addr(pHeader->m_pEnvName) == '@')
+		LPCSTR name = (LPCSTR)m_psma->addr(pHeader->m_pEnvName);
+		assert(!IsBadStringPtr(name, 1));
+		if (*name == '@') {
 			//	永続的変数
+			const BYTE* value = (const BYTE*)m_psma->addr(pHeader->m_pEnvString);
+			assert(!IsBadStringPtr((LPCSTR)value, 1));
 			::RegSetValueEx(
 					hDgKey,
-					(LPCSTR)m_psma->addr(pHeader->m_pEnvName),
+					name,
 					0,
 					REG_SZ,
-					(const BYTE*)m_psma->addr(pHeader->m_pEnvString),
-					lstrlen((LPCSTR)m_psma->addr(pHeader->m_pEnvString)) + 1
+					value,
+					lstrlen((LPCSTR)value) + 1
 				);
+		}
 	}
 	return ::RegCloseKey(hDgKey) == ERROR_SUCCESS;
 }
