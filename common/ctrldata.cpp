@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.16 2002-06-16 14:56:09 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.17 2002-06-17 13:20:49 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -2650,7 +2650,17 @@ LViewCtrl::onSetItem(CmdLineParser& argv, const StringBuffer& pos)
 	if (ind < 0) ind = num - 1;
 	if (pos.length() > 0) {
 		int	tmp = ival(pos) - 1;
-		if (tmp >= 0 && tmp < num) ind = tmp;
+		switch (tmp) {
+		case -2:
+			ind = num - 1;
+			break;
+		case -1:
+			ind = m_state - 1;
+			break;
+		default:
+			if (tmp >= 0 && tmp < num) ind = tmp;
+			else ind = -1;
+		}
 	}
 	LViewItemData*
 		lvid = static_cast<LViewItemData*>(m_item->getItemByIndex(ind));
@@ -2717,8 +2727,17 @@ LViewCtrl::onGetItem(const StringBuffer& pos)
 	int	ind = m_state - 1, num = m_item->itemNum();
 	if (pos.length() > 0) {
 		int	tmp = ival(pos) - 1;
-		if (tmp >= 0 && tmp < num) ind = tmp;
-		else ind = -1;
+		switch (tmp) {
+		case -2:
+			ind = num - 1;
+			break;
+		case -1:
+			ind = m_state - 1;
+			break;
+		default:
+			if (tmp >= 0 && tmp < num) ind = tmp;
+			else ind = -1;
+		}
 	}
 	if (ind < 0) return nullStr;
 	LViewItemData*
