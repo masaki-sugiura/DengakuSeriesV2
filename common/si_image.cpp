@@ -1,4 +1,4 @@
-//	$Id: si_image.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: si_image.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
 /*
  *	si_image.cpp
  *	‰æ‘œ‚ÌŠÇ—‚ÉŠÖ‚·‚éƒNƒ‰ƒX
@@ -13,40 +13,45 @@ SessionInstance::si_loadspi(const StringBuffer& filename)
 {
 	PathName pnspi;
 	if (!m_DirList.getPathName(filename,pnspi,TRUE)) return FALSE;
-	return m_SPIManager.loadSPI(pnspi);
+	try {
+		m_pSPIManager = new SPI_Manager(pnspi);
+	} catch (...) {
+		return FALSE;
+	}
+	return TRUE;
 }
 
 int
 SessionInstance::si_freespi()
 {
-	if (!m_SPIManager.isLoaded()) return FALSE;
-	m_SPIManager.freeSPI();
+	if (m_pSPIManager.ptr() == NULL) return FALSE;
+	m_pSPIManager = NULL;
 	return TRUE;
 }
 
 StringBuffer
 SessionInstance::si_getspiinfo(int id)
 {
-	if (!m_SPIManager.isLoaded()) return nullStr;
-	return m_SPIManager.getSPIInfo(id);
+	if (m_pSPIManager.ptr() == NULL) return nullStr;
+	return m_pSPIManager->getSPIInfo(id);
 }
 
 int
 SessionInstance::si_issupportedpic(const StringBuffer& filename)
 {
-	if (!m_SPIManager.isLoaded()) return FALSE;
+	if (m_pSPIManager.ptr() == NULL) return FALSE;
 	PathName pnpic;
 	if (!m_DirList.getPathName(filename,pnpic,TRUE) ||
-		!m_SPIManager.isSupportedPic(pnpic)) return FALSE;
+		!m_pSPIManager->isSupportedPic(pnpic)) return FALSE;
 	return TRUE;
 }
 
 StringBuffer
 SessionInstance::si_getpicinfo(const StringBuffer& filename)
 {
-	if (!m_SPIManager.isLoaded()) return nullStr;
+	if (m_pSPIManager.ptr() == NULL) return nullStr;
 	PathName pnpic;
 	if (!m_DirList.getPathName(filename,pnpic,TRUE)) return nullStr;
-	return m_SPIManager.getPicInfo(pnpic);
+	return m_pSPIManager->getPicInfo(pnpic);
 }
 

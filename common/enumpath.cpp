@@ -1,23 +1,26 @@
-//	$Id: enumpath.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: enumpath.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
 /*
  *	enumpath.cpp
  *	enum*** に関するクラスの実装
  */
 
+#include "strutils.h"
 #include "enumpath.h"
 #include "tokenizer.h"
 
 static int
-compareByName(path_tree* p1, path_tree* p2)
+compareByName(const WIN32_FIND_DATA& lhs,
+			  const WIN32_FIND_DATA& rhs)
 {
-	return lstrcmp(p1->m_fd.cFileName,p2->m_fd.cFileName);
+	return lstrcmp(lhs.cFileName,rhs.cFileName);
 }
 
 static int
-compareByExt(path_tree* p1, path_tree* p2)
+compareByExt(const WIN32_FIND_DATA& lhs,
+			 const WIN32_FIND_DATA& rhs)
 {
-	LPCSTR	ptr1 = lstrrchr(p1->m_fd.cFileName,'.'),
-			ptr2 = lstrrchr(p2->m_fd.cFileName,'.');
+	LPCSTR	ptr1 = lstrrchr(lhs.cFileName,'.'),
+			ptr2 = lstrrchr(rhs.cFileName,'.');
 	if (ptr1 == NULL) ptr1 = "";
 	else ptr1++;
 	if (ptr2 == NULL) ptr2 = "";
@@ -26,41 +29,31 @@ compareByExt(path_tree* p1, path_tree* p2)
 }
 
 static int
-compareBySize(path_tree* p1, path_tree* p2)
+compareBySize(const WIN32_FIND_DATA& lhs,
+			  const WIN32_FIND_DATA& rhs)
 {
-	return	(p1->m_fd.nFileSizeHigh > p2->m_fd.nFileSizeHigh) ?  1 :
-			(p1->m_fd.nFileSizeHigh < p2->m_fd.nFileSizeHigh) ? -1 :
-			(p1->m_fd.nFileSizeLow > p2->m_fd.nFileSizeLow) ?  1 :
-			(p1->m_fd.nFileSizeLow < p2->m_fd.nFileSizeLow) ? -1 :
-			0;
+	int diff = lhs.nFileSizeHigh - rhs.nFileSizeHigh;
+	if (diff != 0) return diff;
+	return lhs.nFileSizeLow - rhs.nFileSizeLow;
 }
 
 static int
-compareByTime(path_tree* p1, path_tree* p2)
+compareByTime(const WIN32_FIND_DATA& lhs,
+			  const WIN32_FIND_DATA& rhs)
+
 {
 	//	explorer と同じソート順序になるように逆の値を返す
-	return (int)::CompareFileTime(&p2->m_fd.ftLastWriteTime,
-								&p1->m_fd.ftLastWriteTime);
+	return (int)::CompareFileTime(&lhs.ftLastWriteTime,
+								  &rhs.ftLastWriteTime);
 }
 
-EnumSortedPath::EnumSortedPath(
-	const StringBuffer& topdir,
-	const StringBuffer& filter,
-	const StringBuffer& s_order,
-	DWORD flags)
-	:	m_topdir(topdir),
-		m_filter(filter),
-		m_flags(flags),
-		m_cur_pt_buf(NULL),
-		m_top(NULL), m_pStk(NULL),
-		m_ncOrder(0)
+PathComparator::PathComparator(const StringBuffer& sbOrder, BOOL bReverse)
+	: m_bReverse(bReverse)
 {
-	m_dwAttrTopDir = m_topdir.getAttributes();
-	if (m_dwAttrTopDir == 0xFFFFFFFF && lstrlen(m_topdir.getBaseName()) == 0)
-		m_dwAttrTopDir = FILE_ATTRIBUTE_DIRECTORY;	//	root directory
-	LPCSTR ptr = (LPCSTR)s_order;
+	LPCSTR ptr = (LPCSTR)sbOrder;
 	int findex = 0, bn = 0, be = 0, bs = 0, bt = 0;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++) {
+		if (*ptr == '\0') break;
 		switch (*ptr++) {
 		case 'n':
 			if (bn) throw InvalidArgumentException();
@@ -86,22 +79,59 @@ EnumSortedPath::EnumSortedPath(
 		default:
 			throw InvalidArgumentException();
 		}
+	}
 	if (!bn || !be || !bs || !bt) throw InvalidArgumentException();
 }
 
-EnumSortedPath::~EnumSortedPath()
+int
+PathComparator::doCompare(const WIN32_FIND_DATA& lhs,
+						  const WIN32_FIND_DATA& rhs) const
 {
-	delete m_pStk;
+	// "." と ".." はソート方法に関係なく常に最小
+	int lipn = IsPathNameDots(lhs.cFileName),
+		ripn = IsPathNameDots(rhs.cFileName);
+	if ((lipn | ripn) != 0) {
+		if (lipn == 0)      return  1; // normal file > dot
+		else if (ripn == 0) return -1; // dot < normal file
+		return lipn - ripn; // dot ?? dot
+	}
+
+	int compName, comp;
+	if ((compName = compareByName(lhs,rhs)) == 0) return 0;
+
+#define COMPARE(i) ((m_ncOrder == i) ? compName : (*m_pfnCompare[i])(lhs,rhs))
+
+	// m_pfnCompare[]() を順番に呼び、違いがあったらその値を comp に代入
+	// ややこしいのは既に行った名前比較の結果を再利用するためだが…
+	if ((comp = COMPARE(0)) == 0 &&
+		(comp = COMPARE(1)) == 0 &&
+		(comp = COMPARE(2)) == 0) comp = compName;
+	return m_bReverse == 0 ? comp : -comp;
+}
+
+EnumSortedPath::EnumSortedPath(
+	const StringBuffer& topdir,
+	const StringBuffer& filter,
+	const StringBuffer& s_order,
+	DWORD flags)
+	:	Sorter<WIN32_FIND_DATA>(
+			new PathComparator(s_order,
+							   (flags&ENUMPATH_SORTREVERSE) != 0)),
+		m_topdir(topdir),
+		m_filter(filter),
+		m_flags(flags)
+{
+	m_dwAttrTopDir = m_topdir.getAttributes();
+	if (m_dwAttrTopDir == 0xFFFFFFFF && lstrlen(m_topdir.getBaseName()) == 0)
+		m_dwAttrTopDir = FILE_ATTRIBUTE_DIRECTORY;	//	root directory
 }
 
 int
 EnumSortedPath::doEnum()
 {
 	Tokenizer wcard(m_filter,";",TRUE);
-	int num = 0;
 	HANDLE hFindFile;
 	WIN32_FIND_DATA fd;
-	path_tree *ptr = NULL;
 	while (wcard.hasMoreTokens()) {
 		StringBuffer wcstr = wcard.getNextToken();
 		if (wcstr.length() <= 0) continue;
@@ -111,91 +141,41 @@ EnumSortedPath::doEnum()
 		if (hFindFile != INVALID_HANDLE_VALUE) {
 			do {
 				if (tobeAdded(fd)) {
-					if (ptr == NULL) ptr = allocBuf(&fd);
-					else ptr->m_fd = fd;
-					ptr = addPath(&ptr,&m_top); // NULL if SUCCESS!!
-					num++;
+					this->addElement(fd);
 				}
 			} while (::FindNextFile(hFindFile,&fd));
 			::FindClose(hFindFile);
 			m_flags |= ENUMPATH_EXCLUDEDOTS;
 		}
 	}
-	m_pStk = new Stack<path_tree>(num);
-	pushLower(m_top);
-	return num;
+	// 最も小さい要素がスタックのトップになる
+	return this->initSequentialGet();
 }
 
+//	fd で表されるファイルまたはフォルダが現在の検索対象かどうかを返す
 BOOL
 EnumSortedPath::tobeAdded(const WIN32_FIND_DATA& fd) const
 {
-	if (fd.dwFileAttributes == 0xFFFFFFFF) return FALSE;
-	else if ((fd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) != 0) {
+	if ((fd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) != 0) {
+		//	フォルダの場合
+		//	dwFileAttributes == 0xFFFFFFFF : ルートフォルダを含む
 		return	(m_flags & ENUMPATH_FINDDIR) != 0 &&
 				((m_flags & ENUMPATH_EXCLUDEDOTS) == 0 ||
 				 !IsPathNameDots(fd.cFileName));
 	} else {
+		//	一般のファイルの場合
 		return (m_flags & ENUMPATH_FINDFILE) != 0;
 	}
 }
 
-path_tree*
-EnumSortedPath::allocBuf(const WIN32_FIND_DATA* pfd)
-{
-	if (m_cur_pt_buf == NULL ||
-		m_cur_pt_buf->m_head >= PTBUF_BLOCKSIZE) {
-		m_cur_pt_buf = new pt_buf;
-		if (m_cur_pt_buf == NULL) return NULL;
-		m_pt_buf_list.addItem(m_cur_pt_buf);
-	}
-	path_tree* ret = m_cur_pt_buf->m_buf + m_cur_pt_buf->m_head++;
-	ret->m_lower = ret->m_upper = NULL;
-	::CopyMemory(&ret->m_fd,pfd,sizeof(WIN32_FIND_DATA));
-	return ret;
-}
-
-path_tree*
-EnumSortedPath::addPath(path_tree** ppt, path_tree** prev)
-{
-	path_tree* ptr;
-	int comp, compName;
-	while (*prev != NULL) {
-		ptr = *prev;
-		if (IsPathNameDots(ptr->m_fd.cFileName)) { // * == "." || * == ".."
-			prev = &ptr->m_upper;
-			continue;
-		}
-		//	file is already registered
-		if ((compName = compareByName(*ppt,ptr)) == 0) return *ppt;
-
-#define COMPARE(i) ((m_ncOrder == i) ? compName : (*m_pfnCompare[i])(*ppt,ptr))
-
-		if ((comp = COMPARE(0)) == 0 &&
-			(comp = COMPARE(1)) == 0 &&
-			(comp = COMPARE(2)) == 0) comp = compName;
-
-		prev = (comp > 0) == ((m_flags&ENUMPATH_SORTREVERSE) == 0) ?
-				&ptr->m_upper : &ptr->m_lower;
-	}
-	*prev = *ppt;
-	return NULL;	//	return NULL if "SUCCESS"
-}
-
-void
-EnumSortedPath::pushLower(const path_tree* top)
-{
-	while (top != NULL) {
-		m_pStk->push(top);
-		top = top->m_lower;
-	}
-}
-
+//	現在のスタックトップの要素(のファイル名)を返し、
+//	それより大きい(がスタックに積まれた要素よりは小さいはずの)要素を
+//	スタックに積む
 const StringBuffer
 EnumSortedPath::findNext()
 {
-	path_tree* ptr = m_pStk->pop();
-	if (ptr == NULL) return nullStr;
-	if (ptr->m_upper != NULL) pushLower(ptr->m_upper);
-	return ptr->m_fd.cFileName;
+	const WIN32_FIND_DATA* pfd = this->getNextElement();
+	if (pfd == NULL) return nullStr;
+	return pfd->cFileName;
 }
 

@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.2 2001-11-22 13:37:09 sugiura Exp $
+//	$Id: session.h,v 1.3 2002-01-16 15:57:23 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -207,7 +207,7 @@ protected:
 	DlgFrame m_DlgFrame; // ユーザー定義ダイアログのクラス
 	DirList m_DirList; // ドライブ毎のカレントフォルダのリスト
 	MenuList m_UserMenu; // ユーザー定義メニューのクラス
-	SPI_Manager m_SPIManager; // Susie Plugin をコントロールするクラス
+	Auto_Ptr<SPI_Manager> m_pSPIManager; // Susie Plugin をコントロールするクラス
 	Auto_Ptr<EnvManager> m_pEnvManager; // 共有変数をコントロールするクラス
 	Auto_Ptr<FindData> m_pFindData; // "enum*" コマンドで使うクラス
 	Auto_Ptr<Tokenizer> m_pStrToken; // gettoken コマンドで使うクラス

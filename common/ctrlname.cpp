@@ -1,8 +1,9 @@
-// $Id: ctrlname.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+// $Id: ctrlname.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
 /*
  *	コントロール名テーブル
  */
 
+#include "strutils.h"
 #include "ctrlname.h"
 #include "ctrldata.h"
 

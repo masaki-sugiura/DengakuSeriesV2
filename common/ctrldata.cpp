@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -7,6 +7,7 @@
 //	チェックリストで使うチェックボックスのビットマップを得るためのおまじない
 #define	OEMRESOURCE
 
+#include "strutils.h"
 #include "session.h"
 #include "ctrldata.h"
 #include "dlgdata.h"
@@ -18,43 +19,13 @@
 #include <exception>
 #include <imm.h>
 
-#define STATE_INDEX(ind) ((ind) >> 5)
-#define STATE_BIT(ind)   (0x1 << ((ind) & 0x1F))
-
-BOOL
-CtrlListItem::States::getState(int ind) const
-{
-	if (ind < 0 || ind >= (int)sizeof(DWORD)*64) return FALSE;
-//	return (m_state[ind/32] & (0x1 << (ind%32))) != 0;
-	return (m_state[STATE_INDEX(ind)] & STATE_BIT(ind)) != 0;
-}
-
-int
-CtrlListItem::States::getFirstIndex(int last) const
-{
-	if (last > (int)sizeof(DWORD)*64) last = sizeof(DWORD)*64;
-	for (int i = 0; i < last; i++) {
-		if (this->getState(i)) return i;
-	}
-	return -1;
-}
-
-void
-CtrlListItem::States::setState(int ind, BOOL flag)
-{
-	if (ind < 0 || ind >= (int)sizeof(DWORD)*64) return;
-	if (flag)
-		m_state[STATE_INDEX(ind)] |= STATE_BIT(ind);
-	else
-		m_state[STATE_INDEX(ind)] &= ~STATE_BIT(ind);
-}
-
 BOOL
 CtrlListItem::States::dumpData(DlgDataFile& ddfile) const
 {
 	StringBuffer buf(32);
-	for (int i = 0; i < (int)sizeof(DWORD)*8; i++) {
-		if (this->getState(i)) {
+	int last = (int)m_states.getSize();
+	for (int i = 0; i < last; i++) {
+		if (m_states.getBit(i)) {
 			if (buf.length() > 0) buf.append((TCHAR)',');
 			buf.append(i+1);
 		}
@@ -66,14 +37,13 @@ CtrlListItem::States::dumpData(DlgDataFile& ddfile) const
 BOOL
 CtrlListItem::States::loadData(DlgDataFile& ddfile)
 {
+	m_states.clear();
 	StringBuffer buf(32);
 	ddfile.read(buf,GetString(STR_DLGDATA_STATES));
-	buf.append((TCHAR)',');
-	LPSTR h, t;
-	for (h = buf.getBufPtr(); (t = lstrchr(h,',')) != NULL; h = t + 1) {
-		*t = '\0';
-		if (h == t) continue;
-		this->setState(ival(h)-1,TRUE);
+	Tokenizer tknStates(buf, ", ", TRUE); // skip null str
+	while (tknStates.hasMoreTokens()) {
+		int index = ival(tknStates.getNextToken()) - 1;
+		if (index > 0) m_states.setBit(index, TRUE);
 	}
 	return TRUE;
 }

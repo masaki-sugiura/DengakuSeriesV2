@@ -1,4 +1,4 @@
-//	$Id: si_file.cpp,v 1.2 2001-11-22 13:37:09 sugiura Exp $
+//	$Id: si_file.cpp,v 1.3 2002-01-16 15:57:23 sugiura Exp $
 /*
  *	si_file.cpp
  *	SessionInstance: ファイルサービスの関数
@@ -594,10 +594,12 @@ SessionInstance::si_enumpath(CmdLineParser& params)
 		return FALSE;
 	try {
 		if ((flags & RECFIND_REVERSE) != 0)
-			m_pFindData = new RecFindBackward(path,anyPathName,filter,
+			m_pFindData = new RecFindBackward(m_DirList,
+											path,anyPathName,filter,
 											s_order,flags);
 		else
-			m_pFindData = new RecFindForward(path,anyPathName,filter,
+			m_pFindData = new RecFindForward(m_DirList,
+											path,anyPathName,filter,
 											s_order,flags);
 	} catch (exception&) {
 		return FALSE;
@@ -614,7 +616,7 @@ SessionInstance::si_enumfile(CmdLineParser& params)
 	if (!ParseEnumOptions(params,m_DirList,path,filter,s_order,flags))
 		return FALSE;
 	try {
-		m_pFindData = new FindFile(path,filter,s_order,flags);
+		m_pFindData = new FindFile(m_DirList,path,filter,s_order,flags);
 	} catch (exception&) {
 		return FALSE;
 	}
@@ -630,7 +632,7 @@ SessionInstance::si_enumdir(CmdLineParser& params)
 	if (!ParseEnumOptions(params,m_DirList,path,filter,s_order,flags))
 		return FALSE;
 	try {
-		m_pFindData = new FindDir(path,filter,s_order,flags);
+		m_pFindData = new FindDir(m_DirList,path,filter,s_order,flags);
 	} catch (exception&) {
 		return FALSE;
 	}
@@ -781,11 +783,11 @@ SessionInstance::si_findnext()
 StringBuffer
 SessionInstance::si_getdrives()
 {
-	StringBuffer drives_str = "00000000000000000000000000000000";
+	TCHAR drives_str[33] = "00000000000000000000000000000000";
 	DWORD drives = ::GetLogicalDrives();
 
 	for (int i = 0; i < 32; i++, drives >>= 1)
-		drives_str.setcharAt(i,(drives&0x00000001) != 0 ? '1' : '0');
+		drives_str[i] = (drives&0x00000001) != 0 ? '1' : '0';
 
 	return drives_str;
 }

@@ -32,6 +32,7 @@ typedef char* (*PFN_BREGEXPVERSION)(void);
 inline StringBuffer
 make_result(DWORD res)
 {
+	if (res == BREGEXP_RESULT_FAILED) return nullStr;
 	return StringBuffer(16).append((DWORD)LOWORD(res))
 						   .append((TCHAR)':')
 						   .append((DWORD)HIWORD(res));
@@ -57,14 +58,16 @@ public:
 	BRegExp_Manager(const StringBuffer&);
 	~BRegExp_Manager();
 
-	StringBuffer bMatch(const StringBuffer& ptn, const StringBuffer& str);
+	DWORD bMatch(const StringBuffer& ptn, const StringBuffer& str);
 	StringBuffer bSubst(const StringBuffer& ptn, const StringBuffer& str);
 	StringBuffer bTrans(const StringBuffer& ptn, const StringBuffer& str);
 	int bSplit(const StringBuffer& ptn, const StringBuffer& str, int limit);
 	const StringBuffer& bRegexpversion();
 
-	StringBuffer getNextResult();
+	DWORD getNextResult();
 	BOOL hasMoreResults();
+
+	StringBuffer posToString(DWORD pos) const;
 
 	const StringBuffer& getErrorMessage() const
 	{ return m_strErrMsg; }
@@ -79,8 +82,9 @@ private:
 	PFN_BREGEXPVERSION m_pfnBRegexpversion;
 
 	HashTable<BREGEXP*,11> m_htblBRegExp;
-	LinkList<BREGEXP> m_BRegExp_Pool;
+	LinkList<BREGEXP,false> m_BRegExp_Pool; // don't delete at delItem..()
 	Auto_Ptr<ResultList> m_pResultList;
+	StringBuffer m_strSplitted;
 	StringBuffer m_strVersion;
 	StringBuffer m_strErrMsg;
 };

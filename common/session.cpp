@@ -1,4 +1,4 @@
-//	$Id: session.cpp,v 1.2 2001-11-22 13:37:09 sugiura Exp $
+//	$Id: session.cpp,v 1.3 2002-01-16 15:57:23 sugiura Exp $
 /*
  *	session.cpp
  *	SessionInstance クラスのコア部分の実装
@@ -10,6 +10,7 @@ SessionInstance::SessionInstance(HINSTANCE hInstance, BOOL bTrueCD)
 	:	m_hInstance(hInstance),	//	インスタンスハンドル
 		m_dwLastError(0L), // DdeExecute() の LastError
 		m_DirList(bTrueCD), // DirList クラス
+		m_pSPIManager(NULL), // SPI_Manager クラスへのポインタ
 		m_pEnvManager(NULL), // EnvManager クラスへのポインタ
 		m_pFindData(NULL), // enum* の結果を保持するクラスへのポインタ
 		m_pStrToken(NULL), // gettoken の結果を保持するクラスへのポインタ

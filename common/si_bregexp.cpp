@@ -1,4 +1,4 @@
-//	$Id: si_bregexp.cpp,v 1.1 2001-11-22 13:42:41 sugiura Exp $
+//	$Id: si_bregexp.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
 /*
  *	si_bregexp.cpp
  *	BRegexp ‚ÉŠÖ‚·‚éƒNƒ‰ƒX
@@ -82,7 +82,7 @@ StringBuffer
 SessionInstance::si_bregexp_getnext()
 {
 	if (m_pBRegExp_Manager.ptr() == NULL) return nullStr;
-	return m_pBRegExp_Manager->getNextResult();
+	return make_result(m_pBRegExp_Manager->getNextResult());
 }
 
 int

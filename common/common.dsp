@@ -230,6 +230,10 @@ SOURCE=.\strbuf.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\strutils.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\thread.cpp
 # End Source File
 # Begin Source File
@@ -243,6 +247,14 @@ SOURCE=.\tokenizer.cpp
 # Begin Source File
 
 SOURCE=.\auto_ptr.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\bitarray.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\block_alloc.h
 # End Source File
 # Begin Source File
 
@@ -354,6 +366,10 @@ SOURCE=.\smalloc.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\sorter.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\spi_mngr.h
 # End Source File
 # Begin Source File
@@ -367,6 +383,10 @@ SOURCE=.\str_tbl.h
 # Begin Source File
 
 SOURCE=.\strbuf.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\strutils.h
 # End Source File
 # Begin Source File
 

@@ -1,17 +1,20 @@
-//	$Id: recfind.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: recfind.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
 /*
  *	recfind.cpp
  *	enum** 系の関数のためのクラス
  */
 
 #include "recfind.h"
+#include "dirlist.h"
 
 static const StringBuffer nullPath = ".";
 
-FindData::FindData(const PathName& path)
-	:	m_pnPathBuf(path),
+FindData::FindData(const DirList& dirlist, const PathName& path)
+	:	m_DirList(dirlist),
+		m_pnPathBuf(path),
 		m_sbBaseName(nullStr),
-		m_pCurrentPath(NULL)
+		m_pCurrentPath(NULL),
+		m_bGotAttrib(FALSE)
 {
 	//	no operation.
 	m_pnPathBuf.addPath(nullPath);
@@ -40,7 +43,38 @@ FindData::findNext()
 		return FALSE;
 	}
 	m_pnPathBuf.addPath(m_sbBaseName);
+	m_bGotAttrib = FALSE;
 	return TRUE;
+}
+
+DWORD
+FindData::getAttributes()
+{
+	if (!m_bGotAttrib) {
+		m_DirList.getPathName(m_pnPathBuf, m_pnForGetAttrib, TRUE);
+		m_bGotAttrib = TRUE;
+	}
+	return m_pnForGetAttrib.getAttributes();
+}
+
+DWORD
+FindData::getSize()
+{
+	if (!m_bGotAttrib) {
+		m_DirList.getPathName(m_pnPathBuf, m_pnForGetAttrib, TRUE);
+		m_bGotAttrib = TRUE;
+	}
+	return m_pnForGetAttrib.getSize();
+}
+
+const FILETIME*
+FindData::getTime()
+{
+	if (!m_bGotAttrib) {
+		m_DirList.getPathName(m_pnPathBuf, m_pnForGetAttrib, TRUE);
+		m_bGotAttrib = TRUE;
+	}
+	return m_pnForGetAttrib.getTime();
 }
 
 StringBuffer
@@ -78,12 +112,13 @@ FindData::setPath(
 
 
 RecFindData::RecFindData(
+	const DirList& dirlist,			//	カレントフォルダ等の情報
 	const PathName& dir,			//	検索パス
 	const StringBuffer& dirfilter,	//	ディレクトリ検索のフィルタ
 	const StringBuffer& filefilter,	//	ファイル検索のフィルタ
 	const StringBuffer& s_order,	//	ソートオーダー
 	DWORD flags)					//	検索フラグ
-	:	FindData(dir),
+	:	FindData(dirlist, dir),
 		m_sDirFilter(dirfilter),
 		m_sFileFilter(filefilter),
 		m_sSortOrder(s_order),
@@ -155,12 +190,13 @@ RecFindData::initDirSearch()
 }
 
 RecFindForward::RecFindForward(
+	const DirList& dirlist,			//	カレントフォルダ等の情報
 	const PathName& dir,			//	検索パス
 	const StringBuffer& dirfilter,	//	ディレクトリ検索のフィルタ
 	const StringBuffer& filefilter,	//	ファイル検索のフィルタ
 	const StringBuffer& s_order,	//	ソートオーダー
 	DWORD flags)					//	ディレクトリを検索対象にするか
-	: RecFindData(dir,dirfilter,filefilter,s_order,flags)
+	: RecFindData(dirlist,dir,dirfilter,filefilter,s_order,flags)
 {
 	initSearch();
 }
@@ -216,12 +252,13 @@ RecFindForward::findNext()
 }
 
 RecFindBackward::RecFindBackward(
+	const DirList& dirlist,			//	カレントフォルダ等の情報
 	const PathName& dir,			//	検索パス
 	const StringBuffer& dirfilter,	//	ディレクトリ検索のフィルタ
 	const StringBuffer& filefilter,	//	ファイル検索のフィルタ
 	const StringBuffer& s_order,	//	ソートオーダー
 	DWORD flags)					//	ディレクトリを検索対象にするか
-	: RecFindData(dir,dirfilter,filefilter,s_order,
+	: RecFindData(dirlist,dir,dirfilter,filefilter,s_order,
 			ENUMPATH_SORTREVERSE|RECFIND_REVERSE|flags)
 {
 	initSearch();

@@ -76,6 +76,7 @@ CLEAN :
 	-@erase "$(INTDIR)\spi_mngr.obj"
 	-@erase "$(INTDIR)\str_tbl.obj"
 	-@erase "$(INTDIR)\strbuf.obj"
+	-@erase "$(INTDIR)\strutils.obj"
 	-@erase "$(INTDIR)\thread.obj"
 	-@erase "$(INTDIR)\tokenizer.obj"
 	-@erase "$(INTDIR)\vc60.idb"
@@ -94,6 +95,7 @@ BSC32_SBRS= \
 LIB32=link.exe -lib
 LIB32_FLAGS=/nologo /out:"$(OUTDIR)\common.lib" 
 LIB32_OBJS= \
+	"$(INTDIR)\bregexp_mngr.obj" \
 	"$(INTDIR)\cmdline.obj" \
 	"$(INTDIR)\ctrldata.obj" \
 	"$(INTDIR)\ctrlname.obj" \
@@ -115,6 +117,7 @@ LIB32_OBJS= \
 	"$(INTDIR)\seq_op.obj" \
 	"$(INTDIR)\session.obj" \
 	"$(INTDIR)\shicons.obj" \
+	"$(INTDIR)\si_bregexp.obj" \
 	"$(INTDIR)\si_comdlg.obj" \
 	"$(INTDIR)\si_common.obj" \
 	"$(INTDIR)\si_dialog.obj" \
@@ -127,10 +130,9 @@ LIB32_OBJS= \
 	"$(INTDIR)\spi_mngr.obj" \
 	"$(INTDIR)\str_tbl.obj" \
 	"$(INTDIR)\strbuf.obj" \
+	"$(INTDIR)\strutils.obj" \
 	"$(INTDIR)\thread.obj" \
-	"$(INTDIR)\tokenizer.obj" \
-	"$(INTDIR)\bregexp_mngr.obj" \
-	"$(INTDIR)\si_bregexp.obj"
+	"$(INTDIR)\tokenizer.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -184,6 +186,7 @@ CLEAN :
 	-@erase "$(INTDIR)\spi_mngr.obj"
 	-@erase "$(INTDIR)\str_tbl.obj"
 	-@erase "$(INTDIR)\strbuf.obj"
+	-@erase "$(INTDIR)\strutils.obj"
 	-@erase "$(INTDIR)\thread.obj"
 	-@erase "$(INTDIR)\tokenizer.obj"
 	-@erase "$(INTDIR)\vc60.idb"
@@ -203,6 +206,7 @@ BSC32_SBRS= \
 LIB32=link.exe -lib
 LIB32_FLAGS=/nologo /out:"$(OUTDIR)\common.lib" 
 LIB32_OBJS= \
+	"$(INTDIR)\bregexp_mngr.obj" \
 	"$(INTDIR)\cmdline.obj" \
 	"$(INTDIR)\ctrldata.obj" \
 	"$(INTDIR)\ctrlname.obj" \
@@ -224,6 +228,7 @@ LIB32_OBJS= \
 	"$(INTDIR)\seq_op.obj" \
 	"$(INTDIR)\session.obj" \
 	"$(INTDIR)\shicons.obj" \
+	"$(INTDIR)\si_bregexp.obj" \
 	"$(INTDIR)\si_comdlg.obj" \
 	"$(INTDIR)\si_common.obj" \
 	"$(INTDIR)\si_dialog.obj" \
@@ -236,10 +241,9 @@ LIB32_OBJS= \
 	"$(INTDIR)\spi_mngr.obj" \
 	"$(INTDIR)\str_tbl.obj" \
 	"$(INTDIR)\strbuf.obj" \
+	"$(INTDIR)\strutils.obj" \
 	"$(INTDIR)\thread.obj" \
-	"$(INTDIR)\tokenizer.obj" \
-	"$(INTDIR)\bregexp_mngr.obj" \
-	"$(INTDIR)\si_bregexp.obj"
+	"$(INTDIR)\tokenizer.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -476,6 +480,11 @@ SOURCE=.\str_tbl.cpp
 SOURCE=.\strbuf.cpp
 
 "$(INTDIR)\strbuf.obj" : $(SOURCE) "$(INTDIR)"
+
+
+SOURCE=.\strutils.cpp
+
+"$(INTDIR)\strutils.obj" : $(SOURCE) "$(INTDIR)"
 
 
 SOURCE=.\thread.cpp

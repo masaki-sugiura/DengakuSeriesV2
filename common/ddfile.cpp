@@ -1,9 +1,10 @@
-//	$Id: ddfile.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: ddfile.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
 /*
  *	ddfile.cpp
  *	ダイアログデータのデータファイルを扱うクラス
  */
 
+#include "strutils.h"
 #include "ddfile.h"
 #include "pathname.h"
 

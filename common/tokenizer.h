@@ -1,4 +1,4 @@
-//	$Id: tokenizer.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: tokenizer.h,v 1.2 2002-01-16 15:57:23 sugiura Exp $
 /*
  *	tokenizer.h
  *	文字列のトークン化クラス
@@ -11,7 +11,7 @@
 
 class Tokenizer {
 public:
-	Tokenizer(const StringBuffer& str, const StringBuffer& seps = NULL,
+	Tokenizer(const StringBuffer& str, const StringBuffer& seps = nullStr,
 			BOOL skip_null = FALSE);
 
 	void setSeparatorChars(const StringBuffer& seps);

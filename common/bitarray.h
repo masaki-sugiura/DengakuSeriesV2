@@ -1,11 +1,11 @@
-// $Id: bitarray.h,v 1.1 2001-11-26 14:43:16 sugiura Exp $
+// $Id: bitarray.h,v 1.2 2002-01-16 15:57:23 sugiura Exp $
 /*
  *	bitarray.h
  *	ビット配列クラス
  */
 
-#ifndef	DENGAKUSERIES_CLASSES_AUTO_PTR
-#define	DENGAKUSERIES_CLASSES_AUTO_PTR
+#ifndef	DENGAKUSERIES_CLASSES_BITARRAY
+#define	DENGAKUSERIES_CLASSES_BITARRAY
 
 #include <windows.h>
 
@@ -18,20 +18,35 @@
 class BitArray {
 public:
 	BitArray(DWORD init_size = BITARRAY_DEFAULT_SIZE)
-		: m_size(BITARRAY_SIZE(init_size)), m_bits(NULL)
+		: m_size(init_size), m_alloc_size(0), m_bits(NULL)
 	{
-		this->enlargeSize(m_size);
+		this->enlargeSize(init_size);
 	}
-
+	BitArray(const BitArray& rhs)
+		: m_bits(NULL)
+	{
+		this->enlargeSize(rhs.m_size);
+		::CopyMemory(m_bits, rhs.m_bits, sizeof(DWORD) * m_alloc_size);
+	}
 	~BitArray()
 	{
 		delete [] m_bits;
+	}
+	BitArray& operator=(const BitArray& rhs)
+	{
+		if (this != &rhs) {
+			delete [] m_bits;
+			m_bits = NULL;
+			this->enlargeSize(rhs.m_size);
+			::CopyMemory(m_bits, rhs.m_bits, sizeof(DWORD) * m_alloc_size);
+		}
+		return *this;
 	}
 
 #if 0
 	int operator[] (DWORD i) const
 	{
-		if (BITARRAY_INDEX(i) >= m_size) return 0;
+		if (i >= m_size) return 0;
 		return (m_bits[BITARRAY_INDEX(i)] & BITARRAY_BIT(i)) != 0;
 	}
 
@@ -61,13 +76,11 @@ public:
 	friend class BitArrayProxy;
 #endif
 
+	DWORD getSize() const { return m_size; }
+
 	void setBit(int index, int bit)
 	{
-		DWORD size = BITARRAY_SIZE(index);
-		if (size > m_size) {
-			if (!bit) return; // 0 returns in default
-			this->enlargeSize(size);
-		}
+		if (index > m_size) this->enlargeSize(index);
 		if (bit)
 			m_bits[BITARRAY_INDEX(index)] |= BITARRAY_BIT(index);
 		else
@@ -76,27 +89,37 @@ public:
 
 	int getBit(int i) const
 	{
-		if (BITARRAY_INDEX(i) >= m_size) return 0;
+		if (i >= m_size) return 0;
 		return (m_bits[BITARRAY_INDEX(i)] & BITARRAY_BIT(i)) != 0;
 	}
 
+	void clear()
+	{
+		if (m_bits != NULL)
+			::ZeroMemory(m_bits, m_alloc_size * sizeof(DWORD));
+	}
 
 private:
-	DWORD  m_size;
+	DWORD  m_size; // size in bit
+	DWORD  m_alloc_size; // size in dword
 	DWORD* m_bits;
 
 	void enlargeSize(DWORD size)
 	{
+		DWORD new_alloc_size = BITARRAY_SIZE(size);
 		if (m_bits == NULL) {
-			m_bits = new DWORD[size];
-			::ZeroMemory(m_bits, sizeof(DWORD) * size);
+			m_bits = new DWORD[new_alloc_size];
+			::ZeroMemory(m_bits, new_alloc_size * sizeof(DWORD));
 		} else {
-			DWORD* newbits = new DWORD[size];
-			::CopyMemory(newbits, m_bits, sizeof(DWORD) * m_size);
-			::ZeroMemory(newbits + m_size, sizeof(DWORD) * (size - m_size));
+			DWORD* newbits = new DWORD[new_alloc_size];
+			::CopyMemory(newbits, m_bits, sizeof(DWORD) * m_alloc_size);
+			::ZeroMemory(newbits + sizeof(DWORD) * m_alloc_size,
+						 sizeof(DWORD) * (new_alloc_size - m_alloc_size));
 			delete [] m_bits;
 			m_bits = newbits;
 		}
+		m_alloc_size = new_alloc_size;
+		m_size = size;
 	}
 };
 

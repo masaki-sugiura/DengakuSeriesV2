@@ -25,30 +25,22 @@ typedef int (__stdcall *PFNSPIINFO)(int,LPSTR,int);
 typedef int (__stdcall *PFNSPISUPPORTED)(LPCSTR,DWORD);
 typedef int (__stdcall *PFNSPIGETPICINFO)(LPCSTR,LONG,UINT,PIC_INFO*);
 
-typedef struct {
-	HMODULE m_hSPI;
-	PFNSPIINFO m_pfnSPIInfo;
-	PFNSPISUPPORTED m_pfnSPISupported;
-	PFNSPIGETPICINFO m_pfnSPIGetPicInfo;
-} SPI_PFNS;
-
 class SPI_Manager {
 public:
-	SPI_Manager() { m_spi_pfns.m_hSPI = NULL; }
-	~SPI_Manager()
-	{ if (m_spi_pfns.m_hSPI != NULL) ::FreeLibrary(m_spi_pfns.m_hSPI); }
-
-	BOOL isLoaded() const { return m_spi_pfns.m_hSPI != NULL; }
-
-	BOOL loadSPI(const StringBuffer&);
-	void freeSPI();
+	SPI_Manager(const StringBuffer&);
+	~SPI_Manager();
 
 	StringBuffer getSPIInfo(int) const;
 	BOOL isSupportedPic(const StringBuffer&) const;
 	StringBuffer getPicInfo(const StringBuffer&) const;
 
 private:
-	SPI_PFNS m_spi_pfns;
+	HMODULE m_hSPI;
+	PFNSPIINFO m_pfnSPIInfo;
+	PFNSPISUPPORTED m_pfnSPISupported;
+	PFNSPIGETPICINFO m_pfnSPIGetPicInfo;
 };
+
+class SPINotFoundException {};
 
 #endif

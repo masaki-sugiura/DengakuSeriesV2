@@ -1,9 +1,10 @@
-//	$Id: tokenizer.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: tokenizer.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
 /*
  *	tokenizer.cpp
  *	文字列のトークン化クラス
  */
 
+#include "strutils.h"
 #include "tokenizer.h"
 
 Tokenizer::Tokenizer(

@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: ctrldata.h,v 1.2 2002-01-16 15:57:23 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -60,8 +60,10 @@
 #ifndef	DENGAKUSERIES_CLASSES_CONTROL
 #define	DENGAKUSERIES_CLASSES_CONTROL
 
+#include "strutils.h"
 #include "ddfile.h"
 #include "linklist.h"
+#include "bitarray.h"
 #include "ctrlname.h"
 
 #include <commctrl.h>
@@ -264,25 +266,34 @@ protected:
 	//	複数の選択項目を持つコントロールのための状態管理クラス
 	class States {
 	public:
-		States()
-		{
-			::ZeroMemory(m_state,sizeof(DWORD)*8);
-		}
-
 		void reset()
 		{
-			::ZeroMemory(m_state,sizeof(DWORD)*8);
+			m_states.clear();
 		}
 
-		BOOL getState(int ind) const;
-		int getFirstIndex(int last = sizeof(DWORD)*64) const;
-		void setState(int ind, BOOL flag);
+		BOOL getState(int ind) const
+		{
+			return m_states.getBit(ind);
+		}
+
+		int getFirstIndex(int last) const
+		{
+			for (int i = 0; i < last; i++) {
+				if (m_states.getBit(i)) return i;
+			}
+			return -1;
+		}
+
+		void setState(int ind, BOOL flag)
+		{
+			m_states.setBit(ind, flag);
+		}
 
 		BOOL dumpData(DlgDataFile &ddfile) const;
 		BOOL loadData(DlgDataFile &ddfile);
 
 	private:
-		DWORD m_state[8];
+		BitArray m_states;
 	};
 
 	//	クラスメンバ・メソッド

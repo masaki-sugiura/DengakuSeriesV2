@@ -1,4 +1,4 @@
-//	$Id: seq_op.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: seq_op.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
 /*
  *	seq_op.cpp
  *	SequentialOp クラスの実装
@@ -43,7 +43,12 @@ SequentialOp::doOp()
 			WIN32_FIND_DATA fd;
 			HANDLE hFile = ::FindFirstFile(file,&fd);
 			if (hFile == INVALID_HANDLE_VALUE) {
-				bSuccess = FALSE;
+				// dirname may be invalid..??
+				StringBuffer basename(file.getBaseName());
+				file.delPath();
+				if (!file.isValid()) bSuccess = FALSE;
+				// else no match file for the specified wildcard
+				file.addPath(basename);
 				continue;
 			}
 			file.delPath();
@@ -94,8 +99,14 @@ FileToFileOperation(
 
 	//	操作先ファイル・フォルダ名の正当性チェック
 	PathName dest;
-	if (!DirList.getPathName(params.getArgvStr(-1), dest, FALSE))
+	if (!DirList.getPathName(params.getArgvStr(-1), dest, FALSE)) {
+#if 0
+		StringBuffer msg("specified filename: ");
+		msg.append(dest).append("\nis invalid");
+		::MessageBox(NULL, msg, NULL, MB_OK);
+#endif
 		return FALSE;
+	}
 
 	params.delArgv(-1);
 
@@ -122,7 +133,15 @@ FileToFileOperation(
 				}
 				WIN32_FIND_DATA fd;
 				HANDLE hFile = ::FindFirstFile(file,&fd);
-				if (hFile == INVALID_HANDLE_VALUE) continue;
+				if (hFile == INVALID_HANDLE_VALUE) {
+					// dirname may be invalid..??
+					StringBuffer basename(file.getBaseName());
+					file.delPath();
+					if (!file.isValid()) bSuccess = FALSE;
+					// else no match file for the specified wildcard
+					file.addPath(basename);
+					continue;
+				}
 				file.delPath();
 				do {
 					if ((fd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) != 0) {

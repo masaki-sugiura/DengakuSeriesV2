@@ -25,14 +25,17 @@ BRegExp_Manager::BRegExp_Manager(const StringBuffer& filename)
 
 BRegExp_Manager::~BRegExp_Manager()
 {
-	while (m_BRegExp_Pool.itemNum() > 0) {
-		(*m_pfnBRegfree)(m_BRegExp_Pool.getItemByIndex(0));
-		m_BRegExp_Pool.delItemByIndex(0);
+	// DLL のアンロードの順序によりアクセス違反が起こる可能性あり
+	if (!::IsBadReadPtr(m_BRegExp_Pool.getItemByIndex(0), sizeof(BREGEXP))) {
+		while (m_BRegExp_Pool.itemNum() > 0) {
+			(*m_pfnBRegfree)(m_BRegExp_Pool.getItemByIndex(0));
+			m_BRegExp_Pool.delItemByIndex(0);
+		}
+		::FreeLibrary(m_hModuleDll);
 	}
-	::FreeLibrary(m_hModuleDll);
 }
 
-StringBuffer
+DWORD
 BRegExp_Manager::bMatch(const StringBuffer& ptn, const StringBuffer& str)
 {
 	BREGEXP* pBRegExp_Org = m_htblBRegExp.getValue(ptn);
@@ -44,6 +47,8 @@ BRegExp_Manager::bMatch(const StringBuffer& ptn, const StringBuffer& str)
 							 &pBRegExp,
 							 msg);
 	m_strErrMsg = msg;
+
+	m_strSplitted = str;
 	if (pBRegExp_Org == NULL && pBRegExp != NULL) {
 		m_BRegExp_Pool.addItem(pBRegExp);
 		m_htblBRegExp.setValue(ptn, pBRegExp);
@@ -64,7 +69,7 @@ BRegExp_Manager::bMatch(const StringBuffer& ptn, const StringBuffer& str)
 		}
 	}
 	m_pResultList = pResultList;
-	return result != BREGEXP_RESULT_FAILED ? make_result(result) : nullStr;
+	return result;
 }
 
 StringBuffer
@@ -79,11 +84,13 @@ BRegExp_Manager::bSubst(const StringBuffer& ptn, const StringBuffer& str)
 							 &pBRegExp,
 							 msg);
 	m_strErrMsg = msg;
+
+//	m_strSplitted = nullStr;
 	if (pBRegExp_Org == NULL && pBRegExp != NULL) {
 		m_BRegExp_Pool.addItem(pBRegExp);
 		m_htblBRegExp.setValue(ptn, pBRegExp);
 	}
-	m_pResultList = NULL;
+//	m_pResultList = NULL;
 	if (ret < 0) return nullStr;
 	return pBRegExp->outp;
 }
@@ -100,11 +107,13 @@ BRegExp_Manager::bTrans(const StringBuffer& ptn, const StringBuffer& str)
 							 &pBRegExp,
 							 msg);
 	m_strErrMsg = msg;
+
+//	m_strSplitted = nullStr;
 	if (pBRegExp_Org == NULL && pBRegExp != NULL) {
 		m_BRegExp_Pool.addItem(pBRegExp);
 		m_htblBRegExp.setValue(ptn, pBRegExp);
 	}
-	m_pResultList = NULL;
+//	m_pResultList = NULL;
 	if (ret < 0) return nullStr;
 	return pBRegExp->outp;
 }
@@ -121,16 +130,18 @@ BRegExp_Manager::bSplit(const StringBuffer& ptn, const StringBuffer& str, int li
 							 &pBRegExp,
 							 msg);
 	m_strErrMsg = msg;
+
+	m_strSplitted = str;
 	if (pBRegExp_Org == NULL && pBRegExp != NULL) {
 		m_BRegExp_Pool.addItem(pBRegExp);
 		m_htblBRegExp.setValue(ptn, pBRegExp);
 	}
-	DWORD result;
+	int result;
 	ResultList* pResultList = NULL;
 	if (ret <= 0) {
 		result = BREGEXP_RESULT_FAILED;
 	} else {
-		result = (DWORD)ret;
+		result = ret;
 		if (ret > 0) {
 			pResultList = new ResultList(ret);
 			for (int i = 0; i < ret; i++) {
@@ -141,7 +152,7 @@ BRegExp_Manager::bSplit(const StringBuffer& ptn, const StringBuffer& str, int li
 		}
 	}
 	m_pResultList = pResultList;
-	return (int)result;
+	return result;
 }
 
 const StringBuffer&
@@ -151,13 +162,20 @@ BRegExp_Manager::bRegexpversion()
 	return m_strVersion;
 }
 
-StringBuffer
+DWORD
 BRegExp_Manager::getNextResult()
 {
 	if (m_pResultList.ptr() == NULL ||
 		m_pResultList->m_nHead >= m_pResultList->m_nSize)
-		return nullStr;
-	return make_result(m_pResultList->m_pResults[m_pResultList->m_nHead++]);
+		return (DWORD)-1;
+	return m_pResultList->m_pResults[m_pResultList->m_nHead++];
+}
+
+StringBuffer
+BRegExp_Manager::posToString(DWORD pos) const
+{
+	if (pos == (DWORD)-1 || m_strSplitted.length() == 0) return nullStr;
+	return m_strSplitted.extract(LOWORD(pos), HIWORD(pos));
 }
 
 BOOL

@@ -1,35 +1,117 @@
-//	$Id: pathname.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: pathname.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
 /*
  *	pathname.cpp
  *	パス名を扱うクラス
  */
 
+#include "misc.h"
 #include "pathname.h"
 
 const StringBuffer anyPathName("*.*");
 
+static int
+GetTokenLength(LPCSTR str, TCHAR sep)
+{
+	if (str == NULL) return -1;
+	LPCSTR top = str;
+	while (*str != '\0' && *str != sep)
+		str = ToNextChar(str);
+	return str - top;
+}
+
+int
+PathName::getPathType(LPCSTR pathname, LPCSTR* pphead)
+{
+	if (!IsValidPtr(pathname)) return ISPATHINVALID;
+
+	int type = 0; // return itself if null string
+	if (*pathname == '\\') {
+		//	1st char is "\"
+		if (*++pathname == '\\') {
+			//	UNC path ??
+			type |= ISPATHREMOTE;
+			int	len = GetTokenLength(++pathname,'\\');
+			if (len <= 0)	//	"\\" or "\\\"
+				return ISPATHINVALID;
+
+			pathname += len; // skip server name
+			type |= ISSERVERSPECIFIED;
+			if (*pathname != '\0') { // "\\svr\.."
+				len = GetTokenLength(++pathname,'\\');
+				pathname += len;
+				if (len == 0) {
+					if (*pathname != '\0') return ISPATHINVALID; // "\\svr\\.."
+					// else "\\svr\"
+				} else { // "\\svr\share..."
+					type |= ISSHARENAMESPECIFIED;
+					if (*pathname != '\0') { // "\\svr\share\.."
+						type |= ISPATHFROMROOT;
+						pathname++;
+					}
+				}
+			}
+		} else {
+			//	"\dir.." ??
+			type |= ISPATHFROMROOT;
+			pathname++;
+		}
+	} else if (*pathname != '\0') { // 1st. char is not "\"
+		if (*(pathname + 1) == ':') {
+			// maybe drive is specified
+			if (!ISDRIVELETTER(*pathname)) return ISPATHINVALID;
+			pathname += 2;
+			//	"X:.."
+			type |= ISDRIVESPECIFIED;
+			if (*pathname == '\\') {
+				type |= ISPATHFROMROOT;
+				pathname++;
+			}
+		}
+	}
+	if (pphead != NULL) *pphead = pathname;
+	return type | (*pathname != '\0' ? ISPATHSPECIFIED : 0);
+}
+
 void
 PathName::refresh()
 {
-	if (this->StringBuffer::charAt(-1) == '\\')
-		this->StringBuffer::setcharAt(-1,'\0');
-	if (this->StringBuffer::length() == 2) {
-		this->StringBuffer::append((TCHAR)'\\');
-		m_node = 0;
-	} else {
-		LPCSTR str = (LPCSTR)*this;
-		for (m_node = 0; (str = lstrchr(str,'\\')) != NULL; m_node++, str++)
-			/* no operation here */;
+	LPCSTR phead = NULL;
+	m_type = getPathType(*this, &phead);
+	// calculates the number of nodes of path (without header)
+	m_node = 0; // invalid, null, "X:\" or "\" or "\\svr[\[share[\]]]"
+	if ((m_type & ISPATHSPECIFIED) != 0) {
+		m_node++;
+		while ((phead = lstrchr(phead,'\\')) != NULL && *++phead != '\0')
+			m_node++;
+		if (phead != NULL) this->setlength(this->length() - 1);
 	}
 	this->getFileType();
+}
+
+BOOL
+PathName::isRootPath() const
+{
+	return m_node == 0 &&
+			((m_type & ISPATHREMOTE) != 0 ||
+			 ((m_type & ISDRIVESPECIFIED) != 0 &&
+			  (m_type & ISPATHFROMROOT) != 0));
 }
 
 void
 PathName::getFileType() const
 {
 	m_fd.dwFileAttributes = 0xFFFFFFFF;
-	HANDLE hFd = ::FindFirstFile((LPCSTR)*this,&m_fd);
-	if (hFd != INVALID_HANDLE_VALUE) ::FindClose(hFd);
+	if (this->find('*') >= 0 || this->find('?') >= 0) return; // wild card
+	if (this->isRootPath()) {
+		if ((m_type & ISPATHREMOTE) != 0 &&
+			(m_type & ISSHARENAMESPECIFIED) == 0)
+			return; // "\\svr[\]"
+		// ルートフォルダの場合 FindFirstFile() は失敗する(怒)
+		m_fd.dwFileAttributes = FILE_ATTRIBUTE_DIRECTORY;
+	} else {
+		HANDLE hFd = ::FindFirstFile((LPCSTR)*this,&m_fd);
+		if (hFd != INVALID_HANDLE_VALUE) ::FindClose(hFd);
+	}
 }
 
 PathName::PathName(const StringBuffer& name)
@@ -52,7 +134,7 @@ PathName::addPath(const StringBuffer& name)
 		LPCSTR pname = name; // むぅ...
 		if (*pname == '\\') ++pname;
 		if (*pname != '\0') {
-			if (this->StringBuffer::charAt(-1) != '\\')
+			if (!IsPathEndWithSep(*this))
 				this->StringBuffer::append((TCHAR)'\\');
 			this->StringBuffer::append(pname);
 			this->refresh();
@@ -64,26 +146,24 @@ PathName::addPath(const StringBuffer& name)
 PathName&
 PathName::delPath(int num)
 {
-	if (this->StringBuffer::length() > 3) {
+	if (m_node > 0) {
 		if (num < 0 || num > m_node) num = m_node;
 		num = m_node - num;
-		LPCSTR s = (LPCSTR)*this;
-		if (*s == '\\' && *(s + 1) == '\\') {
-			//	UNC Path
-			num -= 2;
-			s += 2;	//	skip "\\" at head.
-			s = lstrchr(s,'\\');	//	set s to the next "\"
-			if (s == NULL) return *this;	//	no change.
-		} else if (*(s + 1) == ':') {
-			//	Absolute Path
-			s += 2;
+		LPCSTR s = NULL;
+		this->getPathType(*this, &s);
+		if (s != NULL) {
+			while (num-- > 0) {
+				//	set s to the deleting "\"
+				s = lstrchr(s,'\\');
+				if (s == NULL) {
+					InternalError(__FILE__, __LINE__);
+					return *this;
+				}
+				s++;
+			}
+			this->StringBuffer::setlength(s - (LPCSTR)*this);
+			this->refresh();
 		}
-		while (s != NULL && num-- > 0) {
-			//	set s to the deleting "\"
-			s = lstrchr(++s,'\\');
-		}
-		this->StringBuffer::setcharAt(s - (LPCSTR)*this,'\0');
-		this->refresh();
 	}
 	return *this;
 }
@@ -91,11 +171,7 @@ PathName::delPath(int num)
 void
 PathName::setBaseName(const StringBuffer& name)
 {
-	if (name.length() <= 0) return;
-	LPSTR s = lstrrchr(*this,'\\');
-	if (s == NULL) return;
-	this->StringBuffer::setlength(++s - (LPCSTR)*this);
-	this->StringBuffer::append(name);
-	this->refresh();
+	this->delPath(1);
+	this->addPath(name);
 }
 

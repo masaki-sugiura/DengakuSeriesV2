@@ -1,4 +1,4 @@
-//	$Id: recfind.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: recfind.h,v 1.2 2002-01-16 15:57:23 sugiura Exp $
 /*
  *	recfind.h
  *	enum** 関数のためのパス検索クラス
@@ -16,10 +16,13 @@
 #define RECFIND_RECURSIVE	0x00002000	//	再帰的に検索
 #define RECFIND_SHOWDIR		0x00004000	//	ディレクトリも表示
 
+// predeclaration
+class DirList;
+
 // パス検索クラス群の基底クラス
 class FindData {
 public:
-	FindData(const PathName&);
+	FindData(const DirList& dirlist, const PathName&);
 	virtual ~FindData();
 
 	BOOL isValid() const;
@@ -27,25 +30,16 @@ public:
 
 	virtual StringBuffer getBaseName() const;
 
-	DWORD getAttributes()
-	{
-		return m_pnPathBuf.getAttributes();
-	}
-
-	DWORD getSize()
-	{
-		return m_pnPathBuf.getSize();
-	}
-
-	const FILETIME*	getTime()
-	{
-		return m_pnPathBuf.getTime();
-	}
+	DWORD getAttributes();
+	DWORD getSize();
+	const FILETIME*	getTime();
 
 protected:
-	PathName m_pnPathBuf;
+	const DirList& m_DirList;
+	PathName m_pnPathBuf, m_pnForGetAttrib;
 	StringBuffer m_sbBaseName;
 	EnumSortedPath* m_pCurrentPath;	//	cannot be Auto_Ptr, see source
+	BOOL m_bGotAttrib;
 
 	FindData(const FindData&);
 	FindData& operator=(const FindData&);
@@ -57,11 +51,12 @@ protected:
 class FindFile : public FindData {
 public:
 	FindFile(
+		const DirList& dirlist,
 		const PathName& path,
 		const StringBuffer& filter,
 		const StringBuffer& s_order,
 		DWORD flags)
-		: FindData(path)
+		: FindData(dirlist, path)
 	{
 		this->setPath(filter,s_order,ENUMPATH_FINDFILE|flags);
 	}
@@ -71,11 +66,12 @@ public:
 class FindDir : public FindData {
 public:
 	FindDir(
+		const DirList& dirlist,
 		const PathName& path,
 		const StringBuffer& filter,
 		const StringBuffer& s_order,
 		DWORD flags)
-		: FindData(path)
+		: FindData(dirlist, path)
 	{
 		this->setPath(filter,s_order,ENUMPATH_FINDDIR|flags);
 	}
@@ -85,6 +81,7 @@ public:
 class RecFindData : public FindData {
 public:
 	RecFindData(
+		const DirList& dirlist,
 		const PathName&,
 		const StringBuffer&,
 		const StringBuffer&,
@@ -117,6 +114,7 @@ protected:
 class RecFindForward : public RecFindData {
 public:
 	RecFindForward(
+		const DirList& dirlist,
 		const PathName&,
 		const StringBuffer&,
 		const StringBuffer&,
@@ -132,6 +130,7 @@ protected:
 class RecFindBackward : public RecFindData {
 public:
 	RecFindBackward(
+		const DirList& dirlist,
 		const PathName&,
 		const StringBuffer&,
 		const StringBuffer&,

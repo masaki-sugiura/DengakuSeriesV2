@@ -1,4 +1,4 @@
-//	$Id: linklist.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: linklist.h,v 1.2 2002-01-16 15:57:23 sugiura Exp $
 /*
  *	linklist.h
  *	(単方向)リンクリストクラス
@@ -35,14 +35,15 @@ private:
 	PtrLinkList& operator=(const PtrLinkList&);
 };
 
-template<class T>
+template<class T, bool bTrueDelete = true>
 class LinkList : private PtrLinkList {
 public:
 	virtual ~LinkList()
 	{
-		this->LinkList<T>::initSequentialGet();
+		if (!bTrueDelete) return;
+		this->LinkList::initSequentialGet();
 		T* ptr;
-		while ((ptr = this->LinkList<T>::getNextItem()) != NULL)
+		while ((ptr = this->LinkList::getNextItem()) != NULL)
 			delete ptr;
 	}
 
@@ -55,13 +56,13 @@ public:
 	{
 		T* pvalue = this->getItemByIndex(ind);
 		if (pvalue == NULL) return -1;
-		delete pvalue;
+		if (bTrueDelete) delete pvalue;
 		return PtrLinkList::delItem_(pvalue);
 	}
 	virtual int	delItemByPtr(T* pvalue)
 	{
 		if (PtrLinkList::getItemIndex_(pvalue) < 0) return -1;
-		delete pvalue;
+		if (bTrueDelete) delete pvalue;
 		return PtrLinkList::delItem_(pvalue);
 	}
 	virtual int	getItemIndexByPtr(T* pvalue) const
@@ -80,8 +81,8 @@ public:
 
 //	NamedLinkListItem のリストのクラス
 //	class T には T::getName() メソッドが定義されている必要がある
-template<class T>
-class NamedLinkList : public LinkList<T> {
+template<class T, bool bTrueDelete = true>
+class NamedLinkList : public LinkList<T,bTrueDelete> {
 public:
 	int	addItem(T* pvalue, int ind = -1)
 	{
@@ -92,7 +93,7 @@ public:
 			m_HashName.setValue(name,0);
 			this->delItemByPtr(oldvalue);
 		}
-		if (LinkList<T>::addItem(pvalue,ind) <= 0) return -1;
+		if (this->LinkList<T,bTrueDelete>::addItem(pvalue,ind) <= 0) return -1;
 		m_HashName.setValue(name,pvalue);
 		return this->itemNum();
 	}
@@ -102,14 +103,14 @@ public:
 		T* oldvalue = m_HashName.getValue(name);
 		if (oldvalue == NULL) return -1;
 		m_HashName.setValue(oldvalue->getName(),0);
-		return this->LinkList<T>::delItemByPtr(oldvalue);
+		return this->LinkList<T,bTrueDelete>::delItemByPtr(oldvalue);
 	}
 
 	int	delItemByPtr(T* pvalue)
 	{
 		if (pvalue == NULL) return -1;
 		m_HashName.setValue(pvalue->getName(),0);
-		return this->LinkList<T>::delItemByPtr(pvalue);
+		return this->LinkList<T,bTrueDelete>::delItemByPtr(pvalue);
 	}
 
 	int getItemIndexByName(const StringBuffer& name) const

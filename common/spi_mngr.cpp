@@ -8,33 +8,20 @@
 #include "pathname.h"
 #include "file.h"
 
-BOOL
-SPI_Manager::loadSPI(const StringBuffer& spiname)
+SPI_Manager::SPI_Manager(const StringBuffer& spiname)
 {
-	if (m_spi_pfns.m_hSPI != NULL ||
-		(m_spi_pfns.m_hSPI = ::LoadLibrary(spiname)) == NULL) return FALSE;
-	if ((m_spi_pfns.m_pfnSPIInfo
-			= (PFNSPIINFO)::GetProcAddress(m_spi_pfns.m_hSPI,"GetPluginInfo"))
-			== NULL ||
-		(m_spi_pfns.m_pfnSPISupported
-			= (PFNSPISUPPORTED)::GetProcAddress(m_spi_pfns.m_hSPI,
-												"IsSupported")) == NULL ||
-		(m_spi_pfns.m_pfnSPIGetPicInfo
-			= (PFNSPIGETPICINFO)::GetProcAddress(m_spi_pfns.m_hSPI,
-												"GetPictureInfo")) == NULL) {
-		this->freeSPI();
-		return FALSE;
-	}
-	return TRUE;
+	if ((m_hSPI = ::LoadLibrary(spiname)) == NULL ||
+		(m_pfnSPIInfo = (PFNSPIINFO)::GetProcAddress(m_hSPI, "GetPluginInfo")) == NULL ||
+		(m_pfnSPISupported = (PFNSPISUPPORTED)::GetProcAddress(m_hSPI, "IsSupported")) == NULL ||
+		(m_pfnSPIGetPicInfo = (PFNSPIGETPICINFO)::GetProcAddress(m_hSPI, "GetPictureInfo")) == NULL)
+		throw SPINotFoundException();
 }
 
-void
-SPI_Manager::freeSPI()
+SPI_Manager::~SPI_Manager()
 {
-	if (m_spi_pfns.m_hSPI != NULL) {
-		::FreeLibrary(m_spi_pfns.m_hSPI);
-		m_spi_pfns.m_hSPI = NULL;
-	}
+	// DLL アンロードの順序が不定な場合への対処
+	if (!::IsBadCodePtr((FARPROC)m_pfnSPIInfo))
+		::FreeLibrary(m_hSPI);
 }
 
 StringBuffer
@@ -42,17 +29,13 @@ SPI_Manager::getSPIInfo(int type) const
 {
 	TCHAR buf[MAX_PATH];
 	buf[0] = '\0';
-	if (m_spi_pfns.m_hSPI != NULL && m_spi_pfns.m_pfnSPIInfo != NULL) {
-		(*m_spi_pfns.m_pfnSPIInfo)(type,buf,MAX_PATH);
-	}
+	(*m_pfnSPIInfo)(type, buf, MAX_PATH);
 	return buf;
 }
 
 BOOL
 SPI_Manager::isSupportedPic(const StringBuffer& filename) const
 {
-	if (m_spi_pfns.m_hSPI == NULL ||
-		m_spi_pfns.m_pfnSPISupported == NULL) return FALSE;
 	File fPicture(
 				(LPCSTR)PathName(filename),
 				GENERIC_READ,
@@ -60,12 +43,16 @@ SPI_Manager::isSupportedPic(const StringBuffer& filename) const
 				FILE_ATTRIBUTE_NORMAL|FILE_FLAG_SEQUENTIAL_SCAN
 			);
 	if (!fPicture.isValid()) return FALSE;
+
+#define SPISUPPORTED_BUF_SIZE 2048
+
 	BOOL ret = FALSE;
-	BYTE buf[2048];
-	DWORD fsize = fPicture.readFile(buf,2048);
+	BYTE buf[SPISUPPORTED_BUF_SIZE];
+	DWORD fsize = fPicture.readFile(buf, SPISUPPORTED_BUF_SIZE);
 	if (fsize > 0) {
-		if (fsize < 2048) ::ZeroMemory(buf + fsize,2048-fsize);
-		ret = (*m_spi_pfns.m_pfnSPISupported)((LPCSTR)filename,(DWORD)buf);
+		if (fsize < SPISUPPORTED_BUF_SIZE)
+			::ZeroMemory(buf + fsize, SPISUPPORTED_BUF_SIZE - fsize);
+		ret = (*m_pfnSPISupported)((LPCSTR)filename,(DWORD)buf);
 	}
 	return ret;
 }
@@ -73,12 +60,10 @@ SPI_Manager::isSupportedPic(const StringBuffer& filename) const
 StringBuffer
 SPI_Manager::getPicInfo(const StringBuffer& filename) const
 {
-	if (m_spi_pfns.m_hSPI == NULL ||
-		m_spi_pfns.m_pfnSPIGetPicInfo == NULL) return nullStr;
 	PIC_INFO pi;
 	pi.hInfo = NULL;
-	if ((*m_spi_pfns.m_pfnSPIGetPicInfo)(filename,0,0,&pi) != 0 &&
-		(*m_spi_pfns.m_pfnSPIGetPicInfo)(filename,128,0,&pi) != 0)
+	if ((*m_pfnSPIGetPicInfo)(filename,0,0,&pi) != 0 &&
+		(*m_pfnSPIGetPicInfo)(filename,128,0,&pi) != 0)
 		return nullStr;
 	StringBuffer ret(80);
 	ret.append((DWORD)pi.left).append(',')

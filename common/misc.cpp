@@ -1,9 +1,10 @@
-//	$Id: misc.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: misc.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数
  */
 
+#include "strutils.h"
 #include "misc.h"
 
 BOOL
@@ -58,5 +59,18 @@ ColorRefToColorStr(COLORREF color)
 	TCHAR buf[8];
 	wsprintf(buf,"#%-06.6x",0x00FFFFFF&swap_bytes(color));
 	return buf;
+}
+
+void
+InternalError(LPCSTR file, int line)
+{
+	TCHAR msg[2 * MAX_PATH];
+	lstrcpy(msg, "DengakuLib: 内部エラー\nFILE: ");
+	lstrcat(msg, file);
+	lstrcat(msg, "\nLINE: ");
+	int len = lstrlen(msg);
+	wsprintf(msg + len, "%d", line);
+
+	::MessageBox(NULL, msg, "DengakuLib Message", MB_OK);
 }
 
