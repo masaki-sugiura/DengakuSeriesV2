@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.39 2005-01-16 09:00:25 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.40 2005-01-16 11:07:48 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -1148,7 +1148,8 @@ EditCtrl::EditCtrl(
 	const StringBuffer& text,
 	CTRL_ID type)
 	: SimpleCtrl(name,text,type),
-	  m_imestate(0L)
+	  m_imestate(0L),
+	  m_bAlreadyFocused(FALSE)
 {
 	m_pcp->m_style		= /*ES_AUTOHSCROLL|*/
 							WS_BORDER|WS_CHILD|WS_TABSTOP|WS_VISIBLE|WS_GROUP;
@@ -1183,6 +1184,13 @@ EditCtrl::createCtrlTemplate(CtrlTemplateArgs& cta)
 	cta.m_cy = UHEIGHT * m_cy - UHEIGHT;
 	m_pcp->setCtrlTemplate(cta);
 	return TRUE;
+}
+
+BOOL
+EditCtrl::initCtrl(HWND hDlg)
+{
+	m_bAlreadyFocused = FALSE;
+	return SimpleCtrl::initCtrl(hDlg);
 }
 
 BOOL
@@ -1228,6 +1236,7 @@ BOOL
 EditCtrl::onSetImeState(int state)
 {
 	m_imestate = state;
+	m_bAlreadyFocused = FALSE;
 	return TRUE;
 }
 
@@ -1245,22 +1254,37 @@ EditCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 		return m_notify[0];
 	case EN_SETFOCUS:
 		{
-			int nState = m_pDlgPage->getDlgFrame().getImeState();
+			DlgFrame& dlgFrame = m_pDlgPage->getDlgFrame();
+			int nState = dlgFrame.getImeState();
+			if (nState > 2 && dlgFrame.isImeAlreadyFocused()) {
+				// 既にいずれかのコントロールがフォーカスを得ている
+				nState = 0;
+			}
 			if (m_imestate > 0 || nState > 0) {
 				// グローバル設定をローカル設定で上書き
 				if (m_imestate > 0) nState = m_imestate;
 				HIMC hImc = ::ImmGetContext((HWND)lParam);
 				switch (nState) {
+				case 3:
+					if (m_bAlreadyFocused) break;
+					// through down
 				case 1:
 					if (!::ImmGetOpenStatus(hImc)) ::ImmSetOpenStatus(hImc,TRUE);
 					break;
-				default:
+				case 4:
+					if (m_bAlreadyFocused) break;
+					// through down
+				case 2:
 					if (::ImmGetOpenStatus(hImc)) ::ImmSetOpenStatus(hImc,FALSE);
+					break;
+				default:
 					break;
 				}
 				::ImmReleaseContext((HWND)lParam,hImc);
 			}
 			::SendMessage((HWND)lParam, EM_SETSEL, 0, -1);
+			m_bAlreadyFocused = TRUE;
+			dlgFrame.setImeAlreadyFocused();
 		}
 		break;
 	}
@@ -2252,7 +2276,8 @@ ComboCtrl::ComboCtrl(
 	CTRL_ID type)
 	: ListCtrl(name,text,CTRLID_COMBO),
 	  m_imestate(0L),
-	  m_bEditable(type == CTRLID_COMBO)
+	  m_bEditable(type == CTRLID_COMBO),
+	  m_bAlreadyFocused(FALSE)
 {
 	m_pcp->m_style		= CBS_AUTOHSCROLL|CBS_SORT|WS_BORDER|WS_VSCROLL|
 							WS_CHILD|WS_VISIBLE|WS_TABSTOP|WS_VISIBLE|WS_GROUP|
@@ -2299,6 +2324,7 @@ ComboCtrl::createCtrlTemplate(CtrlTemplateArgs& cta)
 BOOL
 ComboCtrl::initCtrl(HWND hDlg)
 {
+	m_bAlreadyFocused = FALSE;
 	if (!ListCtrl::initCtrl(hDlg)) return FALSE;
 	ChildCtrlSubClassInfo*
 		pCCSci = new ChildCtrlSubClassInfo();
@@ -2360,6 +2386,7 @@ BOOL
 ComboCtrl::onSetImeState(int state)
 {
 	m_imestate = state;
+	m_bAlreadyFocused = FALSE;
 	return TRUE;
 }
 
@@ -2379,24 +2406,39 @@ ComboCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 		if (m_bEditable) {
 			HWND hwndEdit = ::GetTopWindow((HWND)lParam);
 			if (hwndEdit == NULL) break;
-			int nState = m_pDlgPage->getDlgFrame().getImeState();
+			DlgFrame& dlgFrame = m_pDlgPage->getDlgFrame();
+			int nState = dlgFrame.getImeState();
+			if (nState > 2 && dlgFrame.isImeAlreadyFocused()) {
+				// 既にいずれかのコントロールがフォーカスを得ている
+				nState = 0;
+			}
 			if (m_imestate > 0 || nState > 0) {
 				// グローバル設定をローカル設定で上書き
 				if (m_imestate > 0) nState = m_imestate;
 				HIMC hImc = ::ImmGetContext(hwndEdit);
 				switch (nState) {
+				case 3:
+					if (m_bAlreadyFocused) break;
+					// through down
 				case 1:
 					if (!::ImmGetOpenStatus(hImc))
 						::ImmSetOpenStatus(hImc, TRUE);
 					break;
-				default:
+				case 4:
+					if (m_bAlreadyFocused) break;
+					// through down
+				case 2:
 					if (::ImmGetOpenStatus(hImc))
 						::ImmSetOpenStatus(hImc, FALSE);
+					break;
+				default:
 					break;
 				}
 				::ImmReleaseContext(hwndEdit, hImc);
 			}
 			::SendMessage(hwndEdit, EM_SETSEL, 0, -1);
+			m_bAlreadyFocused = TRUE;
+			dlgFrame.setImeAlreadyFocused();
 		}
 		break;
 	}

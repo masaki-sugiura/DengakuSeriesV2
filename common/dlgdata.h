@@ -1,4 +1,4 @@
-//	$Id: dlgdata.h,v 1.14 2005-01-15 06:53:48 sugiura Exp $
+//	$Id: dlgdata.h,v 1.15 2005-01-16 11:07:48 sugiura Exp $
 /*
  *	dlgdata.h
  *	ダイアログを扱うクラス
@@ -233,7 +233,18 @@ public:
 	}
 
 	int setImeState(int nState);
-	int getImeState() const;
+	int getImeState() const
+	{
+		return m_imestate;
+	}
+	void setImeAlreadyFocused()
+	{
+		m_bAlreadyFocused = TRUE;
+	}
+	BOOL isImeAlreadyFocused() const
+	{
+		return m_bAlreadyFocused;
+	}
 
 //	ダイアログの背景をTABコントロールと同色にする
 	void setBackGroundTheme(HWND hwndPage, BOOL bInTab)
@@ -293,6 +304,7 @@ private:
 	WORD m_height;	//	ダイアログの高さ
 	WORD m_flags;	//	表示位置に関するフラグ
 	int m_imestate;	//	IMEの状態を表す
+	BOOL m_bAlreadyFocused; // 入力フォーカスを持ついずれかのコントロールにフォーカスが移ったかどうか
 };
 
 extern const StringBuffer strRootPageName;

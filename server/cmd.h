@@ -1,4 +1,4 @@
-//	$Id: cmd.h,v 1.15 2005-01-16 07:38:33 sugiura Exp $
+//	$Id: cmd.h,v 1.16 2005-01-16 11:07:48 sugiura Exp $
 /*
  *	cmd.h
  *	ƒRƒ}ƒ“ƒh–¼ˆê——
@@ -7,6 +7,7 @@
 #if	defined(DECLARE_DDECMD_EXECUTE)&&defined(DECLARE_DDECMD_REQUEST)&&defined(DECLARE_DDECMD_POKE)&&defined(DECLARE_DDECMD_FINAL)&&defined(DECLARE_DDECMD_HEADER)&&defined(DECLARE_DDECMD_FOOTER)
 DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_EXECUTE(exit)
+	DECLARE_DDECMD_EXECUTE(sleep)
 	DECLARE_DDECMD_EXECUTE(getcolor)
 	DECLARE_DDECMD_EXECUTE(getfont)
 	DECLARE_DDECMD_EXECUTE(setcurdir)

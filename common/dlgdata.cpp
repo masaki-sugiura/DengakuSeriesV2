@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.27 2005-01-16 09:00:25 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.28 2005-01-16 11:07:48 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -859,7 +859,8 @@ DlgFrame::DlgFrame()
 		m_width(0),
 		m_height(0),
 		m_flags(0),
-		m_imestate(0)
+		m_imestate(0),
+		m_bAlreadyFocused(FALSE)
 {
 	try {
 		m_pThemeWrapper = new ThemeWrapper();
@@ -1110,6 +1111,7 @@ DlgFrame::initFrame(HWND hDlg)
 		m_pSessionInstance->SessionInstance::setNotify(ngStr);
 	}
 #endif
+	m_bAlreadyFocused = FALSE;
 
 	return hwndRoot != NULL;
 }
@@ -1245,6 +1247,7 @@ int
 DlgFrame::setImeState(int nState)
 {
 	m_imestate = nState;
+	m_bAlreadyFocused = FALSE;
 #if 0 // 入力フォーカスを得るコントロールに個別に設定が必要
 	if (m_hwndFrame) {
 		HIMC hImc = ::ImmGetContext(m_hwndFrame);
@@ -1261,12 +1264,6 @@ DlgFrame::setImeState(int nState)
 		::ImmReleaseContext(m_hwndFrame, hImc);
 	}
 #endif
-	return m_imestate;
-}
-
-int
-DlgFrame::getImeState() const
-{
 	return m_imestate;
 }
 

@@ -1,4 +1,4 @@
-//	$Id: cs_func.cpp,v 1.4 2005-01-16 07:38:33 sugiura Exp $
+//	$Id: cs_func.cpp,v 1.5 2005-01-16 11:07:48 sugiura Exp $
 /*
  *	cs_func.cpp
  *	共通サービスの関数
@@ -69,6 +69,16 @@ GETCURSORPOS()
 		return g_strBuffer;
 	} catch (...) {
 		return "";
+	}
+}
+
+DENGAKUDLL_API HIDEDLL_NUMTYPE
+SLEEP(HIDEDLL_NUMTYPE nTime)
+{
+	try {
+		return g_pSessionInstance->si_sleep(nTime);
+	} catch (...) {
+		return 0;
 	}
 }
 

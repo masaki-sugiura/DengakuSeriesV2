@@ -1,4 +1,4 @@
-//	$Id: si_common.cpp,v 1.2 2005-01-16 07:38:33 sugiura Exp $
+//	$Id: si_common.cpp,v 1.3 2005-01-16 11:07:48 sugiura Exp $
 /*
  *	si_common.cpp
  *	共通サービスの関数
@@ -136,5 +136,12 @@ SessionInstance::si_getcursorpos()
 	wsprintf(buf, "%d,%d", ptCursor.x, ptCursor.y);
 
 	return buf;
+}
+
+int
+SessionInstance::si_sleep(int nTime)
+{
+	::Sleep((DWORD)nTime);
+	return 1;
 }
 

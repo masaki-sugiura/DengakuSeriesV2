@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.18 2005-01-15 06:53:48 sugiura Exp $
+//	$Id: ctrldata.h,v 1.19 2005-01-16 11:07:48 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -482,6 +482,7 @@ public:
 	WORD getHeight();
 
 	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
+	BOOL initCtrl(HWND);
 	BOOL sendData();
 	BOOL receiveData();
 
@@ -498,6 +499,7 @@ public:
 
 protected:
 	DWORD m_imestate;
+	BOOL  m_bAlreadyFocused;
 };
 
 //	hline, vline
@@ -748,6 +750,7 @@ public:
 protected:
 	DWORD m_imestate;
 	BOOL  m_bEditable;
+	BOOL  m_bAlreadyFocused;
 
 	void getStateFromView();
 };
