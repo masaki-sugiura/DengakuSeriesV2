@@ -1,4 +1,4 @@
-//	$Id: hmjre_mngr.cpp,v 1.1 2003-12-03 17:17:58 sugiura Exp $
+//	$Id: hmjre_mngr.cpp,v 1.2 2003-12-10 14:33:49 sugiura Exp $
 /*
  *	hmjre_mngr.cpp
  *	HmJre_Manager クラスの実装
@@ -7,12 +7,9 @@
 #include "hmjre_mngr.h"
 
 HmJre_Manager::HmJre_Manager(const StringBuffer& filename)
-	: m_pResultList(NULL)
 {
 	m_hModuleDll = ::LoadLibrary(filename);
 	if (m_hModuleDll == NULL) throw DllNotFoundError();
-	m_pfnIsMatch = (PFN_ISMATCH)::GetProcAddress(m_hModuleDll,HMJRE_ISMATCH);
-	m_pfnGlobalReplace = (PFN_GLOBALREPLACE)::GetProcAddress(m_hModuleDll,HMJRE_GLOBALREPLACE);
 	m_pfnJreGetVersion = (PFN_JREGETVERSION)::GetProcAddress(m_hModuleDll,HMJRE_JREGETVERSION);
 	m_pfnDecodeEscSeq = (PFN_DECODEESCSEQ)::GetProcAddress(m_hModuleDll,HMJRE_DECODEESCSEQ);
 	m_pfnGetJreMessage = (PFN_GETJREMESSAGE)::GetProcAddress(m_hModuleDll,HMJRE_GETJREMESSAGE);
@@ -21,7 +18,7 @@ HmJre_Manager::HmJre_Manager(const StringBuffer& filename)
 	m_pfnJre2GetMatchInfo
 		= (PFN_JRE2GETMATCHINFO)::GetProcAddress(m_hModuleDll,HMJRE_JRE2GETMATCHINFO);
 	m_pfnJre2Close = (PFN_JRE2CLOSE)::GetProcAddress(m_hModuleDll,HMJRE_JRE2CLOSE);
-	if (m_pfnIsMatch == NULL || m_pfnGlobalReplace == NULL || m_pfnJreGetVersion == NULL ||
+	if (m_pfnJreGetVersion == NULL ||
 		m_pfnDecodeEscSeq == NULL || m_pfnGetJreMessage == NULL ||
 		m_pfnJre2Open == NULL || m_pfnJre2Compile == NULL ||
 		m_pfnJre2GetMatchInfo == NULL || m_pfnJre2Close == NULL)
@@ -30,157 +27,75 @@ HmJre_Manager::HmJre_Manager(const StringBuffer& filename)
 
 HmJre_Manager::~HmJre_Manager()
 {
+	m_Jre_Pool.initSequentialGet();
+	JRE2* pJre2;
+	while ((pJre2 = m_Jre_Pool.getNextItem())) {
+		(*m_pfnJre2Close)(pJre2);
+	}
+
 	::FreeLibrary(m_hModuleDll);
+}
+
+void
+HmJre_Manager::setErrorMessage()
+{
+	int len = (*m_pfnGetJreMessage)(0, GJM_JPN, NULL, 0);
+	if (!len) {
+		m_strErrMsg = "メッセージの取得に失敗";
+		return;
+	}
+
+	LPSTR buf = new char[len + 1];
+	(*m_pfnGetJreMessage)(0, GJM_JPN, buf, len + 1);
+
+	m_strErrMsg = buf;
+
+	delete [] buf;
 }
 
 DWORD
 HmJre_Manager::match(const StringBuffer& ptn, const StringBuffer& str, int nFlags)
 {
-	JRE2* pJre2_Org = m_htblJre.getValue(ptn);
-	JRE2* pJre2 = pJre2_Org;
-	LPCSTR pstr = str;
-	char msg[80];
-	int ret = (*m_pfnBMatch)(pHmJre_Org != NULL ? NULL : (LPCSTR)ptn,
-							 pstr, pstr + str.length(),
-							 &pHmJre,
-							 msg);
-	m_strErrMsg = msg;
-
-	m_strSplitted = str;
-	if (pHmJre_Org == NULL && pHmJre != NULL) {
-		m_HmJre_Pool.addItem(pHmJre);
-		m_htblHmJre.setValue(ptn, pHmJre);
-	}
-	DWORD result;
-	ResultList* pResultList = NULL;
-	if (ret <= 0) {
-		result = BREGEXP_RESULT_FAILED;
-	} else {
-		result = make_dword(pHmJre->startp[0] - pstr,
-							pHmJre->endp[0] - pHmJre->startp[0]);
-		if (pHmJre->nparens > 0) {
-			pResultList = new ResultList(pHmJre->nparens);
-			for (int i = 1; i <= pHmJre->nparens; i++)
-				pResultList->m_pResults[i-1]
-					= make_dword(pHmJre->startp[i] - pstr,
-								 pHmJre->endp[i] - pHmJre->startp[i]);
+	JRE2* pJre2 = m_htblJre.getValue(ptn);
+	if (!pJre2) {
+		// 初めて登場するパターン
+		try {
+			pJre2 = new JRE2;
+		} catch (...) {
+			return HMJRE_RESULT_FAILED;
 		}
-	}
-	m_pResultList = pResultList;
-	return result;
-}
 
-StringBuffer
-HmJre_Manager::bSubst(const StringBuffer& ptn, const StringBuffer& str)
-{
-	BREGEXP* pHmJre_Org = m_htblHmJre.getValue(ptn);
-	BREGEXP* pHmJre = pHmJre_Org;
-	LPCSTR pstr = str;
-	char msg[80];
-	int ret = (*m_pfnBSubst)(pHmJre_Org != NULL ? NULL : (LPCSTR)ptn,
-							 pstr, pstr + str.length(),
-							 &pHmJre,
-							 msg);
-	m_strErrMsg = msg;
-
-//	m_strSplitted = nullStr;
-	if (pHmJre_Org == NULL && pHmJre != NULL) {
-		m_HmJre_Pool.addItem(pHmJre);
-		m_htblHmJre.setValue(ptn, pHmJre);
-	}
-//	m_pResultList = NULL;
-	if (ret < 0) return nullStr;
-	return pHmJre->outp;
-}
-
-StringBuffer
-HmJre_Manager::bTrans(const StringBuffer& ptn, const StringBuffer& str)
-{
-	BREGEXP* pHmJre_Org = m_htblHmJre.getValue(ptn);
-	BREGEXP* pHmJre = pHmJre_Org;
-	LPCSTR pstr = str;
-	char msg[80];
-	int ret = (*m_pfnBTrans)(pHmJre_Org != NULL ? NULL : (LPCSTR)ptn,
-							 pstr, pstr + str.length(),
-							 &pHmJre,
-							 msg);
-	m_strErrMsg = msg;
-
-//	m_strSplitted = nullStr;
-	if (pHmJre_Org == NULL && pHmJre != NULL) {
-		m_HmJre_Pool.addItem(pHmJre);
-		m_htblHmJre.setValue(ptn, pHmJre);
-	}
-//	m_pResultList = NULL;
-	if (ret < 0) return nullStr;
-	return pHmJre->outp;
-}
-
-int
-HmJre_Manager::bSplit(const StringBuffer& ptn, const StringBuffer& str, int limit)
-{
-	BREGEXP* pHmJre_Org = m_htblHmJre.getValue(ptn);
-	BREGEXP* pHmJre = pHmJre_Org;
-	LPCSTR pstr = str;
-	char msg[80];
-	int ret = (*m_pfnBSplit)(pHmJre_Org != NULL ? NULL : (LPCSTR)ptn,
-							 pstr, pstr + str.length(), limit,
-							 &pHmJre,
-							 msg);
-	m_strErrMsg = msg;
-
-	m_strSplitted = str;
-	if (pHmJre_Org == NULL && pHmJre != NULL) {
-		m_HmJre_Pool.addItem(pHmJre);
-		m_htblHmJre.setValue(ptn, pHmJre);
-	}
-	int result;
-	ResultList* pResultList = NULL;
-	if (ret <= 0) {
-		result = BREGEXP_RESULT_FAILED;
-	} else {
-		result = ret;
-		if (ret > 0) {
-			pResultList = new ResultList(ret);
-			for (int i = 0; i < ret; i++) {
-				const char** ppStr = pHmJre->splitp + (i << 1);
-				pResultList->m_pResults[i]
-					= make_dword(*ppStr - pstr, *(ppStr + 1) - *ppStr);
-			}
+		if (!(*m_pfnJre2Compile)(pJre2, (LPCSTR)ptn)) {
+			setErrorMessage();
+			return HMJRE_RESULT_FAILED;
 		}
+
+		m_htblJre.setValue(ptn, pJre2);
+		m_Jre_Pool.addItem(pJre2);
 	}
-	m_pResultList = pResultList;
+
+	pJre2->nStart = 0;
+	pJre2->wTranslate = (nFlags != 0);
+
+	if (!(*m_pfnJre2GetMatchInfo)(pJre2, (LPCSTR)str)) {
+		setErrorMessage();
+		return HMJRE_RESULT_FAILED;
+	}
+
+	DWORD result = make_dword(pJre2->nPosition, pJre2->nLength);
+
 	return result;
 }
 
 const StringBuffer&
-HmJre_Manager::bRegexpversion()
+HmJre_Manager::jreGetVersion()
 {
-	if (m_strVersion.length() == 0) m_strVersion = (*m_pfnBRegexpversion)();
+	if (m_strVersion.length() == 0) {
+		WORD wVer = (*m_pfnJreGetVersion)();
+		char buf[80];
+		wsprintf(buf, "%01x.%02x", (wVer >> 8), (wVer & 0xFF));
+		m_strVersion = buf;
+	}
 	return m_strVersion;
-}
-
-DWORD
-HmJre_Manager::getNextResult()
-{
-	if (m_pResultList.ptr() == NULL ||
-		m_pResultList->m_nHead >= m_pResultList->m_nSize)
-		return (DWORD)-1;
-	return m_pResultList->m_pResults[m_pResultList->m_nHead++];
-}
-
-StringBuffer
-HmJre_Manager::posToString(DWORD pos) const
-{
-	if (pos == BREGEXP_RESULT_FAILED || m_strSplitted.length() == 0)
-		return nullStr;
-	return m_strSplitted.extract(LOWORD(pos), HIWORD(pos));
-}
-
-BOOL
-HmJre_Manager::hasMoreResults()
-{
-	return  m_pResultList.ptr() != NULL &&
-			m_pResultList->m_nHead < m_pResultList->m_nSize;
 }
 

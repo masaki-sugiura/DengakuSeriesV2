@@ -1,4 +1,4 @@
-//	$Id: hmjre_mngr.h,v 1.1 2003-12-03 17:17:58 sugiura Exp $
+//	$Id: hmjre_mngr.h,v 1.2 2003-12-10 14:33:49 sugiura Exp $
 /*
  *	hmjre_mngr.h
  *	hmjre.dll を利用するためのラッパークラス
@@ -76,14 +76,9 @@ public:
 						 const StringBuffer& strSrc,
 						 const StringBuffer& strDst,
 						 int nFlags);
-	const StringBuffer& jreGetVersion() const;
+	const StringBuffer& jreGetVersion();
 	const StringBuffer& getErrorMessage() const
 	{ return m_strErrMsg; }
-
-	DWORD getNextResult();
-	BOOL hasMoreResults();
-
-	StringBuffer posToString(DWORD pos) const;
 
 private:
 	HMODULE m_hModuleDll;
@@ -96,10 +91,11 @@ private:
 	PFN_JRE2CLOSE m_pfnJre2Close;
 
 	HashTable<JRE2*,11> m_htblJre;
-	LinkList<JRE2> m_Jre2_Pool;
-	Auto_Ptr<ResultList> m_pResultList;
+	LinkList<JRE2> m_Jre_Pool;
 	StringBuffer m_strVersion;
 	StringBuffer m_strErrMsg;
+
+	void setErrorMessage();
 };
 
 class DllLoadError {};
