@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.30 2003-12-03 17:17:58 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.31 2003-12-10 17:01:04 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -796,7 +796,9 @@ CtrlListItem::loadData(DlgDataFile& ddfile)
 		}
 	}
 
-	return this->sendData();
+	// load 時点では HWND == NULL && sendData() は HWND == NULL で FALSE を返す
+//	return this->sendData();
+	return TRUE;
 }
 
 //	ctrl with one control
