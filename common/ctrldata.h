@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.16 2004-04-25 14:17:18 sugiura Exp $
+//	$Id: ctrldata.h,v 1.17 2004-05-31 15:52:54 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -210,6 +210,8 @@ public:
 	void setRect(WORD x, WORD y, WORD cx, WORD cy);
 
 	int getItemNum() const { return m_item.ptr() != NULL ? m_item->itemNum() : 0; }
+
+	BOOL isEnabled() const { return m_bEnable; }
 
 	BOOL onInitCtrl(HWND hDlg);
 	BOOL onUninitCtrl();

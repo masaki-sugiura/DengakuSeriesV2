@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.22 2004-05-03 16:05:43 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.23 2004-05-31 15:52:54 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -424,6 +424,7 @@ DlgPage::showPage(BOOL bVisible)
 	CtrlListItem* cli;
 	while ((cli = m_pCtrlList->getNextItem()) != NULL) {
 		cli->showCtrl(bVisible);
+		cli->enableCtrl(cli->isEnabled(), FALSE);
 	}
 
 	return TRUE;
