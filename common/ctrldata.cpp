@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.36 2005-01-15 06:53:48 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.37 2005-01-15 09:25:08 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -3926,6 +3926,14 @@ FrameCtrl::initCtrl(HWND hDlg)
 	m_page = new DlgPage*[num];
 	::ZeroMemory(m_page, sizeof(DlgPage*) * num);
 	if (!m_bVisible) ::ShowWindow(m_pcp->m_hwndCtrl, SW_HIDE);
+
+	// グループボックス内のダイアログのオフセットを文字の大きさから決定
+	if (m_type == CTRLID_GROUP) {
+		DWORD unit = GetDialogBaseUnits(hDlg, NULL);
+		m_poffset.x = LOWORD(unit) / 2;
+		m_poffset.y = HIWORD(unit) * 3 / 2;
+	}
+	
 	num = 0;
 	DlgFrame& rDlgFrame = m_pDlgPage->getDlgFrame();
 	m_item->initSequentialGet();
