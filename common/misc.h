@@ -1,4 +1,4 @@
-//	$Id: misc.h,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: misc.h,v 1.3 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	misc.h
  *	雑多なユーティリティ関数
@@ -11,8 +11,6 @@
 
 extern BOOL isWinNT();
 extern DWORD GetDialogBaseUnits(HWND hDlg, LPCSTR str = "M");
-extern COLORREF ColorStrToColorRef(LPCSTR);
-extern StringBuffer ColorRefToColorStr(COLORREF);
 
 extern void InternalError(LPCSTR file, int line);
 

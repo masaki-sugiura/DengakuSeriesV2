@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.4 2002-02-10 18:25:36 sugiura Exp $
+//	$Id: ctrldata.h,v 1.5 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -162,10 +162,11 @@ public:
 
 	//	フォント属性を表す構造体
 	typedef	struct {
-		HFONT		m_hfont;
-		BOOL		m_bchanged;
-		COLORREF	m_color;
-		BYTE		m_fface;
+		HFONT		 m_hfont;
+		BOOL		 m_bchanged;
+		COLORREF	 m_color;
+		BYTE		 m_fface;
+		StringBuffer m_fname;
 	} CtrlFontProperty;
 
 	CtrlListItem(
@@ -189,6 +190,7 @@ public:
 	//	コントロールの種類を表すＩＤ
 	DWORD getCtrlType() const { return m_type; }
 
+	DlgPage& getParentPage() { return *m_pDlgPage; }
 	void setParentPage(DlgPage* pdp) { m_pDlgPage = pdp; }
 
 	POINT getRect() const;
@@ -356,8 +358,8 @@ public:
 class SimpleCtrl : public CtrlListItem {
 public:
 	SimpleCtrl(const StringBuffer& name = nullStr,
-			const StringBuffer& text = nullStr,
-			CTRL_ID type = CTRLID_UNKNOWN);
+			   const StringBuffer& text = nullStr,
+			   CTRL_ID type = CTRLID_UNKNOWN);
 	~SimpleCtrl();
 
 	HWND getCtrlHWND(int i = 0) const { return m_pcp->m_hwndCtrl; }
@@ -382,7 +384,8 @@ public:
 
 protected:
 	BOOL setFont(const StringBuffer& fface = nullStr,
-				const StringBuffer& color = nullStr);	//	フォントの変更
+				 const StringBuffer& color = nullStr,
+				 const StringBuffer& fname = nullStr);	//	フォントの変更
 };
 
 //	button, defbutton

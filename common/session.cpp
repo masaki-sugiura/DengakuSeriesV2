@@ -1,4 +1,4 @@
-//	$Id: session.cpp,v 1.3 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: session.cpp,v 1.4 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	session.cpp
  *	SessionInstance クラスのコア部分の実装
@@ -12,7 +12,7 @@ SessionInstance::SessionInstance(HINSTANCE hInstance, BOOL bTrueCD)
 		m_DirList(bTrueCD), // DirList クラス
 		m_pSPIManager(NULL), // SPI_Manager クラスへのポインタ
 		m_pEnvManager(NULL), // EnvManager クラスへのポインタ
-		m_pFindData(NULL), // enum* の結果を保持するクラスへのポインタ
+		m_pEnumerator(NULL), // enum* の結果を保持するクラスへのポインタ
 		m_pStrToken(NULL), // gettoken の結果を保持するクラスへのポインタ
 		m_pMenuThread(NULL), // メニュー表示スレッドへのポインタ
 		m_pDlgThread(NULL), // ダイアログ表示スレッドへのポインタ

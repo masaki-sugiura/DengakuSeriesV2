@@ -1,4 +1,4 @@
-//	$Id: misc.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: misc.cpp,v 1.3 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数
@@ -25,40 +25,6 @@ GetDialogBaseUnits(HWND hDlg, LPCSTR str)
 	::GetTextExtentPoint32(hDc,str,1,&sz);
 	::ReleaseDC(hDlg,hDc);
 	return (DWORD)MAKELONG((WORD)sz.cx,(WORD)sz.cy);
-}
-
-inline COLORREF
-swap_bytes(COLORREF color)
-{
-	return ((0x000000ff & color) << 16) |
-			(0x0000ff00 & color)        |
-		   ((0x00ff0000 & color) >> 16);
-}
-
-COLORREF
-ColorStrToColorRef(LPCSTR pcolor)
-{
-	COLORREF color = 0;
-	if (pcolor != NULL && *pcolor == '#' && lstrlen(++pcolor) >= 6) {
-		for (int i = 0; i < 6; i++) {
-			color <<= 4;
-			if (IsCharDigit(*pcolor))
-				color += *pcolor - '0';
-			else if (IsCharXDigit(*pcolor))
-				color += *pcolor - (IsCharUpper(*pcolor) ? 'A' : 'a') + 10;
-			pcolor++;
-		}
-		color = swap_bytes(color);
-	}
-	return color;
-}
-
-StringBuffer
-ColorRefToColorStr(COLORREF color)
-{
-	TCHAR buf[8];
-	wsprintf(buf,"#%-06.6x",0x00FFFFFF&swap_bytes(color));
-	return buf;
 }
 
 void

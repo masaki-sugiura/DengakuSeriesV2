@@ -1,4 +1,4 @@
-//	$Id: cmd.h,v 1.3 2002-02-10 09:27:32 sugiura Exp $
+//	$Id: cmd.h,v 1.4 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	cmd.h
  *	ƒRƒ}ƒ“ƒh–¼ˆê——
@@ -57,6 +57,9 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_EXECUTE(freespi)
 	DECLARE_DDECMD_EXECUTE(bre_load)
 	DECLARE_DDECMD_EXECUTE(bre_free)
+	DECLARE_DDECMD_EXECUTE(clr_setname)
+	DECLARE_DDECMD_EXECUTE(clr_load)
+	DECLARE_DDECMD_EXECUTE(clr_save)
 	DECLARE_DDECMD_REQUEST(result)
 	DECLARE_DDECMD_REQUEST(keepalive)
 	DECLARE_DDECMD_REQUEST(getversion)
@@ -121,6 +124,8 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_REQUEST(bre_split)
 	DECLARE_DDECMD_REQUEST(bre_getnext)
 	DECLARE_DDECMD_REQUEST(bre_hasmoreresults)
+	DECLARE_DDECMD_REQUEST(clr_getrgb)
+	DECLARE_DDECMD_REQUEST(clr_getname)
 	DECLARE_DDECMD_POKE(newdialog)
 	DECLARE_DDECMD_POKE(newdialogex)
 	DECLARE_DDECMD_POKE(newdlgpage)

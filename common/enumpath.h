@@ -1,4 +1,4 @@
-//	$Id: enumpath.h,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: enumpath.h,v 1.3 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	enumpath.h
  *	enum*** ‚ÉŠÖ‚·‚éƒNƒ‰ƒX
@@ -43,11 +43,11 @@ public:
 		return	m_dwAttrTopDir != 0xFFFFFFFF &&
 				(m_dwAttrTopDir&FILE_ATTRIBUTE_DIRECTORY) != 0;
 	}
+	StringBuffer getNext();
 
 	DWORD getFlag() const { return m_flags; }
 
 	int doEnum();
-	const StringBuffer findNext();
 
 private:
 	PathName m_topdir;

@@ -1,4 +1,4 @@
-//	$Id: seq_op.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: seq_op.cpp,v 1.3 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	seq_op.cpp
  *	SequentialOp クラスの実装
@@ -11,19 +11,42 @@
 #include "cmdline.h"
 
 static BOOL
-IsPathWildCard(LPCSTR path)
+IsPathWildCard(const StringBuffer& path)
 {
-	if (path == NULL || *path == '\0') return FALSE;
-	LPCSTR	sep = lstrrchr(path,'\\');
-	if (sep == NULL) sep = path;
-	else sep++;
-	return (lstrchr(sep,'*') != NULL || lstrchr(sep,'?') != NULL);
+	if (path.length() == 0) return FALSE;
+	int sep = path.rfind((TCHAR)'\\') + 1; // 見つからなかったら -1 + 1 = 0
+	int wcc = path.rfind((TCHAR)'*');
+	if (wcc >= 0 && sep <= wcc) return TRUE;
+	wcc = path.rfind((TCHAR)'?');
+	return (wcc >= 0 && sep <= wcc);
 }
 
-SequentialOp::SequentialOp(LPCSTR av, CmdLineParser& params, DirList& dl)
-	: m_av(av), m_params(params), m_DirList(dl)
+void
+AddEnumResult(
+	SeqOpResult* psor,
+	const StringBuffer& path,
+	TCHAR result)
 {
-	//	nothing to do more.
+	if (psor) {
+		StringBuffer* pstr = new StringBuffer(path.length() + 4);
+		pstr->append(result);
+		pstr->append(SEQ_OP_RESULT_SEPCHAR);
+		pstr->append(path);
+		psor->addItem(pstr);
+	}
+}
+
+
+SequentialOp::SequentialOp(
+	int srcidx,
+	CmdLineParser& params,
+	DirList& dl,
+	SeqOpResult* pEnumResult)
+	: m_srcIndex(srcidx),
+	  m_params(params),
+	  m_DirList(dl),
+	  m_pEnumResult(pEnumResult)
+{
 }
 
 SequentialOp::~SequentialOp()
@@ -31,22 +54,32 @@ SequentialOp::~SequentialOp()
 	//	do nothing.
 }
 
-BOOL
+int
 SequentialOp::doOp()
 {
-	if (m_av == NULL) return FALSE;
-	BOOL bSuccess = TRUE;
+	int fnum = m_params.initSequentialGet(m_srcIndex);
+
+	BOOL ret = TRUE;
 	PathName file;
-	do {
-		if (IsPathWildCard(m_av)) {
-			if (!m_DirList.getPathName(m_av,file,FALSE)) continue;
+	while (fnum-- > 0) {
+		const StringBuffer& av = m_params.getNextArgvStr();
+		if (IsPathWildCard(av)) {
+			if (!m_DirList.getPathName(av, file, FALSE)) {
+				ret = FALSE;
+				AddFailure(m_pEnumResult, av);
+				continue;
+			}
 			WIN32_FIND_DATA fd;
-			HANDLE hFile = ::FindFirstFile(file,&fd);
+			HANDLE hFile = ::FindFirstFile(file, &fd);
 			if (hFile == INVALID_HANDLE_VALUE) {
 				// dirname may be invalid..??
 				StringBuffer basename(file.getBaseName());
 				file.delPath();
-				if (!file.isValid()) bSuccess = FALSE;
+				if (!file.isValid()) {
+					ret = FALSE;
+					AddFailure(m_pEnumResult, av);
+					continue; // dirname is invalid!!
+				}
 				// else no match file for the specified wildcard
 				file.addPath(basename);
 				continue;
@@ -55,23 +88,24 @@ SequentialOp::doOp()
 			do {
 				if (!precheck_wc(fd)) continue;
 				file.addPath(fd.cFileName);
-				DWORD ret = do_op(file);
-				if ((ret&RO_STOP) != 0) return FALSE;
-				if ((ret&RO_FAILED) != 0) bSuccess = FALSE;
+				DWORD result = do_op(file, m_pEnumResult);
+				if ((result&RO_STOP) != 0) return ret;
+				else if ((result&RO_FAILED) != 0) ret = FALSE;
 				file.delPath();
-			} while (::FindNextFile(hFile,&fd));
+			} while (::FindNextFile(hFile, &fd));
 			::FindClose(hFile);
-		} else if (m_DirList.getPathName(m_av,file,FALSE) &&
+		} else if (m_DirList.getPathName(av, file, FALSE) &&
 			precheck_normal(file)) {
-			DWORD ret = do_op(file);
-			if ((ret&RO_STOP) != 0) return FALSE;
-			if ((ret&RO_FAILED) != 0) bSuccess = FALSE;
+			DWORD result = do_op(file, m_pEnumResult);
+			if ((result&RO_STOP) != 0) return ret;
+			else if ((result&RO_FAILED) != 0) ret = FALSE;
 		} else {
-			bSuccess = FALSE;
+			ret = FALSE;
+			AddFailure(m_pEnumResult, av);
 		}
-	} while ((m_av = m_params.getNextArgv()) != NULL);
+	}
 
-	return bSuccess;
+	return ret;
 }
 
 BOOL
@@ -92,12 +126,24 @@ FileToFileOperation(
 	PFN_FILETOFILE pfnFTF,
 	DWORD fFlags,
 	DirList& DirList,
-	CmdLineParser& params)
+	CmdLineParser& params,
+	SeqOpResult*& psor)
 {
-	int pnum = params.itemNum();
+	int pnum = params.initSequentialGet();
 	if (pfnFTF == NULL || pnum < 2) return FALSE;
 
-	//	操作先ファイル・フォルダ名の正当性チェック
+	//	オプションの解析
+	int optnum = 0;
+	while (optnum < pnum) {
+		const StringBuffer& av = params.getNextArgvStr();
+		if (!isopthead(av.charAt(0))) break;
+		GetFlags(av, fFlags);
+		optnum++;
+	}
+	//	移動すべきファイル・フォルダの指定がない
+	if (pnum - optnum < 2) return FALSE;
+
+	//	操作先フォルダ名の正当性チェック
 	PathName dest;
 	if (!DirList.getPathName(params.getArgvStr(-1), dest, FALSE)) {
 #if 0
@@ -109,96 +155,97 @@ FileToFileOperation(
 	}
 
 	params.delArgv(-1);
+	pnum--;
 
-	//	オプションの解析
-	params.initSequentialGet();
-	int optnum = 0;
-	LPCSTR av;
-	while ((av = params.getNextArgv()) != NULL && isopthead(*av)) {
-		GetFlags(++av,fFlags);
-		optnum++;
-	}
-	//	移動すべきファイル・フォルダの指定がない
-	if (av == NULL || optnum >= pnum - 1) return FALSE;
+	if (fFlags & FLAG_RETURNNUM) psor = new SeqOpResult();
 
-	BOOL bSuccess = TRUE;
 	PathName file;
 	if (dest.isValid() && dest.isDirectory()) {
 		//	移動先はフォルダ
-		do {
+		BOOL ret = TRUE;
+		params.initSequentialGet(optnum);
+		pnum -= optnum;
+		while (pnum-- > 0) {
+			const StringBuffer& av = params.getNextArgvStr();
 			if (IsPathWildCard(av)) {
-				if (!DirList.getPathName(av,file,FALSE)) {
-					bSuccess = FALSE;
+				if (!DirList.getPathName(av, file, FALSE)) {
+					ret = FALSE;
+					AddFailure(psor, av);
 					continue;
 				}
 				WIN32_FIND_DATA fd;
-				HANDLE hFile = ::FindFirstFile(file,&fd);
+				HANDLE hFile = ::FindFirstFile(file, &fd);
 				if (hFile == INVALID_HANDLE_VALUE) {
 					// dirname may be invalid..??
 					StringBuffer basename(file.getBaseName());
 					file.delPath();
-					if (!file.isValid()) bSuccess = FALSE;
+					if (!file.isValid()) {
+						// dirname is invalid
+						ret = FALSE;
+						AddFailure(psor, av);
+						continue;
+					}
 					// else no match file for the specified wildcard
 					file.addPath(basename);
 					continue;
 				}
 				file.delPath();
 				do {
-					if ((fd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) != 0) {
-						if ((fFlags&FLAG_RECURSIVE) == 0 ||
+					if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) {
+						if ((fFlags & FLAG_RECURSIVE) == 0 ||
 							IsPathNameDots(fd.cFileName)) continue;
 					}
 					file.addPath(fd.cFileName);
 					dest.addPath(fd.cFileName);
-					DWORD ret = (*pfnFTF)(file,dest,fFlags);
-					if ((ret&RO_STOP) != 0) return FALSE;
-					else if ((ret&RO_FAILED) != 0) bSuccess = FALSE;
+					DWORD ret = (*pfnFTF)(file, dest, fFlags, psor);
+					if ((ret&RO_STOP) != 0) return ret;
+					else if ((ret&RO_FAILED) != 0) ret = FALSE;
 					dest.delPath();
 					file.delPath();
-				} while (::FindNextFile(hFile,&fd));
+				} while (::FindNextFile(hFile, &fd));
 				::FindClose(hFile);
-			} else if (DirList.getPathName(av,file,TRUE)) {
+			} else if (DirList.getPathName(av, file, TRUE)) {
 				dest.addPath(file.getBaseName());
-				DWORD ret = (*pfnFTF)(file,dest,fFlags);
-				if ((ret&RO_STOP) != 0) return FALSE; // 処理の停止要求
-				else if ((ret&RO_FAILED) != 0)
-					bSuccess = FALSE; // このファイルの処理は失敗
+				DWORD result = (*pfnFTF)(file, dest, fFlags, psor);
+				if ((result&RO_STOP) != 0) return ret;
+				else if ((result&RO_FAILED) != 0) ret = FALSE;
 				dest.delPath(1);
 			} else {
 				//	コピー元ファイル・フォルダがない
-				bSuccess = FALSE;
+				ret = FALSE;
+				AddFailure(psor, av);
 			}
-		} while ((av = params.getNextArgv()) != NULL);
-	} else if (DirList.getPathName(av,file,TRUE)) {
+		}
+		return ret;
+	} else if (DirList.getPathName(params.getArgvStr(optnum), file, TRUE)) {
 		//	移動先は存在しない、またはファイル
-		bSuccess = ((*pfnFTF)(file,dest,fFlags) == RO_SUCCESS);
+		return ((*pfnFTF)(file, dest, fFlags, psor) == RO_SUCCESS);
 	} else {
-		bSuccess = FALSE;
+		AddFailure(psor, params.getArgvStr(optnum));
+		return FALSE;
 	}
-
-	return bSuccess;
+	// not reached.
 }
+
+static DWORD defFlags[] = {
+	FLAG_RECURSIVE,	//	再帰的に検索
+	FLAG_RETURNNUM,	//	処理したファイル・フォルダの数を返す
+	FLAG_OVERRIDE_FORCED | FLAG_REMOVE_FORCED,	//	強制的に処理
+	FLAG_OVERRIDE_CONFIRM | FLAG_REMOVE_CONFIRM,	//	確認
+	FLAG_OVERRIDE_NOTNEWER	//	新しいファイル・フォルダのみ
+};
+
+OptMap defOptMap("rnfiu", defFlags);
 
 //	オプションの解析
 //	copy, move, remove で使用
 void
-GetFlags(LPCSTR av, DWORD& fFlags)
+GetFlags(const StringBuffer& av, DWORD& fFlags, const OptMap& optMap)
 {
-	while (*av) {
-		switch (*av++) {
-		case 'r':	//	再帰的に検索
-			fFlags |=	FLAG_RECURSIVE;
-			break;
-		case 'f':	//	強制的に処理
-			fFlags |=	(FLAG_OVERRIDE_FORCED|FLAG_REMOVE_FORCED);
-			break;
-		case 'i':	//	確認
-			fFlags |=	(FLAG_OVERRIDE_CONFIRM|FLAG_REMOVE_CONFIRM);
-			break;
-		case 'u':	//	新しいファイル・フォルダのみ
-			fFlags |=	FLAG_OVERRIDE_NOTNEWER;
-			break;
-		}
+	int len = av.length();
+	for (int i = 1; i < len; i++) { // 最初の文字はオプション指定子
+		DWORD fl = optMap.getFlag(av.charAt(i));
+		if (fl != OPT_INVALID) fFlags |= fl;
 	}
 }
 

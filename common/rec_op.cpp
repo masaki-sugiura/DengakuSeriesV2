@@ -1,10 +1,11 @@
-//	$Id: rec_op.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: rec_op.cpp,v 1.2 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	rec_op.cpp
  *	再帰ファイル操作クラス群
  */
 
 #include <exception>
+#include "seq_op.h"
 #include "rec_op.h"
 #include "file.h"
 #include "dirlist.h"
@@ -26,7 +27,7 @@ ConfirmOverRide(const PathName &org, const PathName &dest, DWORD flag)
 
 	//	上書き対象と元オブジェクトが同じかどうかのチェック
 	//	（注：名前のチェックしか行っていない）
-	if (!org.compareTo(dest,FALSE)) return IDNO;
+	if (!org.compareTo(dest, FALSE)) return IDNO;
 
 	//	全ての場合について上書きするかどうか確認
 	if ((flag&FLAG_OVERRIDE_CONFIRM) != 0) {
@@ -55,7 +56,7 @@ ConfirmOverRide(const PathName &org, const PathName &dest, DWORD flag)
 		//	上書きできるように属性値を変更
 		attr &= ~(FILE_ATTRIBUTE_READONLY|FILE_ATTRIBUTE_SYSTEM);
 
-		return ::SetFileAttributes(dest,attr) ? IDYES : IDNO;
+		return ::SetFileAttributes(dest, attr) ? IDYES : IDNO;
 	}
 
 	return IDYES;	//	上書きＯＫ
@@ -92,7 +93,7 @@ ConfirmRemove(const PathName &file, DWORD flag)
 		//	削除できるように属性値を変更
 		attr &= ~(FILE_ATTRIBUTE_READONLY|FILE_ATTRIBUTE_SYSTEM);
 
-		return ::SetFileAttributes(file,attr) ? IDYES : IDNO;
+		return ::SetFileAttributes(file, attr) ? IDYES : IDNO;
 	}
 
 	return IDYES;	//	削除ＯＫ
@@ -163,7 +164,7 @@ SafetyRemoveDirectory(const PathName &dir, DWORD flags)
 	return ::RemoveDirectory(dir) ? RO_SUCCESS : RO_FAILED;
 }
 
-int
+static int
 SetAttributes(const PathName &file, DWORD flags)
 {
 	DWORD attr = file.getAttributes();
@@ -198,7 +199,7 @@ SetAttributes(const PathName &file, DWORD flags)
 	return ::SetFileAttributes(file,attr) ? RO_SUCCESS : RO_FAILED;
 }
 
-int
+static int
 SetTime(const PathName &file, const FILETIME *pft, DWORD flags)
 {
 	if (!file.isValid() && (flags&TOUCH_FILECREATE) == 0) return RO_FAILED;
@@ -212,66 +213,134 @@ SetTime(const PathName &file, const FILETIME *pft, DWORD flags)
 }
 
 int
-CopyPath(const PathName &file, const PathName &dest, DWORD flags)
+CopyPath(const PathName &file, const PathName &dest, DWORD flags, SeqOpResult* psor)
 {
 	DWORD attr = file.getAttributes();
-	if (attr == 0xFFFFFFFF) return RO_FAILED;
-	if ((attr&FILE_ATTRIBUTE_DIRECTORY) != 0) {
-		if ((flags&FLAG_RECURSIVE) == 0) return RO_FAILED;
-		RecursiveCopyDir rcd(file,dest,flags);
-		return rcd.doOperation();
+	if (attr == 0xFFFFFFFF) {
+		AddFailure(psor, file);
+		return RO_FAILED;
+	} else if ((attr&FILE_ATTRIBUTE_DIRECTORY) != 0) {
+		if ((flags&FLAG_RECURSIVE) == 0) {
+			AddFailure(psor, file);
+			return RO_FAILED;
+		} else {
+			RecursiveCopyDir rcd(file,dest,flags,psor);
+			return rcd.doOperation();
+		}
+	} else {
+		int ret = SafetyCopyFile(file,dest,flags);
+		if (ret & RO_STOP) {
+			AddCancel(psor, file);
+		} else if (ret & RO_FAILED) {
+			AddFailure(psor, file);
+		} else {
+			AddSuccess(psor, file);
+		}
+		return ret;
 	}
-	return SafetyCopyFile(file,dest,flags);
 }
 
 int
-MovePath(const PathName &file, const PathName &dest, DWORD flags)
+MovePath(const PathName &file, const PathName &dest, DWORD flags, SeqOpResult* psor)
 {
 	DWORD attr = file.getAttributes();
-	if (attr == 0xFFFFFFFF) return RO_FAILED;
-	if ((attr&FILE_ATTRIBUTE_DIRECTORY) != 0) {
-		if ((flags&FLAG_RECURSIVE) == 0) return RO_FAILED;
-		if (file[0] != dest[0] || !ISDRIVELETTER(file[0])) {
-			RecursiveMoveDir rmd(file,dest,flags);
+	if (attr == 0xFFFFFFFF) {
+		AddFailure(psor, file);
+		return RO_FAILED;
+	} else if ((attr&FILE_ATTRIBUTE_DIRECTORY) != 0) {
+		if ((flags&FLAG_RECURSIVE) == 0) {
+			AddFailure(psor, file);
+			return RO_FAILED;
+		} else if (file[0] != dest[0] || !ISDRIVELETTER(file[0])) {
+			RecursiveMoveDir rmd(file,dest,flags,psor);
 			return rmd.doOperation();
 		}
 	}
-	return SafetyMoveFile(file,dest,flags);
+	int ret = SafetyMoveFile(file,dest,flags);
+	if (ret & RO_STOP) {
+		AddCancel(psor, file);
+	} else if (ret & RO_FAILED) {
+		AddFailure(psor, file);
+	} else {
+		AddSuccess(psor, file);
+	}
+	return ret;
 }
 
 int
-RemovePath(const PathName &file, DWORD flags)
+RemovePath(const PathName &file, DWORD flags, SeqOpResult* psor)
 {
 	DWORD attr = file.getAttributes();
-	if (attr == 0xFFFFFFFF) return RO_FAILED;
-	if ((attr&FILE_ATTRIBUTE_DIRECTORY) != 0) {
-		if ((flags&FLAG_RECURSIVE) == 0) return RO_FAILED;
-		RecursiveRemoveDir rmd(file,flags);
-		return rmd.doOperation();
+	if (attr == 0xFFFFFFFF) {
+		AddFailure(psor, file);
+		return RO_FAILED;
+	} else if ((attr&FILE_ATTRIBUTE_DIRECTORY) != 0) {
+		if ((flags&FLAG_RECURSIVE) == 0) {
+			AddFailure(psor, file);
+			return RO_FAILED;
+		} else {
+			RecursiveRemoveDir rmd(file,flags,psor);
+			return rmd.doOperation();
+		}
+	} else {
+		int ret = SafetyRemoveFile(file,flags);
+		if (ret & RO_STOP) {
+			AddCancel(psor, file);
+		} else if (ret & RO_FAILED) {
+			AddFailure(psor, file);
+		} else {
+			AddSuccess(psor, file);
+		}
+		return ret;
 	}
-	return SafetyRemoveFile(file,flags);
 }
 
 int
-SetPathAttributes(const PathName &file, DWORD flags)
+SetPathAttributes(const PathName &file, DWORD flags, SeqOpResult* psor)
 {
 	if (file.isDirectory()) {
-		if ((flags&ATTRIBUTE_RECURSIVE) == 0) return RO_FAILED;
-		RecursiveSetAttributes rsa(file,flags);
-		return rsa.doOperation();
+		if ((flags&ATTRIBUTE_RECURSIVE) == 0) {
+			AddFailure(psor, file);
+			return RO_FAILED;
+		} else {
+			RecursiveSetAttributes rsa(file,flags,psor);
+			return rsa.doOperation();
+		}
+	} else {
+		int ret = SetAttributes(file,flags);
+		if (ret & RO_STOP) {
+			AddCancel(psor, file);
+		} else if (ret & RO_FAILED) {
+			AddFailure(psor, file);
+		} else {
+			AddSuccess(psor, file);
+		}
+		return ret;
 	}
-	return SetAttributes(file,flags);
 }
 
 int
-SetPathTime(const PathName &file, const FILETIME *pft, DWORD flags)
+SetPathTime(const PathName &file, const FILETIME *pft, DWORD flags, SeqOpResult* psor)
 {
 	if (file.isDirectory()) {
-		if ((flags&TOUCH_RECURSIVE) == 0) return RO_FAILED;
-		RecursiveSetTime rst(file,pft,flags);
-		return rst.doOperation();
+		if ((flags&TOUCH_RECURSIVE) == 0) {
+			AddFailure(psor, file);
+			return RO_FAILED;
+		} else {
+			RecursiveSetTime rst(file,pft,flags,psor);
+			return rst.doOperation();
+		}
+	} else {
+		int ret = SetTime(file,pft,flags);
+		if (ret & RO_STOP) {
+			AddCancel(psor, file);
+		} else if (ret & RO_FAILED) {
+			AddFailure(psor, file);
+		} else {
+			AddSuccess(psor, file);
+		}
+		return ret;
 	}
-	return SetTime(file,pft,flags);
 }
 
 int
@@ -322,11 +391,13 @@ RecursiveMakeDir(const PathName &dir)
 RecursiveOperation::RecursiveOperation(
 	const PathName &orgfile,
 	const PathName &destdir,
-	DWORD flag)
+	DWORD flag,
+	SeqOpResult* psor)
 	:	m_fConfirm(flag),
 		m_OrgPathBuf(orgfile),
 		m_DestDirBuf(destdir),
-		m_pFindData(new WIN32_FIND_DATA)
+		m_pFindData(new WIN32_FIND_DATA),
+		m_psor(psor)
 {
 	//	nothing to do more.
 }
@@ -336,18 +407,27 @@ RecursiveOperation::~RecursiveOperation()
 	delete m_pFindData;
 }
 
-int RecursiveOperation::doOperation()
+int
+RecursiveOperation::doOperation()
 {
 	return this->recursiveDirOp();
 }
 
-int RecursiveOperation::recursiveDirOp()
+int
+RecursiveOperation::recursiveDirOp()
 {
 	if (!m_OrgPathBuf.isValid()) return RO_FAILED;
 
 	int	ret;
 	if (!m_OrgPathBuf.isDirectory()) {
 		ret = this->FiletoFile();
+		if (ret & RO_STOP) {
+			AddCancel(m_psor, m_OrgPathBuf);
+		} else if (ret & RO_FAILED) {
+			AddFailure(m_psor, m_OrgPathBuf);
+		} else {
+			AddSuccess(m_psor, m_OrgPathBuf);
+		}
 	} else {
 		if ((ret = this->preDirOp()) != RO_SUCCESS) return ret;
 		m_OrgPathBuf.addPath(anyPathName);
@@ -365,6 +445,7 @@ int RecursiveOperation::recursiveDirOp()
 		m_OrgPathBuf.delPath(1);
 		if ((ret&RO_STOP) == 0) ret |= this->postDirOp();
 	}
+
 	return ret;
 }
 
@@ -396,8 +477,9 @@ RecursiveOperation::FiletoFile()
 RecursiveCopyDir::RecursiveCopyDir(
 	const PathName& orgdir,
 	const PathName& destdir,
-	DWORD flags)
-	: RecursiveOperation(orgdir,destdir,flags)
+	DWORD flags,
+	SeqOpResult* psor)
+	: RecursiveOperation(orgdir,destdir,flags,psor)
 {
 	//	nothing to do here.
 }
@@ -419,8 +501,9 @@ RecursiveCopyDir::FiletoFile()
 RecursiveMoveDir::RecursiveMoveDir(
 	const PathName& orgdir,
 	const PathName& destdir,
-	DWORD flag)
-	: RecursiveOperation(orgdir,destdir,flag)
+	DWORD flag,
+	SeqOpResult* psor)
+	: RecursiveOperation(orgdir,destdir,flag,psor)
 {
 	//	nothing to do here.
 }
@@ -449,8 +532,9 @@ RecursiveMoveDir::FiletoFile()
 
 RecursiveRemoveDir::RecursiveRemoveDir(
 	const PathName& destdir,
-	DWORD flags)
-	: RecursiveOperation(destdir,destdir,flags)
+	DWORD flags,
+	SeqOpResult* psor)
+	: RecursiveOperation(destdir,destdir,flags,psor)
 {
 	//	nothing to do here.
 }
@@ -458,9 +542,18 @@ RecursiveRemoveDir::RecursiveRemoveDir(
 int
 RecursiveRemoveDir::postDirOp()
 {
-	if (!m_OrgPathBuf.isValid()) return RO_SUCCESS;
-	if (!m_OrgPathBuf.isDirectory()) return RO_FAILED;
-	return SafetyRemoveDirectory(m_OrgPathBuf,m_fConfirm);
+	int ret;
+	if (!m_OrgPathBuf.isValid()) ret = RO_SUCCESS;
+	else if (!m_OrgPathBuf.isDirectory()) ret = RO_FAILED;
+	else ret = SafetyRemoveDirectory(m_OrgPathBuf,m_fConfirm);
+	if (ret & RO_STOP) {
+		AddCancel(m_psor, m_OrgPathBuf);
+	} else if (ret & RO_FAILED) {
+		AddFailure(m_psor, m_OrgPathBuf);
+	} else {
+		AddSuccess(m_psor, m_OrgPathBuf);
+	}
+	return ret;
 }
 
 int
@@ -471,8 +564,9 @@ RecursiveRemoveDir::FiletoFile()
 
 RecursiveSetAttributes::RecursiveSetAttributes(
 	const PathName& file,
-	DWORD flags)
-	: RecursiveOperation(file,file,flags)
+	DWORD flags,
+	SeqOpResult* psor)
+	: RecursiveOperation(file,file,flags,psor)
 {
 	//	nothing to do here.
 }
@@ -480,7 +574,15 @@ RecursiveSetAttributes::RecursiveSetAttributes(
 int
 RecursiveSetAttributes::postDirOp()
 {
-	return SetAttributes(m_OrgPathBuf,m_fConfirm);
+	int ret = SetAttributes(m_OrgPathBuf,m_fConfirm);
+	if (ret & RO_STOP) {
+		AddCancel(m_psor, m_OrgPathBuf);
+	} else if (ret & RO_FAILED) {
+		AddFailure(m_psor, m_OrgPathBuf);
+	} else {
+		AddSuccess(m_psor, m_OrgPathBuf);
+	}
+	return ret;
 }
 
 int
@@ -492,8 +594,9 @@ RecursiveSetAttributes::FiletoFile()
 RecursiveSetTime::RecursiveSetTime(
 	const PathName& file,
 	const FILETIME* pft,
-	DWORD flags)
-	: RecursiveOperation(file,file,flags)
+	DWORD flags,
+	SeqOpResult* psor)
+	: RecursiveOperation(file,file,flags,psor)
 {
 	::CopyMemory(&m_ft,pft,sizeof(FILETIME));
 }

@@ -1,4 +1,4 @@
-//	$Id: enumpath.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: enumpath.cpp,v 1.3 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	enumpath.cpp
  *	enum*** に関するクラスの実装
@@ -171,8 +171,8 @@ EnumSortedPath::tobeAdded(const WIN32_FIND_DATA& fd) const
 //	現在のスタックトップの要素(のファイル名)を返し、
 //	それより大きい(がスタックに積まれた要素よりは小さいはずの)要素を
 //	スタックに積む
-const StringBuffer
-EnumSortedPath::findNext()
+StringBuffer
+EnumSortedPath::getNext()
 {
 	const WIN32_FIND_DATA* pfd = this->getNextElement();
 	if (pfd == NULL) return nullStr;

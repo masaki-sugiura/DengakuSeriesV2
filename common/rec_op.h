@@ -1,4 +1,4 @@
-//	$Id: rec_op.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: rec_op.h,v 1.2 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	rec_op.h
  *	再帰ファイル操作のためのクラス
@@ -9,10 +9,12 @@
 
 #include "pathname.h"
 
+class SeqOpResult;
+
 //	基底クラス
 class RecursiveOperation {
 public:
-	RecursiveOperation(const PathName&, const PathName&, DWORD);
+	RecursiveOperation(const PathName&, const PathName&, DWORD, SeqOpResult*);
 	virtual	~RecursiveOperation();
 
 	int	doOperation();
@@ -22,6 +24,7 @@ protected:
 	PathName m_OrgPathBuf;
 	PathName m_DestDirBuf;
 	LPWIN32_FIND_DATA m_pFindData;
+	SeqOpResult* m_psor;
 
 	RecursiveOperation(const RecursiveOperation&);
 	RecursiveOperation& operator=(const RecursiveOperation&);
@@ -34,7 +37,7 @@ protected:
 
 class RecursiveCopyDir : public RecursiveOperation {
 public:
-	RecursiveCopyDir(const PathName&, const PathName&, DWORD);
+	RecursiveCopyDir(const PathName&, const PathName&, DWORD, SeqOpResult*);
 
 protected:
 	int	preDirOp();
@@ -43,7 +46,7 @@ protected:
 
 class RecursiveMoveDir : public RecursiveOperation {
 public:
-	RecursiveMoveDir(const PathName&, const PathName&, DWORD);
+	RecursiveMoveDir(const PathName&, const PathName&, DWORD, SeqOpResult*);
 
 protected:
 	int	preDirOp();
@@ -53,7 +56,7 @@ protected:
 
 class RecursiveRemoveDir : public RecursiveOperation {
 public:
-	RecursiveRemoveDir(const PathName&, DWORD);
+	RecursiveRemoveDir(const PathName&, DWORD, SeqOpResult*);
 
 protected:
 	int	postDirOp();
@@ -62,7 +65,7 @@ protected:
 
 class RecursiveSetAttributes : public RecursiveOperation {
 public:
-	RecursiveSetAttributes(const PathName&, DWORD);
+	RecursiveSetAttributes(const PathName&, DWORD, SeqOpResult*);
 
 protected:
 	int	postDirOp();
@@ -71,7 +74,7 @@ protected:
 
 class RecursiveSetTime : public RecursiveOperation {
 public:
-	RecursiveSetTime(const PathName&, const FILETIME*, DWORD);
+	RecursiveSetTime(const PathName&, const FILETIME*, DWORD, SeqOpResult*);
 
 protected:
 	FILETIME m_ft;
@@ -82,6 +85,7 @@ protected:
 #define	RO_SUCCESS	0	/* 成功 */
 #define	RO_FAILED	1	/* 処理の失敗 */
 #define	RO_STOP		2	/* 処理の停止要求 */
+#define RO_CANCELED 4   /* 処理の拒否 */
 
 //	ファイル系の関数の動作フラグ
 //		上書き時の動作
@@ -95,6 +99,8 @@ protected:
 #define	FLAG_REMOVE_FORCED		0x00000200	/* 強制的に削除 */
 //		ディレクトリを再帰的に処理
 #define	FLAG_RECURSIVE			0x80000000	/* 再帰処理の実行 */
+//		処理したファイル・フォルダの数を返す
+#define	FLAG_RETURNNUM			0x40000000	/* 再帰処理の実行 */
 
 //	属性値フラグ
 #define	ATTRIBUTE_FLAG_ARCHIVE		0x00010101	/* アーカイブ */
@@ -119,11 +125,11 @@ int	SafetyCopyFile(const PathName &org, const PathName &dest, DWORD flag);
 int	SafetyMoveFile(const PathName &org, const PathName &dest, DWORD flag);
 int	SafetyRemoveFile(const PathName &file, DWORD flag);
 int	SafetyRemoveDirectory(const PathName &dir, DWORD flag);
-int	CopyPath(const PathName &org, const PathName &dest, DWORD flag);
-int	MovePath(const PathName &org, const PathName &dest, DWORD flag);
-int	RemovePath(const PathName &file, DWORD flag);
-int	SetPathAttributes(const PathName &file, DWORD flag);
-int	SetPathTime(const PathName &file, const FILETIME *ft, DWORD flag);
+int	CopyPath(const PathName &org, const PathName &dest, DWORD flag, SeqOpResult*);
+int	MovePath(const PathName &org, const PathName &dest, DWORD flag, SeqOpResult*);
+int	RemovePath(const PathName &file, DWORD flag, SeqOpResult*);
+int	SetPathAttributes(const PathName &file, DWORD flag, SeqOpResult*);
+int	SetPathTime(const PathName &file, const FILETIME *ft, DWORD flag, SeqOpResult*);
 int	RecursiveMakeDir(const PathName &dir);
 
 #endif

@@ -119,6 +119,10 @@ SOURCE=.\convdata.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\crs_handler.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\cs_handler.cpp
 # End Source File
 # Begin Source File

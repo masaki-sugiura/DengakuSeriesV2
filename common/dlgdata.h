@@ -1,4 +1,4 @@
-//	$Id: dlgdata.h,v 1.2 2002-02-10 09:27:32 sugiura Exp $
+//	$Id: dlgdata.h,v 1.3 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	dlgdata.h
  *	ダイアログを扱うクラス
@@ -154,6 +154,14 @@ public:
 					const StringBuffer& fontname = nullStr,
 					WORD fontsize = 0
 				);
+	const StringBuffer& getFontName() const
+	{
+		return m_pFontProp->m_fontname;
+	}
+	int getFontSize() const
+	{
+		return m_pFontProp->m_fontsize;
+	}
 
 //	ダイアログの構築・初期化・破棄
 	HWND createFrame(HWND hwndOwner, BOOL bOnTop = FALSE); // ダイアログの構築

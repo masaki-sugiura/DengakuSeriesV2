@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.5 2002-02-10 09:27:32 sugiura Exp $
+//	$Id: session.h,v 1.6 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -12,13 +12,14 @@
 #include "dlgdata.h"
 #include "dirlist.h"
 #include "menu.h"
-#include "recfind.h"
+#include "enumerator.h"
 #include "env_var.h"
 #include "spi_mngr.h"
 #include "sharedbuf.h"
 #include "tokenizer.h"
 #include "thread.h"
 #include "bregexp_mngr.h"
+#include "colortbl.h"
 
 class PathName;
 class CmdLineParser;
@@ -38,6 +39,7 @@ public:
 	HINSTANCE getInstanceHandle() const { return m_hInstance; }
 	DlgFrame& getDlgFrame() { return m_DlgFrame; }
 	MenuList& getUserMenu() { return m_UserMenu; }
+	ColorTable& getColorTable() { return m_ColorTbl; }
 
 	//	フルパス名を生成する
 	BOOL getPathName(const StringBuffer& file, PathName& buf,
@@ -147,7 +149,7 @@ public:
 								const StringBuffer&, CmdLineParser&);
 	StringBuffer getDirNameByDlg(HWND, const StringBuffer&,
 								const StringBuffer&, int);
-	StringBuffer getColorByDlg(HWND, const StringBuffer&, const StringBuffer&);
+	StringBuffer getColorByDlg(HWND, const StringBuffer&, CmdLineParser&);
 	StringBuffer getFontByDlg(HWND, const StringBuffer&, CmdLineParser&);
 
 	//	ダイアログ表示系
@@ -204,15 +206,23 @@ public:
 	StringBuffer si_bregexp_postostr(const StringBuffer&);
 	int si_bregexp_hasmoreresults();
 
+	// カラーテーブル操作系
+	int si_setcolorref(const StringBuffer&, const StringBuffer&);
+	StringBuffer si_getcolorref(const StringBuffer&);
+	StringBuffer si_getcolorname(const StringBuffer&);
+	int si_loadcolorrefs(const StringBuffer&);
+	int si_savecolorrefs(const StringBuffer&);
+
 protected:
 	HINSTANCE m_hInstance; // インスタンスハンドル
 	DWORD m_dwLastError; // 最後の Execute コマンドのエラー値
 	DlgFrame m_DlgFrame; // ユーザー定義ダイアログのクラス
 	DirList m_DirList; // ドライブ毎のカレントフォルダのリスト
 	MenuList m_UserMenu; // ユーザー定義メニューのクラス
+	ColorTable m_ColorTbl; // 色名と COLORREF との対応表
 	Auto_Ptr<SPI_Manager> m_pSPIManager; // Susie Plugin をコントロールするクラス
 	Auto_Ptr<EnvManager> m_pEnvManager; // 共有変数をコントロールするクラス
-	Auto_Ptr<FindData> m_pFindData; // "enum*" コマンドで使うクラス
+	Auto_Ptr< Enumerator<StringBuffer> > m_pEnumerator; // "enum*" コマンドで使うクラス
 	Auto_Ptr<Tokenizer> m_pStrToken; // gettoken コマンドで使うクラス
 	Auto_Ptr<Thread> m_pMenuThread; // メニュー表示で使うスレッド
 	Auto_Ptr<Thread> m_pDlgThread; // ダイアログ表示で使うスレッド

@@ -1,4 +1,4 @@
-//	$Id: str_tbl.h,v 1.2 2002-02-10 09:27:32 sugiura Exp $
+//	$Id: str_tbl.h,v 1.3 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	str_tbl.h
  *	文字列テーブルの定義
@@ -64,7 +64,8 @@
 #define	STR_DLGDATA_USERSIGNATURE		(STR_HEAD+52)
 #define	STR_DLGDATA_STATES				(STR_HEAD+53)
 #define	STR_DLGDATA_IMESTATE			(STR_HEAD+54)
-#define	STR_LAST						(STR_HEAD+55)
+#define STR_COLORTBL_SECTION            (STR_HEAD+55)
+#define	STR_LAST						(STR_HEAD+56)
 
 extern	LPCSTR	const_strings[];
 

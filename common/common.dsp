@@ -44,7 +44,7 @@ RSC=rc.exe
 # ADD BASE F90 /compile_only /include:"Release/" /nologo /warn:nofileopt
 # ADD F90 /compile_only /include:"Release/" /nologo /warn:nofileopt
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "..\common" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
+# ADD CPP /nologo /MT /W3 /GR /GX /O2 /I "..\common" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
 # ADD BASE RSC /l 0x411 /d "NDEBUG"
 # ADD RSC /l 0x411 /i "..\common" /d "NDEBUG"
 BSC32=bscmake.exe
@@ -69,7 +69,7 @@ LIB32=link.exe -lib
 # ADD BASE F90 /check:bounds /compile_only /debug:full /include:"Debug/" /nologo /traceback /warn:argument_checking /warn:nofileopt
 # ADD F90 /check:bounds /compile_only /debug:full /include:"Debug/" /nologo /traceback /warn:argument_checking /warn:nofileopt
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "..\common" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GR /GX /ZI /Od /I "..\common" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
 # ADD BASE RSC /l 0x411 /d "_DEBUG"
 # ADD RSC /l 0x411 /i "..\common" /d "_DEBUG"
 BSC32=bscmake.exe
@@ -95,6 +95,10 @@ SOURCE=.\bregexp_mngr.cpp
 # Begin Source File
 
 SOURCE=.\cmdline.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\colortbl.cpp
 # End Source File
 # Begin Source File
 
@@ -186,6 +190,10 @@ SOURCE=.\si_bregexp.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\si_colorref.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\si_comdlg.cpp
 # End Source File
 # Begin Source File
@@ -274,6 +282,10 @@ SOURCE=.\cmdline.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\colortbl.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ctrl.h
 # End Source File
 # Begin Source File
@@ -295,6 +307,10 @@ SOURCE=.\dirlist.h
 # Begin Source File
 
 SOURCE=.\dlgdata.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\enumerator.h
 # End Source File
 # Begin Source File
 

@@ -1,4 +1,4 @@
-//	$Id: recfind.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: recfind.cpp,v 1.3 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	recfind.cpp
  *	enum** Œn‚ÌŠÖ”‚Ì‚½‚ß‚ÌƒNƒ‰ƒX
@@ -36,7 +36,7 @@ FindData::findNext()
 {
 	if (!this->isValid()) return FALSE;
 	m_pnPathBuf.delPath(1);
-	m_sbBaseName = m_pCurrentPath->findNext();
+	m_sbBaseName = m_pCurrentPath->getNext();
 	if (m_sbBaseName.length() <= 0) {
 		m_pnPathBuf.addPath(nullPath);
 		m_sbBaseName = nullStr;
@@ -78,7 +78,7 @@ FindData::getTime()
 }
 
 StringBuffer
-FindData::getBaseName() const
+FindData::getValue() const
 {
 	return m_sbBaseName;
 }
@@ -157,7 +157,7 @@ RecFindData::popPath()
 }
 
 StringBuffer
-RecFindData::getBaseName() const
+RecFindData::getValue() const
 {
 	if (m_pCurrentPath == NULL) return nullStr;
 //	if (m_pnPathBuf.length() == m_nIniLength)

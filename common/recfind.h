@@ -1,4 +1,4 @@
-//	$Id: recfind.h,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: recfind.h,v 1.3 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	recfind.h
  *	enum** 関数のためのパス検索クラス
@@ -11,6 +11,7 @@
 #include "stack.h"
 #include "pathname.h"
 #include "enumpath.h"
+#include "enumerator.h"
 
 #define RECFIND_REVERSE		0x00001000	//	逆順にソート
 #define RECFIND_RECURSIVE	0x00002000	//	再帰的に検索
@@ -20,15 +21,15 @@
 class DirList;
 
 // パス検索クラス群の基底クラス
-class FindData {
+class FindData : public Enumerator<StringBuffer> {
 public:
 	FindData(const DirList& dirlist, const PathName&);
 	virtual ~FindData();
 
+	// virtual methods of Enumerator
 	BOOL isValid() const;
-	virtual BOOL findNext();
-
-	virtual StringBuffer getBaseName() const;
+	BOOL findNext();
+	StringBuffer getValue() const;
 
 	DWORD getAttributes();
 	DWORD getSize();
@@ -89,8 +90,8 @@ public:
 		DWORD);
 	~RecFindData();
 
-	BOOL findNext() = 0;
-	StringBuffer getBaseName() const;
+	BOOL findNext() = 0; // to be overridden by extended classes
+	StringBuffer getValue() const;
 
 protected:
 	const StringBuffer m_sDirFilter;	//	ディレクトリ検索のフィルタ

@@ -1,4 +1,4 @@
-//	$Id: si_file.cpp,v 1.3 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: si_file.cpp,v 1.4 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	si_file.cpp
  *	SessionInstance: ファイルサービスの関数
@@ -42,7 +42,7 @@ AppendCopy(const PathName& OrgFile, const PathName& DestFile, BOOL bText)
 		return FALSE;
 	} else if (OrgFile.getSize() == 0) {
 		// アペンド先はサイズ０…コピーと一緒
-		return CopyPath(DestFile,OrgFile,FLAG_OVERRIDE_FORCED) == RO_SUCCESS;
+		return CopyPath(DestFile,OrgFile,FLAG_OVERRIDE_FORCED,NULL) == RO_SUCCESS;
 	}
 
 	File	fFileOrg(OrgFile,
@@ -74,7 +74,7 @@ AppendCopy(const PathName& OrgFile, const PathName& DestFile, BOOL bText)
 		fFileOrg.setFilePointer(0,0,FILE_CURRENT);	//	不必要？
 	}
 	fFileOrg.flushFileBuffers();
-	delete[] buf;
+	delete [] buf;
 
 	return TRUE;
 }
@@ -161,45 +161,6 @@ RunCmd(CmdLineParser& rCmdLine, const StringBuffer& curdir, int nCmdShow)
 }
 
 static BOOL
-GetAttrFlags(CmdLineParser& params, DWORD& mask, DWORD& attrflags)
-{
-	LPCSTR av = params.getNextArgv();
-	if (isopthead(*av) && *(av + 1) == 'R' && *(av + 2) == '\0') {
-		attrflags |= ATTRIBUTE_RECURSIVE;
-		av = params.getNextArgv();
-	}
-	if (av == NULL) return FALSE;
-	while (*av != '\0') {
-		switch (*av++) {
-		case '-':
-			mask = ATTRIBUTE_MASK_DEL;
-			break;
-		case '+':
-			mask = ATTRIBUTE_MASK_ADD;
-			break;
-		case '=':
-			mask = ATTRIBUTE_MASK_REP;
-			break;
-		case 'a':
-			attrflags |= (ATTRIBUTE_FLAG_ARCHIVE&mask);
-			break;
-		case 'r':
-			attrflags |= (ATTRIBUTE_FLAG_READONLY&mask);
-			break;
-		case 'h':
-			attrflags |= (ATTRIBUTE_FLAG_HIDDEN&mask);
-			break;
-		case 's':
-			attrflags |= (ATTRIBUTE_FLAG_SYSTEM&mask);
-			break;
-		default:
-			break;
-		}
-	}
-	return TRUE;
-}
-
-static BOOL
 TimeStampToFileTime(LPCSTR pszTimeStamp, FILETIME* pft)
 {
 	TCHAR buf[20];
@@ -250,8 +211,15 @@ SessionInstance::si_setcurdir(const StringBuffer& newdir)
 int
 SessionInstance::si_copy(CmdLineParser& params)
 {
-	return FileToFileOperation(CopyPath,FLAG_OVERRIDE_DEFAULT,
-								m_DirList,params);
+	SeqOpResult* psor = NULL;
+	int ret = FileToFileOperation(CopyPath, FLAG_OVERRIDE_DEFAULT,
+								  m_DirList, params, psor);
+	if (psor) {
+		m_pEnumerator = psor;
+		return psor->m_nSuccess;
+	} else {
+		return ret;
+	}
 }
 
 int
@@ -290,8 +258,12 @@ SessionInstance::si_delete(const StringBuffer& filename)
 
 class SeqRemove : public SequentialOp {
 public:
-	SeqRemove(LPCSTR av, CmdLineParser& params, DirList& dl, DWORD flags)
-		: SequentialOp(av,params,dl), m_flags(flags)
+	SeqRemove(int srcidx,
+			  CmdLineParser& params,
+			  DirList& dl,
+			  DWORD flags,
+			  SeqOpResult* psor)
+		: SequentialOp(srcidx,params,dl,psor), m_flags(flags)
 	{}
 
 	BOOL precheck_wc(WIN32_FIND_DATA& fd)
@@ -300,9 +272,9 @@ public:
 		if ((m_flags&FLAG_RECURSIVE) == 0) return FALSE;
 		return	!IsPathNameDots(fd.cFileName);
 	}
-	DWORD do_op(PathName& file)
+	DWORD do_op(PathName& file, SeqOpResult* psor)
 	{
-		return RemovePath(file,m_flags);
+		return RemovePath(file, m_flags, psor);
 	}
 
 private:
@@ -312,64 +284,115 @@ private:
 int
 SessionInstance::si_remove(CmdLineParser& params)
 {
-	if (params.initSequentialGet() < 1) return FALSE;
+	int pnum = params.initSequentialGet();
+	if (pnum < 1) return 0;
 
 	//	オプションの解析
 	DWORD fFlags = FLAG_REMOVE_DEFAULT;
-	LPCSTR av;
-	while ((av = params.getNextArgv()) != NULL && isopthead(*av)) {
-		GetFlags(++av,fFlags);
-	}
-	if (av == NULL) return FALSE; // ファイル指定がない
 
-	return SeqRemove(av,params,m_DirList,fFlags).doOp();
+	int optnum = 0;
+	while (optnum < pnum) {
+		const StringBuffer& av = params.getNextArgvStr();
+		if (!isopthead(av.charAt(0))) break;
+		GetFlags(av, fFlags);
+		optnum++;
+	}
+	// ファイル指定がない
+	if (optnum == pnum) return 0;
+
+	SeqOpResult* psor = NULL;
+	if (fFlags & FLAG_RETURNNUM) psor = new SeqOpResult();
+	int ret = SeqRemove(optnum, params, m_DirList, fFlags, psor).doOp();
+	if (psor) {
+		m_pEnumerator = psor;
+		return psor->m_nSuccess;
+	} else {
+		return ret;
+	}
 }
 
 int
 SessionInstance::si_move(CmdLineParser& params)
 {
-	return FileToFileOperation(
+	SeqOpResult* psor = NULL;
+	int ret = FileToFileOperation(
 					MovePath,
 					FLAG_OVERRIDE_DEFAULT|FLAG_RECURSIVE,
 					m_DirList,
-					params
+					params,
+					psor
 				);
+	if (psor) {
+		m_pEnumerator = psor;
+		return psor->m_nSuccess;
+	} else {
+		return ret;
+	}
 }
+
+static DWORD flagsMkDir[] = { FLAG_RECURSIVE, FLAG_RETURNNUM };
+static OptMap optMapMkDir("pn", flagsMkDir);
 
 int
 SessionInstance::si_mkdir(CmdLineParser& params)
 {
-	if (params.initSequentialGet() < 1) return FALSE;
+	int pnum = params.initSequentialGet();
+	if (pnum < 1) return FALSE;
 
-	BOOL bRec = FALSE, bSuccess = TRUE;
+	DWORD flags = 0;
 	//	オプションの解析
-	LPCSTR av;
-	while ((av = params.getNextArgv()) != NULL && isopthead(*av)) {
-		if (*++av == 'p') bRec = TRUE;
+	int optnum = 0;
+	while (optnum < pnum) {
+		const StringBuffer& av = params.getNextArgvStr();
+		if (!isopthead(av.charAt(0))) break;
+		GetFlags(av, flags, optMapMkDir);
+		optnum++;
 	}
-	if (av == NULL) return FALSE;
+	if (optnum == pnum) return FALSE;
 
+	SeqOpResult* psor = NULL;
+	if (flags & FLAG_RETURNNUM) psor = new SeqOpResult();
+
+	int ret = TRUE;
+	pnum = params.initSequentialGet(optnum);
 	PathName dir;
-	BOOL bSuccess_Each;
-	do {
-		m_DirList.getPathName(av,dir,FALSE);
+	while (pnum-- > 0) {
+		m_DirList.getPathName(params.getNextArgvStr(), dir, FALSE);
+		BOOL bResult;
 		if (dir.isValid()) {
 			//	いずれにしても指定されたパスは存在する
-			bSuccess_Each = dir.isDirectory();
+			bResult = dir.isDirectory();
 		} else {
-			bSuccess_Each = bRec ?	(RecursiveMakeDir(dir) == RO_SUCCESS) :
-									CreateDirectory(dir,NULL);
+			if (flags & FLAG_RECURSIVE) {
+				bResult = (RecursiveMakeDir(dir) == RO_SUCCESS);
+			} else {
+				bResult = CreateDirectory(dir, NULL);
+			}
 		}
-		if (bSuccess) bSuccess = bSuccess_Each;
-	} while ((av = params.getNextArgv()) != NULL);
+		if (bResult) {
+			AddSuccess(psor, dir);
+		} else {
+			AddFailure(psor, dir);
+			ret = FALSE;
+		}
+	}
 
-	return bSuccess;
+	if (psor) {
+		m_pEnumerator = psor;
+		return psor->m_nSuccess;
+	} else {
+		return ret;
+	}
 }
 
 class SeqRmDir : public SequentialOp {
 public:
-	SeqRmDir(LPCSTR av, CmdLineParser& params, DirList& dl, DWORD flags)
-		: SequentialOp(av,params,dl), m_flags(flags)
+	SeqRmDir(int srcidx,
+			 CmdLineParser& params,
+			 DirList& dl,
+			 DWORD flags,
+			 SeqOpResult* psor)
+		: SequentialOp(srcidx, params, dl, psor), m_flags(flags)
 	{}
 
 	BOOL precheck_wc(WIN32_FIND_DATA& fd)
@@ -381,75 +404,165 @@ public:
 	{
 		return file.isDirectory();
 	}
-	DWORD do_op(PathName& file)
+	DWORD do_op(PathName& file, SeqOpResult* psor)
 	{
-		return SafetyRemoveDirectory(file,m_flags);
+		int ret = SafetyRemoveDirectory(file,m_flags);
+		if (ret & RO_STOP) {
+			AddCancel(psor, file);
+		} else if (ret & RO_FAILED) {
+			AddFailure(psor, file);
+		} else {
+			AddSuccess(psor, file);
+		}
+		return ret;
 	}
 
 private:
 	DWORD m_flags;
 };
+
+static DWORD flagsRmDir[] = { FLAG_REMOVE_FORCED, FLAG_RETURNNUM };
+static OptMap optMapRmDir("fn", flagsRmDir);
 
 int
 SessionInstance::si_rmdir(CmdLineParser& params)
 {
-	if (params.initSequentialGet() < 1) return FALSE;
+	int pnum = params.initSequentialGet();
+	if (pnum < 1) return FALSE;
 
 	//	オプションの解析
 	DWORD flags = FLAG_REMOVE_DEFAULT;
-	LPCSTR av = params.getNextArgv();
-	if (isopthead(*av) && *(av + 1) == 'f' && *(av + 2) == '\0') {
-		flags |= FLAG_REMOVE_FORCED;
-		if ((av = params.getNextArgv()) == NULL) return FALSE;
+	int optnum = 0;
+	while (optnum < pnum) {
+		const StringBuffer& av = params.getNextArgvStr();
+		if (!isopthead(av.charAt(0))) break;
+		GetFlags(av, flags, optMapRmDir);
+		optnum++;
 	}
+	if (optnum == pnum) return FALSE;
 
-	return SeqRmDir(av,params,m_DirList,flags).doOp();
+	SeqOpResult* psor = NULL;
+	if (flags & FLAG_RETURNNUM) psor = new SeqOpResult();
+	int ret = SeqRmDir(optnum, params, m_DirList, flags, psor).doOp();
+	if (psor) {
+		m_pEnumerator = psor;
+		return psor->m_nSuccess;
+	} else {
+		return ret;
+	}
 }
 
 class SeqSetAttr : public SequentialOp {
 public:
-	SeqSetAttr(LPCSTR av, CmdLineParser& params, DirList& dl, DWORD flags)
-		: SequentialOp(av,params,dl), m_flags(flags)
+	SeqSetAttr(int srcidx,
+			   CmdLineParser& params,
+			   DirList& dl,
+			   DWORD flags,
+			   SeqOpResult* psor)
+		: SequentialOp(srcidx, params, dl, psor), m_flags(flags)
 	{}
 
-	DWORD do_op(PathName& file)
+	DWORD do_op(PathName& file, SeqOpResult* psor)
 	{
-		return SetPathAttributes(file,m_flags);
+		return SetPathAttributes(file,m_flags,psor);
 	}
 
 private:
 	DWORD m_flags;
 };
 
+static DWORD flagsGetAttr[] = { ATTRIBUTE_RECURSIVE, FLAG_RETURNNUM };
+static OptMap optMapGetAttr("rn", flagsGetAttr);
+
+static int
+GetAttrFlags(CmdLineParser& params, DWORD& mask, DWORD& attrflags)
+{
+	int pnum = params.initSequentialGet();
+
+	int optnum = 0;
+	while (optnum < pnum) {
+		const StringBuffer& av = params.getNextArgvStr();
+		if (!isopthead(av.charAt(0))) break;
+		GetFlags(av, attrflags, optMapGetAttr);
+		optnum++;
+	}
+	if (optnum == pnum) return 0;
+
+	const StringBuffer& attropts = params.getArgvStr(optnum++);
+
+	int i = 0, len = attropts.length();
+	while (i < len) {
+		switch (attropts.charAt(i++)) {
+		case '-':
+			mask = ATTRIBUTE_MASK_DEL;
+			break;
+		case '+':
+			mask = ATTRIBUTE_MASK_ADD;
+			break;
+		case '=':
+			mask = ATTRIBUTE_MASK_REP;
+			break;
+		case 'a':
+			attrflags |= (ATTRIBUTE_FLAG_ARCHIVE&mask);
+			break;
+		case 'r':
+			attrflags |= (ATTRIBUTE_FLAG_READONLY&mask);
+			break;
+		case 'h':
+			attrflags |= (ATTRIBUTE_FLAG_HIDDEN&mask);
+			break;
+		case 's':
+			attrflags |= (ATTRIBUTE_FLAG_SYSTEM&mask);
+			break;
+		default:
+			break;
+		}
+	}
+
+	return optnum;
+}
+
 int
 SessionInstance::si_setattribute(CmdLineParser& params)
 {
-	if (params.initSequentialGet() < 2) return FALSE;
+	if (params.itemNum() < 1) return FALSE;
 
 	DWORD attrflags = 0, mask = ATTRIBUTE_MASK_ADD;
-	//	オプションの解析
-	if (!GetAttrFlags(params,mask,attrflags)) return FALSE;
-	LPCSTR av = params.getNextArgv();
 
-	//	属性指定子の解析
-	if ((attrflags&(ATTRIBUTE_MASK_ADD|ATTRIBUTE_MASK_DEL|ATTRIBUTE_MASK_REP))
-		== 0 ||
-		av == NULL) return FALSE;
+	//	オプション＆属性指定子の解析
+	int optnum = GetAttrFlags(params, mask, attrflags);
 
-	return SeqSetAttr(av,params,m_DirList,attrflags).doOp();
+	//	オプション＆属性指定の妥当性検査
+	if (optnum == 0 ||
+		(attrflags&(ATTRIBUTE_MASK_ADD|ATTRIBUTE_MASK_DEL|ATTRIBUTE_MASK_REP))
+		== 0) return FALSE;
+
+	SeqOpResult* psor = NULL;
+	if (attrflags & FLAG_RETURNNUM) psor = new SeqOpResult();
+	int ret = SeqSetAttr(optnum, params, m_DirList, attrflags, psor).doOp();
+	if (psor) {
+		m_pEnumerator = psor;
+		return psor->m_nSuccess;
+	} else {
+		return ret;
+	}
 }
 
 class SeqTouch : public SequentialOp {
 public:
-	SeqTouch(LPCSTR av, CmdLineParser& params, DirList& dl,
-			const FILETIME* pft, DWORD flags)
-		: SequentialOp(av,params,dl), m_flags(flags), m_pft(pft)
+	SeqTouch(int srcidx,
+			 CmdLineParser& params,
+			 DirList& dl,
+			 const FILETIME* pft,
+			 DWORD flags,
+			 SeqOpResult* psor)
+		: SequentialOp(srcidx,params,dl,psor), m_flags(flags), m_pft(pft)
 	{}
 
 	BOOL precheck_normal(PathName&) { return TRUE; }
-	DWORD do_op(PathName& file)
+	DWORD do_op(PathName& file, SeqOpResult* psor)
 	{
-		return SetPathTime(file,m_pft,m_flags);
+		return SetPathTime(file,m_pft,m_flags,psor);
 	}
 
 private:
@@ -460,11 +573,22 @@ private:
 int
 SessionInstance::si_touch(CmdLineParser& params)
 {
-	if (params.initSequentialGet() < 1) return FALSE;
+	int pnum = params.initSequentialGet();
+	if (pnum < 1) return FALSE;
+
+	BOOL bRetNum = FALSE;
+	int optnum = 0;
+	LPCSTR av = params.getNextArgv();
+	if (isopthead(*av)) {
+		if (*(av + 1) == 'n') bRetNum = TRUE;
+		av = params.getNextArgv();
+		optnum++;
+	}
+	if (pnum == optnum) return FALSE;
 
 	//	時刻指定の解析
 	DWORD flags = TOUCH_ACCESSTIME|TOUCH_MODIFYTIME|TOUCH_FILECREATE;
-	LPCSTR	av, pszRefFile = NULL, pszTimeStamp = NULL, *pptr = NULL;
+	LPCSTR pszRefFile = NULL, pszTimeStamp = NULL, *pptr = NULL;
 
 	while ((av = params.getNextArgv()) != NULL) {
 		if (pptr != NULL) {
@@ -473,6 +597,7 @@ SessionInstance::si_touch(CmdLineParser& params)
 			continue;
 		}
 		if (!isopthead(*av)) break;
+		optnum++;
 		while (*++av != '\0') {
 			switch (*av) {
 			case 'a':
@@ -506,31 +631,44 @@ SessionInstance::si_touch(CmdLineParser& params)
 			}
 		}
 	}
-	if (av == NULL) return FALSE;
+	if (pnum == optnum) return FALSE;
 
 	FILETIME ft;
 	if (pszRefFile != NULL) {
 		//	タイムスタンプをファイルから取得
 		PathName reffile;
-		if (!m_DirList.getPathName(pszRefFile,reffile,TRUE))
+		if (!m_DirList.getPathName(pszRefFile, reffile, TRUE))
 			return FALSE;
-		::CopyMemory((LPVOID)&ft,(const LPVOID)reffile.getTime(),
+		::CopyMemory((LPVOID)&ft, (const LPVOID)reffile.getTime(),
 					sizeof(FILETIME));
 	} else if (pszTimeStamp != NULL) {
 		//	タイムスタンプを直接指定
-		if (!TimeStampToFileTime(pszTimeStamp,&ft)) return FALSE;
+		if (!TimeStampToFileTime(pszTimeStamp, &ft))
+			return FALSE;
 	} else {
 		//	現在時刻を取得
 		::GetSystemTimeAsFileTime(&ft);
 	}
 
-	return SeqTouch(av,params,m_DirList,&ft,flags).doOp();
+	SeqOpResult* psor = NULL;
+	if (bRetNum) {
+		psor = new SeqOpResult();
+		flags |= FLAG_RETURNNUM;
+	}
+
+	int ret = SeqTouch(optnum, params, m_DirList, &ft, flags, psor).doOp();
+	if (psor) {
+		m_pEnumerator = psor;
+		return psor->m_nSuccess;
+	} else {
+		return ret;
+	}
 }
 
 int
 SessionInstance::si_run(CmdLineParser& params, int nCmdShow)
 {
-	return RunCmd(params,m_DirList.getCurrentDir(),nCmdShow);
+	return RunCmd(params, m_DirList.getCurrentDir(), nCmdShow);
 }
 
 static BOOL
@@ -569,7 +707,7 @@ ParseEnumOptions(
 	}
 	if (av == NULL) return FALSE;
 
-	dl.getPathName(av,path,FALSE);
+	dl.getPathName(av, path, FALSE);
 	if ((av = params.getNextArgv()) != NULL) {
 		for (;;) {
 			filter.append(av);
@@ -590,21 +728,22 @@ SessionInstance::si_enumpath(CmdLineParser& params)
 	PathName path;
 	StringBuffer filter(16), s_order("nets");
 	DWORD flags = RECFIND_SHOWDIR;
-	if (!ParseEnumOptions(params,m_DirList,path,filter,s_order,flags))
+	if (!ParseEnumOptions(params, m_DirList, path, filter, s_order, flags))
 		return FALSE;
 	try {
 		if ((flags & RECFIND_REVERSE) != 0)
-			m_pFindData = new RecFindBackward(m_DirList,
-											path,anyPathName,filter,
-											s_order,flags);
+			m_pEnumerator = new RecFindBackward(m_DirList,
+												path, anyPathName, filter,
+												s_order, flags);
 		else
-			m_pFindData = new RecFindForward(m_DirList,
-											path,anyPathName,filter,
-											s_order,flags);
+			m_pEnumerator = new RecFindForward(m_DirList,
+											   path, anyPathName, filter,
+											   s_order, flags);
 	} catch (exception&) {
 		return FALSE;
 	}
-	return m_pFindData->isValid();
+
+	return m_pEnumerator->isValid();
 }
 
 int
@@ -613,14 +752,15 @@ SessionInstance::si_enumfile(CmdLineParser& params)
 	PathName path;
 	StringBuffer filter(16), s_order("nets");
 	DWORD flags = ENUMPATH_FINDFILE;
-	if (!ParseEnumOptions(params,m_DirList,path,filter,s_order,flags))
+	if (!ParseEnumOptions(params, m_DirList, path, filter, s_order, flags))
 		return FALSE;
 	try {
-		m_pFindData = new FindFile(m_DirList,path,filter,s_order,flags);
+		m_pEnumerator = new FindFile(m_DirList, path, filter, s_order, flags);
 	} catch (exception&) {
 		return FALSE;
 	}
-	return m_pFindData->isValid();
+
+	return m_pEnumerator->isValid();
 }
 
 int
@@ -629,14 +769,15 @@ SessionInstance::si_enumdir(CmdLineParser& params)
 	PathName path;
 	StringBuffer filter(16), s_order("nets");
 	DWORD flags = ENUMPATH_FINDDIR;
-	if (!ParseEnumOptions(params,m_DirList,path,filter,s_order,flags))
+	if (!ParseEnumOptions(params, m_DirList, path, filter, s_order, flags))
 		return FALSE;
 	try {
-		m_pFindData = new FindDir(m_DirList,path,filter,s_order,flags);
+		m_pEnumerator = new FindDir(m_DirList, path, filter, s_order, flags);
 	} catch (exception&) {
 		return FALSE;
 	}
-	return m_pFindData->isValid();
+
+	return m_pEnumerator->isValid();
 }
 
 StringBuffer
@@ -651,11 +792,12 @@ SessionInstance::si_isreadonly(CmdLineParser& params)
 	BOOL bReadOnly = FALSE;
 	if (params.itemNum() > 0) {
 		PathName file;
-		if (m_DirList.getPathName(params.getArgvStr(0),file,TRUE))
+		if (m_DirList.getPathName(params.getArgvStr(0), file, TRUE))
 			bReadOnly = file.isReadOnly();
-	} else if (m_pFindData.ptr() && m_pFindData->isValid()) {
-		bReadOnly
-			= (m_pFindData->getAttributes()&FILE_ATTRIBUTE_READONLY) != 0;
+	} else if (m_pEnumerator.ptr() && m_pEnumerator->isValid()) {
+		FindData* ptr = dynamic_cast<FindData*>(m_pEnumerator.ptr());
+		if (ptr != NULL)
+			bReadOnly = (ptr->getAttributes()&FILE_ATTRIBUTE_READONLY) != 0;
 	}
 	return bReadOnly ? errorStr : nullStr;
 }
@@ -665,60 +807,64 @@ SessionInstance::si_sizeof(CmdLineParser& params)
 {
 	if (params.itemNum() > 0) {
 		PathName file;
-		if (m_DirList.getPathName(params.getArgvStr(0),file,TRUE))
+		if (m_DirList.getPathName(params.getArgvStr(0), file, TRUE))
 			return StringBuffer(16).append(file.getSize());
 		else
 			return nullStr;
-	} else if (m_pFindData.ptr() && m_pFindData->isValid()) {
-		return StringBuffer(16).append(m_pFindData->getSize());
-	} else {
-		return nullStr;
+	} else if (m_pEnumerator.ptr() && m_pEnumerator->isValid()) {
+		FindData* ptr = dynamic_cast<FindData*>(m_pEnumerator.ptr());
+		if (ptr != NULL) return StringBuffer(16).append(ptr->getSize());
 	}
+	return nullStr;
 }
 
 StringBuffer
 SessionInstance::si_timestampof(CmdLineParser& params)
 {
-	LPCSTR file = NULL;
-	int offset = 2;
+	int offset = 2, optnum = 0, pnum = params.itemNum();
 
-	if (params.itemNum() > 0) {
-		params.initSequentialGet();
-		LPCSTR av = params.getNextArgv();
-		if (av != NULL && isopthead(*av)) {
-			if (*++av == 'l') {
-				av = params.getNextArgv();
-				offset = 0;
-			} else return nullStr;
+	if (pnum > 0) {
+		const StringBuffer& av = params.getArgvStr(0);
+		if (isopthead(av.charAt(0))) {
+			if (av.charAt(1) == 'l') offset = 0;
+			optnum++;
 		}
-		if (av != NULL) file = av;
 	}
 
 	FILETIME time;
-	if (file != NULL) {
+	if (pnum != optnum) {
 		PathName pfile;
-		if (!m_DirList.getPathName(file,pfile,TRUE)) return nullStr;
+		if (!m_DirList.getPathName(params.getArgvStr(optnum), pfile, TRUE))
+			return nullStr;
 		time = *pfile.getTime();
-	} else if (m_pFindData.ptr() && m_pFindData->isValid()) {
-		const FILETIME* ptime = m_pFindData->getTime();
+	} else if (m_pEnumerator.ptr() && m_pEnumerator->isValid()) {
+		FindData* ptr = dynamic_cast<FindData*>(m_pEnumerator.ptr());
+		if (ptr == NULL) return nullStr;
+		const FILETIME* ptime = ptr->getTime();
 		if (ptime == NULL) return nullStr; // root drive has no timestamp.
 		time = *ptime;
 	} else {
 		return nullStr;
 	}
+
 	FILETIME ftlocal;
-	if (!::FileTimeToLocalFileTime(&time,&ftlocal)) return nullStr;
+	if (!::FileTimeToLocalFileTime(&time, &ftlocal)) return nullStr;
 	DOSDATE	dosdate;
 	DOSTIME	dostime;
-	if (!::FileTimeToDosDateTime(&ftlocal,(LPWORD)&dosdate,(LPWORD)&dostime))
+	if (!::FileTimeToDosDateTime(&ftlocal, (LPWORD)&dosdate, (LPWORD)&dostime))
 		return nullStr;
+
 	TCHAR dbuf[32];
 	wsprintf(dbuf,
 			"%04d/%02d/%02d %02d:%02d:%02d",
-			dosdate.Year+1980,dosdate.Month,dosdate.Day,
-			dostime.Hour,dostime.Minute,dostime.Second*2);
+			dosdate.Year + 1980,
+			dosdate.Month,
+			dosdate.Day,
+			dostime.Hour,
+			dostime.Minute,
+			dostime.Second * 2);
 
-	return StringBuffer(32).append(dbuf,offset);
+	return StringBuffer(32).append(dbuf, offset);
 }
 
 StringBuffer
@@ -728,11 +874,13 @@ SessionInstance::si_timecountof(CmdLineParser& params)
 
 	if (params.itemNum() > 0) {
 		PathName file;
-		if (!m_DirList.getPathName(params.getArgvStr(0),file,TRUE))
+		if (!m_DirList.getPathName(params.getArgvStr(0), file, TRUE))
 			return nullStr;
 		time = *file.getTime();
-	} else if (m_pFindData.ptr() && m_pFindData->isValid()) {
-		const FILETIME* ptime = m_pFindData->getTime();
+	} else if (m_pEnumerator.ptr() && m_pEnumerator->isValid()) {
+		FindData* ptr = dynamic_cast<FindData*>(m_pEnumerator.ptr());
+		if (ptr == NULL) return nullStr;
+		const FILETIME* ptime = ptr->getTime();
 		if (ptime == NULL) return nullStr; // root drive has no timestamp.
 		time = *ptime;
 	} else {
@@ -740,7 +888,7 @@ SessionInstance::si_timecountof(CmdLineParser& params)
 	}
 
 	WORD low, high;
-	if (!::FileTimeToDosDateTime(&time,&high,&low)) return nullStr;
+	if (!::FileTimeToDosDateTime(&time, &high, &low)) return nullStr;
 
 	return StringBuffer(16).append((DWORD)((high << 16) | low));
 }
@@ -752,11 +900,12 @@ SessionInstance::si_attributeof(CmdLineParser& params)
 
 	if (params.itemNum() > 0) {
 		PathName file;
-		if (!m_DirList.getPathName(params.getArgvStr(0),file,TRUE))
+		if (!m_DirList.getPathName(params.getArgvStr(0), file, TRUE))
 			return nullStr;
 		attr = file.getAttributes();
-	} else if (m_pFindData.ptr() && m_pFindData->isValid()) {
-		attr = m_pFindData->getAttributes();
+	} else if (m_pEnumerator.ptr() && m_pEnumerator->isValid()) {
+		FindData* ptr = dynamic_cast<FindData*>(m_pEnumerator.ptr());
+		if (ptr != NULL) attr = ptr->getAttributes();
 	}
 	if (attr == 0xFFFFFFFF) return nullStr;
 
@@ -775,8 +924,8 @@ SessionInstance::si_attributeof(CmdLineParser& params)
 StringBuffer
 SessionInstance::si_findnext()
 {
-	if (m_pFindData.ptr() && m_pFindData->findNext())
-		return m_pFindData->getBaseName();
+	if (m_pEnumerator.ptr() && m_pEnumerator->findNext())
+		return m_pEnumerator->getValue();
 	return nullStr;
 }
 

@@ -1,4 +1,4 @@
-// $Id: cds_func.cpp,v 1.2 2002-01-16 16:31:04 sugiura Exp $
+// $Id: cds_func.cpp,v 1.3 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	cds_func.cpp
  *	コモンダイアログサービスの関数
@@ -55,9 +55,10 @@ GETDIRNAMEEX(
 DENGAKUDLL_API LPCSTR
 GETCOLOR(HIDEDLL_NUMTYPE hWnd, LPCSTR pszTitle, LPCSTR pszIniColor)
 {
+	RealCmdLineParser argv(pszIniColor);
 	g_strBuffer = g_pSessionInstance->getColorByDlg((HWND)hWnd,
 													pszTitle,
-													pszIniColor);
+													argv);
 	return g_strBuffer;
 }
 

@@ -1,4 +1,4 @@
-//	$Id: opencomdlg.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: opencomdlg.cpp,v 1.2 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	opencomdlg.cpp
  *	コモンダイアログを表示する関数の実装
@@ -46,9 +46,9 @@ GetDirNameByDlg(HWND hwndOwner, ConvData& cd, CmdLineParser& argv)
 void
 GetColorByDlg(HWND hwndOwner, ConvData& cd, CmdLineParser& argv)
 {
-	StringBuffer ret = cd.getColorByDlg(hwndOwner,
-									argv.getArgvStr(0),
-									argv.getArgvStr(1));
+	StringBuffer title = argv.getArgvStr(0);
+	argv.delArgv(0);
+	StringBuffer ret = cd.getColorByDlg(hwndOwner,title,argv);
 	if (ret.length() <= 0) ret = errorStr;
 	cd.setNotify(ret);
 }

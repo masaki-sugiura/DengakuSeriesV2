@@ -1,4 +1,4 @@
-// $Id: si_comdlg.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+// $Id: si_comdlg.cpp,v 1.2 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	si_comdlg.cpp
  *	コモンダイアログ表示関数
@@ -9,6 +9,7 @@
 #include "cmdline.h"
 #include "seldir.h"
 #include "misc.h"
+#include "colortbl.h"
 
 #define FILEDLG_BUFSIZE (11 * MAX_PATH)
 
@@ -166,13 +167,24 @@ StringBuffer
 SessionInstance::getColorByDlg(
 	HWND hwndOwner,
 	const StringBuffer& title,
-	const StringBuffer& inicolor)
+	CmdLineParser& inicolors)
 {
 	COLORREF cr[17];
-	LPCSTR pszIniColor = inicolor;
+	inicolors.initSequentialGet();
 	int i = 0;
-	for ( ; i < 17 && *pszIniColor != '\0'; i++, pszIniColor += 7)
-		cr[i] = ColorStrToColorRef(pszIniColor);
+	while (i < 17) {
+		const StringBuffer& arg = inicolors.getNextArgvStr();
+		if (arg.length() == 0) break;
+		if (arg.charAt(0) == '#') {
+			int len = arg.length(), head = 0;
+			while (i < 17 && head < len) {
+				cr[i++] = ColorTable::colorStrToColorRef(arg.extract(head,7));
+				head += 7;
+			}
+		} else {
+			cr[i++] = m_ColorTbl.getColorRef(arg);
+		}
+	}
 	while (i < 17) cr[i++] = 0x00FFFFFF;
 
 	CHOOSECOLOR	cc;
@@ -186,10 +198,10 @@ SessionInstance::getColorByDlg(
 	cc.lpfnHook		=	(LPCCHOOKPROC)ChooseColorProc;
 
 	if (!::ChooseColor(&cc)) return nullStr;
-	StringBuffer ret = ColorRefToColorStr(cc.rgbResult);
+	StringBuffer ret(ColorTable::colorRefToColorStr(cc.rgbResult));
 	for (i = 1; i < 17; i++) {
 		if (cr[i] != 0x00FFFFFF) {
-			ret += ColorRefToColorStr(cr[i]);
+			ret.append(ColorTable::colorRefToColorStr(cr[i]));
 		}
 	}
 	return ret;
@@ -235,7 +247,7 @@ SessionInstance::getFontByDlg(
 	cf.iPointSize	=	0;
 	cf.Flags		=	CF_SCREENFONTS|CF_EFFECTS|CF_ENABLEHOOK|
 						CF_INITTOLOGFONTSTRUCT;
-	cf.rgbColors	=	ColorStrToColorRef(pstrFontColor);
+	cf.rgbColors	=	m_ColorTbl.getColorRef(pstrFontColor);
 	cf.lCustData	=	(LPARAM)(LPCSTR)title;
 	cf.lpfnHook		=	(LPCFHOOKPROC)ChooseFontProc;
 	cf.nFontType	=	SCREEN_FONTTYPE|PRINTER_FONTTYPE|SIMULATED_FONTTYPE;
@@ -274,13 +286,13 @@ SessionInstance::getFontByDlg(
 	lf.lfClipPrecision	=	CLIP_DEFAULT_PRECIS;
 	lf.lfQuality		=	DEFAULT_QUALITY;
 	lf.lfPitchAndFamily	=	DEFAULT_PITCH|FF_DONTCARE;
-	lstrcpyn(lf.lfFaceName,pstrFontFace,LF_FACESIZE-1);
+	lstrcpyn(lf.lfFaceName, pstrFontFace, LF_FACESIZE-1);
 
 	if (!::ChooseFont(&cf)) return nullStr;
 
 	StringBuffer ret(lf.lfFaceName,-1,40);
 	ret.append((TCHAR)',').append(cf.iPointSize/10).append((TCHAR)',');
-	ret += ColorRefToColorStr(cf.rgbColors);
+	ret.append(ColorTable::colorRefToColorStr(cf.rgbColors));
 	ret.append((TCHAR)',');
 	if (lf.lfWeight != FW_NORMAL) ret.append((TCHAR)'b');
 	if (lf.lfItalic) ret.append((TCHAR)'i');

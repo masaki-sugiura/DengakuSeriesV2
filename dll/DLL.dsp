@@ -105,6 +105,10 @@ SOURCE=.\cds_func.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\crs_func.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\cs_func.cpp
 # End Source File
 # Begin Source File

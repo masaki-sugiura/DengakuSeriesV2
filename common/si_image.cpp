@@ -1,4 +1,4 @@
-//	$Id: si_image.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: si_image.cpp,v 1.3 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	si_image.cpp
  *	‰æ‘œ‚ÌŠÇ—‚ÉŠÖ‚·‚éƒNƒ‰ƒX
@@ -6,6 +6,7 @@
 
 #include "session.h"
 #include "cmdline.h"
+#include "pathname.h"
 #include "spi_mngr.h"
 
 int

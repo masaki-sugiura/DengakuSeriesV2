@@ -43,6 +43,7 @@ ALL : "$(OUTDIR)\common.lib"
 CLEAN :
 	-@erase "$(INTDIR)\bregexp_mngr.obj"
 	-@erase "$(INTDIR)\cmdline.obj"
+	-@erase "$(INTDIR)\colortbl.obj"
 	-@erase "$(INTDIR)\ctrldata.obj"
 	-@erase "$(INTDIR)\ctrlname.obj"
 	-@erase "$(INTDIR)\ddfile.obj"
@@ -65,6 +66,7 @@ CLEAN :
 	-@erase "$(INTDIR)\shicons.obj"
 	-@erase "$(INTDIR)\shobj_wrapper.obj"
 	-@erase "$(INTDIR)\si_bregexp.obj"
+	-@erase "$(INTDIR)\si_colorref.obj"
 	-@erase "$(INTDIR)\si_comdlg.obj"
 	-@erase "$(INTDIR)\si_common.obj"
 	-@erase "$(INTDIR)\si_dialog.obj"
@@ -88,7 +90,7 @@ CLEAN :
 
 F90_PROJ=/compile_only /include:"$(INTDIR)\\" /nologo /warn:nofileopt /module:"Release/" /object:"Release/" 
 F90_OBJS=.\Release/
-CPP_PROJ=/nologo /MT /W3 /GX /O2 /I "..\common" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /Fp"$(INTDIR)\common.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_PROJ=/nologo /MT /W3 /GR /GX /O2 /I "..\common" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /Fp"$(INTDIR)\common.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\common.bsc" 
 BSC32_SBRS= \
@@ -98,6 +100,7 @@ LIB32_FLAGS=/nologo /out:"$(OUTDIR)\common.lib"
 LIB32_OBJS= \
 	"$(INTDIR)\bregexp_mngr.obj" \
 	"$(INTDIR)\cmdline.obj" \
+	"$(INTDIR)\colortbl.obj" \
 	"$(INTDIR)\ctrldata.obj" \
 	"$(INTDIR)\ctrlname.obj" \
 	"$(INTDIR)\ddfile.obj" \
@@ -118,7 +121,9 @@ LIB32_OBJS= \
 	"$(INTDIR)\seq_op.obj" \
 	"$(INTDIR)\session.obj" \
 	"$(INTDIR)\shicons.obj" \
+	"$(INTDIR)\shobj_wrapper.obj" \
 	"$(INTDIR)\si_bregexp.obj" \
+	"$(INTDIR)\si_colorref.obj" \
 	"$(INTDIR)\si_comdlg.obj" \
 	"$(INTDIR)\si_common.obj" \
 	"$(INTDIR)\si_dialog.obj" \
@@ -133,8 +138,7 @@ LIB32_OBJS= \
 	"$(INTDIR)\strbuf.obj" \
 	"$(INTDIR)\strutils.obj" \
 	"$(INTDIR)\thread.obj" \
-	"$(INTDIR)\tokenizer.obj" \
-	"$(INTDIR)\shobj_wrapper.obj"
+	"$(INTDIR)\tokenizer.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -155,6 +159,7 @@ ALL : "$(OUTDIR)\common.lib"
 CLEAN :
 	-@erase "$(INTDIR)\bregexp_mngr.obj"
 	-@erase "$(INTDIR)\cmdline.obj"
+	-@erase "$(INTDIR)\colortbl.obj"
 	-@erase "$(INTDIR)\ctrldata.obj"
 	-@erase "$(INTDIR)\ctrlname.obj"
 	-@erase "$(INTDIR)\ddfile.obj"
@@ -177,6 +182,7 @@ CLEAN :
 	-@erase "$(INTDIR)\shicons.obj"
 	-@erase "$(INTDIR)\shobj_wrapper.obj"
 	-@erase "$(INTDIR)\si_bregexp.obj"
+	-@erase "$(INTDIR)\si_colorref.obj"
 	-@erase "$(INTDIR)\si_comdlg.obj"
 	-@erase "$(INTDIR)\si_common.obj"
 	-@erase "$(INTDIR)\si_dialog.obj"
@@ -201,7 +207,7 @@ CLEAN :
 
 F90_PROJ=/check:bounds /compile_only /debug:full /include:"$(INTDIR)\\" /nologo /traceback /warn:argument_checking /warn:nofileopt /module:"Debug/" /object:"Debug/" /pdbfile:"Debug/DF60.PDB" 
 F90_OBJS=.\Debug/
-CPP_PROJ=/nologo /MTd /W3 /Gm /GX /ZI /Od /I "..\common" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /Fp"$(INTDIR)\common.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+CPP_PROJ=/nologo /MTd /W3 /Gm /GR /GX /ZI /Od /I "..\common" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /Fp"$(INTDIR)\common.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\common.bsc" 
 BSC32_SBRS= \
@@ -211,6 +217,7 @@ LIB32_FLAGS=/nologo /out:"$(OUTDIR)\common.lib"
 LIB32_OBJS= \
 	"$(INTDIR)\bregexp_mngr.obj" \
 	"$(INTDIR)\cmdline.obj" \
+	"$(INTDIR)\colortbl.obj" \
 	"$(INTDIR)\ctrldata.obj" \
 	"$(INTDIR)\ctrlname.obj" \
 	"$(INTDIR)\ddfile.obj" \
@@ -231,7 +238,9 @@ LIB32_OBJS= \
 	"$(INTDIR)\seq_op.obj" \
 	"$(INTDIR)\session.obj" \
 	"$(INTDIR)\shicons.obj" \
+	"$(INTDIR)\shobj_wrapper.obj" \
 	"$(INTDIR)\si_bregexp.obj" \
+	"$(INTDIR)\si_colorref.obj" \
 	"$(INTDIR)\si_comdlg.obj" \
 	"$(INTDIR)\si_common.obj" \
 	"$(INTDIR)\si_dialog.obj" \
@@ -246,8 +255,7 @@ LIB32_OBJS= \
 	"$(INTDIR)\strbuf.obj" \
 	"$(INTDIR)\strutils.obj" \
 	"$(INTDIR)\thread.obj" \
-	"$(INTDIR)\tokenizer.obj" \
-	"$(INTDIR)\shobj_wrapper.obj"
+	"$(INTDIR)\tokenizer.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -319,6 +327,11 @@ SOURCE=.\bregexp_mngr.cpp
 SOURCE=.\cmdline.cpp
 
 "$(INTDIR)\cmdline.obj" : $(SOURCE) "$(INTDIR)"
+
+
+SOURCE=.\colortbl.cpp
+
+"$(INTDIR)\colortbl.obj" : $(SOURCE) "$(INTDIR)"
 
 
 SOURCE=.\ctrldata.cpp
@@ -429,6 +442,11 @@ SOURCE=.\shobj_wrapper.cpp
 SOURCE=.\si_bregexp.cpp
 
 "$(INTDIR)\si_bregexp.obj" : $(SOURCE) "$(INTDIR)"
+
+
+SOURCE=.\si_colorref.cpp
+
+"$(INTDIR)\si_colorref.obj" : $(SOURCE) "$(INTDIR)"
 
 
 SOURCE=.\si_comdlg.cpp

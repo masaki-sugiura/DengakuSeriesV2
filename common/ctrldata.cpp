@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.4 2002-02-10 18:25:36 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.5 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -15,6 +15,7 @@
 #include "tokenizer.h"
 #include "misc.h"
 #include "str_tbl.h"
+#include "colortbl.h"
 
 #include <exception>
 #include <imm.h>
@@ -107,14 +108,21 @@ CtrlListItem::CtrlProperty::changeFont()
 	if (hFont == NULL)
 		hFont = reinterpret_cast<HFONT>(::GetStockObject(SYSTEM_FIXED_FONT));
 	LOGFONT lf;
-	::GetObject(hFont,sizeof(LOGFONT),&lf);
+	::GetObject(hFont,sizeof(LOGFONT), &lf);
 	lf.lfWeight		= (m_fontprop.m_fface&1) != 0 ? 700 : 400;
 	lf.lfItalic		= (m_fontprop.m_fface&2) != 0;
 	lf.lfUnderline	= (m_fontprop.m_fface&4) != 0;
 	lf.lfStrikeOut	= (m_fontprop.m_fface&8) != 0;
+	if (m_fontprop.m_fname.length() == 0) {
+		lstrcpyn(lf.lfFaceName,
+				 m_pCtrl->getParentPage().getDlgFrame().getFontName(), 32);
+	} else {
+		lstrcpyn(lf.lfFaceName, m_fontprop.m_fname, 32);
+	}
 	if (m_fontprop.m_hfont != NULL) ::DeleteObject(m_fontprop.m_hfont);
 	m_fontprop.m_hfont = ::CreateFontIndirect(&lf);
-	::SendMessage(m_hwndCtrl,WM_SETFONT,(WPARAM)m_fontprop.m_hfont,TRUE);
+	if (m_fontprop.m_hfont != NULL)
+		::SendMessage(m_hwndCtrl, WM_SETFONT, (WPARAM)m_fontprop.m_hfont, TRUE);
 	m_fontprop.m_bchanged = FALSE;
 }
 
@@ -275,6 +283,7 @@ CtrlListItem::createCtrl(
 			break;
 		case CTRLID_EDIT:
 		case CTRLID_MLEDIT:
+		case CTRLID_PWDEDIT:
 			nc = new EditCtrl(name,text,static_cast<CTRL_ID>(ctrltype));
 			break;
 		case CTRLID_LIST:
@@ -682,33 +691,42 @@ SimpleCtrl::~SimpleCtrl()
 }
 
 BOOL
-SimpleCtrl::setFont(const StringBuffer& pfface, const StringBuffer& pcolor)
+SimpleCtrl::setFont(
+	const StringBuffer& fface,
+	const StringBuffer& color,
+	const StringBuffer& fname)
 {
-	BYTE fface = 0;
-	if (pfface.length() > 0) {
-		LPCSTR pstr = pfface;
+	BYTE bfface = 0;
+	if (fface.length() > 0) {
+		LPCSTR pstr = fface;
 		while (*pstr != '\0') {
 			switch (*pstr++) {
 			case 'b':
-				fface |= 1;
+				bfface |= 1;
 				break;
 			case 'i':
-				fface |= 2;
+				bfface |= 2;
 				break;
 			case 'u':
-				fface |= 4;
+				bfface |= 4;
 				break;
 			case 's':
-				fface |= 8;
+				bfface |= 8;
 				break;
 			}
 		}
 	}
-	DWORD color = ColorStrToColorRef(pcolor);
-	if (m_pcp->m_fontprop.m_fface != fface	||
-		m_pcp->m_fontprop.m_color != color) {
-		m_pcp->m_fontprop.m_fface = fface;
-		m_pcp->m_fontprop.m_color = color;
+	COLORREF cref = 0;
+	SessionInstance* pSI = m_pDlgPage->getDlgFrame().getSessionInstance();
+	if (pSI != NULL) {
+		cref = pSI->getColorTable().getColorRef(color);
+	}
+	if (m_pcp->m_fontprop.m_fface != bfface	||
+		m_pcp->m_fontprop.m_color != cref ||
+		m_pcp->m_fontprop.m_fname.compareTo(fname) != 0) {
+		m_pcp->m_fontprop.m_fface = bfface;
+		m_pcp->m_fontprop.m_color = cref;
+		m_pcp->m_fontprop.m_fname = fname;
 		m_pcp->m_fontprop.m_bchanged = TRUE;
 	}
 	return TRUE;
@@ -801,7 +819,8 @@ SimpleCtrl::onSetCtrlFont(CmdLineParser& argv)
 	argv.initSequentialGet();
 	const StringBuffer& fface = argv.getNextArgvStr();
 	const StringBuffer& color = argv.getNextArgvStr();
-	this->setFont(fface,color);
+	const StringBuffer& fname = argv.getNextArgvStr();
+	this->setFont(fface, color, fname);
 	this->sendData();
 	return TRUE;
 }
@@ -816,16 +835,18 @@ SimpleCtrl::onGetString()
 StringBuffer
 SimpleCtrl::onGetCtrlFont()
 {
-	TCHAR buf[6];
-	int i = 0;
+	StringBuffer ret(60);
 	BYTE fface = m_pcp->m_fontprop.m_fface;
-	if ((fface&1) != 0) buf[i++] = 'b';
-	if ((fface&2) != 0) buf[i++] = 'i';
-	if ((fface&4) != 0) buf[i++] = 'u';
-	if ((fface&8) != 0) buf[i++] = 's';
-	buf[i++] = ',';  buf[i] = '\0';
-	return StringBuffer(buf,-1,8)
-			.append(ColorRefToColorStr(m_pcp->m_fontprop.m_color));
+	if ((fface&1) != 0) ret.append((TCHAR)'b');
+	if ((fface&2) != 0) ret.append((TCHAR)'i');
+	if ((fface&4) != 0) ret.append((TCHAR)'u');
+	if ((fface&8) != 0) ret.append((TCHAR)'s');
+	ret.append((TCHAR)',');
+	ret.append(ColorTable::colorRefToColorStr(m_pcp->m_fontprop.m_color));
+	if (m_pcp->m_fontprop.m_fname.length() > 0) {
+		ret.append((TCHAR)',').append(m_pcp->m_fontprop.m_fname);
+	}
+	return ret;
 }
 
 HBRUSH
@@ -910,8 +931,13 @@ EditCtrl::EditCtrl(
 {
 	m_pcp->m_style		= ES_AUTOHSCROLL|
 							WS_BORDER|WS_CHILD|WS_TABSTOP|WS_VISIBLE|WS_GROUP;
-	if (type == CTRLID_MLEDIT) {
+	switch (type) {
+	case CTRLID_MLEDIT:
 		m_pcp->m_style |= ES_AUTOVSCROLL|ES_MULTILINE|ES_WANTRETURN;
+		break;
+	case CTRLID_PWDEDIT:
+		m_pcp->m_style |= ES_PASSWORD;
+		break;
 	}
 	m_pcp->m_exstyle	= 0x0;
 	m_pcp->m_id			= 0;
@@ -2009,63 +2035,65 @@ RefBtnCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 	if (HIWORD(wParam) != BN_CLICKED) return 0xFFFF;
 	SessionInstance* psi = m_pDlgPage->getDlgFrame().getSessionInstance();
 	StringBuffer strRet;
+	ItemData* id;
 	switch (m_type) {
 	case CTRLID_REFFILEBUTTON:
 		{
-			LPCSTR pszTitle  = NULL, pszIniDir = NULL;
-			StringBuffer buf(MAX_PATH);
-			int ac = m_item->initSequentialGet();
-			if (ac > 0) pszTitle = m_item->getNextItem()->getText();
-			if (ac > 1) pszIniDir = m_item->getNextItem()->getText();
+			StringBuffer sbTitle(nullStr), sbIniDir(nullStr);
+			m_item->initSequentialGet();
+			id = m_item->getNextItem();
+			if (id != NULL) sbTitle = id->getText();
+			id = m_item->getNextItem();
+			if (id != NULL) sbIniDir = id->getText();
 			RealCmdLineParser filters(nullStr);
-			if (ac > 2) {
-				m_item->initSequentialGet(2);
-				ItemData* id;
-				while ((id = m_item->getNextItem()) != NULL) {
-					filters.addArgv(id->getText());
-				}
+			while ((id = m_item->getNextItem()) != NULL) {
+				filters.addArgv(id->getText());
 			}
 			strRet = psi->getFileNameByDlg(m_pDlgPage->gethwndPage(),
-											pszTitle, pszIniDir, filters);
+										   sbTitle, sbIniDir, filters);
 		}
 		break;
 	case CTRLID_REFDIRBUTTON:
 		{
-			LPCSTR pszTitle = NULL, pszIniDir = NULL;
-			int ac = m_item->initSequentialGet(), flag = 0;
-			if (ac > 0) pszTitle = m_item->getNextItem()->getText();
-			if (ac > 1) pszIniDir = m_item->getNextItem()->getText();
-			if (ac > 2) flag = ival(m_item->getNextItem()->getText());
+			StringBuffer sbTitle(nullStr), sbIniDir(nullStr);
+			int flag = 0;
+			m_item->initSequentialGet();
+			id = m_item->getNextItem();
+			if (id != NULL) sbTitle = id->getText();
+			id = m_item->getNextItem();
+			if (id != NULL) sbIniDir = id->getText();
+			id = m_item->getNextItem();
+			if (id != NULL) flag = ival(id->getText());
 			strRet = psi->getDirNameByDlg(m_pDlgPage->gethwndPage(),
-											pszTitle, pszIniDir, flag);
+										  sbTitle, sbIniDir, flag);
 		}
 		break;
 	case CTRLID_REFCOLORBUTTON:
 		{
-			LPCSTR pszTitle = NULL, pszIniColor = NULL;
-			int	ac = m_item->initSequentialGet();
-			if (ac > 0) pszTitle = m_item->getNextItem()->getText();
-			if (ac > 1) pszIniColor = m_item->getNextItem()->getText();
+			StringBuffer sbTitle(nullStr);
+			m_item->initSequentialGet();
+			id = m_item->getNextItem();
+			if (id != NULL) sbTitle = id->getText();
+			RealCmdLineParser inicolors(nullStr);
+			while ((id = m_item->getNextItem()) != NULL) {
+				inicolors.addArgv(id->getText());
+			}
 			strRet = psi->getColorByDlg(m_pDlgPage->gethwndPage(),
-										pszTitle, pszIniColor);
+										sbTitle, inicolors);
 		}
 		break;
 	case CTRLID_REFFONTBUTTON:
 		{
-			LPCSTR pszTitle = NULL;
-			int	ac = m_item->initSequentialGet();
-			StringBuffer buf(40);
-			if (ac > 0) pszTitle = m_item->getNextItem()->getText();
+			StringBuffer sbTitle(nullStr);
+			m_item->initSequentialGet();
+			id = m_item->getNextItem();
+			if (id != NULL) sbTitle = id->getText();
 			RealCmdLineParser fontspecs(nullStr);
-			if (ac > 1) {
-				m_item->initSequentialGet(1);
-				ItemData* id;
-				while ((id = m_item->getNextItem()) != NULL) {
-					fontspecs.addArgv(id->getText());
-				}
+			while ((id = m_item->getNextItem()) != NULL) {
+				fontspecs.addArgv(id->getText());
 			}
 			strRet = psi->getFontByDlg(m_pDlgPage->gethwndPage(),
-										pszTitle, fontspecs);
+										sbTitle, fontspecs);
 		}
 		break;
 	}

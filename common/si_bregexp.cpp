@@ -1,4 +1,4 @@
-//	$Id: si_bregexp.cpp,v 1.4 2002-01-16 16:51:02 sugiura Exp $
+//	$Id: si_bregexp.cpp,v 1.5 2002-02-15 17:46:08 sugiura Exp $
 /*
  *	si_bregexp.cpp
  *	BRegexp ‚ÉŠÖ‚·‚éƒNƒ‰ƒX
@@ -6,6 +6,7 @@
 
 #include "session.h"
 #include "cmdline.h"
+#include "pathname.h"
 #include "bregexp_mngr.h"
 
 int
