@@ -1,4 +1,4 @@
-//	$Id: si_file.cpp,v 1.13 2002-12-15 12:09:49 sugiura Exp $
+//	$Id: si_file.cpp,v 1.14 2002-12-16 15:50:42 sugiura Exp $
 /*
  *	si_file.cpp
  *	SessionInstance: ファイルサービスの関数
@@ -537,13 +537,7 @@ SessionInstance::si_touch(CmdLineParser& params)
 
 	BOOL bRetNum = FALSE;
 	int optnum = 0;
-	LPCSTR av = params.getNextArgv();
-	if (isopthead(*av)) {
-		if (*(av + 1) == 'n') bRetNum = TRUE;
-		av = params.getNextArgv();
-		optnum++;
-	}
-	if (pnum == optnum) return FALSE;
+	LPCSTR av = NULL;
 
 	//	時刻指定の解析
 	DWORD flags = TOUCH_ACCESSTIME|TOUCH_MODIFYTIME|TOUCH_FILECREATE;
@@ -584,6 +578,9 @@ SessionInstance::si_touch(CmdLineParser& params)
 					pszTimeStamp = av;
 					while (*(av + 1) != '\0') av++;
 				} else pptr = &pszTimeStamp;
+				break;
+			case 'n':
+				bRetNum = TRUE;
 				break;
 			default:
 				break;
