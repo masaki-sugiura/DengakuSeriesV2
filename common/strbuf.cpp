@@ -1,4 +1,4 @@
-//	$Id: strbuf.cpp,v 1.5 2002-04-03 16:13:14 sugiura Exp $
+//	$Id: strbuf.cpp,v 1.6 2002-04-08 14:00:10 sugiura Exp $
 /*
  *	strbuf.cpp
  *	•¶Žš—ñƒNƒ‰ƒX
@@ -428,21 +428,16 @@ int
 StringBuffer::rfind(LPCSTR lpstr) const
 {
 	if (!IsValidPtr(lpstr)) return -1;
-
-	int len = lstrlen(lpstr);
-	if (len == 0) return -1;
-
 	if (!m_sbuf->isShareable()) m_sbuf->recalc();
 
-	LPCSTR t = m_sbuf->m_buf;
-	for (LPCSTR s = t + m_sbuf->m_len - 1;
-		 s > t;
-		 s--) {
-		if (*s == *lpstr && !IsCharLeadByte(*(s-1)) &&
-			(len == 1 || lstrcmpn(s + 1, lpstr + 1, len - 1) == 0))
-			return s - t;
-	}
-	return (lstrcmpn(s, lpstr, len) == 0) - 1;
+	LPCSTR nstr = lstrstr(m_sbuf->m_buf, lpstr);
+	if (nstr == NULL) return -1;
+
+	LPCSTR str;
+	for ( ; (str = lstrstr(ToNextChar(nstr), lpstr)) != NULL; nstr = str)
+		/* no operation here */;
+
+	return nstr - m_sbuf->m_buf;
 }
 
 StringBuffer
