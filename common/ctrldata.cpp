@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.12 2002-03-02 09:39:46 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.13 2002-03-02 12:26:12 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -2137,7 +2137,7 @@ RefBtnCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 			if (id != NULL) sbIniDir = id->getText();
 			RealCmdLineParser filters(nullStr);
 			while ((id = m_item->getNextItem()) != NULL) {
-				filters.mergeArgv(id->getText());
+				filters.addArgv(id->getText());
 			}
 			strRet = psi->getFileNameByDlg(m_pDlgPage->gethwndPage(),
 										   sbTitle, sbIniDir, filters);
@@ -2166,7 +2166,7 @@ RefBtnCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 			if (id != NULL) sbTitle = id->getText();
 			RealCmdLineParser inicolors(nullStr);
 			while ((id = m_item->getNextItem()) != NULL) {
-				inicolors.mergeArgv(id->getText());
+				inicolors.addArgv(id->getText());
 			}
 			strRet = psi->getColorByDlg(m_pDlgPage->gethwndPage(),
 										sbTitle, inicolors);
@@ -2180,7 +2180,7 @@ RefBtnCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 			if (id != NULL) sbTitle = id->getText();
 			RealCmdLineParser fontspecs(nullStr);
 			while ((id = m_item->getNextItem()) != NULL) {
-				fontspecs.mergeArgv(id->getText());
+				fontspecs.addArgv(id->getText());
 			}
 			strRet = psi->getFontByDlg(m_pDlgPage->gethwndPage(),
 										sbTitle, fontspecs);
