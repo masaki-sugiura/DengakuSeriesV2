@@ -1,0 +1,42 @@
+//	$Id: sddlg_templ.rc,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+/*
+ *	sddlg_templ.rc
+ *	「フォルダを選択」ダイアログのダイアログテンプレート
+ */
+
+#ifdef __GNUC__
+#include <windows.h>
+#endif
+
+#ifdef SELDIR_INC_TEMPLATE
+//	テンプレート本体
+IDD_DIRBROWSE DIALOGEX 0, 0, 187, 207
+STYLE DS_MODALFRAME | DS_SETFOREGROUND | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "フォルダの選択"
+FONT 9, "ＭＳ Ｐゴシック"
+BEGIN
+    PUSHBUTTON      "OK",IDC_OK,76,186,50,14
+    PUSHBUTTON      "ｷｬﾝｾﾙ",IDC_CANCEL,130,186,50,14
+    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | 
+                    TVS_HASLINES | TVS_EDITLABELS | TVS_DISABLEDRAGDROP | 
+                    TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,34,173,149,
+                    WS_EX_CLIENTEDGE
+    PUSHBUTTON      "サブフォルダの追加",IDC_NEWFOLDER,7,19,80,13
+    PUSHBUTTON      "名前の変更",IDC_RENAME,91,19,48,13
+    PUSHBUTTON      "削除",IDC_DELETE,143,19,37,13
+    CONTROL         "Static",IDC_TITLE,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,
+                    7,7,173,10
+END
+#endif
+
+#ifdef SELDIR_INC_DESIGNINFO
+//	デザイン情報…いるんか？
+    IDD_DIRBROWSE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 200
+    END
+#endif
+

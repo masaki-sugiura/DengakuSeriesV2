@@ -1,0 +1,154 @@
+//Microsoft Developer Studio generated resource script.
+//	$Id: DengakuServer.rc,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef __GNUC__
+#include "afxres.h"
+#endif // __GNUC__
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 日本語 resources
+
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+#ifndef __GNUC__
+#ifdef _WIN32
+LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+#pragma code_page(932)
+#endif //_WIN32
+#endif // __GNUC__
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON                ICON    DISCARDABLE     "DengakuServer.ico"
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+#ifndef __GNUC__
+IDD_ABOUT DIALOG DISCARDABLE  0, 0, 229, 109
+STYLE WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "田楽サーバについて"
+CLASS "DengakuServerClass"
+FONT 9, "ＭＳ Ｐゴシック"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,57,88,50,14
+    PUSHBUTTON      "ヘルプ",IDC_SHOWHELP,114,88,50,14
+    PUSHBUTTON      "終了",IDC_CLOSE,171,88,50,14
+    LTEXT           "田楽 (でんがく) サーバ  Ver.0.01β",IDC_APPNAME,33,13,
+                    108,8
+    LTEXT           "Copyright(C) 1998-2001, M. Sugiura (sugiura@ceres.dti.ne.jp)",
+                    IDC_STATIC,33,23,187,8
+    GROUPBOX        "現在の DDE 通信",IDC_STATIC,7,39,215,47
+    LTEXT           "サービス名：",IDC_STATIC,13,52,41,8
+    LTEXT           "通信数：",IDC_STATIC,26,65,28,8
+    LTEXT           "",IDC_SERVICENAME,57,52,128,8
+    LTEXT           "",IDC_CONVNUM,57,65,128,8
+    ICON            IDI_ICON,IDC_STATIC,7,13,20,20
+END
+#endif
+
+#define SELDIR_INC_TEMPLATE
+#include "sddlg_templ.rc"
+#undef SELDIR_INC_TEMPLATE
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifndef __GNUC__
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 222
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 102
+    END
+    IDD_DIRBROWSE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 200
+    END
+END
+#endif    // APSTUDIO_INVOKED
+#endif
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU MENU DISCARDABLE 
+BEGIN
+    POPUP "Dummy"
+    BEGIN
+        MENUITEM "田楽サーバについて(&A)",      IDM_ABOUT
+        MENUITEM "ヘルプ(&H)",                  IDM_HELP
+        MENUITEM SEPARATOR
+        MENUITEM "田楽サーバの終了(&X)",        IDM_QUIT
+    END
+END
+
+#endif    // 日本語 resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

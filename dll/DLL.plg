@@ -1,0 +1,89 @@
+<html>
+<body>
+<pre>
+<h1>ﾋﾞﾙﾄﾞのﾛｸﾞ</h1>
+<h3>
+--------------------構成: common - Win32 Release--------------------
+</h3>
+<h3>ｺﾏﾝﾄﾞ ﾗｲﾝ</h3>
+一時ﾌｧｲﾙ "D:\TEMP\RSP66.tmp" を作成し、次の内容を記録します
+[
+/nologo /MT /W3 /GX /O2 /I "..\common" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /Fp"Release/common.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"D:\Program Files\DevStudio\MyProjects\DengakuSeriesV1\common\si_dialog.cpp"
+]
+Creating command line "cl.exe @D:\TEMP\RSP66.tmp" 
+一時ﾌｧｲﾙ "D:\TEMP\RSP67.tmp" を作成し、次の内容を記録します
+[
+/nologo /out:"Release\common.lib" 
+".\Release\cmdline.obj"
+".\Release\ctrldata.obj"
+".\Release\ctrlname.obj"
+".\Release\ddfile.obj"
+".\Release\dirlist.obj"
+".\Release\dlgdata.obj"
+".\Release\enumpath.obj"
+".\Release\env_var.obj"
+".\Release\file.obj"
+".\Release\hashtbl.obj"
+".\Release\linklist.obj"
+".\Release\menu.obj"
+".\Release\misc.obj"
+".\Release\pathname.obj"
+".\Release\rec_op.obj"
+".\Release\recfind.obj"
+".\Release\refcount.obj"
+".\Release\seldir.obj"
+".\Release\seq_op.obj"
+".\Release\session.obj"
+".\Release\shicons.obj"
+".\Release\si_comdlg.obj"
+".\Release\si_common.obj"
+".\Release\si_dialog.obj"
+".\Release\si_file.obj"
+".\Release\si_image.obj"
+".\Release\si_menu.obj"
+".\Release\si_string.obj"
+".\Release\si_variable.obj"
+".\Release\smalloc.obj"
+".\Release\spi_mngr.obj"
+".\Release\str_tbl.obj"
+".\Release\strbuf.obj"
+".\Release\thread.obj"
+".\Release\tokenizer.obj"
+]
+ｺﾏﾝﾄﾞ ﾗｲﾝ "link.exe -lib @D:\TEMP\RSP67.tmp" の作成中
+<h3>ｱｳﾄﾌﾟｯﾄ ｳｨﾝﾄﾞｳ</h3>
+ｺﾝﾊﾟｲﾙ中...
+si_dialog.cpp
+ﾗｲﾌﾞﾗﾘを作成中...
+<h3>
+--------------------構成: DLL - Win32 Release--------------------
+</h3>
+<h3>ｺﾏﾝﾄﾞ ﾗｲﾝ</h3>
+一時ﾌｧｲﾙ "D:\TEMP\RSP68.tmp" を作成し、次の内容を記録します
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib imm32.lib ..\common\Release\common.lib /nologo /dll /incremental:no /pdb:"Release/DengakuDLL.pdb" /machine:I386 /out:"Release/DengakuDLL.dll" /implib:"Release/DengakuDLL.lib" 
+".\Release\cds_func.obj"
+".\Release\cs_func.obj"
+".\Release\DengakuDLL.obj"
+".\Release\ds_func.obj"
+".\Release\es_func.obj"
+".\Release\fs_func.obj"
+".\Release\is_func.obj"
+".\Release\ms_func.obj"
+".\Release\ss_func.obj"
+".\Release\seldir.res"
+"\Program Files\DevStudio\MyProjects\DengakuSeriesV1\common\Release\common.lib"
+]
+ｺﾏﾝﾄﾞ ﾗｲﾝ "link.exe @D:\TEMP\RSP68.tmp" の作成中
+<h3>ｱｳﾄﾌﾟｯﾄ ｳｨﾝﾄﾞｳ</h3>
+ﾘﾝｸ中...
+   ﾗｲﾌﾞﾗﾘ Release/DengakuDLL.lib とｵﾌﾞｼﾞｪｸﾄ Release/DengakuDLL.exp を作成中
+
+
+
+<h3>結果</h3>
+DengakuDLL.dll - ｴﾗｰ 0、警告 0
+</pre>
+</body>
+</html>

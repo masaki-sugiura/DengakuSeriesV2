@@ -1,0 +1,837 @@
+//	$Id: ctrldata.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+/*
+ *	ctrldata.h
+ *	コントロールを扱うクラス
+ */
+
+/*
+	コントロールクラスの実装についてのコメント：
+
+	はっきり言って美しくない。首尾一貫性がない。
+	動作させることが第一なので今はほったらかしにしているが、
+	いずれはクラス設計から根本的にやり直す予定。
+
+	クラス階層マップ(継承は全て public)：
+
+	CtrlListItem				全てのコントロールクラスの(純粋)基底クラス
+								全てのインターフェイスを定義する。
+	PageFormatCtrl : CtrlListItem	newcolumn, newpage
+	SimpleCtrl : CtrlListItem	内部にコントロールウィンドウを１つ持つ(純粋)
+								基底クラス(…の予定だったが、RadioCtrl がその
+								contract に違反している…美しくない(ToT))
+		BtnCtrl : SimpleCtrl		button, defbutton
+			CheckCtrl : BtnCtrl		check, rdbtn
+		TextCtrl : SimpleCtrl		text
+		EditCtrl : SimpleCtrl		edit, mledit
+		LineCtrl : SimpleCtrl		hline, vline
+		TrackCtrl : SimpleCtrl		track
+		TreeCtrl : SimpleCtrl		tree
+		HasListCtrl : SimpleCtrl	item コマンドを受け付ける(純粋)基底クラス。
+									(これまた TreeCtrl が contract 違反(ToT))
+			RefBtnCtrl : HasListCtrl	reffilebutton, refdirbutton, refcolorbutton
+			RadioCtrl : HasListCtrl		radio
+			ListCtrl : HasListCtrl		list
+				ComboCtrl : ListCtrl	combo
+			ChkListCtrl : HasListCtrl	chklist
+				LViewCtrl : ChkListCtrl	lview
+			FrameCtrl : HasListCtrl		frame, group
+				TabCtrl : FrameCtrl		tab
+	MultipleCtrl : CtrlListItem	複数のコントロールウィンドウを持つ(純粋)基底
+								クラス。
+		SpinCtrl : MultipleCtrl		spin
+		OkCancelCtrl : MultipleCtrl	okcancel
+
+	これらから、次世代のクラス階層はこんな感じになるかな？？
+	CtrlContainer	:	全ての（ユーザーから見た）コントロールを表すクラス
+	以下は Windows 定義のコントロールに対応した(汎用)クラス(というかラッパー)
+		SimpleTextCtrl	:	text, line, frame
+		ButtonCtrl		:	button, check, radio, group
+		EditBoxCtrl		:	edit, multi-line edit
+		ListBoxCtrl		:	list
+		ComboBoxCtrl	:	combo
+		TrackBarCtrl	:	track
+		TreeViewCtrl	:	tree
+		ListViewCtrl	:	listview, checklist
+		SpinButtonCtrl	:	spin
+		TabCtrl			:	tab
+
+*/
+
+#ifndef	DENGAKUSERIES_CLASSES_CONTROL
+#define	DENGAKUSERIES_CLASSES_CONTROL
+
+#include "ddfile.h"
+#include "linklist.h"
+#include "ctrlname.h"
+
+#include <commctrl.h>
+
+class DlgPage;
+class CmdLineParser;
+
+//	ダイアログ単位で計った行・列幅
+#define	UWIDTH	4		//	横の長さの１単位(文字幅)
+#define	UHEIGHT	4		//	縦の長さの１単位(文字高の半分)
+#define	OWIDTH	2		//	横の余白の長さ
+//	#define	OHEIGHT	4		//	縦の余白の長さ
+#define	STRICTHEIGHT	2	//	厳密な１文字の高さ
+#define	NARROWHEIGHT	3	//	縦幅が少ないコントロールの高さ
+#define	NORMALHEIGHT	4	//	普通のコントロールの高さ
+
+
+//	項目を表すクラス
+class ItemData {
+public:
+	ItemData(const StringBuffer& str = nullStr)
+		: m_text(str)
+	{}	//	nothing to do more.
+	virtual ~ItemData() {}
+
+	virtual	StringBuffer& getText(){ return m_text; }
+
+protected:
+	StringBuffer m_text;
+
+	ItemData(const ItemData&);
+	ItemData& operator=(const ItemData&);
+};
+
+//	名前で識別できる項目を表すクラス
+class NamedItemData : public ItemData {
+public:
+	NamedItemData(const StringBuffer& name,
+				const StringBuffer& text = nullStr)
+		: ItemData(text), m_name(name)
+	{}	//	nothing to do more.
+
+	const StringBuffer& getName() const { return m_name; }
+
+protected:
+	const StringBuffer m_name;
+};
+
+//	lview コントロールの項目を表すクラス
+class LViewItemData : public ItemData, public LinkList<ItemData> {
+//	nothing more.
+};
+
+typedef	HashTable<class TreeItemData*,11> TreeHashTable;
+
+//	tree コントロールの項目を表すクラス
+class TreeItemData : public NamedItemData, public NamedLinkList<TreeItemData> {
+public:
+	TreeItemData(const StringBuffer& name,
+				const StringBuffer& text = nullStr)
+		:	NamedItemData(name,text), m_parent(NULL)
+	{}	//	nothing to do more.
+
+	HTREEITEM m_hItem;
+
+	int	addItem(TreeItemData* tid, int ind = -1)
+	{
+		tid->m_parent = this;
+		return LinkList<TreeItemData>::addItem(tid,ind);
+	}
+
+	TreeItemData* getParent() const { return m_parent; }
+
+	BOOL initItem(HWND, HTREEITEM);
+	BOOL dumpData(DlgDataFile&);
+	BOOL loadData(DlgDataFile&, TreeHashTable&);
+
+protected:
+	TreeItemData* m_parent;
+};
+
+
+//	最も基本的なコントロールを表す基底クラス
+class CtrlListItem {
+public:
+	typedef	struct {
+		WORD*	m_hdr;	//	DLGITEMTEMPLATE 構造体のヘッダアドレス
+		WORD	m_id;	//	コントロールＩＤ
+		WORD	m_x;	//	コントロールの左上の x 座標
+		WORD	m_y;	//	コントロールの左上の y 座標
+		WORD	m_cx;	//	コントロールの幅
+		WORD	m_cy;	//	コントロールの高さ
+	} CtrlTemplateArgs;
+
+	//	フォント属性を表す構造体
+	typedef	struct {
+		HFONT		m_hfont;
+		BOOL		m_bchanged;
+		COLORREF	m_color;
+		BYTE		m_fface;
+	} CtrlFontProperty;
+
+	CtrlListItem(
+			CTRL_ID type = CTRLID_UNKNOWN,
+			const StringBuffer& name = nullStr,
+			const StringBuffer& text = nullStr
+		);
+	virtual	~CtrlListItem() = 0;
+
+	//	ctrltypeID からコントロールクラスを生成するファクトリー関数
+	static CtrlListItem* createCtrl(int ctrltypeID,
+									const StringBuffer& name,
+									const StringBuffer& text);
+	static CTRL_ID getCtrlTypeFromName(const StringBuffer&);
+
+	//	仮想でないメソッド
+	//	コントロールの（ユーザー定義の）名前を返す
+	const StringBuffer&	getName() const { return m_name; }
+	//	コントロールの種類を表すＩＤ
+	DWORD getCtrlType() const { return m_type; }
+
+	void setParentPage(DlgPage* pdp) { m_pDlgPage = pdp; }
+
+	POINT getRect() const;
+	void setRect(WORD x, WORD y, WORD cx, WORD cy);
+
+	int getItemNum() const { return m_item != NULL ? m_item->itemNum() : 0; }
+
+	BOOL onInitCtrl(HWND hDlg);
+	BOOL onUninitCtrl();
+
+	WORD onWmCommand(WPARAM wParam, LPARAM lParam);
+	WORD onWmNotify(WPARAM wParam, LPARAM lParam);
+	HBRUSH onWmCtlColor(WPARAM wParam, LPARAM lParam);
+	WORD onWmImeNotify(WPARAM wParam, LPARAM lParam);
+
+	//	virtual functions, should/may be overrided.
+	virtual	int getCtrlNum() const { return m_cnum; }
+	virtual HWND getCtrlHWND(int i = 0) const { return NULL; }
+	virtual HWND getFocusedCtrl() const { return NULL; } // フォーカスを得るコントロールの HWND
+	virtual	int getDataSize();	//	DLGITEMTEMPLATE の大きさ
+	virtual	WORD getWidth();
+	virtual WORD getHeight();
+
+	//	DLGITEMTEMPLATE 構造体への書き込み
+	virtual	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
+	//	コントロールの有効/無効の切替
+	virtual	BOOL enableCtrl(BOOL bEnable, BOOL bChange = FALSE);
+	virtual	BOOL showCtrl(BOOL);	//	コントロールの可視化
+
+	//	return TRUE if the control whose id is ctrl_id
+	//	is included in this obj.
+	virtual	BOOL isCommand(WORD);
+
+	//	command handlers
+	virtual	BOOL onSetState(CmdLineParser&);	//	選択項目変更
+	virtual	BOOL onSetString(const StringBuffer&);	//	テキスト変更
+	virtual	BOOL onSetCtrlFont(CmdLineParser&);	//	フォントの変更
+	virtual	BOOL onSetHeight(WORD);		//	高さの変更
+	virtual	BOOL onSetWidth(WORD);		//	幅の変更
+	virtual	BOOL onSetNotify(CmdLineParser&);	//	通知番号の変更
+	//	項目の状態変更
+	virtual	BOOL onSetItem(CmdLineParser&,const StringBuffer&);
+	//	項目の追加
+	virtual	BOOL onInsertItem(CmdLineParser&,const StringBuffer&);
+	virtual	BOOL onDeleteItem(const StringBuffer&);	//	項目の削除
+	virtual	BOOL onResetList();	//	全項目の削除
+	virtual	StringBuffer onGetState();	//	選択項目の取得
+	virtual	StringBuffer onGetString();	//	テキストの取得
+	virtual	StringBuffer onGetCtrlFont();	//	フォントの取得
+	virtual	StringBuffer onGetItem(const StringBuffer&);	//	項目の取得
+	virtual BOOL onSetImeState(int);	//	IME の初期状態を変更
+	virtual int onGetImeState();	//	IME の初期状態を設定
+
+	//	datafile handlers
+	virtual	BOOL dumpData(DlgDataFile&);	//	データの書き込み
+	virtual	BOOL loadData(DlgDataFile&);	//	データの読込み
+
+protected:
+	//	グローバル名前空間に置いておきたくないクラス
+
+	//	コントロールの属性を表すクラス
+	struct CtrlProperty	{
+		HWND	m_hwndCtrl;		//	コントロールのウィンドウハンドル
+		LPSTR	m_classname;	//	コントロールクラス名
+		DWORD	m_style;		//	ウィンドウスタイルフラグ
+		DWORD	m_exstyle;		//	extra ウィンドウスタイルフラグ
+		WORD	m_id;			//	コントロールＩＤ
+		WORD	m_bufsize;		//	クラス名の長さ+1
+		StringBuffer	m_text;	//	コントロールテキストバッファ
+		CtrlFontProperty	m_fontprop;		//	フォント属性
+
+		CtrlProperty();
+		~CtrlProperty();
+		void setCtrlTemplate(CtrlTemplateArgs&);
+		void changeFont();
+	};
+	typedef CtrlProperty* LPCtrlProperty;
+
+	//	複数の選択項目を持つコントロールのための状態管理クラス
+	class States {
+	public:
+		States()
+		{
+			::ZeroMemory(m_state,sizeof(DWORD)*8);
+		}
+
+		void reset()
+		{
+			::ZeroMemory(m_state,sizeof(DWORD)*8);
+		}
+
+		BOOL getState(int ind) const;
+		int getFirstIndex(int last = sizeof(DWORD)*64) const;
+		void setState(int ind, BOOL flag);
+
+		BOOL dumpData(DlgDataFile &ddfile) const;
+		BOOL loadData(DlgDataFile &ddfile);
+
+	private:
+		DWORD m_state[8];
+	};
+
+	//	クラスメンバ・メソッド
+	DWORD m_type;		//	コントロール識別ＩＤ
+	const StringBuffer m_name;		//	コントロールの名前
+	const StringBuffer m_text;		//	newcontrol の３番目の引数
+	class DlgPage* m_pDlgPage;	//	所属先 DlgPage へのポインタ
+	int m_cnum;		//	コントロールウィンドウの数
+	CtrlListItem::CtrlProperty* m_pcp;	//	コントロール属性構造体へのポインタ
+	LinkList<ItemData>* m_item;	//	アイテムリスト
+	BOOL m_bInitDone;	//	初期化終了フラグ
+	BOOL m_bEnable;	//	コントロールの有効/無効フラグ
+	WORD m_notify[4];	//	通知コード
+	WORD m_x;	//	コントロール位置の x 座標
+	WORD m_y;	//	コントロール位置の y 座標
+	WORD m_cx;	//	コントロールの幅
+	WORD m_cy;	//	コントロールの高さ
+	WORD m_width;	//	part コマンドの指定値
+	WORD m_height;	//	height コマンドの指定値
+
+	CtrlListItem(const CtrlListItem&);
+	CtrlListItem& operator=(const CtrlListItem&);
+
+	//	初期化・破棄処理
+	virtual	BOOL initCtrl(HWND);	//	コントロールの初期化
+	virtual	BOOL uninitCtrl();	//	コントロールの破棄
+	//	オブジェクトとコントロールウィンドウ間のデータのやりとり
+	virtual	BOOL sendData();		//	オブジェクト→ウィンドウ
+	virtual BOOL receiveData();	//	ウィンドウ→オブジェクト
+
+	//	ウィンドウメッセージハンドラ
+	virtual	WORD onCommand(WPARAM,LPARAM);	//	WM_COMMAND
+	virtual	WORD onNotify(WPARAM,LPARAM);	//	WM_NOTIFY
+	virtual	HBRUSH onCtlColor(HDC);			//	WM_CTLCOLOR
+	virtual WORD onImeNotify(WPARAM,LPARAM);	//	WM_IME_NOTIFY
+};
+
+//	newpage, newcolumn
+class PageFormatCtrl : public CtrlListItem {
+public:
+	PageFormatCtrl(const StringBuffer& width, CTRL_ID type)
+		:	CtrlListItem(type)
+	{
+		m_cnum = -1;
+		m_width = (WORD)ival(width);
+	}
+};
+
+class SimpleCtrl : public CtrlListItem {
+public:
+	SimpleCtrl(const StringBuffer& name = nullStr,
+			const StringBuffer& text = nullStr,
+			CTRL_ID type = CTRLID_UNKNOWN);
+	~SimpleCtrl();
+
+	HWND getCtrlHWND(int i = 0) const { return m_pcp->m_hwndCtrl; }
+	int getDataSize();
+
+	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
+	BOOL initCtrl(HWND);
+	BOOL uninitCtrl();
+	BOOL enableCtrl(BOOL bEnable, BOOL bChange = FALSE);
+	BOOL showCtrl(BOOL);
+	BOOL sendData();
+	BOOL receiveData();
+
+	BOOL onSetString(const StringBuffer&);
+	BOOL onSetCtrlFont(CmdLineParser&);
+	StringBuffer onGetString();
+	StringBuffer onGetCtrlFont();
+
+	HBRUSH onCtlColor(HDC);
+
+	BOOL isCommand(WORD);
+
+protected:
+	BOOL setFont(const StringBuffer& fface = nullStr,
+				const StringBuffer& color = nullStr);	//	フォントの変更
+};
+
+//	button, defbutton
+class BtnCtrl : public SimpleCtrl {
+public:
+	BtnCtrl(const StringBuffer& name = nullStr,
+			const StringBuffer& text = nullStr,
+			CTRL_ID type = CTRLID_BUTTON);
+
+	HWND getFocusedCtrl() const { return m_pcp->m_hwndCtrl; }
+
+	WORD getHeight();
+
+	WORD onCommand(WPARAM, LPARAM);
+};
+
+//	check, rdbtn
+class CheckCtrl : public BtnCtrl {
+public:
+	CheckCtrl(const StringBuffer& name = nullStr,
+			const StringBuffer& text = nullStr,
+			CTRL_ID type = CTRLID_CHECK);
+
+	HWND getFocusedCtrl() const { return m_pcp->m_hwndCtrl; }
+
+	BOOL sendData();
+	BOOL receiveData();
+
+	BOOL onSetState(CmdLineParser&);
+	StringBuffer onGetState();
+
+	BOOL dumpData(DlgDataFile&);
+	BOOL loadData(DlgDataFile&);
+
+protected:
+	BOOL m_state;
+};
+
+//	text
+class TextCtrl : public SimpleCtrl {
+public:
+	TextCtrl(const StringBuffer& name = nullStr,
+			const StringBuffer& text = nullStr);
+
+	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
+};
+
+//	edit, mledit
+class EditCtrl : public SimpleCtrl {
+public:
+	EditCtrl(const StringBuffer& name = nullStr,
+			const StringBuffer& text = nullStr,
+			CTRL_ID type = CTRLID_EDIT);
+
+	HWND getFocusedCtrl() const { return m_pcp->m_hwndCtrl; }
+
+	WORD getHeight();
+
+	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
+	BOOL sendData();
+	BOOL receiveData();
+
+	BOOL onSetState(CmdLineParser&);
+	StringBuffer onGetState();
+	BOOL onSetImeState(int);
+	int onGetImeState();
+
+	WORD onCommand(WPARAM, LPARAM);
+	WORD onImeNotify(WPARAM, LPARAM);
+
+	BOOL dumpData(DlgDataFile&);
+	BOOL loadData(DlgDataFile&);
+
+protected:
+	DWORD m_imestate;
+};
+
+//	hline, vline
+class LineCtrl : public SimpleCtrl {
+public:
+	LineCtrl(const StringBuffer& name = nullStr,
+			const StringBuffer& width = nullStr,
+			CTRL_ID type = CTRLID_HLINE);
+
+	WORD getHeight();
+	WORD getWidth();
+
+	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
+};
+
+//	track
+class	TrackCtrl : public SimpleCtrl	{
+public:
+	TrackCtrl(const StringBuffer& name = nullStr,
+			const StringBuffer& text = nullStr);
+
+	HWND getFocusedCtrl() const { return m_pcp->m_hwndCtrl; }
+
+	WORD getHeight();
+
+	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
+	BOOL initCtrl(HWND);
+	BOOL sendData();
+	BOOL receiveData();
+
+	BOOL onSetState(CmdLineParser&);
+	StringBuffer onGetState();
+
+	WORD onCommand(WPARAM, LPARAM);
+
+	BOOL dumpData(DlgDataFile&);
+	BOOL loadData(DlgDataFile&);
+
+protected:
+	WORD m_min;
+	WORD m_max;
+	WORD m_val;
+	WORD m_tic;
+	WORD m_wPrevNotify;
+};
+
+//	tree
+class TreeCtrl : public SimpleCtrl {
+public:
+	TreeCtrl(const StringBuffer& name = nullStr,
+			const StringBuffer& text = nullStr);
+	~TreeCtrl();
+
+	HWND getFocusedCtrl() const { return m_pcp->m_hwndCtrl; }
+
+	BOOL initCtrl(HWND);
+	BOOL sendData();
+	BOOL receiveData();
+
+	BOOL onSetState(CmdLineParser&);
+	BOOL onSetItem(CmdLineParser&, const StringBuffer&);
+	BOOL onInsertItem(CmdLineParser&, const StringBuffer&);
+	BOOL onDeleteItem(const StringBuffer&);
+	BOOL onResetList();
+	StringBuffer onGetState();
+	StringBuffer onGetItem(const StringBuffer&);
+
+	WORD onNotify(WPARAM, LPARAM);
+
+	BOOL dumpData(DlgDataFile&);
+	BOOL loadData(DlgDataFile&);
+
+protected:
+	TreeHashTable* m_pHashItem;
+	StringBuffer m_state;
+};
+
+
+class HasListCtrl : public SimpleCtrl {
+public:
+	HasListCtrl(const StringBuffer& name = nullStr,
+				const StringBuffer& text = nullStr,
+				CTRL_ID type = CTRLID_UNKNOWN);
+	~HasListCtrl();
+
+	WORD getHeight();
+
+	BOOL onSetState(CmdLineParser&);
+	BOOL onSetItem(CmdLineParser&, const StringBuffer&);
+	BOOL onInsertItem(CmdLineParser&, const StringBuffer&);
+	BOOL onDeleteItem(const StringBuffer&);
+	BOOL onResetList();
+	StringBuffer onGetState();
+	StringBuffer onGetItem(const StringBuffer&);
+
+	BOOL dumpData(DlgDataFile&);
+	BOOL loadData(DlgDataFile&);
+
+protected:
+	int	m_state;
+
+	int	getItemData(const StringBuffer&);
+};
+
+//	reffilebutton, refdirbutton, refcolorbutton
+class RefBtnCtrl : public HasListCtrl {
+public:
+	RefBtnCtrl(const StringBuffer& name = nullStr,
+			const StringBuffer& text = nullStr,
+			CTRL_ID type = CTRLID_REFFILEBUTTON);
+
+	HWND getFocusedCtrl() const { return m_pcp->m_hwndCtrl; }
+
+	WORD getHeight();
+
+	BOOL onSetString(const StringBuffer&);
+	StringBuffer onGetString();
+
+	WORD onCommand(WPARAM, LPARAM);
+
+	BOOL dumpData(DlgDataFile&);
+	BOOL loadData(DlgDataFile&);
+
+protected:
+	StringBuffer m_exbuffer;
+};
+
+//	radio
+class RadioCtrl : public HasListCtrl {
+public:
+	RadioCtrl(const StringBuffer& name = nullStr,
+			const StringBuffer& text = nullStr);
+
+	WORD getHeight();
+	int getCtrlNum() const;
+	HWND getFocusedCtrl() const { return m_pcp->m_hwndCtrl; }
+	int getDataSize();
+
+	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
+	BOOL enableCtrl(BOOL, BOOL);
+	BOOL showCtrl(BOOL);
+	BOOL sendData();
+	BOOL receiveData();
+
+	BOOL onSetString(const StringBuffer&);
+	BOOL onSetItem(CmdLineParser&,const StringBuffer&);
+	BOOL onInsertItem(CmdLineParser&,const StringBuffer&);
+	BOOL onDeleteItem(const StringBuffer&);
+	BOOL onResetList();
+	StringBuffer onGetString();
+
+	BOOL isCommand(WORD);
+
+	WORD onCommand(WPARAM, LPARAM);
+};
+
+//	list
+class ListCtrl : public HasListCtrl {
+public:
+	ListCtrl(const StringBuffer& name = nullStr,
+			const StringBuffer& text = nullStr,
+			CTRL_ID type = CTRLID_LIST);
+
+	HWND getFocusedCtrl() const { return m_pcp->m_hwndCtrl; }
+
+	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
+	BOOL initCtrl(HWND);
+	BOOL sendData();
+	BOOL receiveData();
+
+	BOOL onSetItem(CmdLineParser&,const StringBuffer&);
+	BOOL onInsertItem(CmdLineParser&,const StringBuffer&);
+	BOOL onDeleteItem(const StringBuffer&);
+	BOOL onResetList();
+
+	WORD onCommand(WPARAM, LPARAM);
+
+protected:
+	UINT m_msg_setstr;
+	UINT m_msg_getstr;
+	UINT m_msg_delstr;
+	UINT m_msg_delall;
+	UINT m_msg_setsel;
+	UINT m_msg_getsel;
+	UINT m_msg_err;
+};
+
+//	combo
+class ComboCtrl : public ListCtrl {
+public:
+	ComboCtrl(const StringBuffer& name = nullStr,
+			const StringBuffer& text = nullStr);
+
+	HWND getFocusedCtrl() const { return m_pcp->m_hwndCtrl; }
+
+	WORD getHeight();
+
+	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
+	BOOL initCtrl(HWND);
+	BOOL sendData();
+	BOOL receiveData();
+
+	BOOL onSetImeState(int);
+	int onGetImeState();
+
+	WORD onCommand(WPARAM, LPARAM);
+
+	BOOL dumpData(DlgDataFile&);
+	BOOL loadData(DlgDataFile&);
+
+protected:
+	DWORD m_imestate;
+};
+
+//	chklist
+class ChkListCtrl : public HasListCtrl {
+public:
+	ChkListCtrl(const StringBuffer& name = nullStr,
+				const StringBuffer& text = nullStr,
+				CTRL_ID type = CTRLID_CHKLIST);
+
+	HWND getFocusedCtrl() const { return m_pcp->m_hwndCtrl; }
+
+	BOOL initCtrl(HWND);
+	BOOL sendData();
+	BOOL receiveData();
+
+	BOOL onSetState(CmdLineParser&);
+	BOOL onSetItem(CmdLineParser&,const StringBuffer&);
+	BOOL onInsertItem(CmdLineParser&,const StringBuffer&);
+	BOOL onDeleteItem(const StringBuffer&);
+	BOOL onResetList();
+	StringBuffer onGetState();
+
+	WORD onNotify(WPARAM, LPARAM);
+
+	BOOL dumpData(DlgDataFile&);
+	BOOL loadData(DlgDataFile&);
+
+protected:
+	States m_states;
+};
+
+//	lview
+class LViewCtrl : public ChkListCtrl {
+public:
+	LViewCtrl(const StringBuffer& name = nullStr,
+			const StringBuffer& text = nullStr);
+	~LViewCtrl();
+
+	HWND getFocusedCtrl() const { return m_pcp->m_hwndCtrl; }
+
+	WORD getHeight();
+
+	BOOL initCtrl(HWND);
+	BOOL sendData();
+	BOOL receiveData();
+
+	BOOL onSetItem(CmdLineParser&,const StringBuffer&);
+	BOOL onInsertItem(CmdLineParser&,const StringBuffer&);
+	StringBuffer onGetItem(const StringBuffer&);
+
+	WORD onNotify(WPARAM, LPARAM);
+
+	BOOL dumpData(DlgDataFile&);
+	BOOL loadData(DlgDataFile&);
+
+protected:
+	LViewItemData* m_hdr;
+	WORD m_colnum;
+};
+
+
+//	frame, group
+class FrameCtrl : public HasListCtrl {
+public:
+	FrameCtrl(const StringBuffer& name = nullStr,
+			const StringBuffer& text = nullStr,
+			CTRL_ID type = CTRLID_FRAME);
+	~FrameCtrl();
+
+	HWND getFocusedCtrl() const;
+
+	WORD getHeight();
+
+	BOOL initCtrl(HWND);
+	BOOL uninitCtrl();
+	BOOL enableCtrl(BOOL bEnable, BOOL bChange = FALSE);
+	BOOL showCtrl(BOOL);
+	BOOL sendData();
+
+	BOOL onSetItem(CmdLineParser&,const StringBuffer&);
+	BOOL onInsertItem(CmdLineParser&,const StringBuffer&);
+	BOOL onDeleteItem(const StringBuffer&);
+	BOOL onResetList();
+
+	WORD onCommand(WPARAM,LPARAM);
+
+protected:
+	class DlgPage** m_page;
+	POINTS m_poffset;
+	POINTS m_pmargin;
+	BOOL m_bVisible;
+};
+
+//	tab
+class TabCtrl : public FrameCtrl {
+public:
+	TabCtrl(const StringBuffer& name = nullStr,
+			const StringBuffer& text = nullStr);
+
+	HWND getFocusedCtrl() const;
+
+	WORD getHeight();
+
+	BOOL initCtrl(HWND);
+	BOOL enableCtrl(BOOL bEnable, BOOL bChange = FALSE);
+	BOOL showCtrl(BOOL);
+	BOOL sendData();
+	BOOL receiveData();
+
+	BOOL onSetState(CmdLineParser&);
+	BOOL onSetItem(CmdLineParser&,const StringBuffer&);
+	BOOL onInsertItem(CmdLineParser&,const StringBuffer&);
+
+	WORD onNotify(WPARAM, LPARAM);
+
+	BOOL dumpData(DlgDataFile&);
+	BOOL loadData(DlgDataFile&);
+};
+
+
+class MultipleCtrl : public CtrlListItem {
+public:
+	MultipleCtrl(const StringBuffer& name = nullStr,
+				const StringBuffer& text = nullStr,
+				CTRL_ID type = CTRLID_UNKNOWN,
+				int cnum = 2);
+	~MultipleCtrl();
+
+	HWND getCtrlHWND(int i = 0) const { return m_pcp[i].m_hwndCtrl; }
+	int getDataSize();
+
+	BOOL initCtrl(HWND);
+	BOOL uninitCtrl();
+	BOOL enableCtrl(BOOL bEnable, BOOL bChange = FALSE);
+	BOOL showCtrl(BOOL);
+	BOOL sendData();
+	BOOL receiveData();
+
+	BOOL isCommand(WORD);
+};
+
+//	spin
+class SpinCtrl : public MultipleCtrl {
+public:
+	SpinCtrl(const StringBuffer& name = nullStr,
+			const StringBuffer& text = nullStr);
+
+	HWND getFocusedCtrl() const { return m_pcp[0].m_hwndCtrl; }
+	WORD getHeight();
+
+	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
+	BOOL initCtrl(HWND);
+	BOOL sendData();
+	BOOL receiveData();
+
+	BOOL onSetState(CmdLineParser&);
+	BOOL onSetString(const StringBuffer&);
+	StringBuffer onGetState();
+	StringBuffer onGetString();
+
+	WORD onCommand(WPARAM, LPARAM);
+	WORD onNotify(WPARAM, LPARAM);
+
+	BOOL dumpData(DlgDataFile&);
+	BOOL loadData(DlgDataFile&);
+
+protected:
+	int	m_min;
+	int	m_max;
+	int	m_val;
+};
+
+//	okcancel
+class OkCancelCtrl : public MultipleCtrl {
+public:
+	OkCancelCtrl();
+
+	HWND getFocusedCtrl() const { return m_pcp[0].m_hwndCtrl; }
+	WORD getHeight();
+
+	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
+
+	WORD onCommand(WPARAM, LPARAM);
+};
+
+#endif
+
