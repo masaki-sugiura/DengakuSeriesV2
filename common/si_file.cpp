@@ -1,4 +1,4 @@
-//	$Id: si_file.cpp,v 1.15 2002-12-16 16:04:46 sugiura Exp $
+//	$Id: si_file.cpp,v 1.16 2003-01-19 05:59:33 sugiura Exp $
 /*
  *	si_file.cpp
  *	SessionInstance: ファイルサービスの関数
@@ -78,6 +78,97 @@ AppendCopy(const PathName& OrgFile, const PathName& DestFile, BOOL bText)
 	fFileOrg.flushFileBuffers();
 
 	return TRUE;
+}
+
+class SeqEnumFiles : public SequentialOp {
+public:
+	SeqEnumFiles(int srcidx,
+				 CmdLineParser& params,
+				 DirList& dl,
+				 DWORD flags,
+				 SeqOpResult* psor)
+		: SequentialOp(srcidx,params,dl,psor),
+		  m_flags(flags),
+		  m_dwBufferSize(0)
+	{}
+
+	BOOL precheck_wc(WIN32_FIND_DATA& fd)
+	{
+		if ((fd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) == 0) return TRUE;
+		if ((m_flags&FLAG_RECURSIVE) == 0) return FALSE;
+		return	!IsPathNameDots(fd.cFileName);
+	}
+	DWORD do_op(PathName& file, SeqOpResult* psor)
+	{
+		m_dwBufferSize += file.length() + 1;
+		m_pnList.addItem(new PathName(file), -1);
+		return RO_SUCCESS;
+	}
+
+	LinkList<PathName> m_pnList;
+	DWORD getBufferSize() const { return m_dwBufferSize + 1; }
+
+private:
+	DWORD m_flags;
+	DWORD m_dwBufferSize;
+};
+
+static int
+RecycleBin(int srcidx,
+		   CmdLineParser& params,
+		   DirList& dl,
+		   DWORD flags,
+		   SeqOpResult* psor)
+{
+	SeqEnumFiles enumFiles(srcidx, params, dl, flags, psor);
+
+	if (!enumFiles.doOp()) return 0;
+
+	LinkList<PathName>& pnList = enumFiles.m_pnList;
+
+	int pnOffset = 0, pnLen = enumFiles.getBufferSize();
+	LPSTR pBuf = new TCHAR[pnLen];
+	int fnum = pnList.initSequentialGet();
+	for (int i = 0; i < fnum; i++) {
+		PathName* pFile = pnList.getNextItem();
+		int len = pFile->length() + 1;
+		::CopyMemory(pBuf + pnOffset, (LPCSTR)*pFile, len);
+		pnOffset += len;
+	}
+	pBuf[pnOffset] = 0;
+
+	SHFILEOPSTRUCT shfop;
+	shfop.hwnd = NULL;
+	shfop.wFunc = FO_DELETE;
+	shfop.pFrom = pBuf;
+	shfop.pTo = NULL;
+	shfop.fAnyOperationsAborted = FALSE;
+	shfop.hNameMappings = NULL;
+	shfop.lpszProgressTitle = NULL;
+	shfop.fFlags = ((flags & FLAG_REMOVE_CONFIRM) ? 0 : FOF_NOCONFIRMATION) |
+				   ((flags & FLAG_RECURSIVE) ? 0 : FOF_NORECURSION) |
+				   FOF_ALLOWUNDO;
+
+	int ret = ::SHFileOperation(&shfop);
+	if (!psor) return !ret;
+	pnList.initSequentialGet();
+	if (ret) {
+		for (i = 0; i < fnum; i++) {
+			PathName* pFile = pnList.getNextItem();
+			AddFailure(psor, (LPCSTR)*pFile);
+		}
+	} else if (shfop.fAnyOperationsAborted) {
+		for (i = 0; i < fnum; i++) {
+			PathName* pFile = pnList.getNextItem();
+			AddCancel(psor, (LPCSTR)*pFile);
+		}
+	} else {
+		for (i = 0; i < fnum; i++) {
+			PathName* pFile = pnList.getNextItem();
+			AddSuccess(psor, (LPCSTR)*pFile);
+		}
+	}
+	return !ret;
 }
 
 //	getlongname の実体
@@ -240,6 +331,16 @@ private:
 	DWORD m_flags;
 };
 
+static DWORD flagsRemove[] = {
+	FLAG_RECURSIVE,	//	再帰的に検索
+	FLAG_RETURNNUM,	//	処理したファイル・フォルダの数を返す
+	FLAG_OVERRIDE_FORCED | FLAG_REMOVE_FORCED,	//	強制的に処理
+	FLAG_OVERRIDE_CONFIRM | FLAG_REMOVE_CONFIRM,	//	確認
+	FLAG_OVERRIDE_NOTNEWER,	//	新しいファイル・フォルダのみ
+	FLAG_REMOVE_RECYCLE // ごみ箱へ移動
+};
+static OptMap optMapRemove("rnfiug", flagsRemove);
+
 int
 SessionInstance::si_remove(CmdLineParser& params)
 {
@@ -253,15 +354,22 @@ SessionInstance::si_remove(CmdLineParser& params)
 	while (optnum < pnum) {
 		const StringBuffer& av = params.getNextArgvStr();
 		if (!isopthead(av[0]) ||
-			!GetFlags(av, fFlags)) break;
+			!GetFlags(av, fFlags, optMapRemove)) break;
 		optnum++;
 	}
 	// ファイル指定がない
 	if (optnum == pnum) return 0;
 
 	SeqOpResult* psor = NULL;
+	int ret;
 	if (fFlags & FLAG_RETURNNUM) psor = new SeqOpResult();
-	int ret = SeqRemove(optnum, params, m_DirList, fFlags, psor).doOp();
+	if (fFlags & FLAG_REMOVE_RECYCLE) {
+		// ごみ箱へ移動
+		ret = RecycleBin(optnum, params, m_DirList, fFlags, psor);
+	} else {
+		// いきなり削除
+		ret = SeqRemove(optnum, params, m_DirList, fFlags, psor).doOp();
+	}
 	if (psor) {
 		m_pFileOpResult = psor;
 		return psor->m_nSuccess;

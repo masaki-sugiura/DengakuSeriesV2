@@ -1,4 +1,4 @@
-//	$Id: rec_op.cpp,v 1.5 2002-03-05 14:09:40 sugiura Exp $
+//	$Id: rec_op.cpp,v 1.6 2003-01-19 05:59:33 sugiura Exp $
 /*
  *	rec_op.cpp
  *	再帰ファイル操作クラス群
@@ -31,8 +31,18 @@ ConfirmOverRide(const PathName &org, const PathName &dest, DWORD flag)
 	if ((flag & FLAG_OVERRIDE_CONFIRM) != 0) {
 		StringBuffer msg(org);
 		msg.append(" で\n").append(dest).append("を\n上書きしますか？");
-		return ::MessageBox(NULL, msg, "上書きの確認",
-				MB_YESNOCANCEL|MB_DEFBUTTON2|MB_ICONQUESTION|MB_SETFOREGROUND);
+		int ret = ::MessageBox(NULL, msg, "上書きの確認",
+								MB_YESNOCANCEL|MB_DEFBUTTON2|
+								MB_ICONQUESTION|MB_SETFOREGROUND);
+		if (ret != IDYES) return ret;
+		//	読取専用またはシステムファイルの上書きを確認
+		if ((attr&(FILE_ATTRIBUTE_READONLY|FILE_ATTRIBUTE_SYSTEM)) == 0) {
+			return IDYES;
+		}
+		//	上書きできるように属性値を変更
+		attr &= ~(FILE_ATTRIBUTE_READONLY|FILE_ATTRIBUTE_SYSTEM);
+
+		return ::SetFileAttributes(dest, attr) ? IDYES : IDNO;
 	}
 
 	//	古いファイルのみを上書き
@@ -71,8 +81,18 @@ ConfirmRemove(const PathName &file, DWORD flag)
 	if ((flag&FLAG_REMOVE_CONFIRM) != 0) {
 		StringBuffer msg(file);
 		msg.append(" を\n削除しますか？");
-		return ::MessageBox(NULL, msg, "削除の確認",
-				MB_YESNOCANCEL|MB_DEFBUTTON2|MB_ICONQUESTION|MB_SETFOREGROUND);
+		int ret = ::MessageBox(NULL, msg, "削除の確認",
+								MB_YESNOCANCEL|MB_DEFBUTTON2|
+								MB_ICONQUESTION|MB_SETFOREGROUND);
+		if (ret != IDYES) return ret;
+		//	読取専用またはシステムファイルの上書きを確認
+		if ((attr&(FILE_ATTRIBUTE_READONLY|FILE_ATTRIBUTE_SYSTEM)) == 0) {
+			return IDYES;
+		}
+		//	上書きできるように属性値を変更
+		attr &= ~(FILE_ATTRIBUTE_READONLY|FILE_ATTRIBUTE_SYSTEM);
+
+		return ::SetFileAttributes(file, attr) ? IDYES : IDNO;
 	}
 
 	//	読取専用またはシステムファイルの削除を確認

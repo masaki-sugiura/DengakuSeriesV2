@@ -1,4 +1,4 @@
-//	$Id: rec_op.h,v 1.2 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: rec_op.h,v 1.3 2003-01-19 05:59:33 sugiura Exp $
 /*
  *	rec_op.h
  *	再帰ファイル操作のためのクラス
@@ -97,6 +97,7 @@ protected:
 #define	FLAG_REMOVE_DEFAULT		0x00000000	/* デフォルトの動作 */
 #define	FLAG_REMOVE_CONFIRM		0x00000100	/* 全てについて確認 */
 #define	FLAG_REMOVE_FORCED		0x00000200	/* 強制的に削除 */
+#define FLAG_REMOVE_RECYCLE		0x00000400	/* ごみ箱へ移動 */
 //		ディレクトリを再帰的に処理
 #define	FLAG_RECURSIVE			0x80000000	/* 再帰処理の実行 */
 //		処理したファイル・フォルダの数を返す
