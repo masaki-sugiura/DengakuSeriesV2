@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.7 2002-02-17 17:28:41 sugiura Exp $
+//	$Id: ctrldata.h,v 1.8 2002-02-19 15:34:21 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -63,6 +63,7 @@
 #include "strutils.h"
 #include "ddfile.h"
 #include "linklist.h"
+#include "auto_ptr.h"
 #include "bitarray.h"
 #include "ctrlname.h"
 
@@ -200,7 +201,7 @@ public:
 	POINT getRect() const;
 	void setRect(WORD x, WORD y, WORD cx, WORD cy);
 
-	int getItemNum() const { return m_item != NULL ? m_item->itemNum() : 0; }
+	int getItemNum() const { return m_item.ptr() != NULL ? m_item->itemNum() : 0; }
 
 	BOOL onInitCtrl(HWND hDlg);
 	BOOL onUninitCtrl();
@@ -320,7 +321,7 @@ protected:
 	class DlgPage* m_pDlgPage;	//	所属先 DlgPage へのポインタ
 	int m_cnum;		//	コントロールウィンドウの数
 	CtrlListItem::CtrlProperty* m_pcp;	//	コントロール属性構造体へのポインタ
-	LinkList<ItemData>* m_item;	//	アイテムリスト
+	Auto_Ptr< LinkList<ItemData> > m_item;	//	アイテムリスト
 	BOOL m_bInitDone;	//	初期化終了フラグ
 	BOOL m_bEnable;	//	コントロールの有効/無効フラグ
 	WORD m_notify[4];	//	通知コード
@@ -538,7 +539,7 @@ public:
 	BOOL loadData(DlgDataFile&);
 
 protected:
-	TreeHashTable* m_pHashItem;
+	Auto_Ptr<TreeHashTable> m_pHashItem;
 	StringBuffer m_state;
 };
 

@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.4 2002-02-10 18:25:36 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.5 2002-02-19 15:34:22 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -230,12 +230,7 @@ SessionInstance::si_showmessage(
 	if (hDlg == NULL) return FALSE;
 
 	LPARAM notify = (WORD)ival(str1);
-	StringBuffer* msgbuf;
-	try {
-		msgbuf = new StringBuffer(str2);
-	} catch (exception&) {
-		return FALSE;
-	}
+	StringBuffer* msgbuf = new StringBuffer(str2);
 	return ::PostMessage(hDlg,WM_USER_MESSAGEBOX,(WPARAM)msgbuf,notify);
 }
 
@@ -250,12 +245,7 @@ SessionInstance::si_showquestion(
 
 	LPARAM notify = 0xFFFF0000&(ival(str1)<<16);
 	notify += 0x0000FFFF&ival(str2);
-	StringBuffer* msgbuf;
-	try {
-		msgbuf = new StringBuffer(str3);
-	} catch (exception&) {
-		return FALSE;
-	}
+	StringBuffer* msgbuf = new StringBuffer(str3);
 	return ::PostMessage(hDlg,WM_USER_QUESTIONBOX,(WPARAM)msgbuf,notify);
 }
 

@@ -1,4 +1,4 @@
-//	$Id: stack.h,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: stack.h,v 1.3 2002-02-19 15:34:22 sugiura Exp $
 /*
  *	stack.h
  *	スタッククラス(テンプレート)
@@ -7,30 +7,21 @@
 #ifndef	DENGAKUSERIES_CLASSES_STACK
 #define	DENGAKUSERIES_CLASSES_STACK
 
-#include <windows.h>
+#include "array.h"
 
 template<typename T>
 class Stack {
 public:
 	Stack(int num)
-	{
-		if (num <= 0) num = 8;
-		m_init_num = m_num = num;
-		m_hdr = 0;
-		m_stack = new T*[m_num];
-	}
-	virtual ~Stack()
-	{
-		delete [] m_stack;
-	}
+		: m_stack(num <= 0 ? 8 : num),
+		  m_init_num(m_stack.size()),
+		  m_hdr(0)
+	{}
 
 	int push(const T* val)
 	{
-		if (m_hdr >= m_num) {
-			T** new_stack = new T*[m_num + m_init_num];
-			::CopyMemory(new_stack, m_stack, sizeof(T*) * m_num);
-			delete [] m_stack;
-			m_stack = new_stack;
+		if (m_hdr >= m_stack.size()) {
+			m_stack.resize(m_stack.size() + m_init_num);
 		}
 		m_stack[m_hdr++] = const_cast<T*>(val);
 		return m_hdr;
@@ -50,8 +41,8 @@ public:
 	}
 
 protected:
-	T**	m_stack;
-	int	m_init_num, m_num;
+	mutable Array<T*> m_stack;
+	int	m_init_num;
 	int	m_hdr;
 
 	Stack(const Stack&);

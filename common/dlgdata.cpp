@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.4 2002-02-17 08:00:41 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.5 2002-02-19 15:34:21 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -192,16 +192,11 @@ DlgPage::createPage(
 //					sizeof(WORD) * (fp.m_fontname.length() + 1) + 16;
 					((fp.m_fontname.length() + 1) << 1) + 16;
 	//	バッファの確保
-	BYTE* pDlgTemplate;
-	try {
-		pDlgTemplate = new BYTE[m_dwPageSize];
-	} catch (exception&) {
-		return FALSE;
-	}
-	::ZeroMemory(pDlgTemplate,m_dwPageSize);
+	Array<BYTE> pDlgTemplate(m_dwPageSize);
+	pDlgTemplate.zero();
 
 	//	DLGTEMPLATE 部分の構築
-	WORD* lpwExData = CreateDialogTemplate((LPDLGTEMPLATE)pDlgTemplate,
+	WORD* lpwExData = CreateDialogTemplate((LPDLGTEMPLATE)(BYTE*)pDlgTemplate,
 										WS_CHILD|WS_VISIBLE|
 											WS_CLIPCHILDREN|WS_CLIPSIBLINGS|
 											DS_CONTROL|DS_SETFONT,
@@ -227,7 +222,7 @@ DlgPage::createPage(
 	HWND hwndFrame = m_pDlgFrame->getUserDlg();
 	m_hwndPage = ::CreateDialogIndirectParam(
 					m_pDlgFrame->getSessionInstance()->getInstanceHandle(),
-					(LPDLGTEMPLATE)pDlgTemplate,
+					(LPDLGTEMPLATE)(BYTE*)pDlgTemplate,
 					hwndFrame,
 					(DLGPROC)DlgPageProc,
 					(LPARAM)this);
@@ -246,7 +241,6 @@ DlgPage::createPage(
 	}
 
 	//	後始末
-	delete [] pDlgTemplate;
 	m_dwPageSize = 0;
 
 	if (m_pShowPageQueue->itemNum() > 0) {
@@ -342,12 +336,9 @@ DWORD
 DlgPage::evalPageSize()
 {
 	if (m_pCtrlList == NULL) return 0;
-	try {
-		//	ダイアログの終わり
-		m_pCtrlList->addItem(new PageFormatCtrl("0",CTRLID_NEWPAGE));
-	} catch (exception&) {
-		return 0;
-	}
+	//	ダイアログの終わり
+	m_pCtrlList->addItem(new PageFormatCtrl("0",CTRLID_NEWPAGE));
+
 	WORD	dcx = m_iniwidth, dcy = 0,
 			py = 0, pcx = m_iniwidth, pcy = 0,
 			cx = 0, ccx = m_iniwidth, ccy = 0,
@@ -779,14 +770,10 @@ DlgFrame::createFrame(HWND hwndOwner, BOOL bOnTop)
 				((m_DlgTitle.length() + 
 				 m_pFontProp->m_fontname.length() + 2) << 1) + 
 				16;
-	BYTE* pDlgTemplate;
-	try {
-		pDlgTemplate = new BYTE[bufsize];
-	} catch (exception&) {
-		return NULL;
-	}
-	::ZeroMemory(pDlgTemplate,bufsize);
-	CreateDialogTemplate((LPDLGTEMPLATE)pDlgTemplate,
+	Array<BYTE> pDlgTemplate(bufsize);
+	pDlgTemplate.zero();
+
+	CreateDialogTemplate((LPDLGTEMPLATE)(BYTE*)pDlgTemplate,
 						WS_POPUP|WS_CAPTION|WS_SYSMENU|
 							DS_MODALFRAME|DS_SETFONT,
 						0L,
@@ -801,13 +788,10 @@ DlgFrame::createFrame(HWND hwndOwner, BOOL bOnTop)
 	//	親ダイアログのウィンドウの生成
 	m_hwndFrame = ::CreateDialogIndirectParam(
 								m_pSessionInstance->getInstanceHandle(),
-								(LPDLGTEMPLATE)pDlgTemplate,
+								(LPDLGTEMPLATE)(BYTE*)pDlgTemplate,
 								hwndOwner,
 								(DLGPROC)DlgFrameProc,
 								(LPARAM)this);
-
-	//	後始末
-	delete [] pDlgTemplate;
 
 	return m_hwndFrame;
 }
@@ -927,13 +911,7 @@ int
 DlgFrame::addPage(const StringBuffer& name, WORD width)
 {
 	if (name.length() <= 0 || m_hwndFrame != NULL) return 0;
-	DlgPage* pdp;
-	try {
-		pdp = new DlgPage(this,name,width);
-	} catch (exception&) {
-		return 0;
-	}
-	m_pCurDlgPage = pdp;	//	Poke の対象
+	m_pCurDlgPage = new DlgPage(this,name,width);	//	Poke の対象
 	return m_pPageList->addItem(m_pCurDlgPage);
 }
 

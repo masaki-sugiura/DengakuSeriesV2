@@ -47,12 +47,11 @@ SPI_Manager::isSupportedPic(const StringBuffer& filename) const
 #define SPISUPPORTED_BUF_SIZE 2048
 
 	BOOL ret = FALSE;
-	BYTE buf[SPISUPPORTED_BUF_SIZE];
+	Array<BYTE> buf(SPISUPPORTED_BUF_SIZE);
 	DWORD fsize = fPicture.readFile(buf, SPISUPPORTED_BUF_SIZE);
 	if (fsize > 0) {
-		if (fsize < SPISUPPORTED_BUF_SIZE)
-			::ZeroMemory(buf + fsize, SPISUPPORTED_BUF_SIZE - fsize);
-		ret = (*m_pfnSPISupported)((LPCSTR)filename,(DWORD)buf);
+		if (fsize < SPISUPPORTED_BUF_SIZE) buf.zero(fsize, -1);
+		ret = (*m_pfnSPISupported)((LPCSTR)filename, (DWORD)(BYTE*)buf);
 	}
 	return ret;
 }

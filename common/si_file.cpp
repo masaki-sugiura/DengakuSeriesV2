@@ -1,4 +1,4 @@
-//	$Id: si_file.cpp,v 1.5 2002-02-17 08:00:41 sugiura Exp $
+//	$Id: si_file.cpp,v 1.6 2002-02-19 15:34:22 sugiura Exp $
 /*
  *	si_file.cpp
  *	SessionInstance: ファイルサービスの関数
@@ -65,7 +65,7 @@ AppendCopy(const PathName& OrgFile, const PathName& DestFile, BOOL bText)
 	fFileOrg.readFile((BYTE*)&ch,1);
 	if (bText && ch == (TCHAR)0x1A) fFileOrg.setFilePointer(-1,0,FILE_END);
 
-	BYTE* buf = new BYTE[READBUF_SIZE];
+	Array<BYTE> buf(READBUF_SIZE);
 	DWORD rnum = READBUF_SIZE;
 	while (rnum == READBUF_SIZE) {
 		if (!(rnum = fFileDest.readFile(buf,READBUF_SIZE))) break;
@@ -74,7 +74,6 @@ AppendCopy(const PathName& OrgFile, const PathName& DestFile, BOOL bText)
 		fFileOrg.setFilePointer(0,0,FILE_CURRENT);	//	不必要？
 	}
 	fFileOrg.flushFileBuffers();
-	delete [] buf;
 
 	return TRUE;
 }
@@ -738,18 +737,14 @@ SessionInstance::si_enumpath(CmdLineParser& params)
 	DWORD flags = RECFIND_SHOWDIR;
 	if (!ParseEnumOptions(params, m_DirList, path, filter, s_order, flags))
 		return FALSE;
-	try {
-		if ((flags & RECFIND_REVERSE) != 0)
-			m_pEnumerator = new RecFindBackward(m_DirList,
-												path, anyPathName, filter,
-												s_order, flags);
-		else
-			m_pEnumerator = new RecFindForward(m_DirList,
-											   path, anyPathName, filter,
-											   s_order, flags);
-	} catch (exception&) {
-		return FALSE;
-	}
+	if ((flags & RECFIND_REVERSE) != 0)
+		m_pEnumerator = new RecFindBackward(m_DirList,
+											path, anyPathName, filter,
+											s_order, flags);
+	else
+		m_pEnumerator = new RecFindForward(m_DirList,
+										   path, anyPathName, filter,
+										   s_order, flags);
 
 	return m_pEnumerator->isValid();
 }
@@ -762,11 +757,7 @@ SessionInstance::si_enumfile(CmdLineParser& params)
 	DWORD flags = ENUMPATH_FINDFILE;
 	if (!ParseEnumOptions(params, m_DirList, path, filter, s_order, flags))
 		return FALSE;
-	try {
-		m_pEnumerator = new FindFile(m_DirList, path, filter, s_order, flags);
-	} catch (exception&) {
-		return FALSE;
-	}
+	m_pEnumerator = new FindFile(m_DirList, path, filter, s_order, flags);
 
 	return m_pEnumerator->isValid();
 }
@@ -779,11 +770,7 @@ SessionInstance::si_enumdir(CmdLineParser& params)
 	DWORD flags = ENUMPATH_FINDDIR;
 	if (!ParseEnumOptions(params, m_DirList, path, filter, s_order, flags))
 		return FALSE;
-	try {
-		m_pEnumerator = new FindDir(m_DirList, path, filter, s_order, flags);
-	} catch (exception&) {
-		return FALSE;
-	}
+	m_pEnumerator = new FindDir(m_DirList, path, filter, s_order, flags);
 
 	return m_pEnumerator->isValid();
 }

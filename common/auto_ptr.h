@@ -1,4 +1,4 @@
-// $Id: auto_ptr.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+// $Id: auto_ptr.h,v 1.2 2002-02-19 15:34:21 sugiura Exp $
 /*
  *	auto_ptr.h
  *	スマートポインタクラス
@@ -48,8 +48,10 @@ public:
 	}
 
 	T& operator*() { return *m_ptr; }
+	const T& operator*() const { return *m_ptr; }
 	T* operator->() { return m_ptr; }
-	T* ptr() { return m_ptr; }
+	const T* operator->() const { return m_ptr; }
+	T* ptr() const { return m_ptr; }
 
 private:
 	T* m_ptr;		//	生のポインタ

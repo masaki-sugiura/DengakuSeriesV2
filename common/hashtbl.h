@@ -1,4 +1,4 @@
-//	$Id: hashtbl.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: hashtbl.h,v 1.2 2002-02-19 15:34:21 sugiura Exp $
 /*
  *	hashtbl.h
  *	ハッシュテーブルクラス(テンプレート)
@@ -71,13 +71,9 @@ HashTable<T,n>::setValue(const StringBuffer& keyname, T value)
 {
 	if (keyname.length() <= 0) return -1;
 	UINT hash = getHash(keyname,n);
-	try {
-		Key<T>* newkey = new Key<T>(keyname,value);
-		newkey->m_next = m_keylist[hash];
-		m_keylist[hash] = newkey;
-	} catch (exception&) {
-		return -1;
-	}
+	Key<T>* newkey = new Key<T>(keyname,value);
+	newkey->m_next = m_keylist[hash];
+	m_keylist[hash] = newkey;
 	return hash;
 }
 

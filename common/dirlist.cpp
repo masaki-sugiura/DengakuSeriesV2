@@ -1,4 +1,4 @@
-//	$Id: dirlist.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: dirlist.cpp,v 1.3 2002-02-19 15:34:21 sugiura Exp $
 /*
  *	dirlist.cpp
  *	全ドライブのカレントディレクトリの管理
@@ -82,23 +82,19 @@ DirList::DirList(BOOL bTrueCD)
 	//	存在する全てのドライブのカレントディレクトリを設定
 	::ZeroMemory(m_ppsbCurDir, sizeof(m_ppsbCurDir[0]) * 32);
 	DWORD drives = ::GetLogicalDrives();
-	try {
-		for (int i = 0; i < 32; i++) {
-			if ((0x1 & drives) != 0) {
-				if (i == m_nCurDrive) {
-					//	カレントドライブ
-					m_ppsbCurDir[i] = new StringBuffer(cdbuf);
-				} else {
-					//	それ以外
-					m_ppsbCurDir[i] = new StringBuffer(" :\\");
-				}
-				//	ドライブレターを大文字に
-				m_ppsbCurDir[i]->setcharAt(0,(TCHAR)('A' + i));
+	for (int i = 0; i < 32; i++) {
+		if ((0x1 & drives) != 0) {
+			if (i == m_nCurDrive) {
+				//	カレントドライブ
+				m_ppsbCurDir[i] = new StringBuffer(cdbuf);
+			} else {
+				//	それ以外
+				m_ppsbCurDir[i] = new StringBuffer(" :\\");
 			}
-			drives >>= 1;
+			//	ドライブレターを大文字に
+			m_ppsbCurDir[i]->setcharAt(0,(TCHAR)('A' + i));
 		}
-	} catch (exception&) {
-		// nothing to be able to do...
+		drives >>= 1;
 	}
 }
 
@@ -198,12 +194,10 @@ DirList::setCurrentDir(const StringBuffer& dirname)
 	if (!ISDRIVELETTER(ch)) return NULL; // UNC path
 	m_nCurDrive = ch - 'A';
 	if (m_ppsbCurDir[m_nCurDrive] == NULL) {
-		try {
-			m_ppsbCurDir[m_nCurDrive] = new StringBuffer(buf);
-		} catch (exception&) {
-			return NULL;
-		}
-	} else *m_ppsbCurDir[m_nCurDrive] = buf;
+		m_ppsbCurDir[m_nCurDrive] = new StringBuffer(buf);
+	} else {
+		*m_ppsbCurDir[m_nCurDrive] = buf;
+	}
 	if (m_bTrueCD) // 実際にディレクトリを移動
 		::SetCurrentDirectory(*m_ppsbCurDir[m_nCurDrive]);
 

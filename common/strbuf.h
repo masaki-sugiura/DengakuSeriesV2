@@ -1,4 +1,4 @@
-//	$Id: strbuf.h,v 1.2 2001-11-22 13:37:09 sugiura Exp $
+//	$Id: strbuf.h,v 1.3 2002-02-19 15:34:22 sugiura Exp $
 /*
  *	strbuf.h
  *	文字列クラス
@@ -7,6 +7,7 @@
 #ifndef	DENGAKUSERIES_CLASSES_STRBUF
 #define	DENGAKUSERIES_CLASSES_STRBUF
 
+#include "array.h"
 #include "refcount.h"
 
 #define	BUF_LEN	2
@@ -49,7 +50,7 @@ public:
 	int size() const	//	バッファサイズを返す
 	{
 		if (!m_sbuf->isShareable()) m_sbuf->recalc();
-		return m_sbuf->m_bufsize;
+		return m_sbuf->m_buf.size() - 1; // NULL 文字領域を含めない
 	}
 
 	void resize(int newsize)	//	バッファのサイズを増やす(減らさない)
@@ -124,9 +125,9 @@ protected:
 #ifdef _DEBUG
 		int m_id;
 #endif
-		int m_bufsize;	//	バッファのサイズ
+//		int m_bufsize;	//	バッファのサイズ
 		int m_len;		//	現在格納中の文字列の長さ
-		LPSTR m_buf;	//	バッファへのポインタ
+		Array<TCHAR> m_buf;	//	バッファの実態
 
 		StringBuffer_rep(int inisize);
 		StringBuffer_rep(LPCSTR str, int len = -1, int exsize = BUF_LEN);

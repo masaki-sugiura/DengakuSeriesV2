@@ -1,4 +1,4 @@
-//	$Id: colortbl.cpp,v 1.1 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: colortbl.cpp,v 1.2 2002-02-19 15:34:21 sugiura Exp $
 /*
  *	colortbl.cpp
  *	カラーテーブルを管理するクラスの実装
@@ -42,7 +42,7 @@ int
 ColorTable::load(const StringBuffer& file)
 {
 	this->init();
-	TCHAR buf[0x10000]; // 64KBytes
+	Array<TCHAR> buf(0x10000); // 64KBytes
 	::GetPrivateProfileString(GetString(STR_COLORTBL_SECTION),
 							  NULL, "", buf, 0x10000, file);
 	LPCSTR pcname = buf;

@@ -1,4 +1,4 @@
-//	$Id: cmdline.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: cmdline.cpp,v 1.2 2002-02-19 15:34:21 sugiura Exp $
 /*
  *	cmdline.cpp
  *	文字列のパース＆リスト化
@@ -53,11 +53,7 @@ RealCmdLineParser::mergeArgv(const StringBuffer& sbCmdLine)
 	//	コマンドラインバッファへのポインタの設定
 	LPSTR pBuf;
 	if (cmdlen >= MAX_CMDLINE) {
-		try {
-			pBuf = new TCHAR[cmdlen + 4];
-		} catch (exception&) {
-			return -1;
-		}
+		pBuf = new TCHAR[cmdlen + 4];
 	} else {
 		pBuf = m_workBuffer;	//	デフォルトのバッファ
 	}
@@ -102,8 +98,8 @@ RealCmdLineParser::mergeArgv(const StringBuffer& sbCmdLine)
 		if (*pstrCmdLine == '\0') break;
 	}
 
-	} catch (exception&) {
-		// nothing to do.
+	} catch (...) {
+		// nothing to do
 	}
 
 	if (cmdlen >= MAX_CMDLINE) delete [] pBuf;

@@ -1,4 +1,4 @@
-// $Id: si_comdlg.cpp,v 1.2 2002-02-15 17:46:08 sugiura Exp $
+// $Id: si_comdlg.cpp,v 1.3 2002-02-19 15:34:22 sugiura Exp $
 /*
  *	si_comdlg.cpp
  *	コモンダイアログ表示関数
@@ -30,14 +30,8 @@ SessionInstance::getFileNameByDlg(
 	const StringBuffer& _inifile,
 	CmdLineParser& filters)
 {
-	LPSTR buf = NULL;
-	try {
-		buf = new TCHAR[sizeof(OPENFILENAME) + FILEDLG_BUFSIZE];
-	} catch (exception&) {
-		return nullStr;
-	}
-
-	::ZeroMemory(buf,sizeof(OPENFILENAME) + FILEDLG_BUFSIZE);
+	Array<TCHAR> buf(sizeof(OPENFILENAME) + FILEDLG_BUFSIZE);
+	buf.zero();
 
 	LPSTR pszFileName = buf + sizeof(OPENFILENAME),
 		  pszFilter	  = buf + sizeof(OPENFILENAME) + MAX_PATH;
@@ -106,7 +100,7 @@ SessionInstance::getFileNameByDlg(
 	}
 
 	//	OPENFILENAME 構造体の初期化
-	OPENFILENAME* pofn = (OPENFILENAME*)buf;
+	OPENFILENAME* pofn = (OPENFILENAME*)(LPSTR)buf;
 	pofn->lStructSize		=	sizeof(OPENFILENAME);
 	pofn->hwndOwner			=	hwndOwner;
 	pofn->lpstrFilter		=	pszFilter;
@@ -127,8 +121,6 @@ SessionInstance::getFileNameByDlg(
 			*bufPtr = '|';
 		ret = pszFileName;
 	}
-
-	delete [] buf;
 
 	return ret;
 }

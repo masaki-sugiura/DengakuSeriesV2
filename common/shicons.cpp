@@ -1,4 +1,4 @@
-//	$Id: shicons.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: shicons.cpp,v 1.2 2002-02-19 15:34:22 sugiura Exp $
 /*
  *	shicons.cpp
  *	shell32.dll からアイコンを抜き出す＆管理するクラス
@@ -7,10 +7,9 @@
 #include "shicons.h"
 
 ShellIcons::ShellIcons()
-	:	m_nIconNum(32),
-		m_nCurIconNum(0)
+	:	m_nCurIconNum(0),
+		m_phIcons(32)
 {
-	m_phIcons = new HICON[m_nIconNum];
 	m_nIconSize = ::GetSystemMetrics(SM_CXSMICON);
 }
 
@@ -19,7 +18,6 @@ ShellIcons::~ShellIcons()
 	for (int i = 0; i < m_nCurIconNum; i++) {
 		::DestroyIcon(m_phIcons[i]);
 	}
-	delete [] m_phIcons;
 }
 
 int
@@ -63,14 +61,9 @@ ShellIcons::addIconEntry(HIMAGELIST hImgList, const SHFILEINFO& shFileInfo)
 void
 ShellIcons::addIcon(const HICON hIcon)
 {
-	if (m_nCurIconNum >= m_nIconNum) {
-		m_nIconNum += 8;
-		HICON* phIcons = new HICON[m_nIconNum];
-		::CopyMemory(phIcons,m_phIcons, sizeof(HICON) * m_nCurIconNum);
-		::ZeroMemory(phIcons + m_nCurIconNum,
-					sizeof(HICON) * (m_nIconNum - m_nCurIconNum));
-		delete[] m_phIcons;
-		m_phIcons = phIcons;
+	if (m_nCurIconNum >= m_phIcons.size()) {
+		m_phIcons.resize(m_phIcons.size() + 8);
+		m_phIcons.zero(m_nCurIconNum, -1);
 	}
 	m_phIcons[m_nCurIconNum++] = hIcon;
 }

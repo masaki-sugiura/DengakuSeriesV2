@@ -1,4 +1,4 @@
-//	$Id: linklist.h,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: linklist.h,v 1.3 2002-02-19 15:34:21 sugiura Exp $
 /*
  *	linklist.h
  *	(単方向)リンクリストクラス
@@ -20,15 +20,16 @@ protected:
 	int	delItem_(LPVOID);
 	int	getItemIndex_(LPVOID) const;
 	LPVOID getItem_(int) const;
-	int	initSequentialGet_(int);
-	LPVOID getNextItem_();
+	int	initSequentialGet_(int) const;
+	LPVOID getNextItem_() const;
 
 private:
 	struct PtrLinkListContainer {
 		PtrLinkListContainer* m_next;
 		LPVOID m_pvalue;
 	};
-	PtrLinkListContainer *m_root, *m_last, *m_sgcurptr;
+	PtrLinkListContainer *m_root, *m_last;
+	mutable PtrLinkListContainer *m_sgcurptr;
 	int	m_num;
 
 	PtrLinkList(const PtrLinkList&);
@@ -47,7 +48,8 @@ public:
 			delete ptr;
 	}
 
-	using PtrLinkList::itemNum;	//	import
+//	using PtrLinkList::itemNum;	//	import
+	int itemNum() const { return this->PtrLinkList::itemNum(); }
 
 	virtual int	addItem(T* pvalue, int ind = -1)
 	{ return PtrLinkList::addItem_(pvalue,ind); }
@@ -71,10 +73,10 @@ public:
 	virtual T* getItemByIndex(int ind) const
 	{ return static_cast<T*>(PtrLinkList::getItem_(ind)); }
 
-	virtual int initSequentialGet(int ind = 0)
+	virtual int initSequentialGet(int ind = 0) const
 	{ return PtrLinkList::initSequentialGet_(ind); }
 
-	virtual T* getNextItem()
+	virtual T* getNextItem() const
 	{ return static_cast<T*>(PtrLinkList::getNextItem_()); }
 };
 

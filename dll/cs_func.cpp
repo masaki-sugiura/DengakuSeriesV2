@@ -1,4 +1,4 @@
-//	$Id: cs_func.cpp,v 1.2 2002-01-16 16:31:04 sugiura Exp $
+//	$Id: cs_func.cpp,v 1.3 2002-02-19 15:34:22 sugiura Exp $
 /*
  *	cs_func.cpp
  *	共通サービスの関数
@@ -19,17 +19,25 @@ GETVERSION()
 DENGAKUDLL_API LPCSTR
 GETLIBVERSION()
 {
-	g_strBuffer = g_pSessionInstance->si_getlibversion();
-	return g_strBuffer;
+	try {
+		g_strBuffer = g_pSessionInstance->si_getlibversion();
+		return g_strBuffer;
+	} catch (...) {
+		return "";
+	}
 }
 
 //	OS の情報を返す
 DENGAKUDLL_API LPCSTR
 GETOSINFO(LPCSTR str)
 {
-	RealCmdLineParser argv(str);
-	g_strBuffer = g_pSessionInstance->si_getosinfo(argv);
-	return g_strBuffer;
+	try {
+		RealCmdLineParser argv(str);
+		g_strBuffer = g_pSessionInstance->si_getosinfo(argv);
+		return g_strBuffer;
+	} catch (...) {
+		return "";
+	}
 }
 
 #if 0

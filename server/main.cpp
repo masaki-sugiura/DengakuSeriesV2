@@ -1,4 +1,4 @@
-//	$Id: main.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: main.cpp,v 1.2 2002-02-19 15:34:22 sugiura Exp $
 /*
  *	main.cpp
  *	田楽サーバ本体
@@ -114,8 +114,8 @@ extern char** _argv;
 		dsi.m_psbServerLogFileName->length() <= 0) {
 		StringBuffer& lfn = *dsi.m_psbServerLogFileName;
 		lfn = dsi.m_sbModuleName;
-		ptr = lstrrchr((LPCSTR)lfn,'\\');
-		lfn.setlength(++ptr-lfn);
+		int sep = lfn.rfind((TCHAR)'\\');
+		lfn.setlength(++sep);
 		lfn.append(dsi.m_sbServiceName).append(".log");
 	}
 
@@ -329,8 +329,8 @@ static LPCSTR
 	pszOK = "OK",
 	pszHelp = "ヘルプ",
 	pszQuit = "終了",
-	pszTitle = "田楽 (でんがく) サーバ  Ver.0.01β",
-	pszCopyRight = "Copyright(C) 1998-2001, M. Sugiura (sugiura@ceres.dti.ne.jp)",
+	pszTitle = "田楽 (でんがく) サーバ  Ver.2.00β",
+	pszCopyRight = "Copyright(C) 1998-2002, M. Sugiura (sugiura@ceres.dti.ne.jp)",
 	pszLabelConnect = "現在の DDE 通信",
 	pszLabelService = "サービス名：",
 	pszLabelNumber  = "通信数：";
@@ -378,13 +378,9 @@ AddDlgItem(
 static HWND
 CreateMainDialog(HINSTANCE hInst, LPARAM lParam)
 {
-	BYTE* pTemplate;
-	try {
-		pTemplate = new BYTE[DLGTEMPL_SIZE];
-	} catch (exception&) {
-		return NULL;
-	}
-	LPDLGTEMPLATE pdt = (LPDLGTEMPLATE)pTemplate;
+	Array<BYTE> pTemplate(DLGTEMPLSIZE);
+	LPDLGTEMPLATE pdt = (LPDLGTEMPLATE)(BYTE*)pTemplate;
+
 	pdt->style = WS_POPUP | WS_CAPTION | WS_SYSMENU;
 	pdt->dwExtendedStyle = 0;
 	pdt->cdit = 10;
@@ -457,7 +453,7 @@ CreateMainDialog(HINSTANCE hInst, LPARAM lParam)
 											NULL,
 											(DLGPROC)MainWndProc,
 											lParam);
-	delete[] pTemplate;
+
 	return hDlg;
 }
 
@@ -482,18 +478,13 @@ WinMain(
 {
 	int	ret_code = 0;	//	リターンコード
 
-	//	サーバ情報を格納するクラスの生成
-	Auto_Ptr<DDEServerInfo>	pDdeSI(NULL);
 	try {
-		pDdeSI = new DDEServerInfo(hInstance);
-	} catch (exception&) {
-		return 1;
-	}
+
+	//	サーバ情報を格納するクラスの生成
+	Auto_Ptr<DDEServerInfo>	pDdeSI(new DDEServerInfo(hInstance));
 
 	//	コマンドラインの解釈＆サービス名etc.の取得
-	if (!ParseCmdLine(*pDdeSI)) {
-		return 1;
-	}
+	if (!ParseCmdLine(*pDdeSI)) return 1;
 
 	//	複数のインスタンスの起動を抑止するため Mutex オブジェクトを作成。
 	//	但し、Mutex の名前は基本サービス名毎に固有なので、
@@ -501,62 +492,70 @@ WinMain(
 	HANDLE hMutex = ::CreateMutex(NULL,FALSE,pDdeSI->m_sbMutexName);
 	if (::GetLastError() == ERROR_ALREADY_EXISTS) {
 		HWND hwndPrev = ::FindWindow(GetServerString(SVR_STR_DSCLASSNAME),
-									pDdeSI->m_sbWndTitle);
+									 pDdeSI->m_sbWndTitle);
 		//	タスクトレイのアイコンの状態を変更
 		if (hwndPrev != NULL)
-			::SendMessage(hwndPrev,WM_USER_SHOWICON,pDdeSI->m_bHideIcon,0);
-	} else {
-		//	この処理をしないと親プロセスが各ファイルを
-		//	リダイレクトしている場合に DOS アプリが正常に起動しない。
-		//	理由はイマイチよく分からない＆対処療法的だが
-		//	…まぁしょうがなかろう(^^;。
-		CloseStdHandle(STD_INPUT_HANDLE);
-		CloseStdHandle(STD_OUTPUT_HANDLE);
-		CloseStdHandle(STD_ERROR_HANDLE);
+			::SendMessage(hwndPrev, WM_USER_SHOWICON, pDdeSI->m_bHideIcon, 0);
 
-		//	コモンコントロールライブラリの初期化
-		::InitCommonControls();
+		//	このプロセスは終了
+		::CloseHandle(hMutex);
+		return 0;
+	}
 
-		//	(お約束(^^;の)メインウィンドウのウィンドウクラスの登録
-		WNDCLASS wc;
-		::ZeroMemory(&wc,sizeof(WNDCLASS));
-		wc.style = CS_CLASSDC|CS_DBLCLKS;
-		wc.lpfnWndProc = (WNDPROC)DefDlgProc;	//	メインウィンドウは
-		wc.cbWndExtra = DLGWINDOWEXTRA;			//	ダイアログ
-		wc.hInstance = hInstance;
-		wc.hIcon = ::LoadIcon(hInstance,MAKEINTRESOURCE(IDI_ICON));
-		wc.hbrBackground = (HBRUSH)(COLOR_BTNFACE+1);
-		wc.lpszClassName = GetServerString(SVR_STR_DSCLASSNAME);
+	//	この処理をしないと親プロセスが各ファイルを
+	//	リダイレクトしている場合に DOS アプリが正常に起動しない。
+	//	理由はイマイチよく分からない＆対処療法的だが
+	//	…まぁしょうがなかろう(^^;。
+	CloseStdHandle(STD_INPUT_HANDLE);
+	CloseStdHandle(STD_OUTPUT_HANDLE);
+	CloseStdHandle(STD_ERROR_HANDLE);
 
-		HWND hwndDlg;
-		if (::RegisterClass(&wc) &&
+	//	コモンコントロールライブラリの初期化
+	::InitCommonControls();
+
+	//	(お約束(^^;の)メインウィンドウのウィンドウクラスの登録
+	WNDCLASS wc;
+	::ZeroMemory(&wc, sizeof(WNDCLASS));
+	wc.style = CS_CLASSDC|CS_DBLCLKS;
+	wc.lpfnWndProc = (WNDPROC)DefDlgProc;	//	メインウィンドウは
+	wc.cbWndExtra = DLGWINDOWEXTRA;			//	ダイアログ
+	wc.hInstance = hInstance;
+	wc.hIcon = ::LoadIcon(hInstance,MAKEINTRESOURCE(IDI_ICON));
+	wc.hbrBackground = (HBRUSH)(COLOR_BTNFACE+1);
+	wc.lpszClassName = GetServerString(SVR_STR_DSCLASSNAME);
+
+	HWND hwndDlg;
+	if (::RegisterClass(&wc) &&
 #ifdef __GNUC__
-			(hwndDlg = CreateMainDialog(hInstance, (LPARAM)pDdeSI.ptr()))) {
+		(hwndDlg = CreateMainDialog(hInstance, (LPARAM)pDdeSI.ptr()))) {
 #else
-			(hwndDlg = ::CreateDialogParam(hInstance,
-											MAKEINTRESOURCE(IDD_ABOUT),
-											NULL,
-											(DLGPROC)MainWndProc,
-											(LPARAM)pDdeSI.ptr()))) {
+		(hwndDlg = ::CreateDialogParam(hInstance,
+										MAKEINTRESOURCE(IDD_ABOUT),
+										NULL,
+										(DLGPROC)MainWndProc,
+										(LPARAM)pDdeSI.ptr()))) {
 #endif
-			//	これまたお約束のメッセージループ
-			MSG msg;
-			while (::GetMessage(&msg,NULL,0,0)) {
-				//	メインウィンドウ(ダイアログ)へのメッセージ配送
-				if (!::IsDialogMessage(hwndDlg,&msg)) {
-					::TranslateMessage(&msg);
-					::DispatchMessage(&msg);
-				}
+		//	これまたお約束のメッセージループ
+		MSG msg;
+		while (::GetMessage(&msg,NULL,0,0)) {
+			//	メインウィンドウ(ダイアログ)へのメッセージ配送
+			if (!::IsDialogMessage(hwndDlg,&msg)) {
+				::TranslateMessage(&msg);
+				::DispatchMessage(&msg);
 			}
-			ret_code = msg.wParam;
-		} else {
-			ErrorMessageBox(MSG_ERR_START);
-			ret_code = 1;
 		}
+		ret_code = msg.wParam;
+	} else {
+		ErrorMessageBox(MSG_ERR_START);
+		ret_code = 1;
 	}
 
 	//	後始末
 	::CloseHandle(hMutex);
+
+	} catch (...) {
+		return -1;
+	}
 
 	return ret_code;
 }

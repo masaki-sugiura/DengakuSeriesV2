@@ -1,4 +1,4 @@
-//	$Id: linklist.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: linklist.cpp,v 1.2 2002-02-19 15:34:21 sugiura Exp $
 /*
  *	linklist.cpp
  *	リンクリストクラス
@@ -28,12 +28,8 @@ PtrLinkList::addItem_(LPVOID pvalue, int ind)
 {
 	if (pvalue == NULL || ind > m_num) return -1;	//	error!!
 
-	PtrLinkList::PtrLinkListContainer* newitem;
-	try {
+	PtrLinkList::PtrLinkListContainer*
 		newitem = new PtrLinkList::PtrLinkListContainer;
-	} catch (exception&) {
-		return -1;	//	no memory
-	}
 	newitem->m_pvalue = pvalue;
 
 	if (m_root == NULL) { // 初めての追加
@@ -133,7 +129,7 @@ PtrLinkList::getItem_(int ind) const
 }
 
 int
-PtrLinkList::initSequentialGet_(int ind)
+PtrLinkList::initSequentialGet_(int ind) const
 {
 	m_sgcurptr = m_root;
 	int i = 0;
@@ -142,7 +138,7 @@ PtrLinkList::initSequentialGet_(int ind)
 }
 
 LPVOID
-PtrLinkList::getNextItem_()
+PtrLinkList::getNextItem_() const
 {
 	PtrLinkList::PtrLinkListContainer* ret = m_sgcurptr;
 	if (ret == NULL) return NULL;

@@ -1,4 +1,4 @@
-//	$Id: si_menu.cpp,v 1.2 2001-11-22 13:37:09 sugiura Exp $
+//	$Id: si_menu.cpp,v 1.3 2002-02-19 15:34:22 sugiura Exp $
 /*
  *	si_menu.cpp
  *	メニュー表示関数
@@ -243,12 +243,7 @@ SessionInstance::si_newmenu(const StringBuffer& name, BOOL bExtended)
 {
 	if (name.length() <= 0) return FALSE;
 	//	新しいメニューの割り当て
-	try {
-		m_UserMenu.addMenu(new Menu(name,bExtended));
-	} catch (exception&) {
-		return FALSE;
-	}
-	return TRUE;
+	return m_UserMenu.addMenu(new Menu(name, bExtended)) > 0;
 }
 
 int
@@ -261,21 +256,16 @@ SessionInstance::si_addmenuitem(
 	//	処理対象のメニューを検索
 	Menu* menu = m_UserMenu.getMenu(name);
 	if (menu == NULL) return FALSE;
-	try {
-		if (title.length() <= 0) {
-			//	セパレータの挿入
-			menu->addItem(new MenuItem(MENUTYPE_SEPARATOR));
-		} else if (submenu.length() <= 0) {
-			//	通常の項目の挿入
-			menu->addItem(new MenuItem(MENUTYPE_ITEM,title,nullStr,opt));
-		} else {
-			//	サブメニューを持つ項目の挿入
-			menu->addItem(new MenuItem(MENUTYPE_POPUP,title,submenu,opt));
-		}
-	} catch (exception&) {
-		return FALSE;
+	if (title.length() <= 0) {
+		//	セパレータの挿入
+		return menu->addItem(new MenuItem(MENUTYPE_SEPARATOR)) > 0;
+	} else if (submenu.length() <= 0) {
+		//	通常の項目の挿入
+		return menu->addItem(new MenuItem(MENUTYPE_ITEM,title,nullStr,opt)) > 0;
+	} else {
+		//	サブメニューを持つ項目の挿入
+		return menu->addItem(new MenuItem(MENUTYPE_POPUP,title,submenu,opt)) > 0;
 	}
-	return TRUE;
 }
 
 int

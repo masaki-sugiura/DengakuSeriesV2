@@ -1,4 +1,4 @@
-//	$Id: rec_op.cpp,v 1.3 2002-02-17 08:00:41 sugiura Exp $
+//	$Id: rec_op.cpp,v 1.4 2002-02-19 15:34:22 sugiura Exp $
 /*
  *	rec_op.cpp
  *	再帰ファイル操作クラス群
@@ -347,43 +347,26 @@ int
 RecursiveMakeDir(const PathName &dir)
 {
 	int len = dir.length();
-	LPSTR buf = NULL;
-	try {
-		buf = new TCHAR[len + 1];
-	} catch (exception&) {
-		return RO_FAILED;
-	}
-	::CopyMemory(buf,(LPCSTR)dir,len + 1);
+	Array<TCHAR> buf(len + 1);
+	buf.copy(0, (LPCSTR)dir, len + 1);
 
 	LPSTR lpsep = lstrchr(buf,'\\');
-	if (lpsep == NULL) {
-		delete [] buf;
-		return RO_FAILED;
-	}
+	if (lpsep == NULL) return RO_FAILED;
 	for (lpsep = lstrchr(++lpsep,'\\');
 		lpsep != NULL;
 		lpsep = lstrchr(++lpsep,'\\')) {
 		*lpsep = '\0';
 		DWORD attr = ::GetFileAttributes(buf);
 		if (attr == 0xFFFFFFFF) {
-			if (!::CreateDirectory(buf,NULL)) {
-				delete [] buf;
-				return RO_FAILED;
-			}
+			if (!::CreateDirectory(buf,NULL)) return RO_FAILED;
 		} else if ((attr&FILE_ATTRIBUTE_DIRECTORY) == 0) {
-			delete [] buf;
 			return RO_FAILED;
 		}
 		*lpsep = '\\';
 	}
 	if (::GetFileAttributes(buf) == 0xFFFFFFFF) {
-		if (!::CreateDirectory(buf,NULL)) {
-			delete [] buf;
-			return RO_FAILED;
-		}
+		if (!::CreateDirectory(buf,NULL)) return RO_FAILED;
 	}
-
-	delete [] buf;
 
 	return RO_SUCCESS;
 }

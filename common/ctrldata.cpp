@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.7 2002-02-17 17:28:41 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.8 2002-02-19 15:34:21 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -215,11 +215,7 @@ TreeItemData::loadData(DlgDataFile& ddfile, TreeHashTable& hash)
 		keybuf.append(i);
 		ddfile.read(namebuf,keybuf);
 		if (namebuf.length() <= 0) continue;
-		try {
-			tid = new TreeItemData(namebuf,nullStr);
-		} catch (exception&) {
-			return FALSE;
-		}
+		tid = new TreeItemData(namebuf,nullStr);
 		if (tid->loadData(ddfile,hash)) {
 			this->addItem(tid);
 			hash.setValue(tid->getName(),tid);
@@ -333,7 +329,7 @@ CtrlListItem::createCtrl(
 			nc = new PageFormatCtrl(text,static_cast<CTRL_ID>(ctrltype));
 			break;
 		}
-	} catch (exception&) {
+	} catch (...) {
 		return NULL;
 	}
 	return nc;
@@ -800,8 +796,8 @@ SimpleCtrl::receiveData()
 	//	on default, get text of first control
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
 	int	len = ::SendMessage(m_pcp->m_hwndCtrl, WM_GETTEXTLENGTH, 0, 0);
-	m_pcp->m_text.resize(len);
 	::GetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text.getBufPtr(), len + 1);
+	m_pcp->m_text.resize(len);
 	return (m_pcp->m_text.length() == len);
 }
 
@@ -1322,7 +1318,7 @@ HasListCtrl::HasListCtrl(
 
 HasListCtrl::~HasListCtrl()
 {
-	delete m_item;
+//	delete m_item;
 }
 
 WORD
@@ -1387,13 +1383,7 @@ HasListCtrl::onInsertItem(CmdLineParser& text, const StringBuffer& pos)
 		int	tmp = ival(pos) - 1;
 		if (tmp >= 0 && tmp < num) ind = tmp;
 	}
-	ItemData* id;
-	try {
-		id = new ItemData(text.getRawData());
-	} catch (exception&) {
-		return 0;
-	}
-	m_item->addItem(id,ind);
+	m_item->addItem(new ItemData(text.getRawData()), ind);
 	if (ind < 0) ind = num;
 	if (ind < m_state) m_state++;
 	return ind + 1;
@@ -1414,14 +1404,7 @@ HasListCtrl::onDeleteItem(const StringBuffer& pos)
 BOOL
 HasListCtrl::onResetList()
 {
-	LinkList<ItemData>* olditem = m_item;
-	try {
-		m_item = new LinkList<ItemData>;
-	} catch (exception&) {
-		m_item = olditem;
-		return FALSE;
-	}
-	delete olditem;
+	m_item = new LinkList<ItemData>;
 	m_state = 0;
 	return TRUE;
 }
@@ -2360,8 +2343,8 @@ ChkListCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 				LV_ITEM lvi;
 				lvi.mask = LVIF_PARAM;
 				lvi.iSubItem = 0;
-				BOOL* selected = new BOOL[num];
-				::ZeroMemory(selected, sizeof(BOOL) * num);
+				Array<BOOL> selected(num);
+				selected.zero(0, -1);
 				BOOL bAllSet = TRUE;
 				int i;
 				for (i = 0; i < num; i++) {
@@ -2385,7 +2368,6 @@ ChkListCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 						ListView_Update(hwndCtrl, i);
 					}
 				}
-				delete [] selected;
 				return m_notify[1];
 			}
 		}
@@ -2587,15 +2569,10 @@ BOOL
 LViewCtrl::onInsertItem(CmdLineParser& argv, const StringBuffer& pos)
 {
 	this->receiveData();
-	LViewItemData* lvid;
-	try {
-		lvid = new LViewItemData();
-		argv.initSequentialGet();
-		for (WORD i = 0; i < m_colnum; i++) {
-			lvid->addItem(new ItemData(argv.getNextArgvStr()));
-		}
-	} catch (exception&) {
-		return FALSE;
+	LViewItemData* lvid = new LViewItemData();
+	argv.initSequentialGet();
+	for (WORD i = 0; i < m_colnum; i++) {
+		lvid->addItem(new ItemData(argv.getNextArgvStr()));
 	}
 	int	ind = -1, num = m_item->itemNum();
 	if (pos.length() > 0) {
@@ -2756,40 +2733,30 @@ LViewCtrl::loadData(DlgDataFile& ddfile)
 	StringBuffer keybuf(GetString(STR_DLGDATA_HEADER), -1, 32);
 	keybuf.append((TCHAR)'_');
 	int	keylen = keybuf.length();
-	ItemData* id;
 	if (usehdr) {
-		try {
-			if (!m_hdr) m_hdr = new LViewItemData();
-			for (int i = 0; i < (int)m_colnum; i++) {
-				keybuf.setlength(keylen);
-				keybuf.append(i);
-				id = new ItemData(nullStr);
-				ddfile.read(id->getText(), keybuf);
-				m_hdr->addItem(id);
-			}
-		} catch (exception&) {
-			return FALSE;
+		if (!m_hdr) m_hdr = new LViewItemData();
+		for (int i = 0; i < (int)m_colnum; i++) {
+			keybuf.setlength(keylen);
+			keybuf.append(i);
+			ItemData* id = new ItemData(nullStr);
+			ddfile.read(id->getText(), keybuf);
+			m_hdr->addItem(id);
 		}
 	}
-	LViewItemData* lvid;
 	keybuf.reset(GetString(STR_DLGDATA_ITEM));
 	keybuf.append((TCHAR)'_');
 	keylen = keybuf.length();
 	for (int i = 0; i < num; i++) {
-		try {
-			lvid = new LViewItemData();
-			keybuf.setlength(keylen);
-			keybuf.append(i).append((TCHAR)'_');
-			int len = keybuf.length();
-			for (int j = 0; j < m_colnum; j++) {
-				keybuf.setlength(len);
-				keybuf.append(j);
-				id = new ItemData(nullStr);
-				ddfile.read(id->getText(), keybuf);
-				lvid->addItem(id);
-			}
-		} catch (exception&) {
-			return FALSE;
+		LViewItemData* lvid = new LViewItemData();
+		keybuf.setlength(keylen);
+		keybuf.append(i).append((TCHAR)'_');
+		int len = keybuf.length();
+		for (int j = 0; j < m_colnum; j++) {
+			keybuf.setlength(len);
+			keybuf.append(j);
+			ItemData* id = new ItemData(nullStr);
+			ddfile.read(id->getText(), keybuf);
+			lvid->addItem(id);
 		}
 		m_item->addItem(lvid);
 	}
@@ -2799,7 +2766,9 @@ LViewCtrl::loadData(DlgDataFile& ddfile)
 TreeCtrl::TreeCtrl(
 	const StringBuffer& name,
 	const StringBuffer& text)
-	: SimpleCtrl(name, text, CTRLID_TREE), m_state(nullStr, 0, 32)
+	: SimpleCtrl(name, text, CTRLID_TREE),
+	  m_pHashItem(new TreeHashTable),
+	  m_state(nullStr, 0, 32)
 {
 	m_pcp->m_style		= TVS_HASBUTTONS|TVS_LINESATROOT|TVS_HASLINES|
 							TVS_DISABLEDRAGDROP|TVS_SHOWSELALWAYS|
@@ -2808,14 +2777,13 @@ TreeCtrl::TreeCtrl(
 	m_pcp->m_classname	= WC_TREEVIEW;
 	m_pcp->m_bufsize	= lstrlen(m_pcp->m_classname) + 1;
 	m_pcp->m_text.reset();
-	m_item		= new LinkList<ItemData>;
-	m_pHashItem	= new TreeHashTable;
+	m_item = new LinkList<ItemData>;
 }
 
 TreeCtrl::~TreeCtrl()
 {
-	delete m_item;
-	delete m_pHashItem;
+//	delete m_item;
+//	delete m_pHashItem;
 }
 
 BOOL
@@ -2890,12 +2858,7 @@ TreeCtrl::onInsertItem(CmdLineParser& argv, const StringBuffer& pos)
 	argv.initSequentialGet();
 	const StringBuffer& name = argv.getNextArgvStr();
 	if (m_pHashItem->getValue(name) != NULL) return FALSE; // already exist
-	TreeItemData* tid;
-	try {
-		tid = new TreeItemData(name, argv.getNextArgvStr());
-	} catch (exception&) {
-		return FALSE;
-	}
+	TreeItemData* tid = new TreeItemData(name, argv.getNextArgvStr());
 	m_pHashItem->setValue(tid->getName(),tid);
 	HTREEITEM hItem = TVI_ROOT;
 	if (pos.compareTo(GetString(STR_DLGDATA_ROOT)) == 0)
@@ -2937,14 +2900,7 @@ BOOL
 TreeCtrl::onResetList()
 {
 	if (!CtrlListItem::onResetList()) return FALSE;
-	TreeHashTable* olditem = m_pHashItem;
-	try {
-		m_pHashItem = new TreeHashTable;
-	} catch (exception&) {
-		m_pHashItem = olditem;
-		return FALSE;
-	}
-	delete olditem;
+	m_pHashItem = new TreeHashTable;
 	m_state.reset();
 	if (m_pcp->m_hwndCtrl != NULL) {
 		TreeView_DeleteAllItems(m_pcp->m_hwndCtrl);
@@ -3017,17 +2973,12 @@ TreeCtrl::loadData(DlgDataFile& ddfile)
 	keybuf.append((TCHAR)':').append(GetString(STR_DLGDATA_CHILD))
 			.append((TCHAR)'_');
 	int	keylen = keybuf.length();
-	TreeItemData* tid;
 	for (int i = 0; i < num; i++) {
 		keybuf.setlength(keylen);
 		keybuf.append(i);
 		ddfile.read(namebuf, keybuf);
 		if (namebuf.length() <= 0) continue;
-		try {
-			tid = new TreeItemData(namebuf, nullStr);
-		} catch (exception&) {
-			return FALSE;
-		}
+		TreeItemData* tid = new TreeItemData(namebuf, nullStr);
 		if (tid->loadData(ddfile, *m_pHashItem)) {
 			m_item->addItem(tid);
 			m_pHashItem->setValue(tid->getName(), tid);
@@ -3109,12 +3060,8 @@ FrameCtrl::initCtrl(HWND hDlg)
 	if (m_state <= 0) m_state = 1;
 	int	num = m_item->itemNum();
 	if (num <= 0) return FALSE;
-	try {
-		m_page = new DlgPage*[num];
-	} catch (exception&) {
-		return FALSE;
-	}
-	::ZeroMemory(m_page,sizeof(DlgPage*)*num);
+	m_page = new DlgPage*[num];
+	::ZeroMemory(m_page, sizeof(DlgPage*) * num);
 	if (!m_bVisible) ::ShowWindow(m_pcp->m_hwndCtrl, SW_HIDE);
 	num = 0;
 	DlgFrame& rDlgFrame = m_pDlgPage->getDlgFrame();
@@ -3397,13 +3344,9 @@ TabCtrl::onInsertItem(CmdLineParser& argv, const StringBuffer& pos)
 		int	tmp = ival(pos) - 1;
 		if (tmp >= 0 && tmp < m_item->itemNum()) ind = tmp;
 	}
-	try {
-		m_item->addItem(new NamedItemData(argv.getArgvStr(0),
-										argv.getArgvStr(1)),
-						ind);
-	} catch (exception&) {
-		return FALSE;
-	}
+	m_item->addItem(new NamedItemData(argv.getArgvStr(0),
+									  argv.getArgvStr(1)),
+					ind);
 	if (ind != -1 && ind < m_state) m_state++;
 	return TRUE;
 }
@@ -3487,7 +3430,6 @@ TabCtrl::loadData(DlgDataFile& ddfile)
 	int	num;
 	ddfile.read(&num,GetString(STR_DLGDATA_ITEMNUM));
 	if (m_state <= 0 || m_state > num) m_state = 1;
-	NamedItemData* nid;
 	StringBuffer keybuf(GetString(STR_DLGDATA_ITEM), -1, 32), namebuf(32);
 	keybuf.append((TCHAR)'_');
 	int	keylen = keybuf.length(), len;
@@ -3498,11 +3440,7 @@ TabCtrl::loadData(DlgDataFile& ddfile)
 		keybuf.append((TCHAR)':').append(GetString(STR_DLGDATA_NAME));
 		ddfile.read(namebuf, keybuf);
 		if (namebuf.length() <= 0) continue;
-		try {
-			nid = new NamedItemData(namebuf, nullStr);
-		} catch (exception&) {
-			return FALSE;
-		}
+		NamedItemData* nid = new NamedItemData(namebuf, nullStr);
 		keybuf.setlength(len);
 		ddfile.read(nid->getText(), keybuf);
 		m_item->addItem(nid);

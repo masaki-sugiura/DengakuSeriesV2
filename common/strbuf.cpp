@@ -1,4 +1,4 @@
-//	$Id: strbuf.cpp,v 1.3 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: strbuf.cpp,v 1.4 2002-02-19 15:34:22 sugiura Exp $
 /*
  *	strbuf.cpp
  *	文字列クラス
@@ -14,42 +14,51 @@
 static int s_id;
 #endif
 
-const StringBuffer nullStr = "";
+const StringBuffer nullStr("");
 
+inline int
+neg_to_zero(int x)
+{
+	return x & ~(x >> 31);
+}
 
 StringBuffer::StringBuffer_rep::StringBuffer_rep(int len)
 	:	RCObject(),
 #ifdef _DEBUG
 		m_id(s_id++),
 #endif
-		m_bufsize((len > 0) ? len : 0),
 		m_len(0),
-		m_buf(new TCHAR[m_bufsize+1])
+		m_buf((len > 0) ? (len + 1) : 1)
 {
 #ifdef _DEBUG
 	fprintf(stdout,"create *%d of size %d\n",m_id,len);
 #endif
-	::ZeroMemory(m_buf,m_bufsize+1);
+	m_buf.zero(0, -1);
 }
 
 StringBuffer::StringBuffer_rep::StringBuffer_rep(
 	LPCSTR str, int len, int exlen)
-	: RCObject()
+	: RCObject(),
+	  m_len(neg_to_zero(len)),
+	  m_buf(m_len +  neg_to_zero(exlen) + 1) // 仮のサイズ
 #ifdef _DEBUG
 	  , m_id(s_id++)
 #endif
 {
-	this->init(str,len,exlen);
+	this->init(str, len, exlen);
 }
 
 StringBuffer::StringBuffer_rep::StringBuffer_rep(const StringBuffer_rep& str)
-	: RCObject(str)
+	: RCObject(str),
+	  m_buf(str.m_buf) // 仮のコピー
 #ifdef _DEBUG
 	  , m_id(s_id++)
 #endif
 {
-	if (!str.isShareable()) const_cast<StringBuffer_rep&>(str).recalc();
-	this->init(str.m_buf, str.m_len, str.m_bufsize - str.m_len);
+	if (!str.isShareable()) {
+		const_cast<StringBuffer_rep&>(str).recalc();
+		this->init(str.m_buf, str.m_len, str.m_buf.size() - str.m_len - 1);
+	}
 }
 
 StringBuffer::StringBuffer_rep::~StringBuffer_rep()
@@ -57,7 +66,6 @@ StringBuffer::StringBuffer_rep::~StringBuffer_rep()
 #ifdef _DEBUG
 	fprintf(stdout,"delete %d\n",m_id);
 #endif
-	delete [] m_buf;
 }
 
 void
@@ -66,11 +74,10 @@ StringBuffer::StringBuffer_rep::init(LPCSTR str, int len, int exlen)
 	if (!IsValidPtr(str)) str = "";
 	if (len < 0) len = lstrlen(str);
 	if (exlen < 0) exlen = 0;
-	m_bufsize = len + exlen;
-	m_buf = new TCHAR[m_bufsize + 1];
-	::ZeroMemory(m_buf,m_bufsize + 1);
+	m_buf.resize(len + exlen + 1);
 	m_len = len;
-	::CopyMemory(m_buf,str,len);
+	m_buf.copy(0, str, len);
+	m_buf.zero(len, -1);
 #ifdef _DEBUG
 	fprintf(stdout,"create %d of str %s\n",m_id,str);
 #endif
@@ -81,31 +88,22 @@ StringBuffer::StringBuffer_rep::recalc()
 {
 	if (m_buf == NULL) return;
 	m_len = lstrlen(m_buf);
-	if (m_len > m_bufsize) m_bufsize = m_len + 1;	//	有り得ないと思うけど…
+	if (m_len >= m_buf.size()) m_buf.resize(m_len + 1);	//	有り得ないと思うけど…
 	this->markShareable();	//	再び共有可能にセット
 }
 
 void
 StringBuffer::StringBuffer_rep::resize(int len)
 {
-	if (m_bufsize < len) {
-		LPSTR m_buftmp;
-		try {
-			m_buftmp = new TCHAR[len + 1];
-		} catch (exception&) {
-			return;
-		}
-		m_bufsize = len;
-		::CopyMemory(m_buftmp,m_buf,m_len);
-		delete [] m_buf;
-		m_buf = m_buftmp;
+	if (m_buf.size() <= len) {
+		m_buf.resize(len + 1);
 #ifdef _DEBUG
 		int old_id = m_id;
 		m_id = s_id++;
-		fprintf(stdout,"delete %d\ncreate %d when resizing\n",old_id,m_id);
+		fprintf(stdout, "delete %d\ncreate %d when resizing\n", old_id, m_id);
 #endif
 	}
-	::ZeroMemory(m_buf + m_len, m_bufsize + 1 - m_len);
+	m_buf.zero(m_len, -1);
 }
 
 
@@ -114,9 +112,7 @@ StringBuffer::dup()
 {
 	if (m_sbuf->isShared()) {
 		//	バッファが共有されていれば複製を作成する
-		m_sbuf = new StringBuffer_rep(m_sbuf->m_buf,
-									m_sbuf->m_len,
-									m_sbuf->m_bufsize - m_sbuf->m_len);
+		m_sbuf = new StringBuffer_rep(m_sbuf->m_buf);
 	}
 }
 
@@ -127,7 +123,7 @@ StringBuffer::StringBuffer(int len)
 
 StringBuffer::StringBuffer(LPCSTR str, int len, int exlen)
 {
-	m_sbuf = new StringBuffer_rep(str,len,exlen);
+	m_sbuf = new StringBuffer_rep(str, len, exlen);
 }
 
 StringBuffer::~StringBuffer()
@@ -152,7 +148,7 @@ StringBuffer::setlength(int len)
 	if (m_sbuf->m_len > len && len >= 0) {
 		this->dup();
 		m_sbuf->m_len = len;
-		*(m_sbuf->m_buf + m_sbuf->m_len) = '\0';
+		m_sbuf->m_buf[m_sbuf->m_len] = '\0';
 	}
 }
 
@@ -162,7 +158,7 @@ StringBuffer::charAt(int at) const
 	if (!m_sbuf->isShareable()) m_sbuf->recalc();
 	if (ABS(at) > m_sbuf->m_len) return '\0';
 	else if (at < 0) at += m_sbuf->m_len;
-	return *(m_sbuf->m_buf + at);
+	return m_sbuf->m_buf[at];
 }
 
 void
@@ -179,7 +175,7 @@ StringBuffer::setcharAt(int at, TCHAR ch)
 
 	this->dup();
 
-	*(m_sbuf->m_buf + at) = ch;
+	m_sbuf->m_buf[at] = ch;
 }
 
 StringBuffer&
@@ -195,9 +191,9 @@ StringBuffer::append(LPCSTR str, int head, int len)
 		if (len < 0 || len > slen) len = slen;
 		if (head + len > slen) len = slen - head;
 		m_sbuf->resize(m_sbuf->m_len + len);
-		::CopyMemory(m_sbuf->m_buf + m_sbuf->m_len, str + head, len + 1);
+		m_sbuf->m_buf.copy(m_sbuf->m_len, str + head, len);
 		m_sbuf->m_len += len;
-		*(m_sbuf->m_buf + m_sbuf->m_len) = '\0';
+		m_sbuf->m_buf[m_sbuf->m_len] = '\0';
 	}
 	return *this;
 }
@@ -209,8 +205,8 @@ StringBuffer::append(TCHAR ch)
 		if (!m_sbuf->isShareable()) m_sbuf->recalc();
 		this->dup();
 		m_sbuf->resize(m_sbuf->m_len + 1);
-		*(m_sbuf->m_buf + m_sbuf->m_len++) = ch;
-		*(m_sbuf->m_buf + m_sbuf->m_len) = '\0';
+		m_sbuf->m_buf[m_sbuf->m_len++] = ch;
+		m_sbuf->m_buf[m_sbuf->m_len]   = '\0';
 	}
 	return *this;
 }
@@ -245,13 +241,14 @@ StringBuffer::reset(LPCSTR str, int head, int len)
 	if (!m_sbuf->isShareable()) m_sbuf->recalc();
 	this->dup();
 	m_sbuf->m_len = 0;
-	*m_sbuf->m_buf = '\0';
-	if (IsValidPtr(str)) this->append(str,head,len);
+	m_sbuf->m_buf[0] = '\0';
+	if (IsValidPtr(str)) this->append(str, head, len);
 }
 
 void
 StringBuffer::reset(LPCWSTR wstr, int head, int len)
 {
+	if (!IsValidPtr((LPCSTR)wstr)) return;
 	int size = ::WideCharToMultiByte(CP_ACP,
 									WC_COMPOSITECHECK,
 									wstr + head, len,
@@ -348,22 +345,18 @@ StringBuffer::replaceStr(LPCSTR ostr, LPCSTR dstr, int num)
 	}
 	if (num < 0 || n < num) num = n;
 
-	int	newlen = m_sbuf->m_bufsize + (dlen - olen) * num;
-	StringBuffer_rep* newbuf;
-	try {
-		newbuf = new StringBuffer_rep(newlen);
-	} catch (exception&) {
-		return *this;
-	}
+	int	newlen = m_sbuf->m_buf.size() + (dlen - olen) * num;
+	StringBuffer_rep* newbuf = new StringBuffer_rep(newlen);
+
 	LPSTR ptop;
 	for (t = m_sbuf->m_buf, ptop = newbuf->m_buf;
-		num-- > 0 && (s = lstrstr(t,ostr)) != NULL;
+		num-- > 0 && (s = lstrstr(t, ostr)) != NULL;
 		t = s + olen, ptop += dlen) {
-		::CopyMemory(ptop,t,s - t);
+		::CopyMemory(ptop, t, s - t);
 		ptop += s - t;
-		::CopyMemory(ptop,dstr,dlen);
+		::CopyMemory(ptop, dstr, dlen);
 	}
-	lstrcpy(ptop,t);
+	lstrcpy(ptop, t);
 	newbuf->m_len = lstrlen(newbuf->m_buf);
 	m_sbuf = newbuf;	//	RCPtr<StringBuffer> への代入
 	return *this;
@@ -376,12 +369,12 @@ StringBuffer::compareTo(LPCSTR lpstr, BOOL casesense, int len) const
 	if (!m_sbuf->isShareable()) m_sbuf->recalc();
 	if (len >= 0) {
 		return	casesense?
-				lstrcmpn(m_sbuf->m_buf,lpstr,len):
-				lstrcmpni(m_sbuf->m_buf,lpstr,len);
+				lstrcmpn(m_sbuf->m_buf, lpstr, len):
+				lstrcmpni(m_sbuf->m_buf, lpstr, len);
 	} else {
 		return	casesense?
-				lstrcmp(m_sbuf->m_buf,lpstr):
-				lstrcmpi(m_sbuf->m_buf,lpstr);
+				lstrcmp(m_sbuf->m_buf, lpstr):
+				lstrcmpi(m_sbuf->m_buf, lpstr);
 	}
 }
 
@@ -392,7 +385,7 @@ StringBuffer::count(LPCSTR str) const
 	if (!m_sbuf->isShareable()) m_sbuf->recalc();
 	int	num = 0, len = lstrlen(str);
 	for (LPCSTR	s = m_sbuf->m_buf;
-		(s = lstrstr(s,str)) != NULL;
+		(s = lstrstr(s, str)) != NULL;
 		num++, s += len)
 		/* no operation here */;
 	return num;
@@ -402,7 +395,7 @@ int
 StringBuffer::find(TCHAR ch) const
 {
 	if (!m_sbuf->isShareable()) m_sbuf->recalc();
-	LPCSTR	s = lstrchr(m_sbuf->m_buf,ch);
+	LPCSTR	s = lstrchr(m_sbuf->m_buf, ch);
 	return s != NULL ? (s - m_sbuf->m_buf) : -1;
 }
 
@@ -437,7 +430,7 @@ StringBuffer::rfind(LPCSTR lpstr) const
 	if (!IsValidPtr(lpstr)) return -1;
 
 	int len = lstrlen(lpstr);
-	if (len == 0) return m_sbuf->m_len;
+	if (len == 0) return -1;
 
 	if (!m_sbuf->isShareable()) m_sbuf->recalc();
 
@@ -468,7 +461,7 @@ StringBuffer::find2(LPCSTR lpstr) const
 {
 	if (!IsValidPtr(lpstr)) return -1;
 	if (!m_sbuf->isShareable()) m_sbuf->recalc();
-	LPCSTR s = lstrstr(m_sbuf->m_buf,lpstr);
+	LPCSTR s = lstrstr(m_sbuf->m_buf, lpstr);
 	if (s == NULL) return -1;
 	LPCSTR t = m_sbuf->m_buf;
 	int i = 0;
@@ -485,10 +478,10 @@ StringBuffer::rfind2(LPCSTR lpstr) const
 	if (!IsValidPtr(lpstr)) return -1;
 	if (!m_sbuf->isShareable()) m_sbuf->recalc();
 
-	LPCSTR nstr = lstrstr(m_sbuf->m_buf,lpstr);
+	LPCSTR nstr = lstrstr(m_sbuf->m_buf, lpstr);
 	if (nstr == NULL) return -1;
 	LPCSTR str;
-	for ( ; (str = lstrstr(ToNextChar(nstr),lpstr)) != NULL; nstr = str)
+	for ( ; (str = lstrstr(ToNextChar(nstr), lpstr)) != NULL; nstr = str)
 		/* no operation here */;
 	int i = 0;
 	for (str = m_sbuf->m_buf; str < nstr; str = ToNextChar(str))
@@ -505,8 +498,8 @@ StringBuffer::extract2(int head, int len) const
 	else if (head >= len2) return nullStr;
 	if (len < 0) len = len2;
 	if (head+len > len2) len = len2 - head;
-	LPCSTR	h = lstrninc(m_sbuf->m_buf,head),
-			t = lstrninc(h,len);
-	return StringBuffer(h,t - h);
+	LPCSTR	h = lstrninc(m_sbuf->m_buf, head),
+			t = lstrninc(h, len);
+	return StringBuffer(h, t - h);
 }
 

@@ -1,4 +1,4 @@
-//	$Id: seq_op.h,v 1.3 2002-02-17 08:00:41 sugiura Exp $
+//	$Id: seq_op.h,v 1.4 2002-02-19 15:34:22 sugiura Exp $
 /*
  *	seq_op.h
  *	ˆø”‚ğ‚È‚ß‚È‚ª‚çˆ—‚ğs‚¤‚½‚ß‚Ì’ŠÛŠî’êƒNƒ‰ƒX
@@ -103,14 +103,10 @@ int FileToFileOperation(PFN_FILETOFILE, DWORD, DirList&, CmdLineParser&, SeqOpRe
 class OptMap {
 public:
 	OptMap(const StringBuffer& opts, DWORD* flags)
-		: m_opts(opts)
+		: m_opts(opts),
+		  m_flags(opts.length())
 	{
-		m_flags = new DWORD[m_opts.length()];
-		::CopyMemory(m_flags, flags, m_opts.length() * sizeof(DWORD));
-	}
-	~OptMap()
-	{
-		delete [] m_flags;
+		m_flags.copy(0, flags, m_opts.length());
 	}
 
 	DWORD getFlag(TCHAR ch) const
@@ -121,7 +117,7 @@ public:
 
 private:
 	const StringBuffer m_opts;
-	DWORD* m_flags;
+	Array<DWORD> m_flags;
 };
 
 extern OptMap defOptMap;

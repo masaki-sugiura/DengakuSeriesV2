@@ -1,4 +1,4 @@
-// $Id: convdata.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+// $Id: convdata.cpp,v 1.2 2002-02-19 15:34:22 sugiura Exp $
 /*
  *	convdata.cpp
  *	ConvData クラスのコア部分の実装
@@ -59,47 +59,59 @@ ConvData::setNotify(const StringBuffer& data)
 {
 	//	ddeAdvStart() が呼ばれるまで待機
 	::WaitForSingleObject(m_hAdvEvent,INFINITE);
-	//	アドバイスデータのセット
-	this->SessionInstance::setNotify(data);
-	//	データがセットされたことをクライアントに通知
-	//	引数の後ろ２つは DdeString::operator HSZ() を呼んでいる
-	::PostMessage(DdeServer::gethwndDlg(),WM_USER_NOTIFYPOSTADV,
-					0,(LPARAM)this);
+	try {
+		//	アドバイスデータのセット
+		this->SessionInstance::setNotify(data);
+		//	データがセットされたことをクライアントに通知
+		//	引数の後ろ２つは DdeString::operator HSZ() を呼んでいる
+		::PostMessage(DdeServer::gethwndDlg(),WM_USER_NOTIFYPOSTADV,
+						0,(LPARAM)this);
+	} catch (...) {
+		// nothing to do
+	}
 }
 
 //	アドバイスデータをクライアントに渡す
 HDDEDATA
 ConvData::ddeAdvReq(HSZ hsz1, HSZ hsz2)
 {
-	if (m_dsAdvTopicName.compareTo(hsz1) != 0 ||
-		m_dsAdvItemName.compareTo(hsz2)  != 0) return HDDE_NULL;
-	//	通知コードの取得
-	StringBuffer buf = nullStr;
-	this->getNotify(buf,INFINITE);
-	//	メニュースレッドの停止…ここしかタイミングがないのかなぁ…？？
-	if (m_pMenuThread.ptr() != NULL) this->stopMenuThread();
-	if (m_pComDlgThread.ptr() != NULL) {
-		m_pComDlgThread->stop();
-		m_pComDlgThread = NULL;
+	try {
+		if (m_dsAdvTopicName.compareTo(hsz1) != 0 ||
+			m_dsAdvItemName.compareTo(hsz2)  != 0) return HDDE_NULL;
+		//	通知コードの取得
+		StringBuffer buf;
+		this->getNotify(buf,INFINITE);
+		//	メニュースレッドの停止…ここしかタイミングがないのかなぁ…？？
+		if (m_pMenuThread.ptr() != NULL) this->stopMenuThread();
+		if (m_pComDlgThread.ptr() != NULL) {
+			m_pComDlgThread->stop();
+			m_pComDlgThread = NULL;
+		}
+		//	クライアントに渡す DDE データを作成
+		//	SendingDdeData は破棄時に DdeFreeDataHandle() を呼ばない
+		//	(からローカルオブジェクトでもよい)
+		return SendingDdeData(m_ddeInst,
+							m_dsAdvItemName.getHandle(),
+							buf).getHandle();
+	} catch (...) {
+		return HDDE_NULL;
 	}
-	//	クライアントに渡す DDE データを作成
-	//	SendingDdeData は破棄時に DdeFreeDataHandle() を呼ばない
-	//	(からローカルオブジェクトでもよい)
-	return SendingDdeData(m_ddeInst,
-						m_dsAdvItemName.getHandle(),
-						buf).getHandle();
 }
 
 //	DDE Execute コマンドの実行
 HDDEDATA
 ConvData::ddeExecute(PFNDDECMD_EXECUTE pfnCmd, CmdLineParser& argv)
 {
-	m_dwLastError = 0L;
-	::SetLastError(m_dwLastError);
-	HDDEDATA ret = (this->*pfnCmd)(argv) ? HDDE_FACK : HDDE_FNOTPROCESSED;
-	m_dwLastError = ::GetLastError();
+	try {
+		m_dwLastError = 0L;
+		::SetLastError(m_dwLastError);
+		HDDEDATA ret = (this->*pfnCmd)(argv) ? HDDE_FACK : HDDE_FNOTPROCESSED;
+		m_dwLastError = ::GetLastError();
 
-	return ret;
+		return ret;
+	} catch (...) {
+		return HDDE_FNOTPROCESSED;
+	}
 }
 
 //	DDE Request コマンドの実行
@@ -109,17 +121,25 @@ ConvData::ddeRequest(
 	CmdLineParser& argv,
 	const DdeString& dsItem)
 {
-	//	SendingDdeData は破棄時に DdeFreeDataHandle() を呼ばない
-	//	(からローカルオブジェクトでもよい)
-	return SendingDdeData(m_ddeInst,
-						dsItem.getHandle(),
-						(this->*pfnCmd)(argv)).getHandle();
+	try {
+		//	SendingDdeData は破棄時に DdeFreeDataHandle() を呼ばない
+		//	(からローカルオブジェクトでもよい)
+		return SendingDdeData(m_ddeInst,
+							dsItem.getHandle(),
+							(this->*pfnCmd)(argv)).getHandle();
+	} catch (...) {
+		return HDDE_FNOTPROCESSED;
+	}
 }
 
 //	DDE Poke コマンドの実行
 HDDEDATA
 ConvData::ddePoke(PFNDDECMD_POKE pfnCmd, CmdLineParser& argv)
 {
-	return (this->*pfnCmd)(argv) ? HDDE_FACK : HDDE_FNOTPROCESSED;
+	try {
+		return (this->*pfnCmd)(argv) ? HDDE_FACK : HDDE_FNOTPROCESSED;
+	} catch (...) {
+		return HDDE_FNOTPROCESSED;
+	}
 }
 

@@ -1,4 +1,4 @@
-//	$Id: ms_handler.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: ms_handler.cpp,v 1.2 2002-02-19 15:34:22 sugiura Exp $
 /*
  *	ms_handler.cpp
  *	メニューサービスの実装
@@ -47,6 +47,10 @@ ConvData::On_menu(CmdLineParser& params)
 			}
 		}
 	}
+
+	HWND hwndTop = ::GetForegroundWindow();
+	if (hwndTop != NULL) ::UpdateWindow(hwndTop);
+
 	//	このスレッドの停止は ConvData::onAdvReq() で行っている
 	return this->showMenuThread(name,pAt);
 }

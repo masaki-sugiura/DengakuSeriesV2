@@ -1,4 +1,4 @@
-// $Id: ddeserv.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+// $Id: ddeserv.cpp,v 1.2 2002-02-19 15:34:22 sugiura Exp $
 /*
  *	ddeserv.cpp
  *	DdeServer クラスの実装
@@ -159,7 +159,7 @@ DdeServer::init(DDEServerInfo& dsi)
 
 	try {
 		m_pdsServiceName = new DdeString(m_ddeInst,dsi.m_sbServiceName);
-	} catch (exception&) {
+	} catch (...) {
 		return FALSE;
 	}
 
@@ -178,9 +178,13 @@ DdeServer::uninit()
 	if (m_ddeInst == 0) return TRUE;
 
 	if (m_bActive) {
-		//	アクティブな通信を全て破棄
-		if (m_ConvDataList.itemNum() > 0)
-			DdeServer::deleteConvData(NULL);
+		try {
+			//	アクティブな通信を全て破棄
+			if (m_ConvDataList.itemNum() > 0)
+				DdeServer::deleteConvData(NULL);
+		} catch (...) {
+			// nothing to do
+		}
 
 		//	Ddeml ライブラリから基本サービス名の登録を削除
 		::DdeNameService(m_ddeInst,
@@ -209,12 +213,16 @@ DdeServer::isSupportedTopic(const HSZ hszTopicName)
 ConvData*
 DdeServer::isStoredCD(const HSZ topicname)
 {
-	DdeString dsTopicName(m_ddeInst,topicname);
-	const StringBuffer& sbTn = (const StringBuffer&)dsTopicName;
-	m_ConvDataList.initSequentialGet();
-	ConvData* cd;
-	while ((cd = m_ConvDataList.getNextItem()) != NULL) {
-		if (sbTn.compareTo(cd->getKeepName()) == 0) return cd;
+	try {
+		DdeString dsTopicName(m_ddeInst,topicname);
+		const StringBuffer& sbTn = (const StringBuffer&)dsTopicName;
+		m_ConvDataList.initSequentialGet();
+		ConvData* cd;
+		while ((cd = m_ConvDataList.getNextItem()) != NULL) {
+			if (sbTn.compareTo(cd->getKeepName()) == 0) return cd;
+		}
+	} catch (...) {
+		// nothing to do
 	}
 	return NULL;
 }
@@ -236,7 +244,7 @@ DdeServer::addConvData(const HCONV hconv, const HSZ hszTn)
 								m_ddeInst,
 								hconv,
 								DdeString(m_ddeInst,hszTn));
-		} catch (exception&) {
+		} catch (...) {
 			return -1;
 		}
 		ret = m_ConvDataList.addItem(pCd);
@@ -268,17 +276,21 @@ void
 DdeServer::deleteConvData(ConvData* pCd)
 {
 	if (m_ConvDataList.itemNum() <= 0) return;
-	if (pCd != NULL) {
-		//	特定の通信を終了
-		DelCD(pCd,m_ConvDataList);
-	} else {
-		//	全通信を終了
-		//	onDisconnect() は内部で m_pConvDataList->delItemByIndex(0) を
-		//	呼んでいるので initSequentialGet() & getNextItem() のペアを
-		//	使わずに一つ一つ処理する必要がある。
-		while (m_ConvDataList.itemNum() > 0) {
-			DelCD(m_ConvDataList.getItemByIndex(0),m_ConvDataList);
+	try {
+		if (pCd != NULL) {
+			//	特定の通信を終了
+			DelCD(pCd,m_ConvDataList);
+		} else {
+			//	全通信を終了
+			//	onDisconnect() は内部で m_pConvDataList->delItemByIndex(0) を
+			//	呼んでいるので initSequentialGet() & getNextItem() のペアを
+			//	使わずに一つ一つ処理する必要がある。
+			while (m_ConvDataList.itemNum() > 0) {
+				DelCD(m_ConvDataList.getItemByIndex(0),m_ConvDataList);
+			}
 		}
+	} catch (...) {
+		// nothing to do
 	}
 }
 
@@ -314,7 +326,7 @@ DdeServer::startLog(const StringBuffer *psbLogFileName)
 	if (psbLogFileName == NULL) return FALSE;
 	try {
 		m_psbLogFileName = new StringBuffer(*psbLogFileName);
-	} catch (exception&) {
+	} catch (...) {
 		return FALSE;
 	}
 	m_pfLogFile = new File(*m_psbLogFileName,
@@ -347,12 +359,16 @@ DdeServer::isLogging()
 void
 DdeServer::writeLog(LPCSTR logdata)
 {
-	StringBuffer buf(40+lstrlen(logdata));
-	buf.append((TCHAR)'[').append((ULONG)::GetTickCount()).append("] ")
-		.append(logdata).append((TCHAR)'\n');
-	if (m_pfLogFile->writeFile((UCHAR*)(LPCSTR)buf,buf.length())
-		!= (DWORD)buf.length()) {
-		DdeServer::stopLog();
+	try {
+		StringBuffer buf(40+lstrlen(logdata));
+		buf.append((TCHAR)'[').append((ULONG)::GetTickCount()).append("] ")
+			.append(logdata).append((TCHAR)'\n');
+		if (m_pfLogFile->writeFile((UCHAR*)(LPCSTR)buf,buf.length())
+			!= (DWORD)buf.length()) {
+			DdeServer::stopLog();
+		}
+	} catch (...) {
+		// nothing to do
 	}
 	//	これがあるとかなり速度が低下する(当たり前(^^;)
 //	m_pfLogFile->flushFileBuffers();
@@ -362,8 +378,11 @@ DdeServer::writeLog(LPCSTR logdata)
 void
 DdeServer::writeLog(const HCONV hconv, LPCSTR logdata)
 {
-	StringBuffer buf("ConvID: ",-1,40+lstrlen(logdata));
-	writeLog(buf.append((ULONG)hconv).append(" : ").append(logdata));
+	try {
+		StringBuffer buf("ConvID: ",-1,40+lstrlen(logdata));
+		writeLog(buf.append((ULONG)hconv).append(" : ").append(logdata));
+	} catch (...) {
+	}
 }
 
 //	コマンド引数をログに書き込む
@@ -373,15 +392,18 @@ DdeServer::writeArgvToLog(
 	CmdLineParser& ha,
 	StringBuffer& header)
 {
-	ha.initSequentialGet();
-	if (header.length()) {
-		writeLog(hconv,header.append(ha.getNextArgv()));
-	}
-	header.reset(" Argv: ");
-	LPCSTR	pav;
-	while ((pav = ha.getNextArgv()) != NULL) {
-		writeLog(hconv,header.append(pav));
-		header.setlength(7);
+	try {
+		ha.initSequentialGet();
+		if (header.length()) {
+			writeLog(hconv,header.append(ha.getNextArgv()));
+		}
+		header.reset(" Argv: ");
+		LPCSTR	pav;
+		while ((pav = ha.getNextArgv()) != NULL) {
+			writeLog(hconv,header.append(pav));
+			header.setlength(7);
+		}
+	} catch (...) {
 	}
 }
 
@@ -437,13 +459,16 @@ DdeServer::error(const HCONV, const HSZ, const HSZ, const HDDEDATA)
 HDDEDATA
 DdeServer::disconnect(const HCONV hconv, const HSZ, const HSZ, const HDDEDATA)
 {
-	//	リストから登録抹消
-	ConvData* cd = getConvData(hconv);
-	if (cd != NULL) {
-		if (!cd->isKeepAlive())
-			m_ConvDataList.delItemByPtr(cd);
-		else
-			cd->sethConv(NULL);
+	try {
+		//	リストから登録抹消
+		ConvData* cd = getConvData(hconv);
+		if (cd != NULL) {
+			if (!cd->isKeepAlive())
+				m_ConvDataList.delItemByPtr(cd);
+			else
+				cd->sethConv(NULL);
+		}
+	} catch (...) {
 	}
 	return HDDE_NULL;	//	Ddeml ignores it.
 }
@@ -459,13 +484,17 @@ DdeServer::execute(
 	ConvData* cd = getConvData(hconv);
 	if (cd == NULL) return HDDE_FNOTPROCESSED;
 
-	ReceivedDdeData rdd(hdata);
-	RealCmdLineParser argv((const StringBuffer&)rdd);
-	if (argv.itemNum() <= 0) return HDDE_FNOTPROCESSED;
-	PFNDDECMD_EXECUTE pfnCmd = getExecCmd(argv.getArgvStr(0));
-	if (pfnCmd == 0) return HDDE_FNOTPROCESSED;
-	argv.delArgv(0); // cmd name
-	return cd->ddeExecute(pfnCmd,argv);
+	try {
+		ReceivedDdeData rdd(hdata);
+		RealCmdLineParser argv((const StringBuffer&)rdd);
+		if (argv.itemNum() <= 0) return HDDE_FNOTPROCESSED;
+		PFNDDECMD_EXECUTE pfnCmd = getExecCmd(argv.getArgvStr(0));
+		if (pfnCmd == 0) return HDDE_FNOTPROCESSED;
+		argv.delArgv(0); // cmd name
+		return cd->ddeExecute(pfnCmd,argv);
+	} catch (...) {
+		return HDDE_FNOTPROCESSED;
+	}
 }
 
 HDDEDATA
@@ -478,13 +507,17 @@ DdeServer::request(
 	ConvData* cd = getConvData(hconv);
 	if (cd == NULL) return HDDE_FNOTPROCESSED;
 
-	DdeString dsItem(m_ddeInst,hsz2);
-	RealCmdLineParser argv((const StringBuffer&)dsItem);
-	if (argv.itemNum() <= 0) return HDDE_FNOTPROCESSED;
-	PFNDDECMD_REQUEST pfnCmd = getReqCmd(argv.getArgvStr(0));
-	if (pfnCmd == 0) return HDDE_FNOTPROCESSED;
-	argv.delArgv(0); // req name
-	return cd->ddeRequest(pfnCmd,argv,dsItem);
+	try {
+		DdeString dsItem(m_ddeInst,hsz2);
+		RealCmdLineParser argv((const StringBuffer&)dsItem);
+		if (argv.itemNum() <= 0) return HDDE_FNOTPROCESSED;
+		PFNDDECMD_REQUEST pfnCmd = getReqCmd(argv.getArgvStr(0));
+		if (pfnCmd == 0) return HDDE_FNOTPROCESSED;
+		argv.delArgv(0); // req name
+		return cd->ddeRequest(pfnCmd,argv,dsItem);
+	} catch (...) {
+		return HDDE_FNOTPROCESSED;
+	}
 }
 
 HDDEDATA
@@ -497,11 +530,15 @@ DdeServer::poke(
 	ConvData* cd = getConvData(hconv);
 	if (cd == NULL) return HDDE_FNOTPROCESSED;
 
-	PFNDDECMD_POKE pfnCmd = getPokeCmd(DdeString(m_ddeInst,hsz2));
-	if (pfnCmd == 0) return HDDE_FNOTPROCESSED;
-	ReceivedDdeData rdd(hdata);
-	PokeDataParser argv((const StringBuffer&)rdd);
-	return cd->ddePoke(pfnCmd,argv);
+	try {
+		PFNDDECMD_POKE pfnCmd = getPokeCmd(DdeString(m_ddeInst,hsz2));
+		if (pfnCmd == 0) return HDDE_FNOTPROCESSED;
+		ReceivedDdeData rdd(hdata);
+		PokeDataParser argv((const StringBuffer&)rdd);
+		return cd->ddePoke(pfnCmd,argv);
+	} catch (...) {
+		return HDDE_FNOTPROCESSED;
+	}
 }
 
 HDDEDATA
@@ -546,8 +583,11 @@ DdeServer::lregist(
 	const HSZ,
 	const HDDEDATA)
 {
-	StringBuffer buf("Start Server : ",-1,32);
-	writeLog(buf.append((LPCSTR)*m_pdsServiceName));
+	try {
+		StringBuffer buf("Start Server : ",-1,32);
+		writeLog(buf.append((LPCSTR)*m_pdsServiceName));
+	} catch (...) {
+	}
 	return HDDE_NULL;	//	Ddeml ignores it.
 }
 
@@ -558,7 +598,10 @@ DdeServer::lunregist(
 	const HSZ,
 	const HDDEDATA)
 {
-	writeLog("Stop Server");
+	try {
+		writeLog("Stop Server");
+	} catch (...) {
+	}
 	return HDDE_NULL;	//	Ddeml ignores it.
 }
 
@@ -579,12 +622,16 @@ DdeServer::lconnectconfirm(
 	const HSZ hsz2,
 	const HDDEDATA hdata)
 {
-	HDDEDATA hret = connectconfirm(hconv,hsz1,hsz2,hdata);
-	StringBuffer msg("Connect ",-1,32);
-	msg.append(hret == HDDE_TRUE ? "Success" : "Failed");
-	msg.append(": ").append((LPCSTR)DdeString(m_ddeInst,hsz1));
-	writeLog(hconv,msg);
-	return hret;	//	Ddeml ignores it.
+	try {
+		HDDEDATA hret = connectconfirm(hconv,hsz1,hsz2,hdata);
+		StringBuffer msg("Connect ",-1,32);
+		msg.append(hret == HDDE_TRUE ? "Success" : "Failed");
+		msg.append(": ").append((LPCSTR)DdeString(m_ddeInst,hsz1));
+		writeLog(hconv,msg);
+		return hret;	//	Ddeml ignores it.
+	} catch (...) {
+		return HDDE_FALSE;
+	}
 }
 
 HDDEDATA
@@ -594,8 +641,12 @@ DdeServer::lerror(
 	const HSZ hsz2,
 	const HDDEDATA hdata)
 {
-	writeLog("Unrecoverable error(s)!! Stop Server");
-	return error(hconv,hsz1,hsz2,hdata);
+	try {
+		writeLog("Unrecoverable error(s)!! Stop Server");
+		return error(hconv,hsz1,hsz2,hdata);
+	} catch (...) {
+		return HDDE_FALSE;
+	}
 }
 
 HDDEDATA
@@ -605,8 +656,12 @@ DdeServer::ldisconnect(
 	const HSZ hsz2,
 	const HDDEDATA hdata)
 {
-	writeLog(hconv,"Disconnect");
-	return disconnect(hconv,hsz1,hsz2,hdata);
+	try {
+		writeLog(hconv,"Disconnect");
+		return disconnect(hconv,hsz1,hsz2,hdata);
+	} catch (...) {
+		return HDDE_FALSE;
+	}
 }
 
 HDDEDATA
@@ -619,18 +674,22 @@ DdeServer::lexecute(
 	ConvData* cd = getConvData(hconv);
 	if (cd == NULL) return HDDE_FNOTPROCESSED;
 
-	ReceivedDdeData rdd(hdata);
-	RealCmdLineParser argv((const StringBuffer&)rdd);
-	if (argv.itemNum() <= 0) return HDDE_FNOTPROCESSED;
-	StringBuffer buf("Execute: ");
-	writeArgvToLog(hconv,argv,buf);
-	PFNDDECMD_EXECUTE pfnCmd = getExecCmd(argv.getArgvStr(0));
-	if (pfnCmd == 0) return HDDE_FNOTPROCESSED;
-	argv.delArgv(0); // cmd name
-	HDDEDATA hret = cd->ddeExecute(pfnCmd,argv);
-	buf = hret == HDDE_FACK ? " Return: Success" : " Return: Failed";
-	writeLog(hconv,buf);
-	return hret;
+	try {
+		ReceivedDdeData rdd(hdata);
+		RealCmdLineParser argv((const StringBuffer&)rdd);
+		if (argv.itemNum() <= 0) return HDDE_FNOTPROCESSED;
+		StringBuffer buf("Execute: ");
+		writeArgvToLog(hconv,argv,buf);
+		PFNDDECMD_EXECUTE pfnCmd = getExecCmd(argv.getArgvStr(0));
+		if (pfnCmd == 0) return HDDE_FNOTPROCESSED;
+		argv.delArgv(0); // cmd name
+		HDDEDATA hret = cd->ddeExecute(pfnCmd,argv);
+		buf = hret == HDDE_FACK ? " Return: Success" : " Return: Failed";
+		writeLog(hconv,buf);
+		return hret;
+	} catch (...) {
+		return HDDE_FNOTPROCESSED;
+	}
 }
 
 HDDEDATA
@@ -643,23 +702,27 @@ DdeServer::lrequest(
 	ConvData* cd = getConvData(hconv);
 	if (cd == NULL) return HDDE_FNOTPROCESSED;
 
-	DdeString dsItem(m_ddeInst,hsz2);
-	RealCmdLineParser argv((const StringBuffer&)dsItem);
-	if (argv.itemNum() <= 0) return HDDE_FNOTPROCESSED;
-	StringBuffer buf("Request: ");
-	writeArgvToLog(hconv,argv,buf);
-	PFNDDECMD_REQUEST pfnCmd = getReqCmd(argv.getArgvStr(0));
-	if (pfnCmd == 0) return HDDE_FNOTPROCESSED;
-	argv.delArgv(0); // req name
-	HDDEDATA hret = cd->ddeRequest(pfnCmd,argv,dsItem);
-	buf = " Return: ";
-	if (hret != HDDE_FNOTPROCESSED) {
-		buf.append((const StringBuffer&)TemporalDdeData(hret));
-	} else {
-		buf.append("Failed");
+	try {
+		DdeString dsItem(m_ddeInst,hsz2);
+		RealCmdLineParser argv((const StringBuffer&)dsItem);
+		if (argv.itemNum() <= 0) return HDDE_FNOTPROCESSED;
+		StringBuffer buf("Request: ");
+		writeArgvToLog(hconv,argv,buf);
+		PFNDDECMD_REQUEST pfnCmd = getReqCmd(argv.getArgvStr(0));
+		if (pfnCmd == 0) return HDDE_FNOTPROCESSED;
+		argv.delArgv(0); // req name
+		HDDEDATA hret = cd->ddeRequest(pfnCmd,argv,dsItem);
+		buf = " Return: ";
+		if (hret != HDDE_FNOTPROCESSED) {
+			buf.append((const StringBuffer&)TemporalDdeData(hret));
+		} else {
+			buf.append("Failed");
+		}
+		writeLog(hconv,buf);
+		return hret;
+	} catch (...) {
+		return HDDE_FNOTPROCESSED;
 	}
-	writeLog(hconv,buf);
-	return hret;
 }
 
 HDDEDATA
@@ -672,19 +735,23 @@ DdeServer::lpoke(
 	ConvData* cd = getConvData(hconv);
 	if (cd == NULL) return HDDE_FNOTPROCESSED;
 
-	DdeString dsItem(m_ddeInst,hsz2);
-	PFNDDECMD_POKE pfnCmd = getPokeCmd(dsItem);
-	if (pfnCmd == 0) return HDDE_FNOTPROCESSED;
-	ReceivedDdeData rdd(hdata);
-	PokeDataParser argv((const StringBuffer&)rdd);
-	StringBuffer buf("Poke : ",-1,dsItem.length());
-	writeLog(hconv,buf.append((LPCSTR)dsItem));
-	buf = nullStr;
-	writeArgvToLog(hconv,argv,buf);
-	HDDEDATA hret = cd->ddePoke(pfnCmd,argv);
-	buf = hret == HDDE_FACK ? " Return: Success" : " Return: Failed";
-	writeLog(hconv,buf);
-	return hret;
+	try {
+		DdeString dsItem(m_ddeInst,hsz2);
+		PFNDDECMD_POKE pfnCmd = getPokeCmd(dsItem);
+		if (pfnCmd == 0) return HDDE_FNOTPROCESSED;
+		ReceivedDdeData rdd(hdata);
+		PokeDataParser argv((const StringBuffer&)rdd);
+		StringBuffer buf("Poke : ",-1,dsItem.length());
+		writeLog(hconv,buf.append((LPCSTR)dsItem));
+		buf = nullStr;
+		writeArgvToLog(hconv,argv,buf);
+		HDDEDATA hret = cd->ddePoke(pfnCmd,argv);
+		buf = hret == HDDE_FACK ? " Return: Success" : " Return: Failed";
+		writeLog(hconv,buf);
+		return hret;
+	} catch (...) {
+		return HDDE_FNOTPROCESSED;
+	}
 }
 
 HDDEDATA
@@ -694,10 +761,14 @@ DdeServer::ladvstart(
 	const HSZ hsz2,
 	const HDDEDATA hdata)
 {
-	HDDEDATA hret = advstart(hconv,hsz1,hsz2,hdata);
-	writeLog(hconv,hret == HDDE_TRUE ? "Start Advice Success" :
-									   "Start Advice Failed");
-	return hret;
+	try {
+		HDDEDATA hret = advstart(hconv,hsz1,hsz2,hdata);
+		writeLog(hconv,hret == HDDE_TRUE ? "Start Advice Success" :
+										   "Start Advice Failed");
+		return hret;
+	} catch (...) {
+		return HDDE_FALSE;
+	}
 }
 
 HDDEDATA
@@ -707,10 +778,14 @@ DdeServer::ladvstop(
 	const HSZ hsz2,
 	const HDDEDATA hdata)
 {
-	HDDEDATA hret = advstop(hconv,hsz1,hsz2,hdata);
-	writeLog(hconv,hret == HDDE_TRUE ? "Stop Advice Success" :
-									   "Stop Advice Ignored");
-	return hret;
+	try {
+		HDDEDATA hret = advstop(hconv,hsz1,hsz2,hdata);
+		writeLog(hconv,hret == HDDE_TRUE ? "Stop Advice Success" :
+										   "Stop Advice Ignored");
+		return hret;
+	} catch (...) {
+		return HDDE_FALSE;
+	}
 }
 
 HDDEDATA
@@ -720,17 +795,21 @@ DdeServer::ladvreq(
 	const HSZ hsz2,
 	const HDDEDATA hdata)
 {
-	HDDEDATA hret = advreq(hconv,hsz1,hsz2,hdata);
-	StringBuffer buf("Request Advice Data ",-1,16);
-	if (hret != HDDE_NULL) {
-		writeLog(hconv,buf.append("Success"));
-		buf.reset(" Data: ");
-		writeLog(hconv,buf.append((const StringBuffer&)TemporalDdeData(hret)));
-	} else {
-		writeLog(hconv,buf.append("Failed"));
-		buf.reset(" Error code: ");
-		writeLog(hconv,buf.append((ULONG)::DdeGetLastError(m_ddeInst)));
+	try {
+		HDDEDATA hret = advreq(hconv,hsz1,hsz2,hdata);
+		StringBuffer buf("Request Advice Data ",-1,16);
+		if (hret != HDDE_NULL) {
+			writeLog(hconv,buf.append("Success"));
+			buf.reset(" Data: ");
+			writeLog(hconv,buf.append((const StringBuffer&)TemporalDdeData(hret)));
+		} else {
+			writeLog(hconv,buf.append("Failed"));
+			buf.reset(" Error code: ");
+			writeLog(hconv,buf.append((ULONG)::DdeGetLastError(m_ddeInst)));
+		}
+		return hret;
+	} catch (...) {
+		return HDDE_NULL;
 	}
-	return hret;
 }
 

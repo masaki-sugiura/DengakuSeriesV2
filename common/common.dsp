@@ -258,6 +258,10 @@ SOURCE=.\tokenizer.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl;fi;fd"
 # Begin Source File
 
+SOURCE=.\array.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\auto_ptr.h
 # End Source File
 # Begin Source File
