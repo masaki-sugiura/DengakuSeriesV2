@@ -1,4 +1,4 @@
-//	$Id: recfind.cpp,v 1.3 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: recfind.cpp,v 1.4 2002-03-05 14:19:35 sugiura Exp $
 /*
  *	recfind.cpp
  *	enum** ånÇÃä÷êîÇÃÇΩÇﬂÇÃÉNÉâÉX
@@ -163,7 +163,7 @@ RecFindData::getValue() const
 //	if (m_pnPathBuf.length() == m_nIniLength)
 //		return m_sbBaseName;
 //	else 
-//	if (m_pnPathBuf.charAt(m_nIniLength - 1) == '\\')
+//	if (m_pnPathBuf[m_nIniLength - 1] == '\\')
 //		return m_pnPathBuf.extract(m_nIniLength,-1);
 //				.append((TCHAR)'\\').append(m_sbBaseName);
 //	else

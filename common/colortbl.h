@@ -1,4 +1,4 @@
-//	$Id: colortbl.h,v 1.1 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: colortbl.h,v 1.2 2002-03-05 14:19:34 sugiura Exp $
 /*
  *	colortbl.h
  *	カラーテーブルを管理するクラス
@@ -32,7 +32,7 @@ public:
 
 	COLORREF getColorRef(const StringBuffer& cname) const
 	{
-		if (cname.charAt(0) == '#')
+		if (cname[0] == '#')
 			return colorStrToColorRef(cname);
 		CRContainer* pCRC = this->getItemByName(cname);
 		if (pCRC != NULL) return pCRC->getColorRef();

@@ -1,4 +1,4 @@
-//	$Id: si_file.cpp,v 1.7 2002-03-05 14:09:40 sugiura Exp $
+//	$Id: si_file.cpp,v 1.8 2002-03-05 14:19:35 sugiura Exp $
 /*
  *	si_file.cpp
  *	SessionInstance: ファイルサービスの関数
@@ -292,8 +292,8 @@ SessionInstance::si_remove(CmdLineParser& params)
 	int optnum = 0;
 	while (optnum < pnum) {
 		const StringBuffer& av = params.getNextArgvStr();
-		if (!isopthead(av.charAt(0))) break;
-		GetFlags(av, fFlags);
+		if (!isopthead(av[0]) ||
+			!GetFlags(av, fFlags)) break;
 		optnum++;
 	}
 	// ファイル指定がない
@@ -343,8 +343,8 @@ SessionInstance::si_mkdir(CmdLineParser& params)
 	int optnum = 0;
 	while (optnum < pnum) {
 		const StringBuffer& av = params.getNextArgvStr();
-		if (!isopthead(av.charAt(0))) break;
-		GetFlags(av, flags, optMapMkDir);
+		if (!isopthead(av[0]) ||
+			!GetFlags(av, flags, optMapMkDir)) break;
 		optnum++;
 	}
 	if (optnum == pnum) return FALSE;
@@ -434,8 +434,8 @@ SessionInstance::si_rmdir(CmdLineParser& params)
 	int optnum = 0;
 	while (optnum < pnum) {
 		const StringBuffer& av = params.getNextArgvStr();
-		if (!isopthead(av.charAt(0))) break;
-		GetFlags(av, flags, optMapRmDir);
+		if (!isopthead(av[0]) ||
+			!GetFlags(av, flags, optMapRmDir)) break;
 		optnum++;
 	}
 	if (optnum == pnum) return FALSE;
@@ -491,7 +491,7 @@ GetAttrFlags(CmdLineParser& params, DWORD& mask, DWORD& attrflags)
 
 	int i = 0, len = attropts.length();
 	while (i < len) {
-		switch (attropts.charAt(i++)) {
+		switch (attropts[i++]) {
 		case '-':
 			mask = ATTRIBUTE_MASK_DEL;
 			break;
@@ -817,8 +817,8 @@ SessionInstance::si_timestampof(CmdLineParser& params)
 
 	if (pnum > 0) {
 		const StringBuffer& av = params.getArgvStr(0);
-		if (isopthead(av.charAt(0))) {
-			if (av.charAt(1) == 'l') offset = 0;
+		if (isopthead(av[0])) {
+			if (av[1] == 'l') offset = 0;
 			optnum++;
 		}
 	}

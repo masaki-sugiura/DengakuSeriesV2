@@ -1,4 +1,4 @@
-//	$Id: colortbl.cpp,v 1.2 2002-02-19 15:34:21 sugiura Exp $
+//	$Id: colortbl.cpp,v 1.3 2002-03-05 14:19:34 sugiura Exp $
 /*
  *	colortbl.cpp
  *	カラーテーブルを管理するクラスの実装
@@ -78,7 +78,7 @@ COLORREF
 ColorTable::colorStrToColorRef(const StringBuffer& cref)
 {
 	COLORREF color = 0;
-	if (cref.charAt(0) == '#' && cref.length() >= 7) {
+	if (cref[0] == '#' && cref.length() >= 7) {
 		LPCSTR pcolor = cref;
 		++pcolor;
 		for (int i = 0; i < 6; i++) {

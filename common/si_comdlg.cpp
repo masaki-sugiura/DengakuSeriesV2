@@ -1,4 +1,4 @@
-// $Id: si_comdlg.cpp,v 1.7 2002-03-02 09:39:46 sugiura Exp $
+// $Id: si_comdlg.cpp,v 1.8 2002-03-05 14:19:35 sugiura Exp $
 /*
  *	si_comdlg.cpp
  *	コモンダイアログ表示関数
@@ -176,7 +176,7 @@ SessionInstance::getColorByDlg(
 	while (i < 17) {
 		const StringBuffer& arg = inicolors.getNextArgvStr();
 		if (arg.length() == 0) break;
-		if (arg.charAt(0) == '#') {
+		if (arg[0] == '#') {
 			int len = arg.length(), head = 0;
 			while (i < 17 && head < len) {
 				cr[i++] = ColorTable::colorStrToColorRef(arg.extract(head,7));
