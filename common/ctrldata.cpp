@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.38 2005-01-15 19:54:47 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.39 2005-01-16 09:00:25 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -1244,19 +1244,24 @@ EditCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 	case EN_CHANGE:
 		return m_notify[0];
 	case EN_SETFOCUS:
-		if (m_imestate > 0) {
-			HIMC hImc = ::ImmGetContext((HWND)lParam);
-			switch (m_imestate) {
-			case 1:
-				if (!::ImmGetOpenStatus(hImc)) ::ImmSetOpenStatus(hImc,TRUE);
-				break;
-			default:
-				if (::ImmGetOpenStatus(hImc)) ::ImmSetOpenStatus(hImc,FALSE);
-				break;
+		{
+			int nState = m_pDlgPage->getDlgFrame().getImeState();
+			if (m_imestate > 0 || nState > 0) {
+				// グローバル設定をローカル設定で上書き
+				if (m_imestate > 0) nState = m_imestate;
+				HIMC hImc = ::ImmGetContext((HWND)lParam);
+				switch (nState) {
+				case 1:
+					if (!::ImmGetOpenStatus(hImc)) ::ImmSetOpenStatus(hImc,TRUE);
+					break;
+				default:
+					if (::ImmGetOpenStatus(hImc)) ::ImmSetOpenStatus(hImc,FALSE);
+					break;
+				}
+				::ImmReleaseContext((HWND)lParam,hImc);
 			}
-			::ImmReleaseContext((HWND)lParam,hImc);
+			::SendMessage((HWND)lParam, EM_SETSEL, 0, -1);
 		}
-		::SendMessage((HWND)lParam,EM_SETSEL,0,-1);
 		break;
 	}
 	return 0xFFFF;
@@ -2282,7 +2287,11 @@ ComboCtrl::createCtrlTemplate(CtrlTemplateArgs& cta)
 	cta.m_cx = UWIDTH * m_cx - OWIDTH;
 	// height of drop-down list
 //	cta.m_cy = (WORD)(8 * (m_item->itemNum() + 3) + 2);
-	cta.m_cy = (WORD)(((m_item->itemNum() + 3) << 3) + 2);
+	if (m_height > 0) {
+		cta.m_cy = (WORD)(8 * m_height + 2);
+	} else {
+		cta.m_cy = (WORD)(8 * (m_item->itemNum() + 3) + 2);
+	}
 	m_pcp->setCtrlTemplate(cta);
 	return TRUE;
 }
@@ -2370,9 +2379,12 @@ ComboCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 		if (m_bEditable) {
 			HWND hwndEdit = ::GetTopWindow((HWND)lParam);
 			if (hwndEdit == NULL) break;
-			if (m_imestate > 0) {
+			int nState = m_pDlgPage->getDlgFrame().getImeState();
+			if (m_imestate > 0 || nState > 0) {
+				// グローバル設定をローカル設定で上書き
+				if (m_imestate > 0) nState = m_imestate;
 				HIMC hImc = ::ImmGetContext(hwndEdit);
-				switch (m_imestate) {
+				switch (nState) {
 				case 1:
 					if (!::ImmGetOpenStatus(hImc))
 						::ImmSetOpenStatus(hImc, TRUE);
@@ -2384,7 +2396,7 @@ ComboCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 				}
 				::ImmReleaseContext(hwndEdit, hImc);
 			}
-			::SendMessage(hwndEdit,EM_SETSEL,0,-1);
+			::SendMessage(hwndEdit, EM_SETSEL, 0, -1);
 		}
 		break;
 	}

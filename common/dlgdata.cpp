@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.26 2005-01-15 06:53:48 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.27 2005-01-16 09:00:25 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -1245,6 +1245,7 @@ int
 DlgFrame::setImeState(int nState)
 {
 	m_imestate = nState;
+#if 0 // 入力フォーカスを得るコントロールに個別に設定が必要
 	if (m_hwndFrame) {
 		HIMC hImc = ::ImmGetContext(m_hwndFrame);
 		switch (m_imestate) {
@@ -1259,6 +1260,7 @@ DlgFrame::setImeState(int nState)
 		}
 		::ImmReleaseContext(m_hwndFrame, hImc);
 	}
+#endif
 	return m_imestate;
 }
 

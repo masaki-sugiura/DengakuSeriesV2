@@ -1,4 +1,4 @@
-//	$Id: ds_func.cpp,v 1.9 2005-01-16 07:38:33 sugiura Exp $
+//	$Id: ds_func.cpp,v 1.10 2005-01-16 09:00:25 sugiura Exp $
 /*
  *	ds_func.cpp
  *	ダイアログ操作関数
@@ -221,6 +221,29 @@ GETDLGTITLE()
 {
 	try {
 		g_strBuffer = g_pSessionInstance->si_getdlgtitle();
+		return g_strBuffer;
+	} catch (...) {
+		return "";
+	}
+}
+
+//	ダイアログ全体のIMEの状態を設定する
+DENGAKUDLL_API HIDEDLL_NUMTYPE
+SETDLGIMESTATE(HIDEDLL_NUMTYPE num1)
+{
+	try {
+		return g_pSessionInstance->si_setdlgimestate(num1);
+	} catch (...) {
+		return 0;
+	}
+}
+
+//	ダイアログ全体のIMEの状態を返す
+DENGAKUDLL_API LPCSTR
+GETDLGIMESTATE()
+{
+	try {
+		g_strBuffer = g_pSessionInstance->si_getdlgimestate();
 		return g_strBuffer;
 	} catch (...) {
 		return "";
