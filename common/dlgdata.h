@@ -1,4 +1,4 @@
-//	$Id: dlgdata.h,v 1.11 2004-04-30 15:27:18 sugiura Exp $
+//	$Id: dlgdata.h,v 1.12 2004-05-03 16:05:43 sugiura Exp $
 /*
  *	dlgdata.h
  *	ダイアログを扱うクラス
@@ -252,17 +252,22 @@ public:
 			m_pThemeWrapper->SetWindowTheme(hwndCtrl, NULL, NULL);
 		}
 	}
-	BOOL getThemeDialogBackgroundColor(COLORREF* pCRef)
+	BOOL getThemeColor(HWND hwndPage, LPCWSTR pwszClass, int iPart, int iState, int iProp, COLORREF* pCRef)
 	{
 		if (!m_pThemeWrapper) return FALSE;
-		HTHEME hTheme = m_pThemeWrapper->OpenThemeData(m_hwndFrame, L"Dialog, Window");
+		HTHEME hTheme = m_pThemeWrapper->OpenThemeData(hwndPage, pwszClass);
 		if (!hTheme) {
 //			::MessageBox(NULL, "hTheme == NULL", NULL, MB_OK);
 			return FALSE;
 		}
-		HRESULT hr = m_pThemeWrapper->GetThemeColor(hTheme, WP_DIALOG, 0, TMT_COLOR, pCRef);
+		HRESULT hr = m_pThemeWrapper->GetThemeColor(hTheme, iPart, iState, iProp, pCRef);
 		m_pThemeWrapper->CloseThemeData(hTheme);
 		return hr == S_OK;
+	}
+	BOOL isThemeActive()
+	{
+		if (!m_pThemeWrapper) return FALSE;
+		return m_pThemeWrapper->IsThemeActive();
 	}
 
 //	データの書き込み・読込み

@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.33 2004-04-30 15:27:18 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.34 2004-05-03 16:05:43 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -983,14 +983,11 @@ SimpleCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDc)
 {
 	if (!m_pcp->m_hbrBackground) {
 		LOGBRUSH lbr;
-		if (!m_pDlgPage->getDlgFrame().getThemeDialogBackgroundColor(&lbr.lbColor)) {
-			lbr.lbColor = ::GetBkColor(hDc);
-		}
+		lbr.lbColor = ::GetBkColor(hDc);
 		lbr.lbStyle = BS_SOLID;
 		m_pcp->m_hbrBackground = ::CreateBrushIndirect(&lbr);
 	}
 	::SetTextColor(hDc, m_pcp->m_fontprop.m_color);
-//	::SetBkMode(hDc, TRANSPARENT);
 	return m_pcp->m_hbrBackground;
 }
 
@@ -1085,9 +1082,21 @@ TextCtrl::createCtrlTemplate(CtrlTemplateArgs& cta)
 HBRUSH
 TextCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDc)
 {
-//	::SetBkMode(hDc, TRANSPARENT);
-	return SimpleCtrl::onCtlColor(hwndCtrl, uMsg, hDc);
-//	return NULL;
+	if (m_pDlgPage->getDlgFrame().isThemeActive()) {
+		::SetTextColor(hDc, m_pcp->m_fontprop.m_color);
+		return NULL;
+	} else {
+		COLORREF bgColor = ::GetSysColor(COLOR_BTNFACE);
+		if (!m_pcp->m_hbrBackground) {
+			LOGBRUSH lbr;
+			lbr.lbColor = bgColor;
+			lbr.lbStyle = BS_SOLID;
+			m_pcp->m_hbrBackground = ::CreateBrushIndirect(&lbr);
+		}
+		::SetTextColor(hDc, m_pcp->m_fontprop.m_color);
+		::SetBkColor(hDc, bgColor);
+		return m_pcp->m_hbrBackground;
+	}
 }
 
 EditCtrl::EditCtrl(
