@@ -1,7 +1,7 @@
-//	$Id: BRE_Wrapper.cpp,v 1.3 2002-01-22 15:31:28 sugiura Exp $
+//	$Id: BRE_Wrapper.cpp,v 1.4 2002-01-22 15:32:37 sugiura Exp $
 /*
- *	bs_func.cpp
- *	BRegexp ‚ÉŠÖ‚·‚éƒNƒ‰ƒX
+ *	BRE_Wrapper.cpp
+ *	BRE_WRAP.DLL –{‘Ì•‚c‚k‚kŠÖ”
  */
 
 #include "BRE_Wrapper.h"
