@@ -1,0 +1,131 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 日本語 resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+#ifdef _WIN32
+LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+#pragma code_page(932)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIRBROWSE DIALOGEX 0, 0, 187, 207
+STYLE DS_MODALFRAME | DS_SETFOREGROUND | DS_CENTER | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "フォルダの選択"
+FONT 9, "ＭＳ Ｐゴシック", 0, 0, 0x1
+BEGIN
+    PUSHBUTTON      "OK",IDC_OK,76,186,50,14
+    PUSHBUTTON      "ｷｬﾝｾﾙ",IDC_CANCEL,130,186,50,14
+    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | 
+                    TVS_HASLINES | TVS_EDITLABELS | TVS_DISABLEDRAGDROP | 
+                    TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,34,173,149,
+                    WS_EX_CLIENTEDGE
+    PUSHBUTTON      "サブフォルダの追加",IDC_NEWFOLDER,7,19,80,13
+    PUSHBUTTON      "名前の変更",IDC_RENAME,91,19,48,13
+    PUSHBUTTON      "削除",IDC_DELETE,143,19,37,13
+    CONTROL         "Static",IDC_TITLE,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,
+                    7,7,173,10
+END
+
+IDD_NETACCOUNT DIALOG DISCARDABLE  0, 0, 293, 79
+STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "ネットワーク パスワードの入力"
+FONT 9, "ＭＳ Ｐゴシック"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,236,7,50,14
+    PUSHBUTTON      "ｷｬﾝｾﾙ",IDCANCEL,236,25,50,14
+    LTEXT           "アクセスするにはパスワードおよびユーザー名が必要です:",
+                    IDC_STATIC,7,7,174,10
+    LTEXT           "",IDC_UNC_PATH,19,19,208,13
+    LTEXT           "ユーザー名(&C):",IDC_STATIC,7,41,46,10
+    EDITTEXT        IDC_USERNAME,58,39,168,12,ES_AUTOHSCROLL
+    LTEXT           "パスワード(&P):",IDC_STATIC,7,57,46,10
+    EDITTEXT        IDC_PASSWD,58,55,168,12,ES_PASSWORD | ES_AUTOHSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_DIRBROWSE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 200
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RT_MANIFEST
+//
+
+1                       RT_MANIFEST DISCARDABLE "DengakuDLL.dll.manifest"
+#endif    // 日本語 resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
