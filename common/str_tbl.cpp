@@ -1,4 +1,4 @@
-//	$Id: str_tbl.cpp,v 1.6 2002-11-10 08:52:05 sugiura Exp $
+//	$Id: str_tbl.cpp,v 1.7 2005-02-22 15:33:19 sugiura Exp $
 /*
  *	str_tbl.cpp
  *	•¶š—ñƒe[ƒuƒ‹
@@ -59,6 +59,7 @@ LPCSTR	const_strings[] = {
 	"States",
 	"ImeState",
 	"Sort",
+	"Editable",
 	"RGBNames"
 };
 

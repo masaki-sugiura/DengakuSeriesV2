@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.41 2005-01-18 13:52:08 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.42 2005-02-22 15:33:19 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -828,7 +828,7 @@ CtrlListItem::loadData(DlgDataFile& ddfile)
 	for (int i = 0; i < sizeof(m_notify) / sizeof(m_notify[0]); i++) {
 		buf.append(i);
 		if (!ddfile.read(&m_notify[i], buf)) m_notify[i] = 0xFFFF;
-		buf.setlength(i);
+		buf.setlength(len);
 	}
 	ddfile.read(&m_width, GetString(STR_DLGDATA_WIDTH));
 	ddfile.read(&m_height, GetString(STR_DLGDATA_HEIGHT));
@@ -2277,7 +2277,7 @@ ComboCtrl::ComboCtrl(
 	const StringBuffer& name,
 	const StringBuffer& text,
 	CTRL_ID type)
-	: ListCtrl(name,text,CTRLID_COMBO),
+	: ListCtrl(name,text,type),
 	  m_imestate(0L),
 	  m_bEditable(type == CTRLID_COMBO),
 	  m_bAlreadyFocused(FALSE)
@@ -2453,6 +2453,7 @@ ComboCtrl::dumpData(DlgDataFile& ddfile)
 {
 	if (!ListCtrl::dumpData(ddfile)) return FALSE;
 	ddfile.write(m_imestate, GetString(STR_DLGDATA_IMESTATE));
+	ddfile.write(m_bEditable, GetString(STR_DLGDATA_EDITABLE));
 	return TRUE;
 }
 
@@ -2460,6 +2461,9 @@ BOOL
 ComboCtrl::loadData(DlgDataFile& ddfile)
 {
 	ddfile.read(&m_imestate, GetString(STR_DLGDATA_IMESTATE));
+	ddfile.read(&m_bEditable, GetString(STR_DLGDATA_EDITABLE));
+	m_pcp->m_style = (m_pcp->m_style & ~(CBS_DROPDOWN | CBS_DROPDOWNLIST)) |
+					 (m_bEditable ? CBS_DROPDOWN : CBS_DROPDOWNLIST);
 	return ListCtrl::loadData(ddfile);
 }
 
@@ -2634,6 +2638,7 @@ ChkListCtrl::ChkListCtrl(
 	const StringBuffer& text,
 	CTRL_ID type)
 	: HasListCtrl(name, text, type)
+	, m_bSorted(FALSE)
 {
 	m_pcp->m_style		= LVS_REPORT|LVS_NOCOLUMNHEADER|LVS_SINGLESEL|
 							WS_CHILD|WS_BORDER|WS_TABSTOP|WS_VISIBLE|WS_GROUP;
@@ -3892,7 +3897,8 @@ FrameCtrl::FrameCtrl(
 	const StringBuffer& name,
 	const StringBuffer& text,
 	CTRL_ID type)
-	: HasListCtrl(name, text, type), m_page(NULL)
+	: HasListCtrl(name, text, type)
+	, m_page(NULL)
 {
 	if (type == CTRLID_FRAME) {
 		m_pcp->m_style		= BS_FLAT;
