@@ -1,4 +1,4 @@
-// $Id: si_comdlg.cpp,v 1.5 2002-02-21 12:55:58 sugiura Exp $
+// $Id: si_comdlg.cpp,v 1.6 2002-02-25 07:26:01 sugiura Exp $
 /*
  *	si_comdlg.cpp
  *	コモンダイアログ表示関数
@@ -13,13 +13,22 @@
 
 #define FILEDLG_BUFSIZE (11 * MAX_PATH)
 
+static void
+CenteringWindow(HWND hwndDlg, HWND hwndOwner)
+{
+	RECT rect;
+	GetWindowCenter(hwndDlg, hwndOwner, rect);
+	::SetWindowPos(hwndDlg, hwndOwner,
+				   rect.left, rect.right, 0, 0,
+				   SWP_NOACTIVATE | SWP_NOREDRAW | SWP_NOZORDER | SWP_NOSIZE);
+}
+
 static UINT CALLBACK
 GetFileNameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	if (uMsg == WM_INITDIALOG) {
 		CenteringWindow(::GetParent(hDlg),
-						(HWND)((LPOPENFILENAME)lParam)->lCustData,
-						SWP_NOSIZE);
+						(HWND)((LPOPENFILENAME)lParam)->lCustData);
 	}
 	return FALSE;
 }
@@ -150,7 +159,7 @@ ChooseColorProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	if (uMsg == WM_INITDIALOG) {
 		CHOOSECOLOR* pcc = reinterpret_cast<CHOOSECOLOR*>(lParam);
 		::SetWindowText(hDlg,(LPCSTR)pcc->lCustData);
-		CenteringWindow(hDlg, pcc->hwndOwner, SWP_NOSIZE);
+		CenteringWindow(hDlg, pcc->hwndOwner);
 	}
 	return 0;
 }
@@ -205,7 +214,7 @@ ChooseFontProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	if (uMsg == WM_INITDIALOG) {
 		CHOOSEFONT* pcf = reinterpret_cast<CHOOSEFONT*>(lParam);
 		::SetWindowText(hDlg,(LPCSTR)pcf->lCustData);
-		CenteringWindow(hDlg, pcf->hwndOwner, SWP_NOSIZE);
+		CenteringWindow(hDlg, pcf->hwndOwner);
 	}
 	return 0;
 }

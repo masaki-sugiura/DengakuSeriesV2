@@ -1,4 +1,4 @@
-//	$Id: misc.cpp,v 1.4 2002-02-20 16:48:40 sugiura Exp $
+//	$Id: misc.cpp,v 1.5 2002-02-25 07:26:01 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数
@@ -28,19 +28,16 @@ GetDialogBaseUnits(HWND hDlg, LPCSTR str)
 }
 
 void
-CenteringWindow(HWND hWnd, HWND hwndOwner, DWORD swparam)
+GetWindowCenter(HWND hWnd, HWND hwndOwner, RECT& rectRet)
 {
 	//	ウィンドウを画面中央に移動
 	RECT rectOwner, rect;
 	::GetWindowRect(hwndOwner, &rectOwner);
 	::GetWindowRect(hWnd, &rect);
-	POINT pos;
-	pos.x = (rectOwner.left + rectOwner.right + rect.left - rect.right) >> 1;
-	pos.y = (rectOwner.top + rectOwner.bottom + rect.top - rect.bottom) >> 1;
-//	::ScreenToClient(hwndOwner, &pos);
-	::SetWindowPos(hWnd, hwndOwner,
-				   pos.x, pos.y, 0, 0,
-				   swparam);
+	rectRet.left = (rectOwner.left + rectOwner.right + rect.left - rect.right) >> 1;
+	rectRet.top  = (rectOwner.top + rectOwner.bottom + rect.top - rect.bottom) >> 1;
+	rectRet.right  = rectRet.left + rect.right - rect.left;
+	rectRet.bottom = rectRet.top + rect.bottom - rect.top;
 }
 
 void

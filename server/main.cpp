@@ -1,4 +1,4 @@
-//	$Id: main.cpp,v 1.3 2002-02-20 16:48:40 sugiura Exp $
+//	$Id: main.cpp,v 1.4 2002-02-25 07:26:01 sugiura Exp $
 /*
  *	main.cpp
  *	田楽サーバ本体
@@ -157,10 +157,11 @@ InitMainWindow(DDEServerInfo* pdsi)
 	lstrcpy(lptnid->szTip,pdsi->m_sbWndTitle);
 
 	//	ウィンドウを画面中央に移動
-	CenteringWindow(pdsi->m_hwndMain, ::GetDesktopWindow(),
-					SWP_NOACTIVATE|SWP_NOREDRAW|SWP_NOSIZE|SWP_HIDEWINDOW);
-	::SetWindowPos(pdsi->m_hwndMain, HWND_TOPMOST, 0, 0, 0, 0,
-					SWP_NOACTIVATE|SWP_NOREDRAW|SWP_NOSIZE|SWP_NOMOVE|SWP_HIDEWINDOW);
+	RECT rectMain;
+	GetWindowCenter(pdsi->m_hwndMain, ::GetDesktopWindow(), rectMain);
+	::SetWindowPos(pdsi->m_hwndMain, HWND_TOPMOST,
+				   rectMain.left, rectMain.top, 0, 0,
+				   SWP_NOACTIVATE | SWP_NOREDRAW | SWP_NOSIZE | SWP_HIDEWINDOW);
 
 	return TRUE;
 }

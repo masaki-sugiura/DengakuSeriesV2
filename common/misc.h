@@ -1,4 +1,4 @@
-//	$Id: misc.h,v 1.4 2002-02-20 16:48:40 sugiura Exp $
+//	$Id: misc.h,v 1.5 2002-02-25 07:26:01 sugiura Exp $
 /*
  *	misc.h
  *	雑多なユーティリティ関数
@@ -12,7 +12,7 @@
 BOOL isWinNT();
 
 DWORD GetDialogBaseUnits(HWND hDlg, LPCSTR str = "M");
-void CenteringWindow(HWND hWnd, HWND hWndPos, DWORD swparam);
+void GetWindowCenter(HWND hWnd, HWND hWndOwner, RECT& rect);
 
 void InternalError(LPCSTR file, int line);
 

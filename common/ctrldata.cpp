@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.9 2002-02-20 15:16:53 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.10 2002-02-25 07:26:01 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -796,8 +796,8 @@ SimpleCtrl::receiveData()
 	//	on default, get text of first control
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
 	int	len = ::SendMessage(m_pcp->m_hwndCtrl, WM_GETTEXTLENGTH, 0, 0);
-	::GetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text.getBufPtr(), len + 1);
 	m_pcp->m_text.resize(len);
+	::GetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text.getBufPtr(), len + 1);
 	return (m_pcp->m_text.length() == len);
 }
 
@@ -976,7 +976,7 @@ EditCtrl::receiveData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
 	int	len = ::SendMessage(m_pcp->m_hwndCtrl, WM_GETTEXTLENGTH, 0, 0);
-	m_pcp->m_text.resize(len + 1);
+	m_pcp->m_text.resize(len);
 	::GetWindowText(m_pcp->m_hwndCtrl,m_pcp->m_text.getBufPtr(), len + 1);
 	m_pcp->m_text.replaceStr("\r\n","\n",-1);
 	return TRUE;
