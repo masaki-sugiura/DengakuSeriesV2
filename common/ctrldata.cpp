@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.28 2003-11-16 15:04:50 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.29 2003-11-16 16:36:52 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -744,7 +744,7 @@ CtrlListItem::onGetSort()
 BOOL
 CtrlListItem::dumpData(DlgDataFile& ddfile)
 {
-	if (!ddfile.isValid()) return FALSE;
+	if (!ddfile.isValid() || !this->receiveData()) return FALSE;
 	ddfile.write(m_type, GetString(STR_DLGDATA_TYPE));
 	ddfile.write(m_name, GetString(STR_DLGDATA_NAME));
 	ddfile.write(m_text, GetString(STR_DLGDATA_TEXT));
@@ -799,7 +799,8 @@ CtrlListItem::loadData(DlgDataFile& ddfile)
 			keybuf.setlength(keylen);
 		}
 	}
-	return TRUE;
+
+	return this->sendData();
 }
 
 //	ctrl with one control
@@ -1217,9 +1218,8 @@ EditCtrl::dumpData(DlgDataFile& ddfile)
 BOOL
 EditCtrl::loadData(DlgDataFile& ddfile)
 {
-	if (!SimpleCtrl::loadData(ddfile)) return FALSE;
 	ddfile.read(&m_imestate, GetString(STR_DLGDATA_IMESTATE));
-	return TRUE;
+	return SimpleCtrl::loadData(ddfile);
 }
 
 //	class CheckCtrl, extends SimpleCtrl
@@ -1275,7 +1275,6 @@ CheckCtrl::onGetState()
 BOOL
 CheckCtrl::dumpData(DlgDataFile& ddfile)
 {
-	this->receiveData();
 	if (!BtnCtrl::dumpData(ddfile)) return FALSE;
 	ddfile.write(m_state, GetString(STR_DLGDATA_STATE));
 	return TRUE;
@@ -1284,10 +1283,8 @@ CheckCtrl::dumpData(DlgDataFile& ddfile)
 BOOL
 CheckCtrl::loadData(DlgDataFile& ddfile)
 {
-	if (!BtnCtrl::loadData(ddfile)) return FALSE;
 	ddfile.read(&m_state, GetString(STR_DLGDATA_STATE));
-	this->sendData();
-	return TRUE;
+	return BtnCtrl::loadData(ddfile);
 }
 
 //	class TrackCtrl, extends NormalCtrl
@@ -1421,12 +1418,11 @@ TrackCtrl::dumpData(DlgDataFile& ddfile)
 BOOL
 TrackCtrl::loadData(DlgDataFile& ddfile)
 {
-	if (!SimpleCtrl::loadData(ddfile)) return FALSE;
 	ddfile.read(&m_min, GetString(STR_DLGDATA_MIN));
 	ddfile.read(&m_max, GetString(STR_DLGDATA_MAX));
 	ddfile.read(&m_val, GetString(STR_DLGDATA_VAL));
 	ddfile.read(&m_tic, GetString(STR_DLGDATA_TIC));
-	return TRUE;
+	return SimpleCtrl::loadData(ddfile);
 }
 
 LineCtrl::LineCtrl(
@@ -1614,7 +1610,6 @@ HasListCtrl::dumpData(DlgDataFile& ddfile)
 BOOL
 HasListCtrl::loadData(DlgDataFile& ddfile)
 {
-	if (!SimpleCtrl::loadData(ddfile)) return FALSE;
 	ddfile.read(&m_state, GetString(STR_DLGDATA_STATE));
 	int	num;
 	ddfile.read(&num, GetString(STR_DLGDATA_ITEMNUM));
@@ -1628,7 +1623,8 @@ HasListCtrl::loadData(DlgDataFile& ddfile)
 		ddfile.read(id->getText(), buf);
 		m_item->addItem(id);
 	}
-	return TRUE;
+
+	return SimpleCtrl::loadData(ddfile);
 }
 
 void
@@ -2149,9 +2145,8 @@ ListCtrl::dumpData(DlgDataFile& ddfile)
 BOOL
 ListCtrl::loadData(DlgDataFile& ddfile)
 {
-	if (!HasListCtrl::loadData(ddfile)) return FALSE;
 	ddfile.read(&m_bSorted, GetString(STR_DLGDATA_SORT));
-	return TRUE;
+	return HasListCtrl::loadData(ddfile);
 }
 
 
@@ -2333,9 +2328,8 @@ ComboCtrl::dumpData(DlgDataFile& ddfile)
 BOOL
 ComboCtrl::loadData(DlgDataFile& ddfile)
 {
-	if (!ListCtrl::loadData(ddfile)) return FALSE;
 	ddfile.read(&m_imestate, GetString(STR_DLGDATA_IMESTATE));
-	return TRUE;
+	return ListCtrl::loadData(ddfile);
 }
 
 void
@@ -2499,9 +2493,8 @@ RefBtnCtrl::dumpData(DlgDataFile& ddfile)
 BOOL
 RefBtnCtrl::loadData(DlgDataFile& ddfile)
 {
-	if (!HasListCtrl::loadData(ddfile)) return FALSE;
 	ddfile.read(m_exbuffer, secname);
-	return TRUE;
+	return HasListCtrl::loadData(ddfile);
 }
 
 ChkListCtrl::ChkListCtrl(
@@ -2899,9 +2892,9 @@ ChkListCtrl::dumpData(DlgDataFile& ddfile)
 BOOL
 ChkListCtrl::loadData(DlgDataFile& ddfile)
 {
-	if (!HasListCtrl::loadData(ddfile)) return FALSE;
 	ddfile.read(&m_bSorted, GetString(STR_DLGDATA_SORT));
-	return m_states.loadData(ddfile);
+	if (!m_states.loadData(ddfile)) return FALSE;
+	return HasListCtrl::loadData(ddfile);
 }
 
 const StringBuffer sep = ":";
@@ -3460,7 +3453,6 @@ LViewCtrl::dumpData(DlgDataFile& ddfile)
 BOOL
 LViewCtrl::loadData(DlgDataFile& ddfile)
 {
-	if (!SimpleCtrl::loadData(ddfile)) return FALSE;
 	ddfile.read(&m_colnum, GetString(STR_DLGDATA_COLNUM));
 	m_states.loadData(ddfile);
 	int	num, usehdr;
@@ -3496,7 +3488,7 @@ LViewCtrl::loadData(DlgDataFile& ddfile)
 		}
 		m_item->addItem(lvid);
 	}
-	return TRUE;
+	return SimpleCtrl::loadData(ddfile);
 }
 
 TreeCtrl::TreeCtrl(
@@ -3740,7 +3732,6 @@ TreeCtrl::dumpData(DlgDataFile& ddfile)
 BOOL
 TreeCtrl::loadData(DlgDataFile& ddfile)
 {
-	if (!SimpleCtrl::loadData(ddfile)) return FALSE;
 	ddfile.read(m_state, GetString(STR_DLGDATA_STATE));
 	ddfile.read(&m_bSorted, GetString(STR_DLGDATA_SORT));
 	int	num;
@@ -3762,7 +3753,7 @@ TreeCtrl::loadData(DlgDataFile& ddfile)
 			m_pHashItem->setValue(tid->getName(), tid);
 		}
 	}
-	return TRUE;
+	return SimpleCtrl::loadData(ddfile);
 }
 
 FrameCtrl::FrameCtrl(
@@ -4249,7 +4240,6 @@ TabCtrl::dumpData(DlgDataFile& ddfile)
 BOOL
 TabCtrl::loadData(DlgDataFile& ddfile)
 {
-	if (!SimpleCtrl::loadData(ddfile)) return FALSE;
 	ddfile.read(&m_state, GetString(STR_DLGDATA_STATE));
 	int	num;
 	ddfile.read(&num, GetString(STR_DLGDATA_ITEMNUM));
@@ -4269,7 +4259,7 @@ TabCtrl::loadData(DlgDataFile& ddfile)
 		ddfile.read(nid->getText(), keybuf);
 		m_item->addItem(nid);
 	}
-	return TRUE;
+	return SimpleCtrl::loadData(ddfile);
 }
 
 
@@ -4523,11 +4513,10 @@ SpinCtrl::dumpData(DlgDataFile& ddfile)
 BOOL
 SpinCtrl::loadData(DlgDataFile& ddfile)
 {
-	if (!MultipleCtrl::loadData(ddfile)) return FALSE;
 	ddfile.read(&m_min, GetString(STR_DLGDATA_MIN));
 	ddfile.read(&m_max, GetString(STR_DLGDATA_MAX));
 	ddfile.read(&m_val, GetString(STR_DLGDATA_VAL));
-	return TRUE;
+	return MultipleCtrl::loadData(ddfile);
 }
 
 OkCancelCtrl::OkCancelCtrl()
