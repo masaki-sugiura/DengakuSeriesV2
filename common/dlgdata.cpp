@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.12 2003-10-18 13:42:34 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.13 2003-11-16 15:04:50 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -857,10 +857,12 @@ DlgFrame::showFrame()
 	if (m_hwndFrame == NULL) return FALSE;
 
 	//	ダイアログの位置の変更
-	DWORD dlgbaseunit = GetDialogBaseUnits(m_hwndFrame);
+	DWORD dlgbaseunit = GetDialogBaseUnits(m_hwndFrame, "w");
 	POINT pos, cpos;
 	pos.x = (m_pos.x * LOWORD(dlgbaseunit)) >> 2;
 	pos.y = (m_pos.y * HIWORD(dlgbaseunit)) >> 3;
+//	pos.x = (m_pos.x * LOWORD(dlgbaseunit));
+//	pos.y = (m_pos.y * HIWORD(dlgbaseunit));
 
 	RECT rect, drect;
 	::GetWindowRect(m_hwndFrame, &rect);

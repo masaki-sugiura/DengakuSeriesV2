@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.27 2003-10-18 13:42:34 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.28 2003-11-16 15:04:50 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -1275,6 +1275,7 @@ CheckCtrl::onGetState()
 BOOL
 CheckCtrl::dumpData(DlgDataFile& ddfile)
 {
+	this->receiveData();
 	if (!BtnCtrl::dumpData(ddfile)) return FALSE;
 	ddfile.write(m_state, GetString(STR_DLGDATA_STATE));
 	return TRUE;
@@ -1285,6 +1286,7 @@ CheckCtrl::loadData(DlgDataFile& ddfile)
 {
 	if (!BtnCtrl::loadData(ddfile)) return FALSE;
 	ddfile.read(&m_state, GetString(STR_DLGDATA_STATE));
+	this->sendData();
 	return TRUE;
 }
 
@@ -1989,6 +1991,9 @@ ListCtrl::sendData()
 		ItemData* id = m_item->getItemByIndex(m_state - 1);
 		if (!id) return FALSE;
 		::SendMessage(m_pcp->m_hwndCtrl, m_msg_setsel, id->getViewIndex(), 0);
+	} else {
+		// 未選択状態にする
+		::SendMessage(m_pcp->m_hwndCtrl, m_msg_setsel, -1, 0);
 	}
 	return TRUE;
 }
@@ -2110,7 +2115,7 @@ ListCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 	case LBN_SELCHANGE:
 		if (m_state > 0) {
 			int sel = ::SendMessage(m_pcp->m_hwndCtrl, LB_GETCURSEL, 0, 0);
-			::SendMessage(m_pcp->m_hwndCtrl, LB_SETTOPINDEX, (WPARAM)sel, 0);
+//			::SendMessage(m_pcp->m_hwndCtrl, LB_SETTOPINDEX, (WPARAM)sel, 0);
 		}
 		return m_notify[1];
 	}
@@ -3816,10 +3821,10 @@ FrameCtrl::getDefID() const
 //		::MessageBox(NULL, "Failed to get id", NULL, MB_OK);
 		return 0xFFFF;
 	}
-	::MessageBox(NULL, (LPCSTR)id->getText(), NULL, MB_OK);
+//	::MessageBox(NULL, (LPCSTR)id->getText(), NULL, MB_OK);
 	DlgPage* pdp = m_pDlgPage->getDlgFrame().getPage(id->getText());
 	if (!pdp) {
-		::MessageBox(NULL, "Failed to get pdp", NULL, MB_OK);
+//		::MessageBox(NULL, "Failed to get pdp", NULL, MB_OK);
 		return 0xFFFF;
 	}
 	return pdp->getDefID();

@@ -1,4 +1,4 @@
-//	$Id: misc.cpp,v 1.6 2002-08-06 13:33:04 sugiura Exp $
+//	$Id: misc.cpp,v 1.7 2003-11-16 15:04:50 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数
@@ -23,6 +23,7 @@ GetDialogBaseUnits(HWND hDlg, LPCSTR str)
 	HDC hDc = ::GetDC(hDlg);
 	SIZE sz;
 	::GetTextExtentPoint32(hDc,str,1,&sz);
+//	sz.cx -= ::GetTextCharacterExtra(hDc);
 	::ReleaseDC(hDlg,hDc);
 	return (DWORD)MAKELONG((WORD)sz.cx,(WORD)sz.cy);
 }
