@@ -1,4 +1,4 @@
-//	$Id: DengakuDLL.cpp,v 1.31 2004-01-15 15:44:40 sugiura Exp $
+//	$Id: DengakuDLL.cpp,v 1.32 2004-04-25 14:17:18 sugiura Exp $
 /*
  *	DengakuDLL.cpp
  *	DLL エントリポイントの定義
@@ -16,7 +16,7 @@ Auto_Ptr<SessionInstance> g_pSessionInstance(NULL);
 StringBuffer g_strBuffer;
 
 //	DLL のバージョン文字列
-const StringBuffer g_versionStr = "2.62";
+const StringBuffer g_versionStr = "2.63";
 
 //	DLL エントリポイント
 extern "C" BOOL APIENTRY

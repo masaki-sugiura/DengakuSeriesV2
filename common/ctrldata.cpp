@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.31 2003-12-10 17:01:04 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.32 2004-04-25 14:17:18 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -2189,7 +2189,9 @@ ComboCtrl::ComboCtrl(
 	const StringBuffer& name,
 	const StringBuffer& text,
 	CTRL_ID type)
-	: ListCtrl(name,text,CTRLID_COMBO), m_bEditable(type == CTRLID_COMBO)
+	: ListCtrl(name,text,CTRLID_COMBO),
+	  m_imestate(0L),
+	  m_bEditable(type == CTRLID_COMBO)
 {
 	m_pcp->m_style		= CBS_AUTOHSCROLL|CBS_SORT|WS_BORDER|WS_VSCROLL|
 							WS_CHILD|WS_VISIBLE|WS_TABSTOP|WS_VISIBLE|WS_GROUP|
@@ -2276,6 +2278,14 @@ ComboCtrl::receiveData()
 	this->setViewIndex();
 	this->getStateFromView();
 	return TRUE;
+}
+
+BOOL
+ComboCtrl::onSetString(const StringBuffer& str)
+{
+	if (!SimpleCtrl::receiveData()) return FALSE;
+	if (m_state > 0) return FALSE;
+	return SimpleCtrl::onSetString(str);
 }
 
 BOOL
@@ -2448,7 +2458,8 @@ RefBtnCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 			id = m_item->getNextItem();
 			if (id != NULL) flag = ival(id->getText());
 			strRet = psi->getDirNameByDlg(m_pDlgPage->gethwndPage(),
-										  sbTitle, sbIniDir, flag);
+										  sbTitle, sbIniDir,
+										  (flag!=0) ? 0 : 1);
 		}
 		break;
 	case CTRLID_REFCOLORBUTTON:

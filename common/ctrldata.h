@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.15 2003-10-18 13:42:34 sugiura Exp $
+//	$Id: ctrldata.h,v 1.16 2004-04-25 14:17:18 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -730,6 +730,7 @@ public:
 	BOOL sendData();
 	BOOL receiveData();
 
+	BOOL onSetString(const StringBuffer&);
 	BOOL onSetImeState(int);
 	int onGetImeState();
 
