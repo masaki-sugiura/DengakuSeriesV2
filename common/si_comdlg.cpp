@@ -1,4 +1,4 @@
-// $Id: si_comdlg.cpp,v 1.10 2002-08-05 16:06:17 sugiura Exp $
+// $Id: si_comdlg.cpp,v 1.11 2004-04-26 15:32:06 sugiura Exp $
 /*
  *	si_comdlg.cpp
  *	コモンダイアログ表示関数
@@ -109,7 +109,20 @@ SessionInstance::getFileNameByDlg(
 
 	//	OPENFILENAME 構造体の初期化
 	OPENFILENAME* pofn = (OPENFILENAME*)(LPSTR)buf;
-	pofn->lStructSize		=	sizeof(OPENFILENAME);
+
+	OSVERSIONINFO osi;
+	osi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	if (!::GetVersionEx(&osi)) {
+		return nullStr;
+	}
+
+	if (osi.dwPlatformId != VER_PLATFORM_WIN32_NT ||
+		osi.dwMajorVersion < 5) {
+		pofn->lStructSize		=	OPENFILENAME_SIZE_VERSION_400;
+	} else {
+		pofn->lStructSize		=	sizeof(OPENFILENAME);
+	}
+
 	pofn->hwndOwner			=	hwndOwner;
 	pofn->lpstrFilter		=	pszFilter;
 	pofn->nFilterIndex		=	1;
@@ -121,6 +134,7 @@ SessionInstance::getFileNameByDlg(
 	pofn->lpfnHook          =   (LPOFNHOOKPROC)GetFileNameProc;
 	pofn->lCustData         =   (DWORD)hwndOwner;
 	pofn->lpstrInitialDir	=	inipath;
+	pofn->FlagsEx			=	0;
 
 	//	ダイアログの表示
 	StringBuffer ret = nullStr;

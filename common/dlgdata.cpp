@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.20 2004-01-15 15:44:40 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.21 2004-04-26 15:32:06 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -817,7 +817,8 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		/* Through Down */
 
 	case WM_CLOSE:
-		::SendMessage(hDlg,WM_USER_NOTIFY,0,0);	//	"0" を通知
+//		::SendMessage(hDlg,WM_USER_NOTIFY,0,0);	//	"0" を通知
+		::PostMessage(hDlg,WM_USER_NOTIFY,0,0);	//	"0" を通知
 //		::DestroyWindow(hDlg);
 		return FALSE;
 

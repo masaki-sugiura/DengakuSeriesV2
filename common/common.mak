@@ -136,7 +136,7 @@ CLEAN :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
 F90=df.exe
-CPP_PROJ=/nologo /MT /W3 /GR /GX /O2 /I "..\common" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /FAcs /Fa"$(INTDIR)\\" /FR"$(INTDIR)\\" /Fp"$(INTDIR)\common.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_PROJ=/nologo /MT /W3 /GR /GX /O2 /I "..\common" /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0500 /FAcs /Fa"$(INTDIR)\\" /FR"$(INTDIR)\\" /Fp"$(INTDIR)\common.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\common.bsc" 
 BSC32_SBRS= \
@@ -152,6 +152,7 @@ BSC32_SBRS= \
 	"$(INTDIR)\env_var.sbr" \
 	"$(INTDIR)\file.sbr" \
 	"$(INTDIR)\hashtbl.sbr" \
+	"$(INTDIR)\hmjre_mngr.sbr" \
 	"$(INTDIR)\linklist.sbr" \
 	"$(INTDIR)\menu.sbr" \
 	"$(INTDIR)\misc.sbr" \
@@ -182,8 +183,7 @@ BSC32_SBRS= \
 	"$(INTDIR)\strbuf.sbr" \
 	"$(INTDIR)\strutils.sbr" \
 	"$(INTDIR)\thread.sbr" \
-	"$(INTDIR)\tokenizer.sbr" \
-	"$(INTDIR)\hmjre_mngr.sbr"
+	"$(INTDIR)\tokenizer.sbr"
 
 "$(OUTDIR)\common.bsc" : "$(OUTDIR)" $(BSC32_SBRS)
     $(BSC32) @<<
@@ -205,6 +205,7 @@ LIB32_OBJS= \
 	"$(INTDIR)\env_var.obj" \
 	"$(INTDIR)\file.obj" \
 	"$(INTDIR)\hashtbl.obj" \
+	"$(INTDIR)\hmjre_mngr.obj" \
 	"$(INTDIR)\linklist.obj" \
 	"$(INTDIR)\menu.obj" \
 	"$(INTDIR)\misc.obj" \
@@ -235,8 +236,7 @@ LIB32_OBJS= \
 	"$(INTDIR)\strbuf.obj" \
 	"$(INTDIR)\strutils.obj" \
 	"$(INTDIR)\thread.obj" \
-	"$(INTDIR)\tokenizer.obj" \
-	"$(INTDIR)\hmjre_mngr.obj"
+	"$(INTDIR)\tokenizer.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -307,7 +307,7 @@ CLEAN :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
 F90=df.exe
-CPP_PROJ=/nologo /MTd /W3 /Gm /GR /GX /ZI /Od /I "..\common" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /Fp"$(INTDIR)\common.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+CPP_PROJ=/nologo /MTd /W3 /Gm /GR /GX /ZI /Od /I "..\common" /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0500 /Fp"$(INTDIR)\common.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\common.bsc" 
 BSC32_SBRS= \
@@ -327,6 +327,7 @@ LIB32_OBJS= \
 	"$(INTDIR)\env_var.obj" \
 	"$(INTDIR)\file.obj" \
 	"$(INTDIR)\hashtbl.obj" \
+	"$(INTDIR)\hmjre_mngr.obj" \
 	"$(INTDIR)\linklist.obj" \
 	"$(INTDIR)\menu.obj" \
 	"$(INTDIR)\misc.obj" \
@@ -357,8 +358,7 @@ LIB32_OBJS= \
 	"$(INTDIR)\strbuf.obj" \
 	"$(INTDIR)\strutils.obj" \
 	"$(INTDIR)\thread.obj" \
-	"$(INTDIR)\tokenizer.obj" \
-	"$(INTDIR)\hmjre_mngr.obj"
+	"$(INTDIR)\tokenizer.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<

@@ -1,4 +1,4 @@
-//	$Id: misc.cpp,v 1.8 2003-11-23 15:37:21 sugiura Exp $
+//	$Id: misc.cpp,v 1.9 2004-04-26 15:32:06 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数
@@ -10,7 +10,7 @@
 BOOL
 isWinNT()
 {
-	static OSVERSIONINFO osi;
+	OSVERSIONINFO osi;
 	osi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	if (!::GetVersionEx(&osi)) return FALSE;
 	return osi.dwPlatformId == VER_PLATFORM_WIN32_NT;
