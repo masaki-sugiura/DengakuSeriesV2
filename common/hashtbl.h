@@ -1,4 +1,4 @@
-//	$Id: hashtbl.h,v 1.2 2002-02-19 15:34:21 sugiura Exp $
+//	$Id: hashtbl.h,v 1.3 2002-03-29 17:11:59 sugiura Exp $
 /*
  *	hashtbl.h
  *	ハッシュテーブルクラス(テンプレート)
@@ -8,89 +8,54 @@
 #define	DENGAKUSERIES_CLASSES_HASHTABLE
 
 #include "strbuf.h"
-#include <exception>
+#include "array.h"
 
-UINT getHash(LPCSTR, UINT);
+class RawHashTable {
+protected:
+	RawHashTable(int n);
+	virtual ~RawHashTable() = 0;
 
-//	ハッシュテーブルのテンプレートクラス
-//	class T は int またはポインタで、
-//	しかも無効なデータは 0 (or NULL) になっている必要がある
-template<class T, UINT n>
-class HashTable {
-public:
-	HashTable();
-	~HashTable();
+	int setValue_(const StringBuffer&, LPVOID);
+	LPVOID getValue_(const StringBuffer&) const;
 
-	int setValue(const StringBuffer&, T);
-	T getValue(const StringBuffer&) const;
-
+private:
 	//	キーと値をまとめたクラス
-	template<class U>
 	class Key {
 	public:
 		Key* m_next;
 		const StringBuffer m_key;
-		U m_value;
-		Key(const StringBuffer& key, U value)
+		LPVOID m_value;
+		Key(const StringBuffer& key, LPVOID value)
 			: m_next(NULL), m_key(key), m_value(value)
 		{}
 	};
 
-private:
-	Key<T>* m_keylist[n];
-	Key<T>& operator=(const Key<T>&);
+	Array<Key*> m_keylist;
 
-	HashTable(const HashTable&);
-	HashTable& operator=(const HashTable&);
+	RawHashTable(const RawHashTable&);
+	RawHashTable& operator=(const RawHashTable&);
+
+	static UINT getHash(LPCSTR, UINT);
 };
 
-template<class T, UINT n>
-HashTable<T,n>::HashTable()
-{
-	::ZeroMemory(m_keylist,sizeof(Key<T>*)*n);
-}
+//	ハッシュテーブルのテンプレートクラス
+//	class T は int またはポインタで、
+//	しかも無効なデータは 0 (or NULL) になっている必要がある
+template<class T, int n>
+class HashTable : private RawHashTable {
+public:
+	HashTable() : RawHashTable(n) {}
 
-template<class T, UINT n>
-HashTable<T,n>::~HashTable()
-{
-	for (UINT i = 0; i < n; i++) {
-		if (m_keylist[i] != NULL) {
-			Key<T>	*ckey = m_keylist[i], *nkey;
-			while (ckey != NULL) {
-				nkey = ckey->m_next;
-				delete ckey;
-				ckey = nkey;
-			}
-		}
+	int setValue(const StringBuffer& keyname, T value)
+	{
+		return setValue_(keyname, (LPVOID)value);
 	}
-}
 
-template<class T, UINT n>
-int
-HashTable<T,n>::setValue(const StringBuffer& keyname, T value)
-{
-	if (keyname.length() <= 0) return -1;
-	UINT hash = getHash(keyname,n);
-	Key<T>* newkey = new Key<T>(keyname,value);
-	newkey->m_next = m_keylist[hash];
-	m_keylist[hash] = newkey;
-	return hash;
-}
-
-template<class T, UINT n>
-T
-HashTable<T,n>::getValue(const StringBuffer& keyname) const
-{
-	if (keyname.length() <= 0) return 0;
-	UINT hash = getHash(keyname,n);
-	Key<T>* key = m_keylist[hash];
-	while (key != NULL) {
-		if (key->m_key.compareTo(keyname) == 0)
-			return key->m_value; // possibly NULL value
-		key = key->m_next;
+	T getValue(const StringBuffer& keyname) const
+	{
+		return (T)getValue_(keyname);
 	}
-	return 0;
-}
+};
 
 #endif
 

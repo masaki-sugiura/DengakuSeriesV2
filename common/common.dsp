@@ -234,6 +234,10 @@ SOURCE=.\spi_mngr.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\stack.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\str_tbl.cpp
 # End Source File
 # Begin Source File

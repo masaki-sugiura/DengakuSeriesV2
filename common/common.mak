@@ -77,6 +77,7 @@ CLEAN :
 	-@erase "$(INTDIR)\si_variable.obj"
 	-@erase "$(INTDIR)\smalloc.obj"
 	-@erase "$(INTDIR)\spi_mngr.obj"
+	-@erase "$(INTDIR)\stack.obj"
 	-@erase "$(INTDIR)\str_tbl.obj"
 	-@erase "$(INTDIR)\strbuf.obj"
 	-@erase "$(INTDIR)\strutils.obj"
@@ -138,7 +139,8 @@ LIB32_OBJS= \
 	"$(INTDIR)\strbuf.obj" \
 	"$(INTDIR)\strutils.obj" \
 	"$(INTDIR)\thread.obj" \
-	"$(INTDIR)\tokenizer.obj"
+	"$(INTDIR)\tokenizer.obj" \
+	"$(INTDIR)\stack.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -193,6 +195,7 @@ CLEAN :
 	-@erase "$(INTDIR)\si_variable.obj"
 	-@erase "$(INTDIR)\smalloc.obj"
 	-@erase "$(INTDIR)\spi_mngr.obj"
+	-@erase "$(INTDIR)\stack.obj"
 	-@erase "$(INTDIR)\str_tbl.obj"
 	-@erase "$(INTDIR)\strbuf.obj"
 	-@erase "$(INTDIR)\strutils.obj"
@@ -255,7 +258,8 @@ LIB32_OBJS= \
 	"$(INTDIR)\strbuf.obj" \
 	"$(INTDIR)\strutils.obj" \
 	"$(INTDIR)\thread.obj" \
-	"$(INTDIR)\tokenizer.obj"
+	"$(INTDIR)\tokenizer.obj" \
+	"$(INTDIR)\stack.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -497,6 +501,11 @@ SOURCE=.\smalloc.cpp
 SOURCE=.\spi_mngr.cpp
 
 "$(INTDIR)\spi_mngr.obj" : $(SOURCE) "$(INTDIR)"
+
+
+SOURCE=.\stack.cpp
+
+"$(INTDIR)\stack.obj" : $(SOURCE) "$(INTDIR)"
 
 
 SOURCE=.\str_tbl.cpp

@@ -1,4 +1,4 @@
-//	$Id: stack.h,v 1.3 2002-02-19 15:34:22 sugiura Exp $
+//	$Id: stack.h,v 1.4 2002-03-29 17:11:59 sugiura Exp $
 /*
  *	stack.h
  *	スタッククラス(テンプレート)
@@ -9,44 +9,41 @@
 
 #include "array.h"
 
-template<typename T>
-class Stack {
-public:
-	Stack(int num)
-		: m_stack(num <= 0 ? 8 : num),
-		  m_init_num(m_stack.size()),
-		  m_hdr(0)
-	{}
-
-	int push(const T* val)
-	{
-		if (m_hdr >= m_stack.size()) {
-			m_stack.resize(m_stack.size() + m_init_num);
-		}
-		m_stack[m_hdr++] = const_cast<T*>(val);
-		return m_hdr;
-	}
-
-	T* pop()
-	{
-		if (m_hdr <= 0) return NULL;
-		T* val = m_stack[--m_hdr];
-		return val;
-	}
-
-	T** gethead() const
-	{
-		m_stack[m_hdr] = NULL;
-		return m_stack;
-	}
-
+class RawStack {
 protected:
-	mutable Array<T*> m_stack;
+	RawStack(int num);
+	virtual ~RawStack() = 0;
+
+	int push_(LPCVOID val);
+	LPVOID pop_();
+	LPVOID* gethead_() const;
+
+private:
+	mutable Array<LPVOID> m_stack;
 	int	m_init_num;
 	int	m_hdr;
 
-	Stack(const Stack&);
-	Stack& operator=(const Stack&);
+	RawStack(const RawStack&);
+	RawStack& operator=(const RawStack&);
+};
+
+template<class T>
+class Stack : private RawStack {
+public:
+	Stack(int n) : RawStack(n) {}
+
+	int push(const T* val)
+	{
+		return push_(val);
+	}
+	T* pop()
+	{
+		return (T*)pop_();
+	}
+	T** gethead() const
+	{
+		return (T**)gethead_();
+	}
 };
 
 #endif
