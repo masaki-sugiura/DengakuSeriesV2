@@ -1,4 +1,4 @@
-//	$Id: rec_op.cpp,v 1.7 2003-02-15 18:37:02 sugiura Exp $
+//	$Id: rec_op.cpp,v 1.8 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	rec_op.cpp
  *	再帰ファイル操作クラス群
@@ -31,6 +31,7 @@ ConfirmOverRide(const PathName &org, const PathName &dest, DWORD flag)
 
 	//	全ての場合について上書きするかどうか確認
 	if ((flag & FLAG_OVERRIDE_CONFIRM) != 0) {
+		if (flag & FLAG_ANSWERNO) return IDNO;
 		StringBuffer msg(org);
 		msg.append(" で\n").append(dest).append("を\n上書きしますか？");
 		int ret = ::MessageBox(NULL, msg, "上書きの確認",
@@ -54,6 +55,13 @@ ConfirmOverRide(const PathName &org, const PathName &dest, DWORD flag)
 	//	読取専用またはシステムファイルの上書きを確認
 	if ((attr&(FILE_ATTRIBUTE_READONLY|FILE_ATTRIBUTE_SYSTEM)) != 0) {
 		if ((flag & FLAG_OVERRIDE_FORCED) == 0) {
+			if (flag & FLAG_ANSWERNO) return IDNO;
+#if 1
+				TCHAR buf[80];
+				wsprintf(buf, "flag = 0x%08x, attr = 0x%08x",
+						 flag, attr);
+				::MessageBox(NULL, buf, NULL, MB_OK);
+#endif
 			StringBuffer msg(dest);
 			msg.append("\nは読取専用またはシステムファイルです。\n"
 					"上書きしますか？");
@@ -81,6 +89,7 @@ ConfirmRemove(const PathName &file, DWORD flag)
 
 	//	全ての場合について上書きするかどうか確認
 	if ((flag&FLAG_REMOVE_CONFIRM) != 0) {
+		if (flag & FLAG_ANSWERNO) return IDNO;
 		StringBuffer msg(file);
 		msg.append(" を\n削除しますか？");
 		int ret = ::MessageBox(NULL, msg, "削除の確認",
@@ -100,6 +109,7 @@ ConfirmRemove(const PathName &file, DWORD flag)
 	//	読取専用またはシステムファイルの削除を確認
 	if ((attr&(FILE_ATTRIBUTE_READONLY|FILE_ATTRIBUTE_SYSTEM)) != 0) {
 		if ((flag&FLAG_REMOVE_FORCED) == 0) {
+			if (flag & FLAG_ANSWERNO) return IDNO;
 			StringBuffer msg(file);
 			msg.append(" は\n読取専用またはシステムファイルです。\n"
 					"削除しますか？");

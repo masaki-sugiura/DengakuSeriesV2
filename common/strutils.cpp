@@ -1,4 +1,4 @@
-//	$Id: strutils.cpp,v 1.4 2003-02-15 18:37:02 sugiura Exp $
+//	$Id: strutils.cpp,v 1.5 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	strutils.cpp
  *	C 文字列のためのユーティリティ関数群の実装
@@ -424,6 +424,7 @@ reverse2(LPSTR str)
 	int num = lstrlen(str);
 	if (num <= 1) return str;
 
+#if 0
 	LPSTR buf = new TCHAR[num];
 	int offset = num;
 	LPCSTR ptr = str;
@@ -441,7 +442,56 @@ reverse2(LPSTR str)
 
 	::CopyMemory(str, buf, num);
 	delete [] buf;
+#else
+	// とりあえず何も考えずに反転
+	int hnum = num / 2;
+	for (int i = 0; i < hnum; i++) {
+		TCHAR ch = str[i];
+		str[i] = str[num - i - 1];
+		str[num - i - 1] = ch;
+	}
+
+	// ２バイト文字のバイト順序を入れ替え
+	for (i = num - 1; i > 0; --i) {
+		if (IsCharLeadByte(str[i])) {
+			TCHAR ch = str[i];
+			str[i] = str[i - 1];
+			str[i - 1] = ch;
+			--i;
+		}
+	}
+#endif
 
 	return str;
+}
+
+int
+tohankaku(LPCSTR str, LPSTR buf, int bufsize)
+{
+	return ::LCMapString(MAKELCID(MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+						 SORT_DEFAULT),
+						 LCMAP_HALFWIDTH | LCMAP_KATAKANA,
+						 str, -1,
+						 buf, bufsize) - 1;
+}
+
+int
+tozenkakuhira(LPCSTR str, LPSTR buf, int bufsize)
+{
+	return ::LCMapString(MAKELCID(MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+						 SORT_DEFAULT),
+						 LCMAP_FULLWIDTH | LCMAP_HIRAGANA,
+						 str, -1,
+						 buf, bufsize) - 1;
+}
+
+int
+tozenkakukata(LPCSTR str, LPSTR buf, int bufsize)
+{
+	return ::LCMapString(MAKELCID(MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+						 SORT_DEFAULT),
+						 LCMAP_FULLWIDTH | LCMAP_KATAKANA,
+						 str, -1,
+						 buf, bufsize) - 1;
 }
 

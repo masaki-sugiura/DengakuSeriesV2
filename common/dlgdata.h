@@ -1,4 +1,4 @@
-//	$Id: dlgdata.h,v 1.4 2002-09-26 13:13:24 sugiura Exp $
+//	$Id: dlgdata.h,v 1.5 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	dlgdata.h
  *	ダイアログを扱うクラス
@@ -79,6 +79,7 @@ public:
 	HWND gethwndPage() const { return m_hwndPage; }
 	WORD getWidth() const { return m_width; }
 	WORD getHeight() const { return m_height; }
+	WORD getDefID() const;
 
 //	ダイアログの構築/初期化
 	DWORD evalPageSize();	//	m_width, m_height を計算
@@ -171,6 +172,7 @@ public:
 	{
 		return m_pFontProp->m_fontsize;
 	}
+	WORD getDefID() const;
 
 //	ダイアログの構築・初期化・破棄
 	HWND createFrame(HWND hwndOwner, BOOL bOnTop = FALSE); // ダイアログの構築

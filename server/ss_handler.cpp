@@ -1,4 +1,4 @@
-//	$Id: ss_handler.cpp,v 1.2 2003-02-15 18:37:02 sugiura Exp $
+//	$Id: ss_handler.cpp,v 1.3 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	ss_handler.cpp
  *	文字列サービスの実装
@@ -122,6 +122,24 @@ StringBuffer
 ConvData::On_toupper2(CmdLineParser& params)
 {
 	return this->si_toupper2(params.getArgvStr(0));
+}
+
+StringBuffer
+ConvData::On_tohankaku(CmdLineParser& params)
+{
+	return this->si_tohankaku(params.getArgvStr(0));
+}
+
+StringBuffer
+ConvData::On_tozenkakuhira(CmdLineParser& params)
+{
+	return this->si_tozenkakuhira(params.getArgvStr(0));
+}
+
+StringBuffer
+ConvData::On_tozenkakukata(CmdLineParser& params)
+{
+	return this->si_tozenkakukata(params.getArgvStr(0));
 }
 
 StringBuffer

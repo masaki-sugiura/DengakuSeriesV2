@@ -1,4 +1,4 @@
-//	$Id: strbuf.h,v 1.4 2003-02-15 18:37:02 sugiura Exp $
+//	$Id: strbuf.h,v 1.5 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	strbuf.h
  *	•¶Žš—ñƒNƒ‰ƒX
@@ -94,6 +94,11 @@ public:
 	//	‚QƒoƒCƒg•¶Žš‚ðˆÓŽ¯‚·‚é•¶Žš—ñ‚Ì•ÏŠ·
 	StringBuffer& toLower2();
 	StringBuffer& toUpper2();
+
+	// ‘SŠp<->”¼Šp•ÏŠ·
+	StringBuffer& toHankaku();
+	StringBuffer& toZenkakuHira();
+	StringBuffer& toZenkakuKata();
 
 	//	•¶Žš—ñ‚Ì”äŠr
 	int compareTo(LPCSTR str, BOOL cs = TRUE, int len = -1) const;

@@ -1,4 +1,4 @@
-//	$Id: strbuf.cpp,v 1.9 2003-02-15 18:37:02 sugiura Exp $
+//	$Id: strbuf.cpp,v 1.10 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	strbuf.cpp
  *	•¶Žš—ñƒNƒ‰ƒX
@@ -380,6 +380,61 @@ StringBuffer::reverse2()
 	this->dup();
 
 	::reverse2(m_sbuf->m_buf);
+
+	return *this;
+}
+
+StringBuffer&
+StringBuffer::toHankaku()
+{
+	if (!m_sbuf->isShareable()) m_sbuf->recalc();
+	this->dup();
+
+	StringBuffer_rep* newbuf = new StringBuffer_rep(m_sbuf->m_buf.size());
+	newbuf->m_len = ::tohankaku(m_sbuf->m_buf, newbuf->m_buf, newbuf->m_buf.size());
+	if (newbuf->m_len >= 0) {
+		m_sbuf = newbuf;
+	} else {
+		delete newbuf;
+	}
+
+	return *this;
+}
+
+StringBuffer&
+StringBuffer::toZenkakuHira()
+{
+	if (!m_sbuf->isShareable()) m_sbuf->recalc();
+	this->dup();
+
+	StringBuffer_rep*
+		newbuf = new StringBuffer_rep(m_sbuf->m_buf.size() * 2);
+	newbuf->m_len = ::tozenkakuhira(m_sbuf->m_buf, newbuf->m_buf,
+									newbuf->m_buf.size() * 2);
+	if (newbuf->m_len >= 0) {
+		m_sbuf = newbuf;
+	} else {
+		delete newbuf;
+	}
+
+	return *this;
+}
+
+StringBuffer&
+StringBuffer::toZenkakuKata()
+{
+	if (!m_sbuf->isShareable()) m_sbuf->recalc();
+	this->dup();
+
+	StringBuffer_rep*
+		newbuf = new StringBuffer_rep(m_sbuf->m_buf.size() * 2);
+	newbuf->m_len = ::tozenkakukata(m_sbuf->m_buf, newbuf->m_buf,
+									newbuf->m_buf.size() * 2);
+	if (newbuf->m_len >= 0) {
+		m_sbuf = newbuf;
+	} else {
+		delete newbuf;
+	}
 
 	return *this;
 }

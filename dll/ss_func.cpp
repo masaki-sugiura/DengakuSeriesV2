@@ -1,4 +1,4 @@
-//	$Id: ss_func.cpp,v 1.4 2003-02-15 18:37:02 sugiura Exp $
+//	$Id: ss_func.cpp,v 1.5 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	ss_func.cpp
  *	•¶š—ñƒT[ƒrƒX‚ÌŠÖ”
@@ -198,6 +198,42 @@ TOUPPER2(LPCSTR str)
 {
 	try {
 		g_strBuffer = g_pSessionInstance->si_toupper2(str);
+		return g_strBuffer;
+	} catch (...) {
+		return "";
+	}
+}
+
+//	‘SŠp•¶š -> ”¼Šp•¶š
+DENGAKUDLL_API LPCSTR
+TOHANKAKU(LPCSTR str)
+{
+	try {
+		g_strBuffer = g_pSessionInstance->si_tohankaku(str);
+		return g_strBuffer;
+	} catch (...) {
+		return "";
+	}
+}
+
+//	”¼Šp•¶š -> ‘SŠp•¶š(‚Ğ‚ç‚ª‚È)
+DENGAKUDLL_API LPCSTR
+TOZENKAKUHIRA(LPCSTR str)
+{
+	try {
+		g_strBuffer = g_pSessionInstance->si_tozenkakuhira(str);
+		return g_strBuffer;
+	} catch (...) {
+		return "";
+	}
+}
+
+//	”¼Šp•¶š -> ‘SŠp•¶š(ƒJƒ^ƒJƒi)
+DENGAKUDLL_API LPCSTR
+TOZENKAKUKATA(LPCSTR str)
+{
+	try {
+		g_strBuffer = g_pSessionInstance->si_tozenkakukata(str);
 		return g_strBuffer;
 	} catch (...) {
 		return "";

@@ -1,4 +1,4 @@
-//	$Id: cmd.h,v 1.10 2003-02-15 18:37:02 sugiura Exp $
+//	$Id: cmd.h,v 1.11 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	cmd.h
  *	ƒRƒ}ƒ“ƒh–¼ˆê——
@@ -94,6 +94,9 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_REQUEST(reverse2)
 	DECLARE_DDECMD_REQUEST(tolower2)
 	DECLARE_DDECMD_REQUEST(toupper2)
+	DECLARE_DDECMD_REQUEST(tohankaku)
+	DECLARE_DDECMD_REQUEST(tozenkakuhira)
+	DECLARE_DDECMD_REQUEST(tozenkakukata)
 	DECLARE_DDECMD_REQUEST(strstr2)
 	DECLARE_DDECMD_REQUEST(strrstr2)
 	DECLARE_DDECMD_REQUEST(strlen2)

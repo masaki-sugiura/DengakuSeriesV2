@@ -1,4 +1,4 @@
-//	$Id: array.h,v 1.3 2002-03-11 13:27:49 sugiura Exp $
+//	$Id: array.h,v 1.4 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	array.h
  *	(primitive Œ^ŒÀ’è)”z—ñƒNƒ‰ƒX
@@ -43,6 +43,7 @@ public:
 			delete [] m_ptr;
 			m_ptr = new T[rhs.m_size];
 			m_size = rhs.m_size;
+			::CopyMemory(m_ptr, rhs.m_ptr, sizeof(T) * m_size);
 		}
 		return *this;
 	}

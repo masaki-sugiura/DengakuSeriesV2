@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.13 2002-12-24 12:47:00 sugiura Exp $
+//	$Id: ctrldata.h,v 1.14 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -223,6 +223,7 @@ public:
 	virtual	int getCtrlNum() const { return m_cnum; }
 	virtual HWND getCtrlHWND(int i = 0) const { return NULL; }
 	virtual HWND getFocusedCtrl() const { return NULL; } // フォーカスを得るコントロールの HWND
+	virtual WORD getDefID() const; // デフォルトプッシュボタンのＩＤを返す
 	virtual	int getDataSize();	//	DLGITEMTEMPLATE の大きさ
 	virtual	WORD getWidth();
 	virtual WORD getHeight();
@@ -421,6 +422,7 @@ public:
 			CTRL_ID type = CTRLID_BUTTON);
 
 	HWND getFocusedCtrl() const { return m_pcp->m_hwndCtrl; }
+	WORD getDefID() const; // デフォルトプッシュボタンのＩＤを返す
 
 	WORD getHeight();
 
@@ -615,6 +617,7 @@ public:
 			CTRL_ID type = CTRLID_REFFILEBUTTON);
 
 	HWND getFocusedCtrl() const { return m_pcp->m_hwndCtrl; }
+	WORD getDefID() const; // デフォルトプッシュボタンのＩＤを返す
 
 	WORD getHeight();
 
@@ -828,6 +831,7 @@ public:
 	~FrameCtrl();
 
 	HWND getFocusedCtrl() const;
+	WORD getDefID() const; // デフォルトプッシュボタンのＩＤを返す
 
 	WORD getHeight();
 
@@ -936,6 +940,7 @@ public:
 	OkCancelCtrl();
 
 	HWND getFocusedCtrl() const { return m_pcp[0].m_hwndCtrl; }
+	WORD getDefID() const; // デフォルトプッシュボタンのＩＤを返す
 	WORD getHeight();
 
 	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);

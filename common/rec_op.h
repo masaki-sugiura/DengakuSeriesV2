@@ -1,4 +1,4 @@
-//	$Id: rec_op.h,v 1.3 2003-01-19 05:59:33 sugiura Exp $
+//	$Id: rec_op.h,v 1.4 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	rec_op.h
  *	再帰ファイル操作のためのクラス
@@ -99,9 +99,11 @@ protected:
 #define	FLAG_REMOVE_FORCED		0x00000200	/* 強制的に削除 */
 #define FLAG_REMOVE_RECYCLE		0x00000400	/* ごみ箱へ移動 */
 //		ディレクトリを再帰的に処理
-#define	FLAG_RECURSIVE			0x80000000	/* 再帰処理の実行 */
+#define	FLAG_RECURSIVE			0x80000000
 //		処理したファイル・フォルダの数を返す
-#define	FLAG_RETURNNUM			0x40000000	/* 再帰処理の実行 */
+#define	FLAG_RETURNNUM			0x40000000
+//		確認が必要な場合は全て "いいえ" を選択
+#define FLAG_ANSWERNO			0x20000000
 
 //	属性値フラグ
 #define	ATTRIBUTE_FLAG_ARCHIVE		0x00010101	/* アーカイブ */

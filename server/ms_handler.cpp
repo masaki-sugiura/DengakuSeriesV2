@@ -1,4 +1,4 @@
-//	$Id: ms_handler.cpp,v 1.3 2002-02-20 13:57:19 sugiura Exp $
+//	$Id: ms_handler.cpp,v 1.4 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	ms_handler.cpp
  *	メニューサービスの実装
@@ -20,11 +20,11 @@ ConvData::On_menu(CmdLineParser& params)
 	const StringBuffer& name = params.getNextArgvStr();
 
 	//	メニュー表示位置の取得
+	BOOL bShowAtCursor = TRUE;
 	POINT MenuPos;
-	LPPOINT pAt = NULL;
+	MenuPos.x = MenuPos.y = 0;
 	if (ac > 2) {
-		MenuPos.x = MenuPos.y = 0;
-		pAt = &MenuPos;
+		bShowAtCursor = FALSE;
 		DWORD unit = GetDialogBaseUnits(DdeServer::gethwndDlg());
 		LPCSTR av = params.getNextArgv();
 		if (isnumber(av)) MenuPos.x = (ival(av)*LOWORD(unit));
@@ -33,17 +33,22 @@ ConvData::On_menu(CmdLineParser& params)
 		if (ac > 3) {
 			av = params.getNextArgv();
 			HWND hwndTemp = NULL;
-			if (lstrcmpi(av,"lastactiveparent") == 0)
+			if (lstrcmpi(av,"lastactiveparent") == 0) {
 				hwndTemp = ::GetForegroundWindow();
-			else if (isnumber(av))
+			} else if (lstrcmpi(av,"cursor") == 0) {
+				bShowAtCursor = TRUE;
+			} else if (isnumber(av)) {
 				hwndTemp = (HWND)ival(av);
-			else {
+			} else {
 				LPCSTR	wname = params.getNextArgv();
 				if (wname != NULL && *wname == '\0') wname = NULL;
 				hwndTemp = ::FindWindow(av,wname);
 			}
-			if (::IsWindow(hwndTemp)) {
-				::ClientToScreen(hwndTemp,pAt);
+			if (hwndTemp && ::IsWindow(hwndTemp)) {
+				POINT pt;
+				::ClientToScreen(hwndTemp,&pt);
+				MenuPos.x += pt.x;
+				MenuPos.y += pt.y;
 			}
 		}
 	}
@@ -55,7 +60,7 @@ ConvData::On_menu(CmdLineParser& params)
 	}
 
 	//	このスレッドの停止は ConvData::onAdvReq() で行っている
-	return this->showMenuThread(name,pAt);
+	return this->showMenuThread(name, bShowAtCursor, MenuPos);
 }
 
 int

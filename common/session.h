@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.12 2003-02-15 18:37:02 sugiura Exp $
+//	$Id: session.h,v 1.13 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -56,7 +56,9 @@ public:
 	{ m_sharedBuf.reset(); }
 
 	//	メニュー表示メソッド群
-	BOOL showMenuThread(const StringBuffer& menuname, POINT* pAt = NULL);
+	BOOL showMenuThread(const StringBuffer& menuname,
+						BOOL bShowAtCursor,
+						POINT pt);
 	void sendMenuResult(LPSHOWMENUPROCARGS);
 	DWORD waitMenuThread(DWORD waittime = INFINITE);
 	DWORD stopMenuThread(DWORD waittime = INFINITE);
@@ -120,6 +122,9 @@ public:
 	StringBuffer si_reverse(const StringBuffer&);
 	StringBuffer si_tolower(const StringBuffer&);
 	StringBuffer si_toupper(const StringBuffer&);
+	StringBuffer si_tohankaku(const StringBuffer&);
+	StringBuffer si_tozenkakuhira(const StringBuffer&);
+	StringBuffer si_tozenkakukata(const StringBuffer&);
 	int si_strstr(const StringBuffer&, const StringBuffer&);
 	int si_strrstr(const StringBuffer&, const StringBuffer&);
 	int si_strlen(const StringBuffer&);

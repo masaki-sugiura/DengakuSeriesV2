@@ -1,4 +1,4 @@
-//	$Id: si_string.cpp,v 1.3 2003-02-15 18:37:02 sugiura Exp $
+//	$Id: si_string.cpp,v 1.4 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	si_string.cpp
  *	文字列サービスの関数
@@ -145,6 +145,24 @@ StringBuffer
 SessionInstance::si_toupper2(const StringBuffer& str)
 {
 	return StringBuffer(str).toUpper2();
+}
+
+StringBuffer
+SessionInstance::si_tohankaku(const StringBuffer& str)
+{
+	return StringBuffer(str).toHankaku();
+}
+
+StringBuffer
+SessionInstance::si_tozenkakuhira(const StringBuffer& str)
+{
+	return StringBuffer(str).toZenkakuHira();
+}
+
+StringBuffer
+SessionInstance::si_tozenkakukata(const StringBuffer& str)
+{
+	return StringBuffer(str).toZenkakuKata();
 }
 
 int

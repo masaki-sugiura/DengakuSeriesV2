@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.10 2002-09-26 13:13:24 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.11 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -421,6 +421,18 @@ DlgPage::addShowPageQueue(
 	return TRUE;
 }
 
+WORD
+DlgPage::getDefID() const
+{
+	CtrlListItem* cli;
+	m_pCtrlList->initSequentialGet();
+	while ((cli = m_pCtrlList->getNextItem()) != NULL) {
+		WORD id = cli->getDefID();
+		if (id != 0xFFFF) return id;
+	}
+	return 0xFFFF;
+}
+
 //	コントロールの追加
 int
 DlgPage::addCtrl(CtrlListItem* cli)
@@ -640,6 +652,10 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			::SetWindowLong(hDlg, DWL_MSGRESULT, (LONG)(LPCSTR)pdf->getFocusedCtrl());
 		}
+		break;
+
+	case DM_GETDEFID:
+		::SetWindowLong(hDlg, DWL_MSGRESULT, (DC_HASDEFID << 16) | pdf->getDefID());
 		break;
 
 	case WM_COMMAND:
@@ -865,12 +881,14 @@ DlgFrame::showFrame()
 //	if (hwndOwner != NULL) ::EnableWindow(hwndOwner,FALSE);
 
 	// デフォルトフォーカスの設定
-	this->setFocusedCtrl(m_sbFocusedCtrl);
+//	this->setFocusedCtrl(m_sbFocusedCtrl);
 	DlgPage* pdproot = this->getPage(strRootPageName);
 	if (pdproot != NULL) {
 		pdproot->showPage(TRUE);
 	}
 	::ShowWindow(m_hwndFrame, SW_SHOW);
+	// デフォルトフォーカスの設定
+	this->setFocusedCtrl(m_sbFocusedCtrl);
 
 	return TRUE;
 }
@@ -1028,6 +1046,17 @@ DlgFrame::getFocusedCtrl() const
 		}
 	}
 	return nullStr;
+}
+
+WORD
+DlgFrame::getDefID() const
+{
+	if (m_hwndFrame == NULL) return 0xFFFF;
+
+	DlgPage* pdpRoot = ((DlgFrame*)this)->getPage(strRootPageName);
+	if (pdpRoot == NULL) return 0xFFFF;
+
+	return pdpRoot->getDefID();
 }
 
 //	ダイアログデータの書き込み

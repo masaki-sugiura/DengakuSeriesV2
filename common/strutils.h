@@ -1,4 +1,4 @@
-//	$Id: strutils.h,v 1.3 2003-02-15 18:37:02 sugiura Exp $
+//	$Id: strutils.h,v 1.4 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	strutils.h
  *	C 文字列のためのユーティリティ関数群
@@ -26,6 +26,9 @@ int		lstrlen2(LPCSTR);
 LPSTR	lstrninc(LPCSTR, int);
 LPSTR	reverse(LPSTR);
 LPSTR	reverse2(LPSTR);
+int		tohankaku(LPCSTR, LPSTR, int);
+int		tozenkakuhira(LPCSTR, LPSTR, int);
+int		tozenkakukata(LPCSTR, LPSTR, int);
 
 #define	lval(num)	((long)ival(num))
 

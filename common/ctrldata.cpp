@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.25 2003-03-11 15:47:30 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.26 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -542,6 +542,12 @@ CtrlListItem::showCtrl(BOOL bVisible)
 	return TRUE;
 }
 
+WORD
+CtrlListItem::getDefID() const
+{
+	return 0xFFFF;
+}
+
 BOOL
 CtrlListItem::sendData()
 {
@@ -1008,6 +1014,14 @@ BtnCtrl::getHeight()
 {
 	if (m_height > 0) return NORMALHEIGHT * m_height;
 	return NORMALHEIGHT;
+}
+
+WORD
+BtnCtrl::getDefID() const
+{
+	DWORD dwStyle = ::GetWindowLong(m_pcp->m_hwndCtrl, GWL_STYLE);
+	if (dwStyle & BS_DEFPUSHBUTTON) return m_pcp->m_id;
+	return 0xFFFF;
 }
 
 WORD
@@ -2337,6 +2351,14 @@ RefBtnCtrl::getHeight()
 {
 	if (m_height > 0) return NORMALHEIGHT * m_height;
 	return NORMALHEIGHT;
+}
+
+WORD
+RefBtnCtrl::getDefID() const
+{
+	DWORD dwStyle = ::GetWindowLong(m_pcp->m_hwndCtrl, GWL_STYLE);
+	if (dwStyle & BS_DEFPUSHBUTTON) return m_pcp->m_id;
+	return 0xFFFF;
 }
 
 BOOL
@@ -3719,6 +3741,17 @@ FrameCtrl::getFocusedCtrl() const
 }
 
 WORD
+FrameCtrl::getDefID() const
+{
+	if (m_state == 0) return 0xFFFF;
+	ItemData* id = m_item->getItemByIndex(m_state - 1);
+	if (!id) return 0xFFFF;
+	DlgPage* pdp = m_pDlgPage->getDlgFrame().getPage(id->getText());
+	if (!pdp) return 0xFFFF;
+	return pdp->getDefID();
+}
+
+WORD
 FrameCtrl::getHeight()
 {
 	if (m_height <= m_pmargin.y) {
@@ -4419,6 +4452,16 @@ OkCancelCtrl::getHeight()
 {
 	if (m_height > 0) return NORMALHEIGHT * m_height;
 	return NORMALHEIGHT;
+}
+
+WORD
+OkCancelCtrl::getDefID() const
+{
+	for (int i = 0; i < 2; i++) {
+		DWORD dwStyle = ::GetWindowLong(m_pcp[i].m_hwndCtrl, GWL_STYLE);
+		if (dwStyle & BS_DEFPUSHBUTTON) return m_pcp[i].m_id;
+	}
+	return 0xFFFF;
 }
 
 BOOL

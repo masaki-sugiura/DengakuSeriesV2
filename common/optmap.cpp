@@ -1,4 +1,4 @@
-//	$Id: optmap.cpp,v 1.1 2002-04-17 16:23:31 sugiura Exp $
+//	$Id: optmap.cpp,v 1.2 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	optmap.cpp
  *	OptMap クラスの実装
@@ -11,13 +11,14 @@
 static DWORD defFlags[] = {
 	FLAG_RECURSIVE,	//	再帰的に検索
 	FLAG_RETURNNUM,	//	処理したファイル・フォルダの数を返す
+	FLAG_ANSWERNO,	//	全ての確認に自動で No を返答する
 	FLAG_OVERRIDE_FORCED | FLAG_REMOVE_FORCED,	//	強制的に処理
 	FLAG_OVERRIDE_CONFIRM | FLAG_REMOVE_CONFIRM,	//	確認
 	FLAG_OVERRIDE_NOTNEWER	//	新しいファイル・フォルダのみ
 };
 
 // デフォルトのオプションのための静的オブジェクト
-OptMap defOptMap("rnfiu", defFlags);
+OptMap defOptMap("rnNfiu", defFlags);
 
 // オプションの解析を行う関数
 BOOL

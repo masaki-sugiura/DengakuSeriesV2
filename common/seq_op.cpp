@@ -1,4 +1,4 @@
-//	$Id: seq_op.cpp,v 1.6 2002-04-17 16:23:31 sugiura Exp $
+//	$Id: seq_op.cpp,v 1.7 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	seq_op.cpp
  *	SequentialOp クラスの実装
@@ -96,16 +96,24 @@ SequentialOp::doOp()
 				if (!precheck_wc(fd)) continue;
 				file.addPath(fd.cFileName);
 				DWORD result = do_op(file, m_pEnumResult);
-				if ((result&RO_STOP) != 0) return ret;
-				else if ((result&RO_FAILED) != 0) ret = FALSE;
+				if ((result&RO_STOP) != 0) {
+					return FALSE;
+				} else if ((result&RO_FAILED) != 0 ||
+						   (result&RO_CANCELED) != 0) {
+					ret = FALSE;
+				}
 				file.delPath();
 			} while (::FindNextFile(hFile, &fd));
 			::FindClose(hFile);
 		} else if (m_DirList.getPathName(av, file, FALSE) &&
 			precheck_normal(file)) {
 			DWORD result = do_op(file, m_pEnumResult);
-			if ((result&RO_STOP) != 0) return ret;
-			else if ((result&RO_FAILED) != 0) ret = FALSE;
+			if ((result&RO_STOP) != 0) {
+				return FALSE;
+			} else if ((result&RO_FAILED) != 0 ||
+					   (result&RO_CANCELED) != 0) {
+				ret = FALSE;
+			}
 		} else {
 			ret = FALSE;
 			AddFailure(m_pEnumResult, av);
@@ -205,8 +213,12 @@ FileToFileOperation(
 					file.addPath(fd.cFileName);
 					dest.addPath(fd.cFileName);
 					DWORD ret = (*pfnFTF)(file, dest, fFlags, psor);
-					if ((ret&RO_STOP) != 0) return ret;
-					else if ((ret&RO_FAILED) != 0) ret = FALSE;
+					if ((ret&RO_STOP) != 0) {
+						return FALSE;
+					} else if ((ret&RO_FAILED) != 0 ||
+							   (ret&RO_CANCELED) != 0) {
+						ret = FALSE;
+					}
 					dest.delPath();
 					file.delPath();
 				} while (::FindNextFile(hFile, &fd));
@@ -214,8 +226,12 @@ FileToFileOperation(
 			} else if (DirList.getPathName(av, file, TRUE)) {
 				dest.addPath(file.getBaseName());
 				DWORD result = (*pfnFTF)(file, dest, fFlags, psor);
-				if ((result&RO_STOP) != 0) return ret;
-				else if ((result&RO_FAILED) != 0) ret = FALSE;
+				if ((result&RO_STOP) != 0) {
+					return FALSE;
+				} else if ((result&RO_FAILED) != 0 ||
+						   (result&RO_CANCELED) != 0) {
+					ret = FALSE;
+				}
 				dest.delPath(1);
 			} else {
 				//	コピー元ファイル・フォルダがない

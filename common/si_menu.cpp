@@ -1,4 +1,4 @@
-//	$Id: si_menu.cpp,v 1.4 2002-02-20 13:57:19 sugiura Exp $
+//	$Id: si_menu.cpp,v 1.5 2003-07-06 16:27:46 sugiura Exp $
 /*
  *	si_menu.cpp
  *	メニュー表示関数
@@ -37,8 +37,12 @@ UserMenuProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_USER_SHOWUSERMENU:
 		{
 			//	ポップアップメニューの表示
-			if (lpsmpa->m_bShowAtCursor)
-				::GetCursorPos(&lpsmpa->m_mnPosInfo);
+			if (lpsmpa->m_bShowAtCursor) {
+				POINT pt;
+				::GetCursorPos(&pt);
+				lpsmpa->m_mnPosInfo.x += pt.x;
+				lpsmpa->m_mnPosInfo.y += pt.y;
+			}
 			lpsmpa->m_wFirstShow = TRUE; // WM_INITMENUPOPUP 参照
 			HWND hwndTop = ::GetForegroundWindow();
 			if (hwndTop != NULL) ::UpdateWindow(hwndTop);
@@ -148,7 +152,9 @@ ShowMenuProc(LPVOID pThreadArgs)
 }
 
 BOOL
-SessionInstance::showMenuThread(const StringBuffer& menuname, POINT* pAt)
+SessionInstance::showMenuThread(const StringBuffer& menuname,
+								BOOL bShowAtCursor,
+								POINT pt)
 {
 	if (menuname.length() <= 0 || m_pMenuThread.ptr() != NULL) return FALSE;
 
@@ -164,11 +170,8 @@ SessionInstance::showMenuThread(const StringBuffer& menuname, POINT* pAt)
 		delete psmpa;
 		return FALSE;
 	}
-	if (pAt == NULL) { // show at mouse cursor
-		psmpa->m_bShowAtCursor = TRUE;
-	} else { // show at position
-		psmpa->m_mnPosInfo = *pAt;
-	}
+	psmpa->m_bShowAtCursor = bShowAtCursor;
+	psmpa->m_mnPosInfo = pt;
 
 	//	メニューを表示するスレッドの開始
 	//	メニューの表示を別スレッドのウィンドウに任せる理由：
