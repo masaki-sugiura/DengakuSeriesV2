@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.17 2004-05-31 15:52:54 sugiura Exp $
+//	$Id: ctrldata.h,v 1.18 2005-01-15 06:53:48 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -174,6 +174,7 @@ public:
 		COLORREF	 m_color;
 		BYTE		 m_fface;
 		StringBuffer m_fname;
+
 		CtrlFontProperty()
 			: m_hfont(NULL), m_bchanged(FALSE), m_color(0), m_fface(0), m_fname(nullStr)
 		{}
@@ -279,6 +280,7 @@ public:
 		StringBuffer	m_text;	//	コントロールテキストバッファ
 		CtrlFontProperty	m_fontprop;		//	フォント属性
 		HBRUSH  m_hbrBackground; // 背景色のハンドル
+		HDC		m_hDC;			//	スタティックテキストの場合のみ用いるメモリDC
 
 		CtrlProperty(CtrlListItem* pCtrl = NULL);
 		~CtrlProperty();

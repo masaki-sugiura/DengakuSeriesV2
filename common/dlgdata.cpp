@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.25 2004-11-16 17:03:50 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.26 2005-01-15 06:53:48 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -370,9 +370,13 @@ DlgPage::initPage(HWND hDlg)
 {
 	if (hDlg == NULL) return FALSE;
 	m_hwndPage = hDlg;
+#if 0
 	if (m_bInTabCtrl) {
 		m_pDlgFrame->setBackGroundToTabColor(m_hwndPage);
 	}
+#else
+	m_pDlgFrame->setBackGroundTheme(m_hwndPage, m_bInTabCtrl);
+#endif
 	//	コントロールの初期化
 //	const StringBuffer& sbFocusedCtrl = m_pDlgFrame->getFocusedCtrlName();
 	m_pCtrlList->initSequentialGet();

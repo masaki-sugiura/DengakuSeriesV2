@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.35 2004-11-16 17:03:50 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.36 2005-01-15 06:53:48 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -100,7 +100,8 @@ CtrlListItem::CtrlProperty::CtrlProperty(CtrlListItem* pCtrl)
 		m_id(0),
 		m_bufsize(0),
 		m_text(32),
-		m_hbrBackground(NULL)
+		m_hbrBackground(NULL),
+		m_hDC(NULL)
 {
 //	::ZeroMemory(&m_fontprop, sizeof(CtrlFontProperty));
 }
@@ -109,6 +110,7 @@ CtrlListItem::CtrlProperty::~CtrlProperty()
 {
 	if (m_fontprop.m_hfont) ::DeleteObject(m_fontprop.m_hfont);
 	if (m_hbrBackground) ::DeleteObject(m_hbrBackground);
+	if (m_hDC) ::DeleteDC(m_hDC);
 }
 
 void
@@ -164,8 +166,32 @@ CtrlListItem::CtrlProperty::changeFont()
 	}
 	if (m_fontprop.m_hfont != NULL) ::DeleteObject(m_fontprop.m_hfont);
 	m_fontprop.m_hfont = ::CreateFontIndirect(&lf);
-	if (m_fontprop.m_hfont != NULL)
+	if (m_fontprop.m_hfont != NULL) {
+		DlgFrame& dlgFrame = m_pCtrl->getParentPage().getDlgFrame();
+		if (dlgFrame.isThemeActive() && m_classname == (LPCSTR)0x82) {
+			// XP Theme が有効の場合、タブコントロール内にないスタティックテキストの色が
+			// 変わらないことへの対策(何だかなぁ。。。)
+			if (m_hDC) ::DeleteDC(m_hDC);
+			HDC hDC = ::GetDC(m_hwndCtrl);
+			m_hDC = ::CreateCompatibleDC(hDC);
+			RECT rcCtrl;
+			::GetWindowRect(m_hwndCtrl, &rcCtrl);
+			rcCtrl.right -= rcCtrl.left;
+			rcCtrl.bottom -= rcCtrl.top;
+			rcCtrl.left = rcCtrl.top = 0;
+			HBITMAP hBitmap = ::CreateCompatibleBitmap(hDC,
+													   rcCtrl.right,
+													   rcCtrl.bottom);
+			::ReleaseDC(m_hwndCtrl, hDC);
+			::SelectObject(m_hDC, hBitmap);
+			dlgFrame.drawThemeParentBackground(m_hwndCtrl, m_hDC, &rcCtrl);
+			::SetTextColor(m_hDC, m_fontprop.m_color);
+			::SetBkMode(m_hDC, TRANSPARENT);
+			::SelectObject(m_hDC, m_fontprop.m_hfont);
+			::TextOut(m_hDC, 0, 0, m_text, m_text.length());
+		}
 		::SendMessage(m_hwndCtrl, WM_SETFONT, (WPARAM)m_fontprop.m_hfont, TRUE);
+	}
 	m_fontprop.m_bchanged = FALSE;
 }
 
@@ -686,6 +712,24 @@ CtrlListItem::dispatchRawMsg(
 			return ret;
 		}
 		break;
+#endif
+#if 1
+	// XP Theme が有効の場合、タブコントロール内にないスタティックテキストの色が
+	// 変わらないことへの対策(何だかなぁ。。。)
+	case WM_PAINT:
+		if (pCProp->m_hDC) {
+			PAINTSTRUCT ps;
+			::BeginPaint(hCtrl, &ps);
+			::BitBlt(ps.hdc, ps.rcPaint.left, ps.rcPaint.top,
+					 ps.rcPaint.right - ps.rcPaint.left,
+					 ps.rcPaint.bottom - ps.rcPaint.top,
+					 pCProp->m_hDC,
+					 ps.rcPaint.left, ps.rcPaint.top,
+					 SRCCOPY);
+			::EndPaint(hCtrl, &ps);
+			return 0;
+		}
+		return ::CallWindowProc(pCProp->m_pfnDefCallback, hCtrl, uMsg, wParam, lParam);
 #endif
 	case WM_GET_CTRL_PTR:
 		return (LRESULT)pCProp->m_pCtrl;

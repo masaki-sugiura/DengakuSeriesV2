@@ -1,4 +1,4 @@
-//	$Id: si_bregexp.cpp,v 1.5 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: si_bregexp.cpp,v 1.6 2005-01-15 06:53:48 sugiura Exp $
 /*
  *	si_bregexp.cpp
  *	BRegexp に関するクラス
@@ -13,16 +13,25 @@ int
 SessionInstance::si_bregexp_load(const StringBuffer& filename)
 {
 	if (m_pBRegExp_Manager.ptr() != NULL) return TRUE;
+
 	PathName path(BREGEXP_FILENAME);
-	if (filename.length() > 0) {
-		if (!m_DirList.getPathName(filename,path,TRUE)) return FALSE;
+	// 空文字指定または"BREGEXP.DLL"が指定された場合は
+	// Windows のデフォルトのサーチに任せる
+	if (filename.length() > 0 &&
+		filename.compareTo(BREGEXP_FILENAME, FALSE) != 0) {
+		// パス指定あり
+		if (!m_DirList.getPathName(filename,path,TRUE)) {
+			return FALSE;
+		}
 	}
+
 	try {
 		m_pBRegExp_Manager = new BRegExp_Manager(path);
 	} catch (DllLoadError&) {
 		m_pBRegExp_Manager = NULL;
 		return FALSE;
 	}
+
 	return TRUE;
 }
 

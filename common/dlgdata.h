@@ -1,4 +1,4 @@
-//	$Id: dlgdata.h,v 1.13 2004-11-16 17:03:50 sugiura Exp $
+//	$Id: dlgdata.h,v 1.14 2005-01-15 06:53:48 sugiura Exp $
 /*
  *	dlgdata.h
  *	ダイアログを扱うクラス
@@ -236,11 +236,11 @@ public:
 	int getImeState() const;
 
 //	ダイアログの背景をTABコントロールと同色にする
-	void setBackGroundToTabColor(HWND hwndPage)
+	void setBackGroundTheme(HWND hwndPage, BOOL bInTab)
 	{
 		if (m_pThemeWrapper) {
 			m_pThemeWrapper->EnableThemeDialogTexture(hwndPage,
-													  ETDT_ENABLETAB);
+													  bInTab ? ETDT_ENABLETAB : ETDT_ENABLE);
 		}
 	}
 	void drawThemeParentBackground(HWND hwndCtrl, HDC hDC, const RECT* pRect)
