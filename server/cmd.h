@@ -1,4 +1,4 @@
-//	$Id: cmd.h,v 1.13 2004-11-16 17:03:51 sugiura Exp $
+//	$Id: cmd.h,v 1.14 2005-01-16 07:09:12 sugiura Exp $
 /*
  *	cmd.h
  *	ƒRƒ}ƒ“ƒh–¼ˆê——
@@ -122,6 +122,8 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_REQUEST(getsignature)
 	DECLARE_DDECMD_REQUEST(getdlgpos)
 	DECLARE_DDECMD_REQUEST(getdlgimestate)
+	DECLARE_DDECMD_REQUEST(getdlgsize)
+	DECLARE_DDECMD_REQUEST(getcaretpos)
 	DECLARE_DDECMD_REQUEST(getvar)
 	DECLARE_DDECMD_REQUEST(existvar)
 	DECLARE_DDECMD_REQUEST(nextvar)

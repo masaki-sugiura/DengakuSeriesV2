@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.16 2005-01-15 19:54:47 sugiura Exp $
+//	$Id: session.h,v 1.17 2005-01-16 07:09:12 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -210,7 +210,7 @@ public:
 	int si_setdlgpos(int, int, const StringBuffer&, const StringBuffer&);
 	StringBuffer si_getdlgsize();
 
-	StringBuffer si_getcaretpos(int);
+	StringBuffer si_getcaretpos();
 
 	// BRegexp系
 	int si_bregexp_load(const StringBuffer&);
