@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.18 2002-08-05 16:06:17 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.19 2002-11-03 15:36:50 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -19,6 +19,7 @@
 
 #include <exception>
 #include <imm.h>
+#include <commctrl.h>
 
 BOOL
 CtrlListItem::States::dumpData(DlgDataFile& ddfile) const
@@ -234,9 +235,16 @@ CtrlListItem::CtrlProperty::loadData(DlgDataFile& ddfile, StringBuffer& key)
 	return m_fontprop.loadData(ddfile, key);
 }
 
+static int CALLBACK
+CompareTreeItems(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	TreeItemData* tid1 = (TreeItemData*)lParam1;
+	TreeItemData* tid2 = (TreeItemData*)lParam2;
+	return lstrcmp(tid1->getText(), tid2->getText());
+}
 
 BOOL
-TreeItemData::initItem(HWND hCtrl, HTREEITEM hParent)
+TreeItemData::initItem(HWND hCtrl, HTREEITEM hParent, BOOL bSort)
 {
 	TV_INSERTSTRUCT	tvis;
 	tvis.hParent		= hParent;
@@ -248,8 +256,13 @@ TreeItemData::initItem(HWND hCtrl, HTREEITEM hParent)
 	if (m_hItem == NULL) return FALSE;
 	this->initSequentialGet();
 	TreeItemData* tid;
-	while ((tid = this->getNextItem()) != NULL)
-		if (!tid->initItem(hCtrl,m_hItem)) return FALSE;
+	while ((tid = this->getNextItem()) != NULL) {
+		if (!tid->initItem(hCtrl,m_hItem, bSort)) return FALSE;
+	}
+	TVSORTCB tvs;
+	tvs.hParent = hParent;
+	tvs.lpfnCompare = (PFNTVCOMPARE)CompareTreeItems;
+	if (bSort) TreeView_SortChildrenCB(hCtrl, &tvs, 0);
 	return TRUE;
 }
 
@@ -328,7 +341,7 @@ CtrlListItem::CtrlListItem(
 		m_bEnable(TRUE)
 {
 	m_x = m_y = m_cx = m_cy = m_width = m_height = 0;
-	::FillMemory(&m_notify, sizeof(WORD) * 4, 0xFF);
+	::FillMemory(m_notify, sizeof(m_notify), 0xFF);
 }
 
 CtrlListItem::~CtrlListItem()
@@ -627,7 +640,8 @@ CtrlListItem::onSetNotify(CmdLineParser& argv)
 	argv.initSequentialGet();
 	LPCSTR av;
 	int	num = 0;
-	while ((av = argv.getNextArgv()) != NULL && num < 4)
+	while ((av = argv.getNextArgv()) != NULL &&
+		   num < sizeof(m_notify) / sizeof(m_notify[0]))
 		m_notify[num++] = (WORD)ival(av);
 	return TRUE;
 }
@@ -695,6 +709,18 @@ CtrlListItem::onImeNotify(WPARAM, LPARAM)
 }
 
 BOOL
+CtrlListItem::onSetSort(CmdLineParser&)
+{
+	return FALSE;
+}
+
+StringBuffer
+CtrlListItem::onGetSort()
+{
+	return nullStr;
+}
+
+BOOL
 CtrlListItem::dumpData(DlgDataFile& ddfile)
 {
 	if (!ddfile.isValid()) return FALSE;
@@ -704,10 +730,12 @@ CtrlListItem::dumpData(DlgDataFile& ddfile)
 	ddfile.write(m_cnum, GetString(STR_DLGDATA_INTERNALCTRLNUM));
 	ddfile.write(m_bEnable, GetString(STR_DLGDATA_ENABLE));
 	StringBuffer buf(GetString(STR_DLGDATA_NOTIFY), -1, 2);
-	buf.append((TCHAR)'_').append((TCHAR)'*');
-	for (int i = 0; i < 4; i++) {
-		buf.setcharAt(-1, (TCHAR)('0'+i));
+	buf.append((TCHAR)'_');
+	int len = buf.length();
+	for (int i = 0; i < sizeof(m_notify) / sizeof(m_notify[0]); i++) {
+		buf.append(i);
 		ddfile.write(m_notify[i], buf);
+		buf.setlength(len);
 	}
 	ddfile.write(m_width, GetString(STR_DLGDATA_WIDTH));
 	ddfile.write(m_height, GetString(STR_DLGDATA_HEIGHT));
@@ -731,10 +759,12 @@ CtrlListItem::loadData(DlgDataFile& ddfile)
 	ddfile.read(&m_cnum, GetString(STR_DLGDATA_INTERNALCTRLNUM));
 	ddfile.read(&m_bEnable, GetString(STR_DLGDATA_ENABLE));
 	StringBuffer buf(GetString(STR_DLGDATA_NOTIFY), -1, 2);
-	buf.append((TCHAR)'_').append((TCHAR)'*');
-	for (int i = 0; i < 4; i++) {
-		buf.setcharAt(-1, (TCHAR)('0'+i));
-		ddfile.read(&m_notify[i], buf);
+	buf.append((TCHAR)'_');
+	int len = buf.length();
+	for (int i = 0; i < sizeof(m_notify) / sizeof(m_notify[0]); i++) {
+		buf.append(i);
+		if (!ddfile.read(&m_notify[i], buf)) m_notify[i] = 0xFFFF;
+		buf.setlength(i);
 	}
 	ddfile.read(&m_width, GetString(STR_DLGDATA_WIDTH));
 	ddfile.read(&m_height, GetString(STR_DLGDATA_HEIGHT));
@@ -1560,6 +1590,18 @@ HasListCtrl::loadData(DlgDataFile& ddfile)
 	return TRUE;
 }
 
+void
+HasListCtrl::setViewIndex()
+{
+	// nothing to do.
+}
+
+void
+HasListCtrl::getStateFromView()
+{
+	// nothing to do.
+}
+
 static LRESULT CALLBACK
 ChildCtrlProc(HWND hCtrl, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -1818,19 +1860,25 @@ ListCtrl::ListCtrl(
 	CTRL_ID type)
 	: HasListCtrl(name,text,type)
 {
-	m_pcp->m_style		= LBS_NOINTEGRALHEIGHT|LBS_NOTIFY|
+	m_pcp->m_style		= LBS_NOINTEGRALHEIGHT|LBS_NOTIFY|LBS_SORT|
 		WS_BORDER|WS_VSCROLL|WS_CHILD|WS_TABSTOP|WS_VISIBLE|WS_GROUP;
 	m_pcp->m_exstyle	= 0x0;
 	m_pcp->m_id			= 0;
 	m_pcp->m_bufsize	= 1;
 	m_pcp->m_classname	= (LPSTR)0x83;
 
+	m_bSorted = FALSE;
+	m_style_sort = LBS_SORT;
+
+	m_msg_addstr	= LB_ADDSTRING;
 	m_msg_setstr	= LB_INSERTSTRING;
 	m_msg_getstr	= LB_GETTEXT;
 	m_msg_delstr	= LB_DELETESTRING;
 	m_msg_delall	= LB_RESETCONTENT;
 	m_msg_setsel	= LB_SETCURSEL;
 	m_msg_getsel	= LB_GETCURSEL;
+	m_msg_setdata	= LB_SETITEMDATA;
+	m_msg_getdata	= LB_GETITEMDATA;
 	m_msg_err		= (UINT)LB_ERR;
 }
 
@@ -1852,22 +1900,43 @@ ListCtrl::initCtrl(HWND hDlg)
 	ItemData* id;
 	int num = m_item->initSequentialGet();
 	while ((id = m_item->getNextItem()) != NULL) {
-		::SendMessage(m_pcp->m_hwndCtrl, m_msg_setstr,
-						(UINT)-1, (LPARAM)id->getText().getBufPtr());
+		int index = ::SendMessage(m_pcp->m_hwndCtrl, m_msg_addstr,
+								  0, (LPARAM)id->getText().getBufPtr());
+		::SendMessage(m_pcp->m_hwndCtrl, m_msg_setdata,
+						index, (LPARAM)id);
 	}
+	this->setViewIndex();
 	if (m_state > num) m_state = 0;
 	if (m_state > 0) {
-		::SendMessage(m_pcp->m_hwndCtrl, m_msg_setsel, (WPARAM)(m_state-1), 0);
-		::SendMessage(m_pcp->m_hwndCtrl, LB_SETTOPINDEX, (WPARAM)(m_state-1), 0);
+		id = m_item->getItemByIndex(m_state - 1);
+		if (!id) return FALSE;
+		int index = id->getViewIndex();
+		::SendMessage(m_pcp->m_hwndCtrl, m_msg_setsel, index, 0);
+		::SendMessage(m_pcp->m_hwndCtrl, LB_SETTOPINDEX, index, 0);
 	}
 	return TRUE;
+}
+
+void
+ListCtrl::setViewIndex()
+{
+	int num = m_item->itemNum();
+	for (int i = 0; i < num; i++) {
+		ItemData* id = (ItemData*)::SendMessage(m_pcp->m_hwndCtrl, m_msg_getdata,
+												i, 0);
+		id->setViewIndex(i);
+	}
 }
 
 BOOL
 ListCtrl::sendData()
 {
 	if (!SimpleCtrl::sendData()) return FALSE;
-	::SendMessage(m_pcp->m_hwndCtrl, m_msg_setsel, (WPARAM)(m_state-1), 0);
+	if (m_state > 0) {
+		ItemData* id = m_item->getItemByIndex(m_state - 1);
+		if (!id) return FALSE;
+		::SendMessage(m_pcp->m_hwndCtrl, m_msg_setsel, id->getViewIndex(), 0);
+	}
 	return TRUE;
 }
 
@@ -1875,13 +1944,28 @@ BOOL
 ListCtrl::receiveData()
 {
 	if (!SimpleCtrl::receiveData()) return FALSE;
-	DWORD i = (DWORD)::SendMessage(m_pcp->m_hwndCtrl, m_msg_getsel, 0, 0);
-	m_state = (i != m_msg_err) ? (i + 1) : 0;
-	if (m_state > 0) {
-		ItemData* id = m_item->getItemByIndex(m_state-1);
-		if (id != NULL) m_pcp->m_text = id->getText();
-	} else m_pcp->m_text = nullStr;
+	this->setViewIndex();
+	this->getStateFromView();
 	return TRUE;
+}
+
+BOOL
+ListCtrl::onSetSort(CmdLineParser& sstate)
+{
+	if (m_pcp->m_hwndCtrl) return FALSE;
+	if (sstate.itemNum() > 0 &&
+		sstate.getArgvStr(0).compareTo("yes") == 0) {
+		m_bSorted = TRUE;
+	} else {
+		m_bSorted = FALSE;
+	}
+	return TRUE;
+}
+
+StringBuffer
+ListCtrl::onGetSort()
+{
+	return m_bSorted ? "yes" : "no";
 }
 
 BOOL
@@ -1891,9 +1975,16 @@ ListCtrl::onSetItem(CmdLineParser& text, const StringBuffer& pos)
 	if (ind < 0) return FALSE;
 	if (m_pcp->m_hwndCtrl != NULL) {
 		ItemData* id = m_item->getItemByIndex(ind);
-		::SendMessage(m_pcp->m_hwndCtrl, m_msg_delstr, ind, 0);
-		::SendMessage(m_pcp->m_hwndCtrl, m_msg_setstr,
-						ind, (LPARAM)id->getText().getBufPtr());
+		int vindex = id->getViewIndex();
+		::SendMessage(m_pcp->m_hwndCtrl, m_msg_delstr, vindex, 0);
+		if (m_bSorted) {
+			::SendMessage(m_pcp->m_hwndCtrl, m_msg_addstr,
+						  0, (LPARAM)id->getText().getBufPtr());
+		} else {
+			::SendMessage(m_pcp->m_hwndCtrl, m_msg_setstr,
+						  vindex, (LPARAM)id->getText().getBufPtr());
+		}
+		this->setViewIndex();
 		this->sendData();
 	}
 	return TRUE;
@@ -1902,13 +1993,28 @@ ListCtrl::onSetItem(CmdLineParser& text, const StringBuffer& pos)
 BOOL
 ListCtrl::onInsertItem(CmdLineParser& text, const StringBuffer& pos)
 {
-	int	ind = HasListCtrl::onInsertItem(text,pos) - 1;
-	if (ind < 0) return FALSE;
+	this->receiveData();
+	int	ind = -1,
+		num = m_item->itemNum();
+	if (pos.length() > 0) {
+		int	tmp = ival(pos) - 1;
+		if (tmp >= 0 && tmp < num) ind = tmp;
+	}
+	m_item->addItem(new ItemData(text.getRawData()), ind);
+	if (ind < 0) ind = num;
 	if (m_pcp->m_hwndCtrl != NULL) {
 		ItemData* id = m_item->getItemByIndex(ind);
-		::SendMessage(m_pcp->m_hwndCtrl, m_msg_setstr,
-					ind, (LPARAM)id->getText().getBufPtr());
-		this->sendData();
+		int index;
+		if (m_bSorted) {
+			index = ::SendMessage(m_pcp->m_hwndCtrl, m_msg_addstr,
+								  0, (LPARAM)id->getText().getBufPtr());
+		} else {
+			index = ::SendMessage(m_pcp->m_hwndCtrl, m_msg_setstr,
+								  ind, (LPARAM)id->getText().getBufPtr());
+		}
+		::SendMessage(m_pcp->m_hwndCtrl, m_msg_setdata, index, (LPARAM)id);
+		this->setViewIndex();
+		this->getStateFromView();
 	}
 	return TRUE;
 }
@@ -1916,11 +2022,18 @@ ListCtrl::onInsertItem(CmdLineParser& text, const StringBuffer& pos)
 BOOL
 ListCtrl::onDeleteItem(const StringBuffer& pos)
 {
-	int	ind = HasListCtrl::onDeleteItem(pos) - 1;
+	this->receiveData();
+	int	ind = this->getItemData(pos);
 	if (ind < 0) return FALSE;
 	if (m_pcp->m_hwndCtrl != NULL) {
-		::SendMessage(m_pcp->m_hwndCtrl, m_msg_delstr, ind, 0);
-		this->sendData();
+		ItemData* id = m_item->getItemByIndex(ind);
+		int vindex = id->getViewIndex();
+		::SendMessage(m_pcp->m_hwndCtrl, m_msg_delstr, vindex, 0);
+	}
+	m_item->delItemByIndex(ind);
+	if (m_pcp->m_hwndCtrl != NULL) {
+		this->setViewIndex();
+		this->getStateFromView();
 	}
 	return TRUE;
 }
@@ -1949,6 +2062,23 @@ ListCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 	return 0xFFFF;
 }
 
+void
+ListCtrl::getStateFromView()
+{
+	if (!m_pcp->m_hwndCtrl) return;
+	DWORD i = (DWORD)::SendMessage(m_pcp->m_hwndCtrl, m_msg_getsel, 0, 0);
+	if (i == m_msg_err) {
+		m_state = 0;
+		m_pcp->m_text = nullStr;
+	} else {
+		ItemData* id = (ItemData*)::SendMessage(m_pcp->m_hwndCtrl, m_msg_getdata,
+												i, 0);
+		m_state = m_item->getItemIndexByPtr(id) + 1;
+		m_pcp->m_text = id->getText();
+	}
+}
+
+
 //	combo
 ComboCtrl::ComboCtrl(
 	const StringBuffer& name,
@@ -1956,16 +2086,22 @@ ComboCtrl::ComboCtrl(
 	CTRL_ID type)
 	: ListCtrl(name,text,CTRLID_COMBO), m_bEditable(type == CTRLID_COMBO)
 {
-	m_pcp->m_style		= CBS_AUTOHSCROLL|WS_BORDER|WS_VSCROLL|
+	m_pcp->m_style		= CBS_AUTOHSCROLL|CBS_SORT|WS_BORDER|WS_VSCROLL|
 							WS_CHILD|WS_VISIBLE|WS_TABSTOP|WS_VISIBLE|WS_GROUP|
 							(m_bEditable ? CBS_DROPDOWN : CBS_DROPDOWNLIST);
 	m_pcp->m_classname	= (LPSTR)0x85;
+
+	m_style_sort = CBS_SORT;
+
+	m_msg_addstr	= CB_ADDSTRING;
 	m_msg_setstr	= CB_INSERTSTRING;
 	m_msg_getstr	= CB_GETLBTEXT;
 	m_msg_delstr	= CB_DELETESTRING;
 	m_msg_delall	= CB_RESETCONTENT;
 	m_msg_setsel	= CB_SETCURSEL;
 	m_msg_getsel	= CB_GETCURSEL;
+	m_msg_setdata	= CB_SETITEMDATA;
+	m_msg_getdata	= CB_GETITEMDATA;
 	m_msg_err		= (UINT)CB_ERR;
 }
 
@@ -2011,8 +2147,11 @@ BOOL
 ComboCtrl::sendData()
 {
 	if (!SimpleCtrl::sendData()) return FALSE;
-	if (m_state > 0)
-		::SendMessage(m_pcp->m_hwndCtrl, m_msg_setsel, (WPARAM)(m_state-1), 0);
+	if (m_state > 0) {
+		ItemData* id = m_item->getItemByIndex(m_state - 1);
+		if (!id) return FALSE;
+		::SendMessage(m_pcp->m_hwndCtrl, m_msg_setsel, id->getViewIndex(), 0);
+	}
 	return TRUE;
 }
 
@@ -2020,8 +2159,8 @@ BOOL
 ComboCtrl::receiveData()
 {
 	if (!SimpleCtrl::receiveData()) return FALSE;
-	DWORD i = (DWORD)::SendMessage(m_pcp->m_hwndCtrl, m_msg_getsel, 0, 0);
-	m_state = (i != m_msg_err) ? (i + 1) : 0;
+	this->setViewIndex();
+	this->getStateFromView();
 	return TRUE;
 }
 
@@ -2083,6 +2222,19 @@ ComboCtrl::loadData(DlgDataFile& ddfile)
 	if (!ListCtrl::loadData(ddfile)) return FALSE;
 	ddfile.read(&m_imestate, GetString(STR_DLGDATA_IMESTATE));
 	return TRUE;
+}
+
+void
+ComboCtrl::getStateFromView()
+{
+	DWORD i = (DWORD)::SendMessage(m_pcp->m_hwndCtrl, m_msg_getsel, 0, 0);
+	if (i == m_msg_err) {
+		m_state = 0;
+	} else {
+		ItemData* id = (ItemData*)::SendMessage(m_pcp->m_hwndCtrl, m_msg_getdata,
+												i, 0);
+		m_state = m_item->getItemIndexByPtr(id) + 1;
+	}
 }
 
 //	ref*button
@@ -2217,9 +2369,9 @@ ChkListCtrl::ChkListCtrl(
 	CTRL_ID type)
 	: HasListCtrl(name, text, type)
 {
-	m_pcp->m_style		= LVS_REPORT|LVS_NOCOLUMNHEADER/*|LVS_SINGLESEL*/|
+	m_pcp->m_style		= LVS_REPORT|LVS_NOCOLUMNHEADER|LVS_SINGLESEL|
 							WS_CHILD|WS_BORDER|WS_TABSTOP|WS_VISIBLE|WS_GROUP;
-	m_pcp->m_exstyle	= WS_EX_CLIENTEDGE;
+	m_pcp->m_exstyle	= WS_EX_CLIENTEDGE | LVS_EX_CHECKBOXES;
 	m_pcp->m_classname	= WC_LISTVIEW;
 	m_pcp->m_bufsize	= lstrlen(m_pcp->m_classname) + 1;
 }
@@ -2228,6 +2380,7 @@ BOOL
 ChkListCtrl::initCtrl(HWND hDlg)
 {
 	if (!HasListCtrl::initCtrl(hDlg)) return FALSE;
+#if 0
 	HANDLE hbmp = ::LoadImage(NULL, MAKEINTRESOURCE(OBM_CHECKBOXES),
 								IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR|LR_SHARED);
 	DWORD dlgbu = (DWORD)LOWORD(GetDialogBaseUnits(hDlg)) * 9 / 10;
@@ -2236,22 +2389,27 @@ ChkListCtrl::initCtrl(HWND hDlg)
 	ImageList_Add(hImage, (HBITMAP)hbmp, NULL);
 	ListView_SetImageList(m_pcp->m_hwndCtrl, hImage, LVSIL_SMALL);
 	::DeleteObject(hbmp);
+#endif
+	ListView_SetExtendedListViewStyleEx(m_pcp->m_hwndCtrl,
+										LVS_EX_CHECKBOXES, LVS_EX_CHECKBOXES);
 	LV_COLUMN lvc;
 	lvc.mask		= LVCF_FMT|LVCF_SUBITEM;
 	lvc.fmt			= LVCFMT_LEFT;
 	lvc.iSubItem	= 0;
 	if (ListView_InsertColumn(m_pcp->m_hwndCtrl, 0, &lvc) < 0) return FALSE;
-	LV_ITEM	lvi;
-	lvi.mask		= LVIF_TEXT|LVIF_IMAGE;
+	LVITEM	lvi;
+	lvi.mask		= LVIF_TEXT | LVIF_PARAM /*|LVIF_IMAGE*/;
 	lvi.iSubItem	= 0;
 	ItemData* id;
 	ListView_SetItemCount(m_pcp->m_hwndCtrl, m_item->initSequentialGet());
 	for (int i = 0; (id = m_item->getNextItem()) != NULL; i++) {
 		lvi.iItem	= i;
+		lvi.lParam  = (LPARAM)id;
 		lvi.pszText = id->getText().getBufPtr();
-		lvi.iImage	= 0;
+//		lvi.iImage	= 0;
 		ListView_InsertItem(m_pcp->m_hwndCtrl, &lvi);
 	}
+	this->setViewIndex();
 	ListView_SetColumnWidth(m_pcp->m_hwndCtrl, 0, LVSCW_AUTOSIZE);
 	return TRUE;
 }
@@ -2262,13 +2420,15 @@ ChkListCtrl::sendData()
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
 	if (m_state > 0 && !m_states.getState(m_state-1))
 		m_states.setState(m_state-1, TRUE);
-	LV_ITEM	lvi;
-	lvi.mask		= LVIF_IMAGE|LVIF_PARAM;
-	lvi.iSubItem	= 0;
+	LVITEM	lvi;
+	lvi.mask	  = LVIF_STATE;
+	lvi.iSubItem  = 0;
+	lvi.stateMask = 0xF000;
 	int	num = m_item->initSequentialGet();	//	skip dummy
-	for (lvi.iItem = 0; lvi.iItem < num; lvi.iItem++) {
-		lvi.lParam	= m_states.getState(lvi.iItem);
-		lvi.iImage	= lvi.lParam != 0;
+	for (int i = 0; i < num; i++) {
+		ItemData* id = m_item->getItemByIndex(i);
+		lvi.iItem = id->getViewIndex();
+		lvi.state = m_states.getState(i) ? 0x2000 : 0x1000;
 		ListView_SetItem(m_pcp->m_hwndCtrl, &lvi);
 	}
 	if (m_pcp->m_fontprop.m_bchanged) m_pcp->changeFont();
@@ -2282,16 +2442,73 @@ BOOL
 ChkListCtrl::receiveData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
-	LV_ITEM	lvi;
-	lvi.mask		= LVIF_PARAM;
-	lvi.iSubItem	= 0;
+	LVITEM	lvi;
+	lvi.mask	  = LVIF_STATE | LVIF_PARAM;
+	lvi.iSubItem  = 0;
+	lvi.stateMask = 0xF000;
 	int	num = m_item->itemNum();
-	for (lvi.iItem = 0; lvi.iItem < num; lvi.iItem++) {
+	for (int i = 0; i < num; i++) {
+		lvi.iItem = i;
 		ListView_GetItem(m_pcp->m_hwndCtrl, &lvi);
-		m_states.setState(lvi.iItem, lvi.lParam);
+		ItemData* id = (ItemData*)lvi.lParam;
+		id->setViewIndex(i);
+		int pos = m_item->getItemIndexByPtr(id);
+		m_states.setState(pos, (lvi.state & 0xF000) == 0x2000);
 	}
 	m_state = m_states.getFirstIndex(num) + 1;
 	return TRUE;
+}
+
+void
+ChkListCtrl::setViewIndex()
+{
+	if (!m_pcp->m_hwndCtrl) return;
+	int num = m_item->itemNum();
+	LVITEM lvi;
+	lvi.mask = LVIF_PARAM;
+	lvi.iSubItem = 0;
+	for (int i = 0; i < num; i++) {
+		lvi.iItem = i;
+		ListView_GetItem(m_pcp->m_hwndCtrl, &lvi);
+		((ItemData*)lvi.lParam)->setViewIndex(i);
+	}
+}
+
+void
+ChkListCtrl::getStateFromView()
+{
+	if (!m_pcp->m_hwndCtrl) return;
+	LVITEM lvi;
+	lvi.mask = LVIF_STATE | LVIF_PARAM;
+	lvi.stateMask = 0xF000;
+	lvi.iSubItem = 0;
+	int num = m_item->itemNum();
+	for (int i = 0; i < num; i++) {
+		lvi.iItem = i;
+		ListView_GetItem(m_pcp->m_hwndCtrl, &lvi);
+		int pos = m_item->getItemIndexByPtr((ItemData*)lvi.lParam);
+		m_states.setState(pos, (lvi.state & 0xF000) == 0x2000);
+	}
+	m_state = m_states.getFirstIndex(num) + 1;
+}
+
+BOOL
+ChkListCtrl::onSetSort(CmdLineParser& sstate)
+{
+	if (m_pcp->m_hwndCtrl) return FALSE;
+	if (sstate.itemNum() > 0 &&
+		sstate.getArgvStr(0).compareTo("yes") == 0) {
+		m_bSorted = TRUE;
+	} else {
+		m_bSorted = FALSE;
+	}
+	return TRUE;
+}
+
+StringBuffer
+ChkListCtrl::onGetSort()
+{
+	return m_bSorted ? "yes" : "no";
 }
 
 BOOL
@@ -2322,9 +2539,9 @@ ChkListCtrl::onSetItem(CmdLineParser& text, const StringBuffer& pos)
 	if (m_pcp->m_hwndCtrl != NULL) {
 		ItemData* id = m_item->getItemByIndex(ind);
 		if (id == NULL) return FALSE;
-		LV_ITEM	lvi;
+		LVITEM	lvi;
 		lvi.mask		= LVIF_TEXT;
-		lvi.iItem		= ind;
+		lvi.iItem		= id->getViewIndex();
 		lvi.iSubItem	= 0;
 		lvi.pszText		= id->getText().getBufPtr();
 		ListView_SetItem(m_pcp->m_hwndCtrl, &lvi);
@@ -2350,14 +2567,15 @@ ChkListCtrl::onInsertItem(CmdLineParser& text, const StringBuffer& pos)
 	if (m_pcp->m_hwndCtrl != NULL) {
 		ItemData* id = m_item->getItemByIndex(ind);
 		if (id == NULL) return FALSE;
-		LV_ITEM	lvi;
-		lvi.mask		= LVIF_TEXT|LVIF_IMAGE|LVIF_PARAM;
+		LVITEM	lvi;
+		lvi.mask		= LVIF_TEXT | LVIF_PARAM;
 		lvi.iItem		= ind;
 		lvi.iSubItem	= 0;
-		lvi.iImage		= 0;
-		lvi.lParam		= 0;
+		lvi.lParam		= (LPARAM)id;
 		lvi.pszText		= id->getText().getBufPtr();
 		ListView_InsertItem(m_pcp->m_hwndCtrl, &lvi);
+		this->setViewIndex();
+		this->getStateFromView();
 		ListView_SetColumnWidth(m_pcp->m_hwndCtrl, 0, LVSCW_AUTOSIZE);
 	}
 	return TRUE;
@@ -2366,17 +2584,23 @@ ChkListCtrl::onInsertItem(CmdLineParser& text, const StringBuffer& pos)
 BOOL
 ChkListCtrl::onDeleteItem(const StringBuffer& pos)
 {
-	int	ind = HasListCtrl::onDeleteItem(pos) - 1;
+	this->receiveData();
+	int	ind = this->getItemData(pos);
 	if (ind < 0) return FALSE;
 	int	num = m_item->itemNum();
 	if (ind < num) {
 		for (int tmp = ind; tmp < num; tmp++) {
 			m_states.setState(tmp, m_states.getState(tmp + 1));
 		}
-		m_state = m_states.getFirstIndex(num);
+		m_state = m_states.getFirstIndex(num) + 1;
 	}
-	if (m_pcp->m_hwndCtrl != NULL)
-		ListView_DeleteItem(m_pcp->m_hwndCtrl, ind);
+	if (m_pcp->m_hwndCtrl != NULL) {
+		ItemData* id = m_item->getItemByIndex(ind);
+		ListView_DeleteItem(m_pcp->m_hwndCtrl, id->getViewIndex());
+	}
+	m_item->delItemByIndex(ind);
+	this->setViewIndex();
+	this->getStateFromView();
 	return TRUE;
 }
 
@@ -2424,8 +2648,9 @@ ChkListCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 		break;
 	case NM_CLICK:
 		{
+#if 0
 			NM_LISTVIEW	*nmlv = reinterpret_cast<NM_LISTVIEW*>(lParam);
-			LV_ITEM	lvi;
+			LVITEM	lvi;
 			lvi.mask  = LVIF_PARAM;
 			lvi.iItem = (reinterpret_cast<NM_LISTVIEW*>(lParam))->iItem;
 			lvi.iSubItem = 0;
@@ -2437,8 +2662,10 @@ ChkListCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 			lvi.iImage		= lvi.lParam != 0;
 			ListView_SetItem(m_pcp->m_hwndCtrl, &lvi);
 			ListView_Update(m_pcp->m_hwndCtrl, lvi.iItem);
+#endif
 		}
 		return m_notify[1];
+#if 0
 	case LVN_KEYDOWN:
 		{
 			NMLVKEYDOWN* nmlvkey = reinterpret_cast<NMLVKEYDOWN*>(lParam);
@@ -2446,7 +2673,7 @@ ChkListCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 				HWND hwndCtrl = m_pcp->m_hwndCtrl;
 				int num = ListView_GetItemCount(hwndCtrl);
 				if (num <= 0) break;
-				LV_ITEM lvi;
+				LVITEM lvi;
 				lvi.mask = LVIF_PARAM;
 				lvi.iSubItem = 0;
 				Array<BOOL> selected(num);
@@ -2478,18 +2705,19 @@ ChkListCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 			}
 		}
 		break;
+#endif
 	case LVN_ENDLABELEDIT:
 		return m_notify[2];
 	case LVN_SETDISPINFO:
 		{
-			LV_ITEM& lvi = (reinterpret_cast<NMLVDISPINFO*>(lParam))->item;
+			LVITEM& lvi = (reinterpret_cast<NMLVDISPINFO*>(lParam))->item;
 			ItemData* id = m_item->getItemByIndex(lvi.iItem);
 			if (id != NULL) id->getText().reset(lvi.pszText);
 		}
 		return 0xFFFF;
 	case LVN_GETDISPINFO:
 		{
-			LV_ITEM& lvi = (reinterpret_cast<NMLVDISPINFO*>(lParam))->item;
+			LVITEM& lvi = (reinterpret_cast<NMLVDISPINFO*>(lParam))->item;
 			ItemData* id = m_item->getItemByIndex(lvi.iItem);
 			if (id == NULL) break;
 			lvi.pszText = id->getText().getBufPtr();
@@ -2526,6 +2754,8 @@ LViewCtrl::LViewCtrl(
 	m_pcp->m_style = LVS_REPORT|LVS_SHOWSELALWAYS|//LVS_NOSORTHEADER|
 						WS_CHILD|WS_BORDER|WS_TABSTOP|WS_VISIBLE|WS_GROUP;
 
+	m_bSorted = FALSE;
+
 	m_hdr = NULL;
 	Tokenizer tkn(text, sep);
 	m_pcp->m_text = tkn.getNextToken();
@@ -2554,14 +2784,26 @@ LViewCtrl::getHeight()
 	return HasListCtrl::getHeight() + NARROWHEIGHT * (m_hdr != 0);
 }
 
+BOOL
+LViewCtrl::createCtrlTemplate(CtrlTemplateArgs& cta)
+{
+	if (m_bSorted) m_pcp->m_style |= LVS_SORTASCENDING;
+	else           m_pcp->m_style &= ~LVS_SORTASCENDING;
+	return ChkListCtrl::createCtrlTemplate(cta);
+}
+
 static void
 setlvitem(
-	LV_ITEM& lvi,
+	LVITEM& lvi,
 	LViewItemData* lvid,
 	HWND hwndCtrl,
 	UINT msg, WPARAM wParam)
 {
 	lvi.pszText = lvid->getItemByIndex(lvi.iSubItem)->getText().getBufPtr();
+	if (lvi.iSubItem == 0) {
+		lvi.lParam = (LPARAM)lvid;
+		lvi.mask |= LVIF_PARAM;
+	}
 	::SendMessage(hwndCtrl, msg, wParam, (LPARAM)&lvi);
 	int cwidth = ListView_GetStringWidth(hwndCtrl, lvi.pszText) + 
 					(lvi.iSubItem ? 12 : 10);
@@ -2588,7 +2830,7 @@ LViewCtrl::initCtrl(HWND hDlg)
 		if (ListView_InsertColumn(m_pcp->m_hwndCtrl, i, &lvc) < 0)
 			return FALSE;
 	}
-	LV_ITEM	lvi;
+	LVITEM	lvi;
 	lvi.mask = LVIF_TEXT;
 	LViewItemData* lvid;
 	ListView_SetItemCount(m_pcp->m_hwndCtrl,m_item->initSequentialGet());
@@ -2601,6 +2843,11 @@ LViewCtrl::initCtrl(HWND hDlg)
 						lvi.iSubItem > 0 ? LVM_SETITEM : LVM_INSERTITEM, 0);
 		}
 	}
+	this->setViewIndex();
+
+	m_lastSortKey = -1;
+	m_bAscending = TRUE;
+
 	return TRUE;
 }
 
@@ -2610,13 +2857,16 @@ LViewCtrl::sendData()
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
 	if (m_state > 0 && !m_states.getState(m_state-1))
 		m_states.setState(m_state-1, TRUE);
-	LV_ITEM	lvi;
+	LVITEM	lvi;
 	lvi.mask		= LVIF_STATE;
 	lvi.stateMask	= LVIS_SELECTED;
 	lvi.iSubItem	= 0;
 	int	num = m_item->itemNum();
-	for (lvi.iItem = 0; lvi.iItem < num; lvi.iItem++) {
-		lvi.state = m_states.getState(lvi.iItem) ? LVIS_SELECTED : 0;
+	for (int i = 0; i < num; i++) {
+		LViewItemData*
+			lvid = static_cast<LViewItemData*>(m_item->getItemByIndex(i));
+		lvi.iItem = lvid->getViewIndex();
+		lvi.state = m_states.getState(i) ? LVIS_SELECTED : 0;
 		ListView_SetItem(m_pcp->m_hwndCtrl, &lvi);
 	}
 	if (m_pcp->m_fontprop.m_bchanged) m_pcp->changeFont();
@@ -2629,17 +2879,39 @@ BOOL
 LViewCtrl::receiveData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
-	LV_ITEM	lvi;
-	lvi.mask		= LVIF_STATE;
+	LVITEM	lvi;
+	lvi.mask		= LVIF_STATE | LVIF_PARAM;
 	lvi.stateMask	= LVIS_SELECTED;
 	lvi.iSubItem	= 0;
 	int	num = m_item->itemNum();
-	for (lvi.iItem = 0; lvi.iItem < num; lvi.iItem++) {
+	for (int i = 0; i < num; i++) {
+		lvi.iItem = i;
 		ListView_GetItem(m_pcp->m_hwndCtrl, &lvi);
-		m_states.setState(lvi.iItem, (lvi.state & LVIS_SELECTED) != 0);
+		LViewItemData* lvid = (LViewItemData*)lvi.lParam;
+		lvid->setViewIndex(i);
+		m_states.setState(m_item->getItemIndexByPtr(lvid),
+						  (lvi.state & LVIS_SELECTED) != 0);
 	}
 	m_state = m_states.getFirstIndex(num) + 1;
 	return TRUE;
+}
+
+void
+LViewCtrl::getStateFromView()
+{
+	if (!m_pcp->m_hwndCtrl) return;
+	LVITEM lvi;
+	lvi.mask = LVIF_STATE | LVIF_PARAM;
+	lvi.stateMask = LVIS_SELECTED;
+	lvi.iSubItem = 0;
+	int num = m_item->itemNum();
+	for (int i = 0; i < num; i++) {
+		lvi.iItem = i;
+		ListView_GetItem(m_pcp->m_hwndCtrl, &lvi);
+		int pos = m_item->getItemIndexByPtr((LViewItemData*)lvi.lParam);
+		m_states.setState(pos, (lvi.state & LVIS_SELECTED) != 0);
+	}
+	m_state = m_states.getFirstIndex(num) + 1;
 }
 
 BOOL
@@ -2672,9 +2944,9 @@ LViewCtrl::onSetItem(CmdLineParser& argv, const StringBuffer& pos)
 		id->getText() = argv.getNextArgvStr();
 	}
 	if (m_pcp->m_hwndCtrl == NULL) return TRUE;
-	LV_ITEM	lvi;
+	LVITEM	lvi;
 	lvi.mask = LVIF_TEXT;
-	lvi.iItem = ind;
+	lvi.iItem = lvid->getViewIndex();
 	for (lvi.iSubItem = 0; lvi.iSubItem < (int)m_colnum; lvi.iSubItem++) {
 		setlvitem(lvi, lvid, m_pcp->m_hwndCtrl, LVM_SETITEMTEXT, lvi.iItem);
 	}
@@ -2704,19 +2976,24 @@ LViewCtrl::onInsertItem(CmdLineParser& argv, const StringBuffer& pos)
 			m_states.setState(num+1, btmp);
 		}
 		m_states.setState(ind, FALSE);
-		m_state = m_states.getFirstIndex(num);
+		m_state = m_states.getFirstIndex(num) + 1;
 	} else ind = num;
 	if (m_pcp->m_hwndCtrl == NULL) return TRUE;
-	LV_ITEM	lvi;
+	LVITEM	lvi;
 	lvi.mask = LVIF_TEXT;
 	lvi.iItem = ind;
-	for (lvi.iSubItem = 0;
+	lvi.iSubItem = 0;
+	setlvitem(lvi, lvid, m_pcp->m_hwndCtrl, LVM_INSERTITEM, 0);
+	this->setViewIndex();
+	lvi.iItem = lvid->getViewIndex();
+	for (lvi.iSubItem = 1;
 		lvi.iSubItem < (int)(DWORD)m_colnum;
 		lvi.iSubItem++) {
 		setlvitem(lvi, lvid, m_pcp->m_hwndCtrl,
-					lvi.iSubItem ? LVM_SETITEMTEXT : LVM_INSERTITEM,
-					lvi.iSubItem ? lvi.iItem : 0);
+					LVM_SETITEMTEXT,
+					lvi.iItem);
 	}
+	this->getStateFromView();
 	return TRUE;
 }
 
@@ -2753,6 +3030,23 @@ LViewCtrl::onGetItem(const StringBuffer& pos)
 	return buf;
 }
 
+struct SortParam {
+	int m_nColumn;
+	BOOL m_bAscending;
+};
+
+static int CALLBACK
+CompareItem(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	SortParam* pSp = (SortParam*)lParamSort;
+	LViewItemData* lvid1 = (LViewItemData*)lParam1;
+	LViewItemData* lvid2 = (LViewItemData*)lParam2;
+	ItemData* id1 = lvid1->getItemByIndex(pSp->m_nColumn);
+	ItemData* id2 = lvid2->getItemByIndex(pSp->m_nColumn);
+	int sgn = pSp->m_bAscending ? 1 : -1;
+	return sgn * lstrcmp(id1->getText(), id2->getText());
+}
+
 WORD
 LViewCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 {
@@ -2763,8 +3057,10 @@ LViewCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 		{
 			int index = m_states.getFirstIndex(m_item->itemNum());
 			if (index >= 0) {
+				LViewItemData*
+					lvid = static_cast<LViewItemData*>(m_item->getItemByIndex(index));
 				ListView_SetItemState(m_pcp->m_hwndCtrl,
-									index,
+									lvid->getViewIndex(),
 									LVIS_FOCUSED,LVIS_FOCUSED);
 			}
 		}
@@ -2773,33 +3069,52 @@ LViewCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 		return m_notify[1];
 	case LVN_ENDLABELEDIT:
 		return m_notify[2];
+	case LVN_COLUMNCLICK:
+		{
+			int pos = reinterpret_cast<NMLISTVIEW*>(lParam)->iSubItem;
+			if (m_bSorted) {
+				SortParam sp;
+				if (pos == m_lastSortKey) {
+					m_bAscending = !m_bAscending;
+				}
+				m_lastSortKey = pos;
+				sp.m_nColumn = pos;
+				sp.m_bAscending = m_bAscending;
+				::SendMessage(m_pcp->m_hwndCtrl, LVM_SORTITEMS,
+							  (WPARAM)&sp, (LPARAM)CompareItem);
+			}
+			pos += 2;
+			if (pos >= sizeof(m_notify) / sizeof(m_notify[0])) break;
+			return m_notify[pos];
+		}
 	case LVN_SETDISPINFO:
 		if (((NMLVDISPINFO*)lParam)->item.mask&LVIF_TEXT) {
-			LV_ITEM& lvi = (reinterpret_cast<NMLVDISPINFO*>(lParam))->item;
-			LViewItemData*
-				lvid = static_cast<LViewItemData*>(
-							m_item->getItemByIndex(lvi.iItem));
+			LVITEM& lvi = (reinterpret_cast<NMLVDISPINFO*>(lParam))->item;
+			LViewItemData* lvid = (LViewItemData*)lvi.lParam;
+//				lvid = static_cast<LViewItemData*>(
+//							m_item->getItemByIndex(lvi.iItem));
 			if (lvid == NULL) break;
 			ItemData* id = lvid->getItemByIndex(lvi.iSubItem);
 			if (id == NULL) break;
 			id->getText().reset(lvi.pszText);
 		}
-		return 0xFFFF;
+		break;
 	case LVN_GETDISPINFO:
 		if ((reinterpret_cast<NMLVDISPINFO*>(lParam))->item.mask&LVIF_TEXT) {
-			LV_ITEM& lvi = (reinterpret_cast<NMLVDISPINFO*>(lParam))->item;
-			LViewItemData*
-				lvid = static_cast<LViewItemData*>(
-							m_item->getItemByIndex(lvi.iItem));
+			LVITEM& lvi = (reinterpret_cast<NMLVDISPINFO*>(lParam))->item;
+			LViewItemData* lvid = (LViewItemData*)lvi.lParam;
+//				lvid = static_cast<LViewItemData*>(
+//							m_item->getItemByIndex(lvi.iItem));
 			if (lvid == NULL) break;
 			ItemData* id = lvid->getItemByIndex(lvi.iSubItem);
 			if (id == NULL) break;
 			lvi.pszText = id->getText().getBufPtr();
 			lvi.mask |= LVIF_DI_SETITEM;
 		}
-		return 0xFFFF;
+		break;
 	case LVN_DELETEALLITEMS:
 		::SetWindowLong(m_pDlgPage->gethwndPage(), DWL_MSGRESULT, (LONG)TRUE);
+		break;
 	}
 	return 0xFFFF;
 }
@@ -2920,7 +3235,7 @@ TreeCtrl::initCtrl(HWND hDlg)
 	m_item->initSequentialGet();
 	TreeItemData* tid;
 	while ((tid = static_cast<TreeItemData*>(m_item->getNextItem())) != NULL)
-		if (!tid->initItem(m_pcp->m_hwndCtrl, TVI_ROOT)) return FALSE;
+		if (!tid->initItem(m_pcp->m_hwndCtrl, TVI_ROOT, m_bSorted)) return FALSE;
 	return TRUE;
 }
 
@@ -2947,8 +3262,27 @@ TreeCtrl::receiveData()
 	tvi.hItem	= TreeView_GetSelection(m_pcp->m_hwndCtrl);
 	if (!TreeView_GetItem(m_pcp->m_hwndCtrl, &tvi)	||
 		!tvi.lParam) return FALSE;
-	m_state.reset((reinterpret_cast<TreeItemData*>(tvi.lParam))->getName());
+	m_state = reinterpret_cast<TreeItemData*>(tvi.lParam)->getName();
 	return TRUE;
+}
+
+BOOL
+TreeCtrl::onSetSort(CmdLineParser& sstate)
+{
+	if (m_pcp->m_hwndCtrl) return FALSE;
+	if (sstate.itemNum() > 0 &&
+		sstate.getArgvStr(0).compareTo("yes") == 0) {
+		m_bSorted = TRUE;
+	} else {
+		m_bSorted = FALSE;
+	}
+	return TRUE;
+}
+
+StringBuffer
+TreeCtrl::onGetSort()
+{
+	return m_bSorted ? "yes" : "no";
 }
 
 BOOL
@@ -2973,7 +3307,14 @@ TreeCtrl::onSetItem(CmdLineParser& text, const StringBuffer& pos)
 		tvi.mask	= TVIF_TEXT;
 		tvi.pszText	= tid->getText().getBufPtr();
 		tvi.hItem	= tid->m_hItem;
-		return TreeView_SetItem(m_pcp->m_hwndCtrl, &tvi) + 1;
+		BOOL ret = TreeView_SetItem(m_pcp->m_hwndCtrl, &tvi);
+		if (ret && m_bSorted) {
+			TVSORTCB tvs;
+			tvs.hParent = tid->getParent() ? tid->getParent()->m_hItem : TVI_ROOT;
+			tvs.lpfnCompare = (PFNTVCOMPARE)CompareTreeItems;
+			TreeView_SortChildrenCB(m_pcp->m_hwndCtrl, &tvs, 0);
+		}
+		return ret;
 	}
 	return TRUE;
 }
@@ -2999,7 +3340,7 @@ TreeCtrl::onInsertItem(CmdLineParser& argv, const StringBuffer& pos)
 		}
 	}
 	if (m_pcp->m_hwndCtrl != NULL) {
-		tid->initItem(m_pcp->m_hwndCtrl, hItem);
+		tid->initItem(m_pcp->m_hwndCtrl, hItem, m_bSorted);
 		::InvalidateRect(m_pcp->m_hwndCtrl, NULL, FALSE);
 		::UpdateWindow(m_pcp->m_hwndCtrl);
 	}

@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.10 2002-08-06 13:33:04 sugiura Exp $
+//	$Id: session.h,v 1.11 2002-11-03 15:36:50 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -192,6 +192,8 @@ public:
 	int si_setctrlwidth(const StringBuffer&, WORD);
 	int si_setctrlheight(const StringBuffer&, WORD);
 	int si_setctrlnotify(const StringBuffer&, CmdLineParser&);
+	int si_setctrlsort(const StringBuffer&, CmdLineParser&);
+	StringBuffer si_getctrlsort(const StringBuffer&);
 	int si_newcolumn(WORD);
 	int si_newpage(WORD);
 

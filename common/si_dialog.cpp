@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.7 2002-09-26 13:13:24 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.8 2002-11-03 15:36:50 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -500,6 +500,24 @@ SessionInstance::si_setctrlnotify(
 
 	CtrlListItem* cli = m_DlgFrame.getCtrl(name);
 	return cli != NULL ? cli->onSetNotify(ntf) : FALSE;
+}
+
+int
+SessionInstance::si_setctrlsort(
+	const StringBuffer& name,
+	CmdLineParser& sstate)
+{
+//	if (m_DlgFrame.getUserDlg() != NULL) return FALSE;
+
+	CtrlListItem* cli = m_DlgFrame.getCtrl(name);
+	return cli != NULL ? cli->onSetSort(sstate) : FALSE;
+}
+
+StringBuffer
+SessionInstance::si_getctrlsort(const StringBuffer& name)
+{
+	CtrlListItem* cli = m_DlgFrame.getCtrl(name);
+	return cli != NULL ? cli->onGetSort() : nullStr;
 }
 
 int

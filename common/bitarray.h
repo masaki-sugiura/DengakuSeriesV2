@@ -1,4 +1,4 @@
-// $Id: bitarray.h,v 1.4 2002-03-11 13:27:49 sugiura Exp $
+// $Id: bitarray.h,v 1.5 2002-11-03 15:36:50 sugiura Exp $
 /*
  *	bitarray.h
  *	ビット配列クラス
@@ -82,7 +82,7 @@ public:
 
 	int getBit(int i) const
 	{
-		if (i < 0 || i >= m_size) return 0;
+		if (i < 0 || i > m_size) return 0;
 		return (m_bits[BITARRAY_INDEX(i)] & BITARRAY_BIT(i)) != 0;
 	}
 

@@ -1,4 +1,4 @@
-//	$Id: ds_handler.cpp,v 1.2 2002-02-10 09:27:32 sugiura Exp $
+//	$Id: ds_handler.cpp,v 1.3 2002-11-03 15:36:50 sugiura Exp $
 /*
  *	ds_handler.cpp
  *	ダイアログサービスの実装
@@ -66,6 +66,14 @@ ConvData::On_setimestate(CmdLineParser& params)
 {
 	return this->si_setctrlimestate(params.getArgvStr(0),
 									ival(params.getArgvStr(1)));
+}
+
+int
+ConvData::On_setsort(CmdLineParser& params)
+{
+	StringBuffer name = params.getArgvStr(0);
+	params.delArgv(0);
+	return this->si_setctrlsort(name, params);
 }
 
 int
@@ -186,6 +194,12 @@ ConvData::On_getimestate(CmdLineParser& params)
 }
 
 StringBuffer
+ConvData::On_getsort(CmdLineParser& params)
+{
+	return this->si_getctrlsort(params.getArgvStr(0));
+}
+
+StringBuffer
 ConvData::On_getctrlfont(CmdLineParser& params)
 {
 	return this->si_getctrlfont(params.getArgvStr(0));
@@ -299,6 +313,12 @@ int
 ConvData::On_imestate(CmdLineParser& params)
 {
 	return this->si_setctrlimestate(nullStr,ival(params.getArgv(0)));
+}
+
+int
+ConvData::On_sort(CmdLineParser& params)
+{
+	return this->si_setctrlsort(nullStr, params);
 }
 
 int

@@ -1,4 +1,4 @@
-//	$Id: ds_func.cpp,v 1.4 2002-02-19 15:34:22 sugiura Exp $
+//	$Id: ds_func.cpp,v 1.5 2002-11-03 15:36:50 sugiura Exp $
 /*
  *	ds_func.cpp
  *	ダイアログ操作関数
@@ -73,6 +73,18 @@ SETCTRLIMESTATE(LPCSTR str1, HIDEDLL_NUMTYPE num2)
 {
 	try {
 		return g_pSessionInstance->si_setctrlimestate(str1,num2);
+	} catch (...) {
+		return 0;
+	}
+}
+
+//	コントロールのソートの状態を設定する
+DENGAKUDLL_API HIDEDLL_NUMTYPE
+SETCTRLSORT(LPCSTR str1, LPCSTR str2)
+{
+	try {
+		RealCmdLineParser argv(str2);
+		return g_pSessionInstance->si_setctrlsort(str1, argv);
 	} catch (...) {
 		return 0;
 	}
@@ -245,6 +257,18 @@ GETCTRLIMESTATE(LPCSTR str1)
 {
 	try {
 		g_strBuffer = g_pSessionInstance->si_getctrlimestate(str1);
+		return g_strBuffer;
+	} catch (...) {
+		return "";
+	}
+}
+
+//	コントロールのソートの状態を返す
+DENGAKUDLL_API LPCSTR
+GETCTRLSORT(LPCSTR str1)
+{
+	try {
+		g_strBuffer = g_pSessionInstance->si_getctrlsort(str1);
 		return g_strBuffer;
 	} catch (...) {
 		return "";

@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.10 2002-02-28 15:32:30 sugiura Exp $
+//	$Id: ctrldata.h,v 1.11 2002-11-03 15:36:50 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -94,8 +94,15 @@ public:
 
 	virtual	StringBuffer& getText(){ return m_text; }
 
+	virtual int getViewIndex() const { return m_nViewIndex; }
+	virtual void setViewIndex(int nViewIndex)
+	{
+		m_nViewIndex = nViewIndex;
+	}
+
 protected:
 	StringBuffer m_text;
+	int m_nViewIndex;
 
 	ItemData(const ItemData&);
 	ItemData& operator=(const ItemData&);
@@ -140,7 +147,7 @@ public:
 
 	TreeItemData* getParent() const { return m_parent; }
 
-	BOOL initItem(HWND, HTREEITEM);
+	BOOL initItem(HWND, HTREEITEM, BOOL);
 	BOOL dumpData(DlgDataFile&);
 	BOOL loadData(DlgDataFile&, TreeHashTable&);
 
@@ -249,6 +256,8 @@ public:
 	virtual	StringBuffer onGetItem(const StringBuffer&);	//	項目の取得
 	virtual BOOL onSetImeState(int);	//	IME の初期状態を変更
 	virtual int onGetImeState();	//	IME の初期状態を設定
+	virtual BOOL onSetSort(CmdLineParser&); // ソートの状態を変更
+	virtual StringBuffer onGetSort(); // ソートの状態を取得
 
 	//	datafile handlers
 	virtual	BOOL dumpData(DlgDataFile&);	//	データの書き込み
@@ -328,7 +337,7 @@ protected:
 	Auto_Ptr< LinkList<ItemData> > m_item;	//	アイテムリスト
 	BOOL m_bInitDone;	//	初期化終了フラグ
 	BOOL m_bEnable;	//	コントロールの有効/無効フラグ
-	WORD m_notify[4];	//	通知コード
+	WORD m_notify[32];	//	通知コード
 	WORD m_x;	//	コントロール位置の x 座標
 	WORD m_y;	//	コントロール位置の y 座標
 	WORD m_cx;	//	コントロールの幅
@@ -542,6 +551,9 @@ public:
 	BOOL sendData();
 	BOOL receiveData();
 
+	BOOL onSetSort(CmdLineParser&);
+	StringBuffer onGetSort();
+
 	BOOL onSetState(CmdLineParser&);
 	BOOL onSetItem(CmdLineParser&, const StringBuffer&);
 	BOOL onInsertItem(CmdLineParser&, const StringBuffer&);
@@ -558,6 +570,8 @@ public:
 protected:
 	Auto_Ptr<TreeHashTable> m_pHashItem;
 	StringBuffer m_state;
+
+	BOOL m_bSorted;
 };
 
 
@@ -585,6 +599,12 @@ protected:
 	int	m_state;
 
 	int	getItemData(const StringBuffer&);
+
+	// ソート可能なコントロールについて、見た目の順序と m_item 内の順序の
+	// 対応付けを更新するメソッド
+	virtual void setViewIndex();
+
+	virtual void getStateFromView();
 };
 
 //	reffilebutton, refdirbutton, refcolorbutton
@@ -655,6 +675,9 @@ public:
 	BOOL sendData();
 	BOOL receiveData();
 
+	BOOL onSetSort(CmdLineParser&);
+	StringBuffer onGetSort();
+
 	BOOL onSetItem(CmdLineParser&,const StringBuffer&);
 	BOOL onInsertItem(CmdLineParser&,const StringBuffer&);
 	BOOL onDeleteItem(const StringBuffer&);
@@ -663,13 +686,22 @@ public:
 	WORD onCommand(WPARAM, LPARAM);
 
 protected:
+	UINT m_style_sort;
+	UINT m_msg_addstr;
 	UINT m_msg_setstr;
 	UINT m_msg_getstr;
 	UINT m_msg_delstr;
 	UINT m_msg_delall;
 	UINT m_msg_setsel;
 	UINT m_msg_getsel;
+	UINT m_msg_setdata;
+	UINT m_msg_getdata;
 	UINT m_msg_err;
+
+	BOOL m_bSorted;
+
+	void setViewIndex();
+	void getStateFromView();
 };
 
 //	combo
@@ -699,6 +731,8 @@ public:
 protected:
 	DWORD m_imestate;
 	BOOL  m_bEditable;
+
+	void getStateFromView();
 };
 
 //	chklist
@@ -714,6 +748,9 @@ public:
 	BOOL sendData();
 	BOOL receiveData();
 
+	BOOL onSetSort(CmdLineParser&);
+	StringBuffer onGetSort();
+
 	BOOL onSetState(CmdLineParser&);
 	BOOL onSetItem(CmdLineParser&,const StringBuffer&);
 	BOOL onInsertItem(CmdLineParser&,const StringBuffer&);
@@ -728,6 +765,11 @@ public:
 
 protected:
 	States m_states;
+
+	BOOL m_bSorted;
+
+	void setViewIndex();
+	void getStateFromView();
 };
 
 //	lview
@@ -741,6 +783,7 @@ public:
 
 	WORD getHeight();
 
+	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
 	BOOL initCtrl(HWND);
 	BOOL sendData();
 	BOOL receiveData();
@@ -757,6 +800,11 @@ public:
 protected:
 	LViewItemData* m_hdr;
 	WORD m_colnum;
+
+	int  m_lastSortKey;
+	BOOL m_bAscending;
+
+	void getStateFromView();
 };
 
 
