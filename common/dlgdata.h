@@ -1,4 +1,4 @@
-//	$Id: dlgdata.h,v 1.6 2003-10-18 13:42:34 sugiura Exp $
+//	$Id: dlgdata.h,v 1.7 2003-11-16 16:24:57 sugiura Exp $
 /*
  *	dlgdata.h
  *	ダイアログを扱うクラス
@@ -47,6 +47,12 @@ enum {
 	DLGPOS_SCREEN_COORD  = 3,
 	DLGPOS_CARET_COORD   = 4,
 	DLGPOS_CURSOR_COORD  = 5
+};
+
+// ダイアログ表示位置指定の単位
+enum {
+	DLGPOS_UNIT_FONTSIZE = 0,
+	DLGPOS_UNIT_PIXEL    = 1
 };
 
 //	コントロール名のリスト
@@ -169,7 +175,8 @@ public:
 					POINTS* ppt = NULL,
 					WORD wflags = 0,
 					const StringBuffer& fontname = nullStr,
-					WORD fontsize = 0
+					WORD fontsize = 0,
+					WORD wPosUnit = DLGPOS_UNIT_FONTSIZE
 				);
 	const StringBuffer& getFontName() const
 	{
@@ -252,6 +259,7 @@ private:
 	StringBuffer m_sbFocusedCtrl; // フォーカスを得るコントロール名
 	LPFontProperty m_pFontProp;	//	ダイアログのフォント属性
 	POINTS m_pos;	//	ダイアログの表示位置
+	WORD m_wPosUnit;	// m_pos メンバの単位
 	WORD m_width;	//	ダイアログの幅
 	WORD m_height;	//	ダイアログの高さ
 	WORD m_flags;	//	表示位置に関するフラグ

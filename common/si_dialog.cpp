@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.8 2002-11-03 15:36:50 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.9 2003-11-16 16:24:57 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -378,6 +378,7 @@ SessionInstance::si_newdialog(
 	WORD wflags = 0;
 	StringBuffer strFont = nullStr;
 	WORD wFontSize = 0;
+	WORD wPosUnit = DLGPOS_UNIT_FONTSIZE;
 
 	if (argv.itemNum() > 0) {
 		argv.initSequentialGet();
@@ -410,8 +411,16 @@ SessionInstance::si_newdialog(
 		strFont = argv.getNextArgvStr();
 		pstr = argv.getNextArgv();
 		wFontSize = ival(pstr);
+
+		//	offset unit
+		pstr = argv.getNextArgv();
+		if (pstr) {
+			if (lstrcmp(pstr, "px") == 0) {
+				wPosUnit = DLGPOS_UNIT_PIXEL;
+			}
+		}
 	}
-	m_DlgFrame.setFrameProperty(str1,&pt,wflags,strFont,wFontSize);
+	m_DlgFrame.setFrameProperty(str1,&pt,wflags,strFont,wFontSize,wPosUnit);
 
 	return TRUE;
 }

@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.13 2003-11-16 15:04:50 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.14 2003-11-16 16:24:57 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -795,13 +795,15 @@ DlgFrame::setFrameProperty(
 	POINTS* ppt,
 	WORD wflags,
 	const StringBuffer& fontname,
-	WORD fontsize)
+	WORD fontsize,
+	WORD wPosUnit)
 {
 	m_DlgTitle = title;
 	if (ppt != NULL) m_pos = *ppt;
 	m_flags = wflags;
 	if (fontname.length() > 0) m_pFontProp->m_fontname = fontname;
 	if (fontsize > 0) m_pFontProp->m_fontsize = fontsize;
+	m_wPosUnit = wPosUnit;
 }
 
 //	親ダイアログの生成
@@ -857,10 +859,16 @@ DlgFrame::showFrame()
 	if (m_hwndFrame == NULL) return FALSE;
 
 	//	ダイアログの位置の変更
-	DWORD dlgbaseunit = GetDialogBaseUnits(m_hwndFrame, "w");
+	DWORD dlgbaseunit = GetDialogBaseUnits(m_hwndFrame, "M");
 	POINT pos, cpos;
-	pos.x = (m_pos.x * LOWORD(dlgbaseunit)) >> 2;
-	pos.y = (m_pos.y * HIWORD(dlgbaseunit)) >> 3;
+	if (m_wPosUnit == DLGPOS_UNIT_FONTSIZE) {
+		pos.x = (m_pos.x * LOWORD(dlgbaseunit)) >> 2;
+		pos.y = (m_pos.y * HIWORD(dlgbaseunit)) >> 3;
+	} else {
+		// ピクセル単位
+		pos.x = m_pos.x;
+		pos.y = m_pos.y;
+	}
 //	pos.x = (m_pos.x * LOWORD(dlgbaseunit));
 //	pos.y = (m_pos.y * HIWORD(dlgbaseunit));
 
