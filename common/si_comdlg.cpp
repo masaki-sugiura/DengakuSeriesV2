@@ -1,4 +1,4 @@
-// $Id: si_comdlg.cpp,v 1.9 2002-06-16 14:56:09 sugiura Exp $
+// $Id: si_comdlg.cpp,v 1.10 2002-08-05 16:06:17 sugiura Exp $
 /*
  *	si_comdlg.cpp
  *	コモンダイアログ表示関数
@@ -19,16 +19,18 @@ CenteringWindow(HWND hwndDlg, HWND hwndOwner)
 	RECT rect;
 	GetWindowCenter(hwndDlg, hwndOwner, rect);
 	::SetWindowPos(hwndDlg, hwndOwner,
-				   rect.left, rect.top, 0, 0,
-				   SWP_NOZORDER | SWP_NOSIZE);
+				   rect.left, rect.top,
+				   rect.right - rect.left,
+				   rect.bottom - rect.top,
+				   SWP_NOZORDER);
 }
 
 static UINT CALLBACK
 GetFileNameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	if (uMsg == WM_INITDIALOG) {
-		CenteringWindow(::GetParent(hDlg),
-						(HWND)((LPOPENFILENAME)lParam)->lCustData);
+	if (uMsg == WM_NOTIFY && ((NMHDR*)lParam)->code == CDN_INITDONE) {
+		OFNOTIFY* ofntf = (OFNOTIFY*)lParam;
+		CenteringWindow(::GetParent(hDlg), (HWND)ofntf->lpOFN->lCustData);
 	}
 	return FALSE;
 }

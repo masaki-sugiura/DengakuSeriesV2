@@ -1,4 +1,4 @@
-//	$Id: shobj_wrapper.h,v 1.1 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: shobj_wrapper.h,v 1.2 2002-08-05 16:06:17 sugiura Exp $
 /*
  *	shobj_wrapper.h
  *	Shell オブジェクトをラップするクラス
@@ -210,19 +210,7 @@ public:
 		return lpeIcon;
 	}
 
-	void initSequentialGet(DWORD flag) const
-	{
-		m_LPEIDL_Wrapper = NULL; // release first
-		LPENUMIDLIST lpeidList = NULL;
-		if (m_lpShObj->EnumObjects(NULL, flag, &lpeidList) == NOERROR) {
-			m_LPEIDL_Wrapper = lpeidList;
-		}
-#ifdef _DEBUG
-		else {
-			::OutputDebugString("enum object failed");
-		}
-#endif
-	}
+	void initSequentialGet(DWORD flag, HWND hwndOwner = NULL) const;
 
 	LPIDL_Wrapper getNextSubFolderLPIDL() const
 	{

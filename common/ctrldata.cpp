@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.17 2002-06-17 13:20:49 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.18 2002-08-05 16:06:17 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -662,7 +662,7 @@ CtrlListItem::dispatchRawMsg(
 	case WM_CTLCOLORSTATIC:
 		::SetTextColor((HDC)wParam, pCProp->m_fontprop.m_color);
 		::SetBkMode((HDC)wParam, TRANSPARENT);
-		return (LRESULT)::GetSysColorBrush(COLOR_MENU);
+		return (LRESULT)::GetSysColorBrush(COLOR_BTNFACE);
 #endif
 	default:
 		return ::CallWindowProc(pCProp->m_pfnDefCallback, hCtrl, uMsg, wParam, lParam);
@@ -941,7 +941,7 @@ SimpleCtrl::onCtlColor(HDC hDc)
 #endif
 	::SetTextColor(hDc, m_pcp->m_fontprop.m_color);
 	::SetBkMode(hDc, TRANSPARENT);
-	return ::GetSysColorBrush(COLOR_MENU);
+	return ::GetSysColorBrush(COLOR_BTNFACE);
 #if 0
 	return m_pcp->m_hbrBackground;
 #endif

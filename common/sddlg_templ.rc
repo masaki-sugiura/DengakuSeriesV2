@@ -1,4 +1,4 @@
-//	$Id: sddlg_templ.rc,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: sddlg_templ.rc,v 1.2 2002-08-05 16:06:17 sugiura Exp $
 /*
  *	sddlg_templ.rc
  *	「フォルダを選択」ダイアログのダイアログテンプレート
@@ -27,6 +27,24 @@ BEGIN
     CONTROL         "Static",IDC_TITLE,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,
                     7,7,173,10
 END
+
+IDD_NETACCOUNT DIALOG DISCARDABLE  0, 0, 293, 79
+STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "ネットワーク パスワードの入力"
+FONT 9, "ＭＳ Ｐゴシック"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,236,7,50,14
+    PUSHBUTTON      "ｷｬﾝｾﾙ",IDCANCEL,236,25,50,14
+    LTEXT           "アクセスするにはパスワードおよびユーザー名が必要です:",
+                    IDC_STATIC,7,7,174,10
+    LTEXT           "",IDC_UNC_PATH,19,19,208,13
+    LTEXT           "ユーザー名(&C):",IDC_STATIC,7,41,46,10
+    EDITTEXT        IDC_USERNAME,58,39,168,12,ES_AUTOHSCROLL
+    LTEXT           "パスワード(&P):",IDC_STATIC,7,57,46,10
+    EDITTEXT        IDC_PASSWD,58,55,168,12,ES_PASSWORD | ES_AUTOHSCROLL
+END
+
 #endif
 
 #ifdef SELDIR_INC_DESIGNINFO

@@ -25,6 +25,7 @@
 #define IDD_ABOUT                       108
 #define IDD_DUMMY                       114
 #define IDD_DIRBROWSE                   120
+#define IDD_NETACCOUNT                  121
 #define IDC_SHOWHELP                    1003
 #define IDC_CLOSE                       1004
 #define IDC_APPLY                       1006
@@ -38,6 +39,9 @@
 #define IDC_DELETE                      1017
 #define IDC_OK                          1018
 #define IDC_CANCEL                      1019
+#define IDC_UNC_PATH                    1028
+#define IDC_USERNAME                    1029
+#define IDC_PASSWD                      1030
 #define IDM_ABOUT                       40001
 #define IDM_QUIT                        40002
 #define IDM_HELP                        40003
@@ -49,9 +53,9 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        121
+#define _APS_NEXT_RESOURCE_VALUE        122
 #define _APS_NEXT_COMMAND_VALUE         40007
-#define _APS_NEXT_CONTROL_VALUE         1028
+#define _APS_NEXT_CONTROL_VALUE         1031
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

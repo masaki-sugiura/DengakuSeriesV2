@@ -47,7 +47,6 @@ RSC=rc.exe
 # ADD F90 /compile_only /include:"Release/" /dll /nologo /warn:nofileopt
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "DLL_EXPORTS" /YX /FD /c
 # ADD CPP /nologo /MT /W3 /GX /O2 /I "..\common" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "DENGAKUDLL_EXPORTS" /FR /YX /FD /c
-# SUBTRACT CPP /Z<none>
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x411 /d "NDEBUG"
@@ -57,7 +56,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib imm32.lib ..\common\Release\common.lib /nologo /dll /machine:I386 /out:"Release/DengakuDLL.dll"
+# ADD LINK32 ..\common\Release\common.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib imm32.lib mpr.lib /nologo /dll /machine:I386 /out:"Release/DengakuDLL.dll"
 # SUBTRACT LINK32 /profile /debug
 
 !ELSEIF  "$(CFG)" == "DLL - Win32 Debug"
@@ -86,7 +85,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib imm32.lib ..\common\Debug\common.lib /nologo /dll /debug /machine:I386 /out:"Debug/DengakuDLL.dll" /pdbtype:sept
+# ADD LINK32 ..\common\Debug\common.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib imm32.lib mpr.lib /nologo /dll /debug /machine:I386 /out:"Debug/DengakuDLL.dll" /pdbtype:sept
 
 !ENDIF 
 
@@ -120,6 +119,10 @@ SOURCE=.\DengakuDLL.cpp
 # Begin Source File
 
 SOURCE=.\ds_func.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dts_func.cpp
 # End Source File
 # Begin Source File
 

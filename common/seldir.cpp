@@ -1,4 +1,4 @@
-//	$Id: seldir.cpp,v 1.4 2002-06-16 14:56:09 sugiura Exp $
+//	$Id: seldir.cpp,v 1.5 2002-08-05 16:06:17 sugiura Exp $
 /*
  *	seldir.cpp
  *	ディレクトリ選択ダイアログの実装
@@ -528,7 +528,7 @@ SelectDirByDlg::addChildFolders(
 		}
 	}
 
-	lpsfParent.initSequentialGet(SHCONTF_FOLDERS|SHCONTF_INCLUDEHIDDEN);
+	lpsfParent.initSequentialGet(SHCONTF_FOLDERS|SHCONTF_INCLUDEHIDDEN, m_hTreeView);
 	int ret = 0;
 	while (insertTreeItem(htiParent,
 						  TVI_LAST,

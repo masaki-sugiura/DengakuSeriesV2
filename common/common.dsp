@@ -45,7 +45,6 @@ RSC=rc.exe
 # ADD F90 /compile_only /include:"Release/" /nologo /warn:nofileopt
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
 # ADD CPP /nologo /MT /W3 /GR /GX /O2 /I "..\common" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /FAcs /FR /YX /FD /c
-# SUBTRACT CPP /Z<none>
 # ADD BASE RSC /l 0x411 /d "NDEBUG"
 # ADD RSC /l 0x411 /i "..\common" /d "NDEBUG"
 BSC32=bscmake.exe
@@ -204,6 +203,10 @@ SOURCE=.\si_comdlg.cpp
 # Begin Source File
 
 SOURCE=.\si_common.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\si_datetime.cpp
 # End Source File
 # Begin Source File
 

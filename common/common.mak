@@ -99,6 +99,8 @@ CLEAN :
 	-@erase "$(INTDIR)\si_comdlg.sbr"
 	-@erase "$(INTDIR)\si_common.obj"
 	-@erase "$(INTDIR)\si_common.sbr"
+	-@erase "$(INTDIR)\si_datetime.obj"
+	-@erase "$(INTDIR)\si_datetime.sbr"
 	-@erase "$(INTDIR)\si_dialog.obj"
 	-@erase "$(INTDIR)\si_dialog.sbr"
 	-@erase "$(INTDIR)\si_file.obj"
@@ -182,7 +184,8 @@ BSC32_SBRS= \
 	"$(INTDIR)\strbuf.sbr" \
 	"$(INTDIR)\strutils.sbr" \
 	"$(INTDIR)\thread.sbr" \
-	"$(INTDIR)\tokenizer.sbr"
+	"$(INTDIR)\tokenizer.sbr" \
+	"$(INTDIR)\si_datetime.sbr"
 
 "$(OUTDIR)\common.bsc" : "$(OUTDIR)" $(BSC32_SBRS)
     $(BSC32) @<<
@@ -234,7 +237,8 @@ LIB32_OBJS= \
 	"$(INTDIR)\strbuf.obj" \
 	"$(INTDIR)\strutils.obj" \
 	"$(INTDIR)\thread.obj" \
-	"$(INTDIR)\tokenizer.obj"
+	"$(INTDIR)\tokenizer.obj" \
+	"$(INTDIR)\si_datetime.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -282,6 +286,7 @@ CLEAN :
 	-@erase "$(INTDIR)\si_colorref.obj"
 	-@erase "$(INTDIR)\si_comdlg.obj"
 	-@erase "$(INTDIR)\si_common.obj"
+	-@erase "$(INTDIR)\si_datetime.obj"
 	-@erase "$(INTDIR)\si_dialog.obj"
 	-@erase "$(INTDIR)\si_file.obj"
 	-@erase "$(INTDIR)\si_image.obj"
@@ -355,7 +360,8 @@ LIB32_OBJS= \
 	"$(INTDIR)\strbuf.obj" \
 	"$(INTDIR)\strutils.obj" \
 	"$(INTDIR)\thread.obj" \
-	"$(INTDIR)\tokenizer.obj"
+	"$(INTDIR)\tokenizer.obj" \
+	"$(INTDIR)\si_datetime.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -879,6 +885,22 @@ SOURCE=.\si_common.cpp
 
 
 "$(INTDIR)\si_common.obj" : $(SOURCE) "$(INTDIR)"
+
+
+!ENDIF 
+
+SOURCE=.\si_datetime.cpp
+
+!IF  "$(CFG)" == "common - Win32 Release"
+
+
+"$(INTDIR)\si_datetime.obj"	"$(INTDIR)\si_datetime.sbr" : $(SOURCE) "$(INTDIR)"
+
+
+!ELSEIF  "$(CFG)" == "common - Win32 Debug"
+
+
+"$(INTDIR)\si_datetime.obj" : $(SOURCE) "$(INTDIR)"
 
 
 !ENDIF 
