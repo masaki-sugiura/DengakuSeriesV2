@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.24 2002-12-24 12:47:00 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.25 2003-03-11 15:47:30 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -2835,6 +2835,7 @@ LViewCtrl::LViewCtrl(
 {
 	m_pcp->m_style = LVS_REPORT|LVS_SHOWSELALWAYS|//LVS_NOSORTHEADER|
 						WS_CHILD|WS_BORDER|WS_TABSTOP|WS_VISIBLE|WS_GROUP;
+	m_pcp->m_exstyle = LVS_EX_FULLROWSELECT;
 
 	m_bSorted = FALSE;
 
@@ -2963,6 +2964,9 @@ LViewCtrl::initCtrl(HWND hDlg)
 
 //	m_lastSortKey = -1;
 //	m_bAscending = TRUE;
+	ListView_SetExtendedListViewStyleEx(m_pcp->m_hwndCtrl,
+										LVS_EX_FULLROWSELECT,
+										LVS_EX_FULLROWSELECT);
 
 	return TRUE;
 }
