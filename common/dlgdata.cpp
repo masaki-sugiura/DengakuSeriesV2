@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.15 2003-11-23 15:37:21 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.16 2003-11-23 15:43:45 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -1220,10 +1220,6 @@ DlgFrame::getDlgPos() const
 
 	POINTS org = GetDlgPosOrigin(m_flags & 0x000F, m_hwndFrame);
 	pos.x -= org.x;  pos.y -= org.y;
-
-	TCHAR buf[80];
-	wsprintf(buf, "%d: %d,%d;%d,%d\n", (m_flags & 0x0F), pos.x, pos.y, org.x, org.y);
-	::OutputDebugString(buf);
 
 	pos = GetDlgPosByUnit(pos, m_wPosUnit, m_hwndFrame);
 
