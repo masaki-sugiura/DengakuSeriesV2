@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.8 2002-02-19 15:34:21 sugiura Exp $
+//	$Id: ctrldata.h,v 1.9 2002-02-20 15:16:53 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -147,7 +147,6 @@ public:
 protected:
 	TreeItemData* m_parent;
 };
-
 
 //	最も基本的なコントロールを表す基底クラス
 class CtrlListItem {
@@ -347,6 +346,14 @@ protected:
 	virtual	WORD onNotify(WPARAM,LPARAM);	//	WM_NOTIFY
 	virtual	HBRUSH onCtlColor(HDC);			//	WM_CTLCOLOR
 	virtual WORD onImeNotify(WPARAM,LPARAM);	//	WM_IME_NOTIFY
+};
+
+//	コントロールの子(または兄弟)コントロールをサブクラス化する時
+//	GWL_USERDATA で渡すクラス
+class ChildCtrlSubClassInfo {
+public:
+	WNDPROC m_pfnDefCallback;
+	CtrlListItem* m_pCtrl;
 };
 
 //	newpage, newcolumn
@@ -593,12 +600,6 @@ protected:
 	StringBuffer m_exbuffer;
 };
 
-class RadioItemSubClassInfo {
-public:
-	WNDPROC m_pfnDefCallback;
-	CtrlListItem* m_pCtrl;
-};
-
 //	radio
 class RadioCtrl : public HasListCtrl {
 public:
@@ -628,9 +629,6 @@ public:
 	BOOL isCommand(WORD);
 
 	WORD onCommand(WPARAM, LPARAM);
-
-private:
-	RadioItemSubClassInfo* m_pRiSci;
 };
 
 //	list

@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.8 2002-02-19 15:34:21 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.9 2002-02-20 15:16:53 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -1472,11 +1472,28 @@ HasListCtrl::loadData(DlgDataFile& ddfile)
 	return TRUE;
 }
 
+static LRESULT CALLBACK
+ChildCtrlProc(HWND hCtrl, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	ChildCtrlSubClassInfo*
+		pCCSci = (ChildCtrlSubClassInfo*)::GetWindowLong(hCtrl, GWL_USERDATA);
+	switch (uMsg) {
+	case WM_GET_CTRL_PTR:
+		return (LRESULT)pCCSci->m_pCtrl;
+	case WM_DESTROY:
+		delete pCCSci;
+		// fall down
+	default:
+		return ::CallWindowProc(pCCSci->m_pfnDefCallback, hCtrl, uMsg, wParam, lParam);
+	}
+	return 0;
+}
+
 //	class RadioCtrl, extends SimpleCtrl, implements WithItem
 RadioCtrl::RadioCtrl(
 	const StringBuffer& name,
 	const StringBuffer& text)
-	: HasListCtrl(name,text,CTRLID_RADIO), m_pRiSci(NULL)
+	: HasListCtrl(name,text,CTRLID_RADIO)
 {
 	m_pcp->m_style		= BS_GROUPBOX|BS_NOTIFY|WS_CHILD|WS_VISIBLE|WS_TABSTOP;
 	m_pcp->m_bufsize	= 1;
@@ -1486,7 +1503,6 @@ RadioCtrl::RadioCtrl(
 
 RadioCtrl::~RadioCtrl()
 {
-	delete [] m_pRiSci;
 }
 
 WORD
@@ -1544,35 +1560,20 @@ RadioCtrl::createCtrlTemplate(CtrlTemplateArgs& cta)
 	return TRUE;
 }
 
-LRESULT CALLBACK
-RadioCtrlProc(HWND hCtrl, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	RadioItemSubClassInfo*
-		pRiSci = (RadioItemSubClassInfo*)::GetWindowLong(hCtrl, GWL_USERDATA);
-	switch (uMsg) {
-	case WM_GET_CTRL_PTR:
-		return (LRESULT)pRiSci->m_pCtrl;
-	default:
-		return ::CallWindowProc(pRiSci->m_pfnDefCallback, hCtrl, uMsg, wParam, lParam);
-	}
-	return 0;
-}
-
 BOOL
 RadioCtrl::initCtrl(HWND hDlg)
 {
 	if (!HasListCtrl::initCtrl(hDlg)) return FALSE;
 	int num = m_item->itemNum();
-	if (m_pRiSci != NULL) delete [] m_pRiSci;
-	m_pRiSci = new RadioItemSubClassInfo[num];
 	for (int i = 1; i <= num; i++) {
 		HWND hCtrl = ::GetDlgItem(hDlg, m_pcp->m_id + i);
-		m_pRiSci[i-1].m_pCtrl = this;
-		m_pRiSci[i-1].m_pfnDefCallback
+		ChildCtrlSubClassInfo* pCCSci = new ChildCtrlSubClassInfo();
+		pCCSci->m_pCtrl = this;
+		pCCSci->m_pfnDefCallback
 			= (WNDPROC)::SetWindowLong(hCtrl,
 									   GWL_WNDPROC,
-									   (LONG)RadioCtrlProc);
-		::SetWindowLong(hCtrl, GWL_USERDATA, (LONG)(m_pRiSci + i - 1));
+									   (LONG)ChildCtrlProc);
+		::SetWindowLong(hCtrl, GWL_USERDATA, (LONG)pCCSci);
 	}
 	return TRUE;
 }
@@ -1903,6 +1904,17 @@ BOOL
 ComboCtrl::initCtrl(HWND hDlg)
 {
 	if (!ListCtrl::initCtrl(hDlg)) return FALSE;
+	HWND hwndEdit = ::GetTopWindow(m_pcp->m_hwndCtrl);
+	if (hwndEdit != NULL) {
+		ChildCtrlSubClassInfo*
+			pCCSci = new ChildCtrlSubClassInfo();
+		pCCSci->m_pCtrl = this;
+		pCCSci->m_pfnDefCallback
+			= (WNDPROC)::SetWindowLong(hwndEdit,
+									   GWL_WNDPROC,
+									   (LONG)ChildCtrlProc);
+		::SetWindowLong(hwndEdit, GWL_USERDATA, (LONG)pCCSci);
+	}
 	::SetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text);
 	return TRUE;
 }

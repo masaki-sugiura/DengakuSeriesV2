@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.5 2002-02-19 15:34:21 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.6 2002-02-20 15:16:53 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -1002,7 +1002,7 @@ DlgFrame::getFocusedCtrl() const
 	if (hCtrl != NULL) {
 		CtrlListItem*
 			pCtrl = (CtrlListItem*)::SendMessage(hCtrl, WM_GET_CTRL_PTR, 0, 0);
-		if (pCtrl->isValid()) {
+		if (pCtrl != NULL && pCtrl->isValid()) {
 			return pCtrl->getName();
 		}
 	}
