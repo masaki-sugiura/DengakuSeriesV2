@@ -1,4 +1,4 @@
-//	$Id: BRE_Wrapper.cpp,v 1.4 2002-01-22 15:32:37 sugiura Exp $
+//	$Id: BRE_Wrapper.cpp,v 1.5 2005-01-24 15:52:48 sugiura Exp $
 /*
  *	BRE_Wrapper.cpp
  *	BRE_WRAP.DLL 本体＆ＤＬＬ関数
@@ -8,7 +8,7 @@
 #include "BRegExp_Mngr.h"
 
 //	BRE_Wrapper のバージョン文字列
-LPCSTR lpszBRE_Wrapper_Version = "1.00";
+LPCSTR lpszBRE_Wrapper_Version = "1.01";
 
 //	DLL のインスタンスハンドル
 Auto_Ptr<BRegExp_Manager> g_pBRegExp_Manager = NULL;
