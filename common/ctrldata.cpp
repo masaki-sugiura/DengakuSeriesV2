@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.14 2002-03-05 14:09:40 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.15 2002-03-11 13:27:50 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -2298,9 +2298,15 @@ ChkListCtrl::onSetState(CmdLineParser& state)
 {
 	m_states.reset();
 	state.initSequentialGet();
+	int num = m_item->itemNum();
 	LPCSTR av;
 	while ((av = state.getNextArgv()) != NULL) {
-		m_states.setState(ival(av) - 1, TRUE);
+		int idx = ival(av) - 1;
+		if (idx < 0) {
+			m_states.reset();
+		} else if (idx < num) {
+			m_states.setState(idx, TRUE);
+		}
 	}
 	m_state = m_states.getFirstIndex(m_item->itemNum()) + 1;
 	this->sendData();
@@ -2364,7 +2370,7 @@ ChkListCtrl::onDeleteItem(const StringBuffer& pos)
 	int	num = m_item->itemNum();
 	if (ind < num) {
 		for (int tmp = ind; tmp < num; tmp++) {
-			m_states.setState(tmp,m_states.getState(tmp + 1));
+			m_states.setState(tmp, m_states.getState(tmp + 1));
 		}
 		m_state = m_states.getFirstIndex(num);
 	}

@@ -1,4 +1,4 @@
-// $Id: bitarray.h,v 1.3 2002-02-19 15:34:21 sugiura Exp $
+// $Id: bitarray.h,v 1.4 2002-03-11 13:27:49 sugiura Exp $
 /*
  *	bitarray.h
  *	ビット配列クラス
@@ -11,24 +11,26 @@
 
 #define BITARRAY_PERBITS      (sizeof(DWORD) * 8)
 #define BITARRAY_DEFAULT_SIZE (BITARRAY_PERBITS * 2)
-#define BITARRAY_INDEX(ind)   ((ind) >> 5)
+#define BITARRAY_INDEX(ind)   (int)((ind) >> 5)
 #define BITARRAY_BIT(ind)     (0x1 << ((ind) & 0x1F))
 #define BITARRAY_SIZE(size)   ((size) / BITARRAY_PERBITS + (((size)&0x1F) != 0))
 
+#define BITARRAY_MAX_SIZE  0x400
+
 class BitArray {
 public:
-	BitArray(DWORD init_size = BITARRAY_DEFAULT_SIZE)
-		: m_size(init_size),
-		  m_bits(BITARRAY_SIZE(init_size))
+	BitArray(int init_size = BITARRAY_DEFAULT_SIZE)
+		: m_size(clip(init_size)),
+		  m_bits(BITARRAY_SIZE(m_size))
 	{
 		m_bits.zero();
 	}
 	// copy ctor and op= can be default
 
 #if 0
-	int operator[] (DWORD i) const
+	int operator[] (int i) const
 	{
-		if (i >= m_size) return 0;
+		if (i < 0 || i >= m_size) return 0;
 		return (m_bits[BITARRAY_INDEX(i)] & BITARRAY_BIT(i)) != 0;
 	}
 
@@ -53,7 +55,7 @@ public:
 		DWORD     m_index;
 	};
 
-	BitArrayProxy operator[] (DWORD i) { return BitArrayProxy(this, i); }
+	BitArrayProxy operator[] (int i) { return BitArrayProxy(this, i); }
 
 	friend class BitArrayProxy;
 #endif
@@ -62,6 +64,7 @@ public:
 
 	void setBit(int index, int bit)
 	{
+		if (index < 0 || index >= BITARRAY_MAX_SIZE) return;
 		if (index > m_size) {
 			int asize = BITARRAY_SIZE(index);
 			if (asize > m_bits.size()) {
@@ -79,7 +82,7 @@ public:
 
 	int getBit(int i) const
 	{
-		if (i >= m_size) return 0;
+		if (i < 0 || i >= m_size) return 0;
 		return (m_bits[BITARRAY_INDEX(i)] & BITARRAY_BIT(i)) != 0;
 	}
 
@@ -89,7 +92,7 @@ public:
 	}
 
 private:
-	DWORD  m_size; // size in bit
+	int  m_size; // size in bit
 	Array<DWORD> m_bits;
 };
 

@@ -1,4 +1,4 @@
-//	$Id: array.h,v 1.2 2002-02-21 12:55:58 sugiura Exp $
+//	$Id: array.h,v 1.3 2002-03-11 13:27:49 sugiura Exp $
 /*
  *	array.h
  *	(primitive Œ^ŒÀ’è)”z—ñƒNƒ‰ƒX
@@ -15,6 +15,7 @@
 inline int
 clip(int size)
 {
+	if (size < 0) size = 0;
 	return (size + MIN_ALLOC_UNIT - 1) & ~(MIN_ALLOC_UNIT - 1);
 }
 
