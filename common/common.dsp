@@ -150,6 +150,10 @@ SOURCE=.\misc.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\optmap.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\pathname.cpp
 # End Source File
 # Begin Source File
@@ -347,6 +351,10 @@ SOURCE=.\menu.h
 # Begin Source File
 
 SOURCE=.\misc.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\optmap.h
 # End Source File
 # Begin Source File
 

@@ -1,4 +1,4 @@
-//	$Id: seq_op.cpp,v 1.5 2002-03-05 14:09:40 sugiura Exp $
+//	$Id: seq_op.cpp,v 1.6 2002-04-17 16:23:31 sugiura Exp $
 /*
  *	seq_op.cpp
  *	SequentialOp クラスの実装
@@ -9,6 +9,7 @@
 #include "pathname.h"
 #include "rec_op.h"
 #include "cmdline.h"
+#include "optmap.h"
 
 static BOOL
 IsPathWildCard(const StringBuffer& path)
@@ -231,29 +232,5 @@ FileToFileOperation(
 		return FALSE;
 	}
 	// not reached.
-}
-
-static DWORD defFlags[] = {
-	FLAG_RECURSIVE,	//	再帰的に検索
-	FLAG_RETURNNUM,	//	処理したファイル・フォルダの数を返す
-	FLAG_OVERRIDE_FORCED | FLAG_REMOVE_FORCED,	//	強制的に処理
-	FLAG_OVERRIDE_CONFIRM | FLAG_REMOVE_CONFIRM,	//	確認
-	FLAG_OVERRIDE_NOTNEWER	//	新しいファイル・フォルダのみ
-};
-
-OptMap defOptMap("rnfiu", defFlags);
-
-//	オプションの解析
-//	copy, move, remove で使用
-BOOL
-GetFlags(const StringBuffer& av, DWORD& fFlags, const OptMap& optMap)
-{
-	int len = av.length();
-	for (int i = 1; i < len; i++) { // 最初の文字はオプション指定子
-		DWORD fl = optMap.getFlag(av[i]);
-		if (fl != OPT_INVALID) fFlags |= fl;
-		else return FALSE;
-	}
-	return TRUE;
 }
 

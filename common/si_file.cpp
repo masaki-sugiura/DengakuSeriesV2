@@ -1,4 +1,4 @@
-//	$Id: si_file.cpp,v 1.8 2002-03-05 14:19:35 sugiura Exp $
+//	$Id: si_file.cpp,v 1.9 2002-04-17 16:23:31 sugiura Exp $
 /*
  *	si_file.cpp
  *	SessionInstance: ファイルサービスの関数
@@ -10,6 +10,7 @@
 #include "recfind.h"
 #include "file.h"
 #include "cmdline.h"
+#include "optmap.h"
 #include <exception>
 
 //	si_TIMESTAMPOF() で使うタイムスタンプを扱う構造体

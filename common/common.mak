@@ -56,6 +56,7 @@ CLEAN :
 	-@erase "$(INTDIR)\linklist.obj"
 	-@erase "$(INTDIR)\menu.obj"
 	-@erase "$(INTDIR)\misc.obj"
+	-@erase "$(INTDIR)\optmap.obj"
 	-@erase "$(INTDIR)\pathname.obj"
 	-@erase "$(INTDIR)\rec_op.obj"
 	-@erase "$(INTDIR)\recfind.obj"
@@ -135,12 +136,13 @@ LIB32_OBJS= \
 	"$(INTDIR)\si_variable.obj" \
 	"$(INTDIR)\smalloc.obj" \
 	"$(INTDIR)\spi_mngr.obj" \
+	"$(INTDIR)\stack.obj" \
 	"$(INTDIR)\str_tbl.obj" \
 	"$(INTDIR)\strbuf.obj" \
 	"$(INTDIR)\strutils.obj" \
 	"$(INTDIR)\thread.obj" \
 	"$(INTDIR)\tokenizer.obj" \
-	"$(INTDIR)\stack.obj"
+	"$(INTDIR)\optmap.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -174,6 +176,7 @@ CLEAN :
 	-@erase "$(INTDIR)\linklist.obj"
 	-@erase "$(INTDIR)\menu.obj"
 	-@erase "$(INTDIR)\misc.obj"
+	-@erase "$(INTDIR)\optmap.obj"
 	-@erase "$(INTDIR)\pathname.obj"
 	-@erase "$(INTDIR)\rec_op.obj"
 	-@erase "$(INTDIR)\recfind.obj"
@@ -254,12 +257,13 @@ LIB32_OBJS= \
 	"$(INTDIR)\si_variable.obj" \
 	"$(INTDIR)\smalloc.obj" \
 	"$(INTDIR)\spi_mngr.obj" \
+	"$(INTDIR)\stack.obj" \
 	"$(INTDIR)\str_tbl.obj" \
 	"$(INTDIR)\strbuf.obj" \
 	"$(INTDIR)\strutils.obj" \
 	"$(INTDIR)\thread.obj" \
 	"$(INTDIR)\tokenizer.obj" \
-	"$(INTDIR)\stack.obj"
+	"$(INTDIR)\optmap.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -396,6 +400,11 @@ SOURCE=.\menu.cpp
 SOURCE=.\misc.cpp
 
 "$(INTDIR)\misc.obj" : $(SOURCE) "$(INTDIR)"
+
+
+SOURCE=.\optmap.cpp
+
+"$(INTDIR)\optmap.obj" : $(SOURCE) "$(INTDIR)"
 
 
 SOURCE=.\pathname.cpp
