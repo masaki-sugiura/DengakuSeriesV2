@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.24 2004-08-14 16:21:18 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.25 2004-11-16 17:03:50 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -854,7 +854,8 @@ DlgFrame::DlgFrame()
 		m_pFontProp(new FontProperty),
 		m_width(0),
 		m_height(0),
-		m_flags(0)
+		m_flags(0),
+		m_imestate(0)
 {
 	try {
 		m_pThemeWrapper = new ThemeWrapper();
@@ -1234,6 +1235,33 @@ DlgFrame::getFocusedCtrl() const
 		}
 	}
 	return nullStr;
+}
+
+int
+DlgFrame::setImeState(int nState)
+{
+	m_imestate = nState;
+	if (m_hwndFrame) {
+		HIMC hImc = ::ImmGetContext(m_hwndFrame);
+		switch (m_imestate) {
+		case 1:
+			if (!::ImmGetOpenStatus(hImc))
+				::ImmSetOpenStatus(hImc, TRUE);
+			break;
+		default:
+			if (::ImmGetOpenStatus(hImc))
+				::ImmSetOpenStatus(hImc, FALSE);
+			break;
+		}
+		::ImmReleaseContext(m_hwndFrame, hImc);
+	}
+	return m_imestate;
+}
+
+int
+DlgFrame::getImeState() const
+{
+	return m_imestate;
 }
 
 WORD

@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.34 2004-05-03 16:05:43 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.35 2004-11-16 17:03:50 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -2268,6 +2268,9 @@ ComboCtrl::initCtrl(HWND hDlg)
 #endif
 	}
 	::SetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text);
+	if (m_height > 0) {
+		::SendMessage(m_pcp->m_hwndCtrl, CB_SETMINVISIBLE, m_height, 0);
+	}
 	return TRUE;
 }
 
@@ -2335,7 +2338,7 @@ ComboCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 						::ImmSetOpenStatus(hImc, FALSE);
 					break;
 				}
-				::ImmReleaseContext((HWND)lParam, hImc);
+				::ImmReleaseContext(hwndEdit, hImc);
 			}
 			::SendMessage(hwndEdit,EM_SETSEL,0,-1);
 		}

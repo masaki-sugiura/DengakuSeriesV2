@@ -1,4 +1,4 @@
-//	$Id: si_file.cpp,v 1.17 2003-02-15 18:37:02 sugiura Exp $
+//	$Id: si_file.cpp,v 1.18 2004-11-16 17:03:51 sugiura Exp $
 /*
  *	si_file.cpp
  *	SessionInstance: ファイルサービスの関数
@@ -221,6 +221,71 @@ GetLongFileName(const PathName& file)
 	//	最後のノードの処理
 	if ((hdata = ::FindFirstFile(buf,&fd)) != INVALID_HANDLE_VALUE) {
 		newname.append(fd.cFileName);
+	} else {
+		newname.append(file.getBaseName());
+	}
+
+	return newname;
+}
+
+//	getshortname の実体
+static StringBuffer
+GetShortFileName(const PathName& file)
+{
+	int	olen = file.length();
+	if (olen < 3 || file.find((TCHAR)'*') >= 0 || file.find((TCHAR)'?') >= 0)
+		//	不正なパス名
+		return nullStr;
+
+	TCHAR dl = file[0];
+	if (ISDRIVELETTER(dl) && olen == 3) {
+		if (file[1] != ':' || file[2] != '\\') return nullStr;
+		//	ルートパス名だった
+		StringBuffer newname(file);
+		newname.setcharAt(0,(TCHAR)('A' + DRIVENUM(dl) - 1));
+		return newname;
+	}
+
+	StringBuffer buf(file);	//	テンポラリバッファ
+	StringBuffer newname(MAX_PATH);
+
+	//	ルートパス名のコピー
+	if (ISDRIVELETTER(dl)) {
+		//	通常のパス名
+		olen = 3;
+		newname.append((TCHAR)('A' + DRIVENUM(dl) - 1)).append(":\\");
+	} else {
+		//	UNC パス名(のはず)
+		LPCSTR	h = lstrchr(buf + 2,'\\');
+		if (h == NULL ||
+			(h = lstrchr(++h,'\\')) == NULL) return nullStr; // 不正なパス名
+		olen = ++h - (LPCSTR)buf;
+		newname.append(buf,0,olen);
+	}
+
+	//	残りのパス名の処理
+	HANDLE hdata = INVALID_HANDLE_VALUE;
+	WIN32_FIND_DATA	fd;
+	for (LPSTR s = buf.getBufPtr() + olen;
+		s != NULL && *s != '\0' && (s = lstrchr(s,'\\')) != NULL;
+		*s++ = '\\'){
+		*s = '\0';
+		if ((hdata = ::FindFirstFile(buf,&fd)) == INVALID_HANDLE_VALUE)
+			return nullStr;
+		::FindClose(hdata);
+		if (fd.cAlternateFileName[0]) {
+			newname.append(fd.cAlternateFileName).append((TCHAR)'\\');
+		} else {
+			newname.append(fd.cFileName).append((TCHAR)'\\');
+		}
+	}
+	//	最後のノードの処理
+	if ((hdata = ::FindFirstFile(buf,&fd)) != INVALID_HANDLE_VALUE) {
+		if (fd.cAlternateFileName[0]) {
+			newname.append(fd.cAlternateFileName);
+		} else {
+			newname.append(fd.cFileName);
+		}
 	} else {
 		newname.append(file.getBaseName());
 	}
@@ -1000,5 +1065,13 @@ SessionInstance::si_getlongname(const StringBuffer& filename, BOOL bExist)
 	PathName file;
 	if (!m_DirList.getPathName(filename,file,bExist)) return nullStr;
 	return GetLongFileName(file);
+}
+
+StringBuffer
+SessionInstance::si_getshortname(const StringBuffer& filename, BOOL bExist)
+{
+	PathName file;
+	if (!m_DirList.getPathName(filename,file,bExist)) return nullStr;
+	return GetShortFileName(file);
 }
 

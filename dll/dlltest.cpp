@@ -1,4 +1,4 @@
-//	$Id: dlltest.cpp,v 1.6 2004-08-14 16:21:18 sugiura Exp $
+//	$Id: dlltest.cpp,v 1.7 2004-11-16 17:03:51 sugiura Exp $
 /*
  *	dlltest.cpp
  *	テスト用アプリ
@@ -153,6 +153,8 @@ MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 using namespace std;
 
 #define DENGAKUDLL_API extern "C" __declspec(dllimport)
+
+DENGAKUDLL_API LPCSTR GETDIRNAME(int, LPCSTR, LPCSTR);
 
 DENGAKUDLL_API LPCSTR GETDRIVES();
 DENGAKUDLL_API LPCSTR GETLONGNAME(LPCSTR);
@@ -612,12 +614,17 @@ int main(int ac, char** av)
 //	ASSERT(uninitDll());
 #endif
 
+#if 0
 	NEWDIALOG("Dialog Test", 40, "");
 	NEWCONTROL("text","","ダイアログテスト");
 //	NEWCONTROL("edit","","");
 	SHOWDIALOG(0, 1);
 	WAITCTRLNOTIFY(1000);
 	ENDDIALOG();
+#endif
+
+	LPCSTR pszDirName = GETDIRNAME(0, "test", "\\\\topquark\\smbshare");
+	MessageBox(NULL, pszDirName, NULL, MB_OK);
 
 	return 0;
 }

@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.13 2004-08-14 16:21:18 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.14 2004-11-16 17:03:51 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -592,5 +592,20 @@ SessionInstance::si_setdlgpos(int x, int y,
 						 ParseDlgPosOrigin(strOrigin),
 						 ParseDlgPosUnit(strUnit));
 	return 1;
+}
+
+int
+SessionInstance::si_setdlgimestate(int nState)
+{
+	return m_DlgFrame.setImeState(nState);
+}
+
+StringBuffer
+SessionInstance::si_getdlgimestate()
+{
+	int nState = m_DlgFrame.getImeState();
+	TCHAR buf[32];
+	wsprintf(buf, "%d", nState);
+	return buf;
 }
 

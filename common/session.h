@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.14 2003-11-23 15:37:21 sugiura Exp $
+//	$Id: session.h,v 1.15 2004-11-16 17:03:50 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -111,6 +111,7 @@ public:
 	StringBuffer si_findnext();
 	StringBuffer si_getdrives();
 	StringBuffer si_getlongname(const StringBuffer&, BOOL);
+	StringBuffer si_getshortname(const StringBuffer&, BOOL);
 
 	//	文字列処理系
 	int si_atoi(const StringBuffer&);
@@ -181,6 +182,8 @@ public:
 	int si_savedialog(const StringBuffer&, const StringBuffer&);
 	int si_loaddialog(const StringBuffer&, const StringBuffer&);
 	int si_setdlgtitle(const StringBuffer&);
+	int si_setdlgimestate(int);
+	StringBuffer si_getdlgimestate();
 	StringBuffer si_getdlgtitle();
 	StringBuffer si_getctrlstate(const StringBuffer&);
 	StringBuffer si_getctrlstring(const StringBuffer&);

@@ -1,4 +1,4 @@
-//	$Id: dlgdata.h,v 1.12 2004-05-03 16:05:43 sugiura Exp $
+//	$Id: dlgdata.h,v 1.13 2004-11-16 17:03:50 sugiura Exp $
 /*
  *	dlgdata.h
  *	ダイアログを扱うクラス
@@ -232,6 +232,9 @@ public:
 		return m_sbFocusedCtrl;
 	}
 
+	int setImeState(int nState);
+	int getImeState() const;
+
 //	ダイアログの背景をTABコントロールと同色にする
 	void setBackGroundToTabColor(HWND hwndPage)
 	{
@@ -289,6 +292,7 @@ private:
 	WORD m_width;	//	ダイアログの幅
 	WORD m_height;	//	ダイアログの高さ
 	WORD m_flags;	//	表示位置に関するフラグ
+	int m_imestate;	//	IMEの状態を表す
 };
 
 extern const StringBuffer strRootPageName;
