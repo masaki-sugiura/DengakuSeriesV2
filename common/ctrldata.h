@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.12 2002-11-10 08:52:05 sugiura Exp $
+//	$Id: ctrldata.h,v 1.13 2002-12-24 12:47:00 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -730,6 +730,8 @@ public:
 
 	BOOL dumpData(DlgDataFile&);
 	BOOL loadData(DlgDataFile&);
+
+	LRESULT dispatchRawMsg(CtrlProperty*, HWND, UINT, WPARAM, LPARAM);
 
 protected:
 	DWORD m_imestate;

@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.23 2002-12-23 14:34:52 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.24 2002-12-24 12:47:00 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -2181,16 +2181,25 @@ BOOL
 ComboCtrl::initCtrl(HWND hDlg)
 {
 	if (!ListCtrl::initCtrl(hDlg)) return FALSE;
-	HWND hwndEdit = ::GetTopWindow(m_pcp->m_hwndCtrl);
-	if (hwndEdit != NULL) {
-		ChildCtrlSubClassInfo*
-			pCCSci = new ChildCtrlSubClassInfo();
-		pCCSci->m_pCtrl = this;
+	ChildCtrlSubClassInfo*
+		pCCSci = new ChildCtrlSubClassInfo();
+	pCCSci->m_pCtrl = this;
+	if (m_bEditable) {
+		// コンボボックス
+		HWND hwndEdit = ::GetTopWindow(m_pcp->m_hwndCtrl);
+		pCCSci->m_pfnDefCallback = (WNDPROC)::GetWindowLong(hwndEdit, GWL_WNDPROC);
+		::SetWindowLong(hwndEdit, GWL_USERDATA, (LONG)pCCSci);
+		::SetWindowLong(hwndEdit, GWL_WNDPROC, (LONG)ComboChildCtrlProc);
+	} else {
+		// ドロップダウンリスト
+#if 0
+		// dispatchRawMsg() で対処
+		::SetWindowLong(m_pcp->m_hwndCtrl, GWL_USERDATA, (LONG)pCCSci);
 		pCCSci->m_pfnDefCallback
-			= (WNDPROC)::SetWindowLong(hwndEdit,
+			= (WNDPROC)::SetWindowLong(m_pcp->m_hwndCtrl,
 									   GWL_WNDPROC,
 									   (LONG)ComboChildCtrlProc);
-		::SetWindowLong(hwndEdit, GWL_USERDATA, (LONG)pCCSci);
+#endif
 	}
 	::SetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text);
 	return TRUE;
@@ -2288,6 +2297,24 @@ ComboCtrl::getStateFromView()
 												i, 0);
 		m_state = m_item->getItemIndexByPtr(id) + 1;
 	}
+}
+
+LRESULT
+ComboCtrl::dispatchRawMsg(CtrlProperty* pCProp, HWND hCtrl, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	ComboCtrl* pCCtrl = dynamic_cast<ComboCtrl*>(pCProp->m_pCtrl);
+	if (pCCtrl && !pCCtrl->m_bEditable) {
+		HWND hwndCombo = pCCtrl->getCtrlHWND();
+		if (uMsg == WM_KEYDOWN && wParam == VK_DOWN &&
+			!::SendMessage(hwndCombo, CB_GETDROPPEDSTATE, 0, 0)) {
+			::SendMessage(hwndCombo, CB_SHOWDROPDOWN, TRUE, 0);
+			int cursel = ::SendMessage(hwndCombo, CB_GETCURSEL, 0, 0);
+			if (cursel == CB_ERR) cursel = 0;
+			::SendMessage(hwndCombo, CB_SETCURSEL, cursel, 0);
+			return 0;
+		}
+	}
+	return ListCtrl::dispatchRawMsg(pCProp, hCtrl, uMsg, wParam, lParam);
 }
 
 //	ref*button
