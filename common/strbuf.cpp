@@ -1,4 +1,4 @@
-//	$Id: strbuf.cpp,v 1.7 2002-04-11 11:16:51 sugiura Exp $
+//	$Id: strbuf.cpp,v 1.8 2002-06-16 14:56:09 sugiura Exp $
 /*
  *	strbuf.cpp
  *	•¶Žš—ñƒNƒ‰ƒX
@@ -28,7 +28,7 @@ StringBuffer::StringBuffer_rep::StringBuffer_rep(int len)
 		m_id(s_id++),
 #endif
 		m_len(0),
-		m_buf((len > 0) ? (len + 1) : 1)
+		m_buf(neg_to_zero(len) + 1)
 {
 #ifdef _DEBUG
 	fprintf(stdout,"create *%d of size %d\n",m_id,len);
@@ -368,12 +368,12 @@ StringBuffer::compareTo(LPCSTR lpstr, BOOL casesense, int len) const
 	if (!IsValidPtr(lpstr)) return *m_sbuf->m_buf;
 	if (!m_sbuf->isShareable()) m_sbuf->recalc();
 	if (len >= 0) {
-		return	casesense?
-				lstrcmpn(m_sbuf->m_buf, lpstr, len):
+		return	casesense ?
+				lstrcmpn(m_sbuf->m_buf, lpstr, len) :
 				lstrcmpni(m_sbuf->m_buf, lpstr, len);
 	} else {
-		return	casesense?
-				lstrcmp(m_sbuf->m_buf, lpstr):
+		return	casesense ?
+				lstrcmp(m_sbuf->m_buf, lpstr) :
 				lstrcmpi(m_sbuf->m_buf, lpstr);
 	}
 }

@@ -1,4 +1,4 @@
-//	$Id: si_file.cpp,v 1.9 2002-04-17 16:23:31 sugiura Exp $
+//	$Id: si_file.cpp,v 1.10 2002-06-16 14:56:09 sugiura Exp $
 /*
  *	si_file.cpp
  *	SessionInstance: ファイルサービスの関数
@@ -924,7 +924,7 @@ SessionInstance::si_getdrives()
 	DWORD drives = ::GetLogicalDrives();
 
 	for (int i = 0; i < 32; i++, drives >>= 1)
-		drives_str[i] = (drives&0x00000001) != 0 ? '1' : '0';
+		drives_str[i] = '0' + (drives & 0x00000001);
 
 	return drives_str;
 }

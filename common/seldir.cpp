@@ -1,4 +1,4 @@
-//	$Id: seldir.cpp,v 1.3 2002-02-21 12:55:58 sugiura Exp $
+//	$Id: seldir.cpp,v 1.4 2002-06-16 14:56:09 sugiura Exp $
 /*
  *	seldir.cpp
  *	ディレクトリ選択ダイアログの実装
@@ -61,7 +61,7 @@ SelectDirByDlg::SelectDirByDlg(HINSTANCE hInstance)
 
 	m_hImgList = ImageList_Create(m_pShellIcons->getIconSize(),
 								m_pShellIcons->getIconSize(),
-								ILC_COLOR16,	//	環境依存？
+								ILC_COLOR24 | ILC_MASK,	//	環境依存？
 								0,20);
 	m_hPopupMenu = createTreePopupMenu();
 	m_htiDesktop = NULL;

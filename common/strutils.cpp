@@ -1,4 +1,4 @@
-//	$Id: strutils.cpp,v 1.2 2002-04-08 14:00:10 sugiura Exp $
+//	$Id: strutils.cpp,v 1.3 2002-06-16 14:56:09 sugiura Exp $
 /*
  *	strutils.cpp
  *	C 文字列のためのユーティリティ関数群の実装
@@ -199,13 +199,15 @@ isnumber(LPCSTR str)
 int
 ival(LPCSTR num)
 {
-	int	ret = 0, sgn = 1;
+	int	ret = 0, sgn = 0;
 	if (IsValidPtr(num) && *num != '\0') {
 		while (IsCharSpace(*num)) num++;
 		if (*num == '-') sgn = -1, num++;
 		while (IsCharDigit(*num))
-			ret = /* ret*10 */ (ret << 3) + (ret << 1) + (*num++ - '0');
-		if (sgn < 0) ret *= -1;
+			ret = ret * 10 + (*num++ - '0');
+//		if (sgn < 0) ret *= -1;
+		ret ^= sgn;
+		ret -= sgn;
 	}
 	return ret;
 }
@@ -284,9 +286,8 @@ itooct(LPSTR buf, int val)
 {
 	int idx = 0, i, v;
 	BOOL bShowZero = FALSE;
-	for (i = 10; i >= 0; --i) {
-		v = (i << 1) + i; // i * 3
-		v = ((unsigned int)val >> v) & 0x00000007;
+	for (i = 30; i >= 0; i -= 3) {
+		v = ((unsigned int)val >> i) & 0x00000007;
 		if (bShowZero || v != 0) {
 			bShowZero = TRUE;
 			buf[idx++] = '0' + v;
@@ -324,7 +325,7 @@ lstrcmpn(LPCSTR lps1, LPCSTR lps2, int num)
 static inline int
 CODE(char ch)
 {
-	return IsCharLowerCase(ch) ? (ch - 0x20) : ch;
+	return IsCharLowerCase(ch) ? (ch & 0x5F) : ch;
 }
 
 int

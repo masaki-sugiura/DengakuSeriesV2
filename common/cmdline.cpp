@@ -1,4 +1,4 @@
-//	$Id: cmdline.cpp,v 1.3 2002-03-05 14:09:40 sugiura Exp $
+//	$Id: cmdline.cpp,v 1.4 2002-06-16 14:56:09 sugiura Exp $
 /*
  *	cmdline.cpp
  *	文字列のパース＆リスト化
@@ -6,6 +6,7 @@
 
 #include <exception>
 #include "cmdline.h"
+#include "strutils.h"
 
 #define	IS_SEPARATOR(ch)	((ch) == ',' || (ch) == ' ' || (ch) == '\t')
 #define	SEP_DEFAULT		0
@@ -62,7 +63,7 @@ RealCmdLineParser::mergeArgv(const StringBuffer& sbCmdLine)
 
 	//	コマンドラインをパースしてバッファに格納
 	//	（"str1\0str2\0....strN\0\0"）
-	int septype, head, len;
+	int head, len;
 	LPCSTR pTop = pBuf;
 
 	try {
@@ -73,6 +74,7 @@ RealCmdLineParser::mergeArgv(const StringBuffer& sbCmdLine)
 			pstrCmdLine++;
 		if (*pstrCmdLine == '\0') break;	//	コマンドラインの終わり
 		//	引用符で囲まれているか and その種類を決める
+#if 0
 		if (*pstrCmdLine == '"') {
 			pstrCmdLine++;  septype = SEP_DBLQUOTE;	//	２重引用符
 		} else if (*pstrCmdLine == '\'') {
@@ -94,6 +96,33 @@ RealCmdLineParser::mergeArgv(const StringBuffer& sbCmdLine)
 		*(pBuf + len) = '\0';	//	終端文字
 		// head, tail は引用符を含む
 		if (septype != SEP_DEFAULT) { head--;  len += 2; }
+#else
+		if (*pstrCmdLine == '"' || *pstrCmdLine == '\'') {
+			char sepchar = *pstrCmdLine;
+			pTop = ++pstrCmdLine;
+			head = pTop - (LPCSTR)sbCmdLine;
+			while (*pstrCmdLine != '\0' &&
+				   (IsCharLeadByte(*pstrCmdLine) || *pstrCmdLine != sepchar)) {
+				pstrCmdLine++;
+			}
+			len = pstrCmdLine - pTop;
+			::CopyMemory(pBuf, pTop, len);
+			*(pBuf + len) = '\0'; // terminator
+			head--;
+			len += 2;
+		} else {
+			pTop = pstrCmdLine;
+			head = pTop - (LPCSTR)sbCmdLine;
+			while (*pstrCmdLine != '\0' &&
+				   (IsCharLeadByte(*pstrCmdLine) ||
+				    !IS_SEPARATOR(*pstrCmdLine))) {
+				pstrCmdLine++;
+			}
+			len = pstrCmdLine - pTop;
+			::CopyMemory(pBuf, pTop, len);
+			*(pBuf + len) = '\0'; // terminator
+		}
+#endif
 		this->addItem(new CmdArgv(pBuf, head, len));
 		if (*pstrCmdLine == '\0') break;
 	}

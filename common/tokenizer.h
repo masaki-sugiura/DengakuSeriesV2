@@ -1,4 +1,4 @@
-//	$Id: tokenizer.h,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: tokenizer.h,v 1.3 2002-06-16 14:56:09 sugiura Exp $
 /*
  *	tokenizer.h
  *	文字列のトークン化クラス
@@ -18,7 +18,11 @@ public:
 	const StringBuffer&	getSeparatorChars() const { return m_strSepChars; }
 
 	StringBuffer getNextToken();
-	int hasMoreTokens() const { return m_bEnd ? 0 : (m_nLength - m_nCurPos + 1); }
+	int hasMoreTokens() const
+	{
+//		return m_bEnd ? 0 : (m_nLength - m_nCurPos + 1);
+		return ~((int)(m_bEnd << 31) >> 31) & (m_nLength - m_nCurPos + 1);
+	}
 
 private:
 	const StringBuffer m_strTokenized;

@@ -1,14 +1,10 @@
-//	$Id: env_var.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: env_var.cpp,v 1.2 2002-06-16 14:56:09 sugiura Exp $
 /*
  *	env_var.cpp
  *	環境変数の管理に関するクラス
  */
 
 #include "env_var.h"
-
-//	alloc() で確保される最小のバイト数
-#define ALLOC_UNIT 16
-#define MAX(n,m) ((n)>(m) ? (n) : (m))
 
 EnvManager::EnvManager(const StringBuffer& env_name)
 	:	m_env_name(env_name,-1,8), m_enumindex(0)
@@ -91,7 +87,7 @@ EnvManager::write(const StringBuffer& env_name, const StringBuffer& env_var)
 		//	ヘッダの初期化
 		pEnvHeader = (LPENV_HEADER)m_psma->addr(index);
 		pEnvHeader->m_pNextHeader = 0;	//	次の変数はまだない
-		pEnvHeader->m_pEnvName = m_psma->alloc(MAX((en_len + 1),ALLOC_UNIT));
+		pEnvHeader->m_pEnvName = m_psma->alloc(en_len + 1);
 		if (pEnvHeader->m_pEnvName == 0) {
 			m_psma->free(index);
 			m_psma->release();
@@ -99,7 +95,7 @@ EnvManager::write(const StringBuffer& env_name, const StringBuffer& env_var)
 		}
 		::CopyMemory((LPSTR)m_psma->addr(pEnvHeader->m_pEnvName),
 					(LPCSTR)env_name,en_len + 1);
-		pEnvHeader->m_pEnvString = m_psma->alloc(MAX((ev_len + 1),ALLOC_UNIT));
+		pEnvHeader->m_pEnvString = m_psma->alloc(ev_len + 1);
 		if (pEnvHeader->m_pEnvString == 0) {
 			m_psma->free(pEnvHeader->m_pEnvName);
 			m_psma->free(index);
@@ -109,7 +105,7 @@ EnvManager::write(const StringBuffer& env_name, const StringBuffer& env_var)
 	} else if (lstrlen((LPCSTR)m_psma->addr(pEnvHeader->m_pEnvString))
 		!= env_var.length()) {
 		//	変数が既に定義されており、値のバッファサイズが異なる
-		int newindex = m_psma->alloc(MAX((ev_len+1),ALLOC_UNIT));
+		int newindex = m_psma->alloc(ev_len + 1);
 		if (newindex == 0) {
 			m_psma->release();
 			throw NoMemoryError();
@@ -119,7 +115,7 @@ EnvManager::write(const StringBuffer& env_name, const StringBuffer& env_var)
 	}
 	//	値の更新
 	::CopyMemory((LPSTR)m_psma->addr(pEnvHeader->m_pEnvString),
-				(LPCSTR)env_var,ev_len + 1);
+				(LPCSTR)env_var, ev_len + 1);
 	m_psma->release();
 }
 

@@ -1,4 +1,4 @@
-//	$Id: dlltest.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: dlltest.cpp,v 1.3 2002-06-16 14:56:09 sugiura Exp $
 /*
  *	dlltest.cpp
  *	テスト用アプリ
@@ -198,8 +198,8 @@ DENGAKUDLL_API LPCSTR TOUPPER(LPCSTR);
 DENGAKUDLL_API LPCSTR TOUPPER2(LPCSTR);
 
 #define NO_OUTPUT
-// #define PROF_FILE
-#define PROF_STR
+#define PROF_FILE
+//#define PROF_STR
 
 static void
 SHOW_FINDNEXT_RESULTS()

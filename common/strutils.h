@@ -1,4 +1,4 @@
-//	$Id: strutils.h,v 1.1 2001-11-22 13:38:42 sugiura Exp $
+//	$Id: strutils.h,v 1.2 2002-06-16 14:56:09 sugiura Exp $
 /*
  *	strutils.h
  *	C 文字列のためのユーティリティ関数群
@@ -41,7 +41,11 @@ extern UCHAR char_property[];
 inline int
 ABS(int i)
 {
-	return (i >= 0) ? i : -i;
+//	return (i >= 0) ? i : -i;
+	int mask = i >> 31;
+	i ^= mask;
+	i -= mask;
+	return i;
 }
 
 inline BOOL
@@ -107,7 +111,7 @@ IsValidPtr(LPCSTR str)
 inline LPSTR
 ToNextChar(LPCSTR ptr)
 {
-	return (LPSTR)(IsCharLeadByte(*ptr) ? (ptr + 2) : (ptr + 1));
+	return (LPSTR)(ptr + 1 + IsCharLeadByte(*ptr));
 }
 
 #endif

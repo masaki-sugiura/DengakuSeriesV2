@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.15 2002-03-11 13:27:50 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.16 2002-06-16 14:56:09 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -151,10 +151,10 @@ CtrlListItem::CtrlProperty::changeFont()
 		hFont = reinterpret_cast<HFONT>(::GetStockObject(SYSTEM_FIXED_FONT));
 	LOGFONT lf;
 	::GetObject(hFont,sizeof(LOGFONT), &lf);
-	lf.lfWeight		= (m_fontprop.m_fface&1) != 0 ? 700 : 400;
-	lf.lfItalic		= (m_fontprop.m_fface&2) != 0;
-	lf.lfUnderline	= (m_fontprop.m_fface&4) != 0;
-	lf.lfStrikeOut	= (m_fontprop.m_fface&8) != 0;
+	lf.lfWeight		= 400 + (m_fontprop.m_fface & 1) * 300;
+	lf.lfItalic		= (m_fontprop.m_fface & 2) >> 1;
+	lf.lfUnderline	= (m_fontprop.m_fface & 4) >> 2;
+	lf.lfStrikeOut	= (m_fontprop.m_fface & 8) >> 3;
 	if (m_fontprop.m_fname.length() == 0) {
 		lstrcpyn(lf.lfFaceName,
 				 m_pCtrl->getParentPage().getDlgFrame().getFontName(), 32);
@@ -1326,7 +1326,7 @@ TrackCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 				break;
 			case TB_THUMBPOSITION:
 				m_wPrevNotify = 0xFFFF;
-				return (m_notify[1] != 0xFFFF) ? m_notify[1] : m_notify[0];
+				return m_notify[(m_notify[1] != 0xFFFF)];
 			default:
 				m_wPrevNotify = 0xFFFF;
 				return m_notify[0];
@@ -1448,6 +1448,7 @@ HasListCtrl::getItemData(const StringBuffer& sind)
 			break;
 		default:
 			if (tmp >= 0 && tmp < num) ind = tmp;
+			else ind = -1;
 		}
 	}
 	if (ind < 0 || ind >= num) return -1;
@@ -1764,21 +1765,21 @@ BOOL
 RadioCtrl::onInsertItem(CmdLineParser& text, const StringBuffer& pos)
 {
 	if (m_pcp->m_hwndCtrl != NULL) return FALSE;
-	return HasListCtrl::onInsertItem(text,pos) ? TRUE : FALSE;
+	return HasListCtrl::onInsertItem(text,pos) != 0;
 }
 
 BOOL
 RadioCtrl::onDeleteItem(const StringBuffer& pos)
 {
 	if (m_pcp->m_hwndCtrl != NULL) return FALSE;
-	return HasListCtrl::onDeleteItem(pos) ? TRUE : FALSE;
+	return HasListCtrl::onDeleteItem(pos) != 0;
 }
 
 BOOL
 RadioCtrl::onResetList()
 {
 	if (m_pcp->m_hwndCtrl != NULL) return FALSE;
-	return HasListCtrl::onResetList() ? TRUE : FALSE;
+	return HasListCtrl::onResetList() != 0;
 }
 
 StringBuffer
@@ -2717,11 +2718,12 @@ LViewCtrl::onGetItem(const StringBuffer& pos)
 	if (pos.length() > 0) {
 		int	tmp = ival(pos) - 1;
 		if (tmp >= 0 && tmp < num) ind = tmp;
+		else ind = -1;
 	}
-	if (ind < 0) return FALSE;
+	if (ind < 0) return nullStr;
 	LViewItemData*
 		lvid = static_cast<LViewItemData*>(m_item->getItemByIndex(ind));
-	if (lvid == NULL) return FALSE;
+	if (lvid == NULL) return nullStr;
 	StringBuffer buf(40);
 	lvid->initSequentialGet();
 	ItemData* id;
@@ -3787,7 +3789,7 @@ SpinCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 		if (val >= m_min && val <= m_max) {
 			m_val = val;
 		}
-		return (m_notify[1] != 0xFFFF) ? m_notify[1] : m_notify[0];
+		return m_notify[(m_notify[1] != 0xFFFF)];
 	}
 	return 0xFFFF;
 }
@@ -3863,6 +3865,6 @@ WORD
 OkCancelCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 {
 	if (HIWORD(wParam) != BN_CLICKED) return 0xFFFF;
-	return (LOBYTE(LOWORD(wParam)) == IDOK) ? m_notify[0] : m_notify[1];
+	return m_notify[(LOBYTE(LOWORD(wParam)) != IDOK)];
 }
 

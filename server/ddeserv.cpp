@@ -1,4 +1,4 @@
-// $Id: ddeserv.cpp,v 1.2 2002-02-19 15:34:22 sugiura Exp $
+// $Id: ddeserv.cpp,v 1.3 2002-06-16 14:56:09 sugiura Exp $
 /*
  *	ddeserv.cpp
  *	DdeServer クラスの実装
@@ -444,7 +444,7 @@ DdeServer::connectconfirm(
 	const HDDEDATA) // not used
 {
 	//	Ddeml ignores it.
-	return addConvData(hconv,hsz1) > 0 ? HDDE_TRUE : HDDE_FALSE;
+	return (HDDEDATA)(addConvData(hconv,hsz1) > 0);
 }
 
 //	エラー

@@ -1,4 +1,4 @@
-//	$Id: pathname.h,v 1.4 2002-02-21 12:55:58 sugiura Exp $
+//	$Id: pathname.h,v 1.5 2002-06-16 14:56:09 sugiura Exp $
 /*
  *	pathname.h
  *	パス名を扱うクラス
@@ -25,7 +25,8 @@
 inline int
 DRIVENUM(TCHAR ch)
 {
-	return IsCharLowerCase(ch) ? (ch - 'a' + 1) : (ch - 'A' + 1);
+//	return IsCharLowerCase(ch) ? (ch - 'a' + 1) : (ch - 'A' + 1);
+	return (ch & 0x5F) - 'A' + 1;
 }
 
 inline BOOL

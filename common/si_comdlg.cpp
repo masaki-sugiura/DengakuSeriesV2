@@ -1,4 +1,4 @@
-// $Id: si_comdlg.cpp,v 1.8 2002-03-05 14:19:35 sugiura Exp $
+// $Id: si_comdlg.cpp,v 1.9 2002-06-16 14:56:09 sugiura Exp $
 /*
  *	si_comdlg.cpp
  *	コモンダイアログ表示関数
@@ -20,7 +20,7 @@ CenteringWindow(HWND hwndDlg, HWND hwndOwner)
 	GetWindowCenter(hwndDlg, hwndOwner, rect);
 	::SetWindowPos(hwndDlg, hwndOwner,
 				   rect.left, rect.top, 0, 0,
-				   SWP_NOACTIVATE | SWP_NOREDRAW | SWP_NOZORDER | SWP_NOSIZE);
+				   SWP_NOZORDER | SWP_NOSIZE);
 }
 
 static UINT CALLBACK
@@ -153,7 +153,7 @@ SessionInstance::getDirNameByDlg(
 	return SelectDirByDlg(m_hInstance).doModal(hwndOwner,flags,title,pnInidir);
 }
 
-UINT CALLBACK
+static UINT CALLBACK
 ChooseColorProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	if (uMsg == WM_INITDIALOG) {
@@ -208,7 +208,7 @@ SessionInstance::getColorByDlg(
 	return ret;
 }
 
-UINT CALLBACK
+static UINT CALLBACK
 ChooseFontProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	if (uMsg == WM_INITDIALOG) {

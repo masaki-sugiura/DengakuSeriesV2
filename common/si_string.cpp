@@ -1,4 +1,4 @@
-//	$Id: si_string.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: si_string.cpp,v 1.2 2002-06-16 14:56:09 sugiura Exp $
 /*
  *	si_string.cpp
  *	文字列サービスの関数
@@ -117,10 +117,10 @@ SessionInstance::si_midstr(const StringBuffer& str, int head, int len)
 }
 
 StringBuffer
-SessionInstance::si_rightstr(const StringBuffer& str, int ind)
+SessionInstance::si_rightstr(const StringBuffer& str, int ext_size)
 {
-	int len = str.length();
-	return str.extract(ind < len ? (len - ind) : 0, ind);
+	int head = str.length() - ext_size;
+	return str.extract(~(head >> 31) & head, ext_size);
 }
 
 StringBuffer
@@ -170,10 +170,10 @@ SessionInstance::si_midstr2(const StringBuffer& str, int head, int len)
 }
 
 StringBuffer
-SessionInstance::si_rightstr2(const StringBuffer& str, int ind)
+SessionInstance::si_rightstr2(const StringBuffer& str, int ext_size)
 {
-	int len = str.length2();
-	return str.extract2(ind < len ? (len - ind) : 0, ind);
+	int head = str.length2() - ext_size;
+	return str.extract2(~(head >> 31) & head, ext_size);
 }
 
 StringBuffer
