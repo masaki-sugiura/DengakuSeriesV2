@@ -91,8 +91,17 @@ BRegExp_Manager::bSubst(const StringBuffer& ptn, const StringBuffer& str)
 		m_htblBRegExp.setValue(ptn, pBRegExp);
 	}
 //	m_pResultList = NULL;
-	if (ret < 0) return nullStr;
-	return pBRegExp->outp;
+
+	// ret == 0 のとき、pBRegExp->outp == NULL になるので、
+	// そのケースを特別に扱う
+	if (ret == 0) {
+		return str;
+	} else if (ret < 0) {
+		// エラーのとき
+		return nullStr;
+	} else {
+		return pBRegExp->outp;
+	}
 }
 
 StringBuffer

@@ -1,4 +1,4 @@
-//	$Id: dlltest.cpp,v 1.7 2004-11-16 17:03:51 sugiura Exp $
+//	$Id: dlltest.cpp,v 1.8 2005-01-24 15:27:51 sugiura Exp $
 /*
  *	dlltest.cpp
  *	テスト用アプリ
@@ -205,6 +205,11 @@ DENGAKUDLL_API int NEWCONTROL(LPCSTR, LPCSTR, LPCSTR);
 DENGAKUDLL_API int SHOWDIALOG(int, int);
 DENGAKUDLL_API int WAITCTRLNOTIFY(int);
 DENGAKUDLL_API int ENDDIALOG();
+
+DENGAKUDLL_API int BRE_LOAD(LPCSTR);
+DENGAKUDLL_API LPCSTR BRE_SUBST(LPCSTR, LPCSTR);
+DENGAKUDLL_API LPCSTR BRE_TRANS(LPCSTR, LPCSTR);
+DENGAKUDLL_API int BRE_FREE();
 
 #define NO_OUTPUT
 #define PROF_FILE
@@ -623,8 +628,15 @@ int main(int ac, char** av)
 	ENDDIALOG();
 #endif
 
-	LPCSTR pszDirName = GETDIRNAME(0, "test", "\\\\topquark\\smbshare");
-	MessageBox(NULL, pszDirName, NULL, MB_OK);
+//	LPCSTR pszDirName = GETDIRNAME(0, "test", "\\\\topquark\\smbshare");
+//	MessageBox(NULL, pszDirName, NULL, MB_OK);
+
+	BRE_LOAD("C:\\Program Files\\hidemaru\\bregexp.dll");
+
+	BRE_SUBST("s/ひ/に/gk", "にゃあ");
+	BRE_TRANS("tr/ひ/に/gk", "にゃあ");
+
+	BRE_FREE();
 
 	return 0;
 }
