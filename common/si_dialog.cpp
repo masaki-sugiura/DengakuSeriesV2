@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.2 2001-11-26 13:29:26 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
