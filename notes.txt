@@ -1,4 +1,4 @@
-$Id: notes.txt,v 1.1 2001-10-07 15:21:49 sugiura Exp $
+$Id: notes.txt,v 1.2 2002-09-28 09:51:12 sugiura Exp $
 
 田楽サーバ＆ＤＬＬ Ver.2 開発日記(笑)
 
