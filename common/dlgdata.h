@@ -1,4 +1,4 @@
-//	$Id: dlgdata.h,v 1.9 2003-12-18 17:00:49 sugiura Exp $
+//	$Id: dlgdata.h,v 1.10 2003-12-27 14:27:55 sugiura Exp $
 /*
  *	dlgdata.h
  *	ダイアログを扱うクラス
@@ -275,5 +275,7 @@ private:
 };
 
 extern const StringBuffer strRootPageName;
+extern const StringBuffer okStr;
+extern const StringBuffer ngStr;
 
 #endif

@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.18 2003-12-18 17:00:49 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.19 2003-12-27 14:27:55 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -13,6 +13,8 @@
 #include "str_tbl.h"
 
 const StringBuffer strRootPageName("root");
+const StringBuffer okStr("OK");
+const StringBuffer ngStr("NG");
 
 //	システムフォント(DEFAULT_GUI_FONT)の属性を得る
 BOOL
@@ -1088,10 +1090,15 @@ DlgFrame::initFrame(HWND hDlg)
 									 m_width-2,m_height - 1,
 									 false);
 
-#if 0 // このタイミングで SetFocus() を呼び出すと秀丸がハングする!!
+#if 1
 	if (hwndRoot) {
+		// 初期化完了を親スレッドに通知
+		// (このタイミングで行わないと SetFocus() でハングする)
+		m_pSessionInstance->setNotify(okStr);
 		// デフォルトフォーカスの設定
 		this->setFocusedCtrl(m_sbFocusedCtrl);
+	} else {
+		m_pSessionInstance->setNotify(ngStr);
 	}
 #endif
 

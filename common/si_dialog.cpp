@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.10 2003-11-23 15:37:21 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.11 2003-12-27 14:27:55 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -13,9 +13,6 @@
 #include "dirlist.h"
 #include "misc.h"
 #include "str_tbl.h"
-
-static const StringBuffer okStr = "OK";
-static const StringBuffer ngStr = "NG";
 
 static BOOL
 PreDispatchKeyPress(HWND hDlg, MSG* lpMsg)
@@ -57,15 +54,17 @@ ShowDlgProc(LPDWORD pThreadArgs)
 	DlgFrame& df = psi->getDlgFrame();
 
 	DWORD ret = 1;
-	StringBuffer* ntf = new StringBuffer(okStr);
+//	StringBuffer* ntf = new StringBuffer(okStr);
 	HWND hwndDlg;
 	if ((hwndDlg = df.createFrame(psdpa->m_hwndOwner,psdpa->m_bOnTop))
 		== NULL) {
-		*ntf = ngStr;
-		psi->SessionInstance::setNotify(*ntf);
+//		*ntf = ngStr;
+//		psi->SessionInstance::setNotify(*ntf);
 	} else {
-		psi->SessionInstance::setNotify(*ntf);
+//		psi->SessionInstance::setNotify(*ntf);
 		::SetForegroundWindow(hwndDlg);
+		df.showFrame();
+
 		MSG	msg;
 		while (::GetMessage(&msg,NULL,0,0)) {
 			if (!PreDispatchKeyPress(hwndDlg, &msg) &&
@@ -74,9 +73,10 @@ ShowDlgProc(LPDWORD pThreadArgs)
 				::DispatchMessage(&msg);
 			}
 		}
+
 		ret = (DWORD)msg.wParam;
 	}
-	delete ntf;
+//	delete ntf;
 	delete psdpa;
 
 	::ExitThread(ret);
@@ -153,7 +153,7 @@ SessionInstance::si_showdialog(HWND hwndOwner, BOOL bOnTop)
 		return FALSE;
 	}
 
-	return m_DlgFrame.showFrame();
+	return TRUE;
 }
 
 int
