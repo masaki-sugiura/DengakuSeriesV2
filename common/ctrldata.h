@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.19 2005-01-16 11:07:48 sugiura Exp $
+//	$Id: ctrldata.h,v 1.20 2005-06-19 17:53:49 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -287,6 +287,9 @@ public:
 		void setCtrlTemplate(CtrlTemplateArgs&);
 		void changeFont();
 		BOOL init(HWND);
+
+		BOOL setText();
+		BOOL getText();
 
 		BOOL dumpData(DlgDataFile&, StringBuffer& key);
 		BOOL loadData(DlgDataFile&, StringBuffer& key);

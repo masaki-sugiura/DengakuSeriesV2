@@ -1,4 +1,4 @@
-//	$Id: strbuf.cpp,v 1.11 2005-06-19 15:33:53 sugiura Exp $
+//	$Id: strbuf.cpp,v 1.12 2005-06-19 17:53:49 sugiura Exp $
 /*
  *	strbuf.cpp
  *	•¶Žš—ñƒNƒ‰ƒX
@@ -268,11 +268,10 @@ StringBuffer::reset(LPCWSTR wstr, int head, int len)
 int
 StringBuffer::toUnicode(LPWSTR wbuf) const
 {
-	if (wbuf == NULL) return -1;
 	return ::MultiByteToWideChar(CP_THREAD_ACP,
 								MB_PRECOMPOSED,
-								m_sbuf->m_buf,-1,
-								wbuf, this->length() + 1);
+								m_sbuf->m_buf, -1,
+								wbuf, wbuf != NULL ? this->length() + 1 : 0);
 }
 
 int

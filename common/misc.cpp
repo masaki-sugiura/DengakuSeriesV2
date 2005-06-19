@@ -1,10 +1,11 @@
-//	$Id: misc.cpp,v 1.10 2005-06-19 15:33:53 sugiura Exp $
+//	$Id: misc.cpp,v 1.11 2005-06-19 17:53:49 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数
  */
 
 #include "strutils.h"
+#include "strbuf.h"
 #include "misc.h"
 
 BOOL
@@ -41,6 +42,67 @@ GetWindowCenter(HWND hWnd, HWND hwndOwner, RECT& rectRet)
 	rectRet.top  = (rectOwner.top + rectOwner.bottom + rect.top - rect.bottom) >> 1;
 	rectRet.right  = rectRet.left + rect.right - rect.left;
 	rectRet.bottom = rectRet.top + rect.bottom - rect.top;
+}
+
+BOOL
+MyGetWindowText(HWND hWnd, StringBuffer& strText)
+{
+	if (!hWnd) {
+		return FALSE;
+	}
+
+	int nSize = ::GetWindowTextLengthW(hWnd);
+	if (nSize == 0) {
+		DWORD dwErr = ::GetLastError();
+		if (dwErr != NOERROR) {
+			return FALSE;
+		}
+		strText.reset();
+		return TRUE;
+	}
+
+	WCHAR wBuf[128];
+	LPWSTR pwszText = wBuf;
+
+	if (nSize > 128) {
+		pwszText = new WCHAR[nSize];
+	}
+
+	::GetWindowTextW(hWnd, pwszText, nSize);
+
+	strText.reset(pwszText);
+
+	if (pwszText != wBuf) {
+		delete [] pwszText;
+	}
+
+	return TRUE;
+}
+
+BOOL
+MySetWindowText(HWND hWnd, const StringBuffer& strText)
+{
+	if (!hWnd) {
+		return FALSE;
+	}
+
+	WCHAR wBuf[128];
+	LPWSTR pwszText = wBuf;
+
+	int nSize = strText.toUnicode(NULL);
+	if (nSize > 128) {
+		pwszText = new WCHAR[nSize];
+	}
+
+	strText.toUnicode(pwszText);
+
+	::SetWindowTextW(hWnd, pwszText);
+
+	if (pwszText != wBuf) {
+		delete [] pwszText;
+	}
+
+	return TRUE;
 }
 
 BOOL
