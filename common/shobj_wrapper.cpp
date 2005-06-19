@@ -1,4 +1,4 @@
-//	$Id: shobj_wrapper.cpp,v 1.2 2002-08-05 16:06:17 sugiura Exp $
+//	$Id: shobj_wrapper.cpp,v 1.3 2005-06-19 15:33:53 sugiura Exp $
 /*
  *	shobj_wrapper.cpp
  *	Shell オブジェクトをラップするクラスの実装
@@ -86,7 +86,7 @@ LPSF_Wrapper::getDisplayNameOf(const LPIDL_Wrapper& lpidlFolder, DWORD flag) con
 		{
 			TCHAR buf[MAX_PATH];
 			buf[0] = '\0';
-			::WideCharToMultiByte(CP_ACP,
+			::WideCharToMultiByte(CP_THREAD_ACP,
 								WC_COMPOSITECHECK,
 								strRet.pOleStr,-1,
 								buf,MAX_PATH,

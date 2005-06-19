@@ -1,4 +1,4 @@
-//	$Id: misc.h,v 1.6 2002-08-06 13:33:04 sugiura Exp $
+//	$Id: misc.h,v 1.7 2005-06-19 15:33:53 sugiura Exp $
 /*
  *	misc.h
  *	雑多なユーティリティ関数
@@ -17,5 +17,12 @@ void GetWindowCenter(HWND hWnd, HWND hWndOwner, RECT& rect);
 BOOL TimeStampToFileTime(LPCSTR pszTimeStamp, FILETIME* pft);
 
 void InternalError(LPCSTR file, int line);
+
+BOOL MySetWindowText(HWND hWnd, LPCSTR pszText);
+
+#ifdef SetWindowText
+#undef SetWindowText
+#endif
+#define SetWindowText(hWnd,lpString)	MySetWindowText(hWnd, lpString)
 
 #endif

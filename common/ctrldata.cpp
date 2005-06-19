@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.42 2005-02-22 15:33:19 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.43 2005-06-19 15:33:53 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -139,7 +139,18 @@ CtrlListItem::CtrlProperty::setCtrlTemplate(CtrlTemplateArgs &cta)
 	} else {
 		lphdr += StringBuffer(m_classname).toUnicode((LPWSTR)lphdr);
 	}
+
+#ifdef _DEBUG
+	int size = m_text.toUnicode((LPWSTR)lphdr);
+
+	::OutputDebugString("Str:");
+	::OutputDebugStringW((LPWSTR)lphdr);
+	::OutputDebugString("\n");
+	lphdr += size;
+#else
 	lphdr += m_text.toUnicode((LPWSTR)lphdr);
+#endif
+	
 	/*	EXDATA of DLGITEMTEMPLATE should be aligned to DWORD boundary */
 	if (((DWORD)lphdr) & (sizeof(DWORD) - 1)) lphdr++;
 	else lphdr += 2;
@@ -154,6 +165,7 @@ CtrlListItem::CtrlProperty::changeFont()
 		hFont = reinterpret_cast<HFONT>(::GetStockObject(SYSTEM_FIXED_FONT));
 	LOGFONT lf;
 	::GetObject(hFont,sizeof(LOGFONT), &lf);
+	lf.lfCharSet = ANSI_CHARSET;
 	lf.lfWeight		= 400 + (m_fontprop.m_fface & 1) * 300;
 	lf.lfItalic		= (m_fontprop.m_fface & 2) >> 1;
 	lf.lfUnderline	= (m_fontprop.m_fface & 4) >> 2;
@@ -964,8 +976,9 @@ SimpleCtrl::sendData()
 {
 	//	on default, set text of first control
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
-	::SetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text);
 	if (m_pcp->m_fontprop.m_bchanged) m_pcp->changeFont();
+	::SetThreadLocale(MAKELCID(0x040c, SORT_DEFAULT));
+	::SetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text);
 	return TRUE;
 }
 

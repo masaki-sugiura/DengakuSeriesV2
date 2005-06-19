@@ -1,4 +1,4 @@
-//	$Id: misc.cpp,v 1.9 2004-04-26 15:32:06 sugiura Exp $
+//	$Id: misc.cpp,v 1.10 2005-06-19 15:33:53 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数
@@ -98,3 +98,24 @@ InternalError(LPCSTR file, int line)
 	::MessageBox(NULL, msg, "DengakuLib Message", MB_OK);
 }
 
+BOOL
+MySetWindowText(HWND hWnd, LPCSTR pszText)
+{
+	int size = ::MultiByteToWideChar(CP_THREAD_ACP,
+									 MB_PRECOMPOSED,
+									 pszText,-1,
+									 NULL, 0);
+
+	LPWSTR wbuf = new WCHAR[size + 1];
+
+	::MultiByteToWideChar(CP_THREAD_ACP,
+						  MB_PRECOMPOSED,
+						  pszText,-1,
+						  wbuf, size + 1);
+
+	BOOL bRet = ::SetWindowTextW(hWnd, wbuf);
+
+	delete [] wbuf;
+
+	return bRet;
+}

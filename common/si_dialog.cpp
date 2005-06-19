@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.18 2005-01-24 15:27:51 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.19 2005-06-19 15:33:53 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -48,6 +48,8 @@ ShowDlgProc(LPDWORD pThreadArgs)
 	}
 
 	::InitCommonControls();
+
+	::SetThreadLocale(MAKELCID(0x040c, SORT_DEFAULT));
 
 	LPSHOWDLGPROCARGS psdpa = (LPSHOWDLGPROCARGS)pThreadArgs;
 	SessionInstance* psi = psdpa->m_psi;
