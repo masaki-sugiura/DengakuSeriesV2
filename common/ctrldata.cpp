@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.42.2.1 2005-07-04 14:50:22 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.42.2.2 2005-07-04 15:48:14 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -110,7 +110,11 @@ CtrlListItem::CtrlProperty::~CtrlProperty()
 {
 	if (m_fontprop.m_hfont) ::DeleteObject(m_fontprop.m_hfont);
 	if (m_hbrBackground) ::DeleteObject(m_hbrBackground);
-	if (m_hDC) ::DeleteDC(m_hDC);
+	if (m_hDC) {
+		HGDIOBJ hBitmap = ::SelectObject(m_hDC, (HBITMAP)NULL);
+		::DeleteObject(hBitmap);
+		::DeleteDC(m_hDC);
+	}
 }
 
 void
@@ -171,7 +175,11 @@ CtrlListItem::CtrlProperty::changeFont()
 		if (dlgFrame.isThemeActive() && m_classname == (LPCSTR)0x82) {
 			// XP Theme が有効の場合、タブコントロール内にないスタティックテキストの色が
 			// 変わらないことへの対策(何だかなぁ。。。)
-			if (m_hDC) ::DeleteDC(m_hDC);
+			if (m_hDC) {
+				HGDIOBJ hBitmap = ::SelectObject(m_hDC, (HBITMAP)NULL);
+				::DeleteObject(hBitmap);
+				::DeleteDC(m_hDC);
+			}
 			HDC hDC = ::GetDC(m_hwndCtrl);
 			m_hDC = ::CreateCompatibleDC(hDC);
 			RECT rcCtrl;
@@ -189,8 +197,9 @@ CtrlListItem::CtrlProperty::changeFont()
 			::SetBkMode(m_hDC, TRANSPARENT);
 			::SelectObject(m_hDC, m_fontprop.m_hfont);
 			::TextOut(m_hDC, 0, 0, m_text, m_text.length());
+		} else {
+			::SendMessage(m_hwndCtrl, WM_SETFONT, (WPARAM)m_fontprop.m_hfont, TRUE);
 		}
-		::SendMessage(m_hwndCtrl, WM_SETFONT, (WPARAM)m_fontprop.m_hfont, TRUE);
 	}
 	m_fontprop.m_bchanged = FALSE;
 }
@@ -1123,6 +1132,26 @@ TextCtrl::createCtrlTemplate(CtrlTemplateArgs& cta)
 	cta.m_cx = UWIDTH * m_cx - OWIDTH;
 	cta.m_cy = UHEIGHT * m_cy - UHEIGHT;
 	m_pcp->setCtrlTemplate(cta);
+	return TRUE;
+}
+
+BOOL
+TextCtrl::onSetCtrlFont(CmdLineParser& argv)
+{
+	if (argv.itemNum() < 1) return FALSE;
+	argv.initSequentialGet();
+	const StringBuffer& fface = argv.getNextArgvStr();
+	const StringBuffer& color = argv.getNextArgvStr();
+	const StringBuffer& fname = argv.getNextArgvStr();
+	this->setFont(fface, color, fname);
+	if (m_pDlgPage->getDlgFrame().isThemeActive() && m_pcp->m_hwndCtrl) {
+		// XP Theme がアクティブの場合、無理矢理changeFont()を呼び出す
+		m_pcp->changeFont();
+		::InvalidateRect(m_pcp->m_hwndCtrl, NULL, TRUE);
+		::UpdateWindow(m_pcp->m_hwndCtrl);
+	} else {
+		this->sendData();
+	}
 	return TRUE;
 }
 
