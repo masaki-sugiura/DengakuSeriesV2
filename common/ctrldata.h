@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.20 2005-06-19 17:53:49 sugiura Exp $
+//	$Id: ctrldata.h,v 1.21 2005-07-04 15:53:29 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -468,6 +468,8 @@ public:
 			const StringBuffer& text = nullStr);
 
 	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
+
+	BOOL onSetCtrlFont(CmdLineParser&);
 
 protected:
 	HBRUSH onCtlColor(HWND hwndCtrl, UINT, HDC); // WM_CTLCOLORSTATIC

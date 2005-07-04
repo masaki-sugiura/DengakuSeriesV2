@@ -1,4 +1,4 @@
-// $Id: bitarray.h,v 1.5 2002-11-03 15:36:50 sugiura Exp $
+// $Id: bitarray.h,v 1.6 2005-07-04 15:58:21 sugiura Exp $
 /*
  *	bitarray.h
  *	ビット配列クラス
@@ -20,7 +20,7 @@
 class BitArray {
 public:
 	BitArray(int init_size = BITARRAY_DEFAULT_SIZE)
-		: m_size(clip(init_size)),
+		: m_size(Array<DWORD>::clip(init_size)),
 		  m_bits(BITARRAY_SIZE(m_size))
 	{
 		m_bits.zero();

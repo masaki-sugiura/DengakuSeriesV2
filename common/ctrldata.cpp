@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.47 2005-07-04 15:53:29 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.48 2005-07-04 15:58:21 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -736,7 +736,7 @@ CtrlListItem::dispatchRawMsg(
 	case WM_PAINT:
 		{
 			LRESULT ret = ::CallWindowProc(pCProp->m_pfnDefCallback,
-										   hCtrl, uMsg, wParam, lParam);
+											hCtrl, uMsg, wParam, lParam);
 			PAINTSTRUCT ps;
 			::BeginPaint(hCtrl, &ps);
 			pCProp->m_pCtrl->getParentPage()
@@ -1898,8 +1898,8 @@ RadioCtrl::initCtrl(HWND hDlg)
 		pCCSci->m_pCtrl = this;
 		pCCSci->m_pfnDefCallback
 			= (WNDPROC)::SetWindowLong(hCtrl,
-									   GWL_WNDPROC,
-									   (LONG)ChildCtrlProc);
+										GWL_WNDPROC,
+										(LONG)ChildCtrlProc);
 		::SetWindowLong(hCtrl, GWL_USERDATA, (LONG)pCCSci);
 	}
 	return TRUE;
@@ -1950,7 +1950,7 @@ RadioCtrl::sendData()
 		if (bFontChanged)
 			::SendMessage(hwndBtn, WM_SETFONT, (WPARAM)m_pcp->m_fontprop.m_hfont, NULL);
 //		::SetWindowText(hwndBtn,id->getText());
-		MySetWindowText(hwndBtn, id->getText());
+		::MySetWindowText(hwndBtn, id->getText());
 		::SendMessage(hwndBtn,BM_SETCHECK,
 					(i == m_state) ? BST_CHECKED : BST_UNCHECKED, 0L);
 	}
@@ -2417,8 +2417,8 @@ ComboCtrl::initCtrl(HWND hDlg)
 		::SetWindowLong(m_pcp->m_hwndCtrl, GWL_USERDATA, (LONG)pCCSci);
 		pCCSci->m_pfnDefCallback
 			= (WNDPROC)::SetWindowLong(m_pcp->m_hwndCtrl,
-									   GWL_WNDPROC,
-									   (LONG)ComboChildCtrlProc);
+										GWL_WNDPROC,
+										(LONG)ComboChildCtrlProc);
 #endif
 	}
 //	::SetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text);

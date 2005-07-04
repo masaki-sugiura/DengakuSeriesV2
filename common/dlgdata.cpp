@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.30 2005-06-19 17:53:49 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.31 2005-07-04 15:58:21 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -168,7 +168,7 @@ DlgPageProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if (!pdp->initPage(hDlg)) {
 			::PostMessage(pdp->getDlgFrame().getUserDlg(),WM_CLOSE,0,0);
 		}
-		::SetWindowLong(hDlg,DWL_USER,(LONG)lParam);
+		::SetWindowLong(hDlg, DWL_USER, (LONG)lParam);
 		return FALSE;
 	}
 
@@ -735,7 +735,7 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if (!pdf->initFrame(hDlg)) {
 			::DestroyWindow(hDlg);
 		}
-		::SetWindowLong(hDlg,DWL_USER,(LONG)lParam);
+		::SetWindowLong(hDlg, DWL_USER, (LONG)lParam);
 		return FALSE;
 	}
 
