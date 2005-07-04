@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.29 2005-01-18 13:52:08 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.31 2005-07-04 15:58:21 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -168,7 +168,7 @@ DlgPageProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if (!pdp->initPage(hDlg)) {
 			::PostMessage(pdp->getDlgFrame().getUserDlg(),WM_CLOSE,0,0);
 		}
-		::SetWindowLong(hDlg,DWL_USER,(LONG)lParam);
+		::SetWindowLong(hDlg, DWL_USER, (LONG)lParam);
 		return FALSE;
 	}
 
@@ -324,7 +324,7 @@ DlgPage::createPage(
 	//	ダイアログの作成
 	HWND hwndFrame = m_pDlgFrame->getUserDlg();
 	m_bInTabCtrl = bInTabCtrl;
-	m_hwndPage = ::CreateDialogIndirectParam(
+	m_hwndPage = ::CreateDialogIndirectParamW(
 					m_pDlgFrame->getSessionInstance()->getInstanceHandle(),
 					(LPDLGTEMPLATE)(BYTE*)pDlgTemplate,
 					hwndFrame,
@@ -735,7 +735,7 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if (!pdf->initFrame(hDlg)) {
 			::DestroyWindow(hDlg);
 		}
-		::SetWindowLong(hDlg,DWL_USER,(LONG)lParam);
+		::SetWindowLong(hDlg, DWL_USER, (LONG)lParam);
 		return FALSE;
 	}
 
@@ -964,7 +964,7 @@ DlgFrame::createFrame(HWND hwndOwner, BOOL bOnTop)
 	if (bOnTop) m_flags |= 0x10;	//	alwaysontop
 
 	//	親ダイアログのウィンドウの生成
-	m_hwndFrame = ::CreateDialogIndirectParam(
+	m_hwndFrame = ::CreateDialogIndirectParamW(
 								m_pSessionInstance->getInstanceHandle(),
 								(LPDLGTEMPLATE)(BYTE*)pDlgTemplate,
 								hwndOwner,

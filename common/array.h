@@ -1,4 +1,4 @@
-//	$Id: array.h,v 1.4 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: array.h,v 1.5 2005-07-04 15:58:21 sugiura Exp $
 /*
  *	array.h
  *	(primitive 型限定)配列クラス
@@ -9,6 +9,7 @@
 
 #include <windows.h>
 
+#if 0
 // 最小の割り当ての単位（２の累乗）
 #define MIN_ALLOC_UNIT  8
 
@@ -18,6 +19,7 @@ clip(int size)
 	if (size < 0) size = 0;
 	return (size + MIN_ALLOC_UNIT - 1) & ~(MIN_ALLOC_UNIT - 1);
 }
+#endif
 
 template<class T>
 class Array {
@@ -66,17 +68,40 @@ public:
 	}
 	void zero(int head = 0, int size = -1)
 	{
-		if (size < 0) size = m_size - head;
+		validateRegionParams(head, size);
 		::ZeroMemory(m_ptr + head, sizeof(T) * size);
 	}
 	void copy(int head, const T* src, int size)
 	{
+		validateRegionParams(head, size);
 		::CopyMemory(m_ptr + head, src, sizeof(T) * size);
+	}
+
+// 最小の割り当ての単位（２の累乗）
+#define MIN_ALLOC_UNIT  8
+//	static const int MIN_ALLOC_UNIT = 8;
+
+	static int clip(int size)
+	{
+		if (size < 0) size = 0;
+		return (size + MIN_ALLOC_UNIT - 1) & ~(MIN_ALLOC_UNIT - 1);
 	}
 
 private:
 	int m_size;
 	T*  m_ptr;
+
+	void validateRegionParams(int& head, int& size)
+	{
+		if (head >= m_size) {
+			size = 0;
+		} else if (head < 0) {
+			head = 0;
+		}
+		if (size < 0 || head + size > m_size) {
+			size = m_size - head;
+		}
+	}
 };
 
 #endif
