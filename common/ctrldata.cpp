@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.44 2005-06-19 17:53:49 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.45 2005-07-04 14:45:56 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -139,18 +139,7 @@ CtrlListItem::CtrlProperty::setCtrlTemplate(CtrlTemplateArgs &cta)
 	} else {
 		lphdr += StringBuffer(m_classname).toUnicode((LPWSTR)lphdr);
 	}
-
-#ifdef _DEBUG
-	int size = m_text.toUnicode((LPWSTR)lphdr);
-
-	::OutputDebugString("Str:");
-	::OutputDebugStringW((LPWSTR)lphdr);
-	::OutputDebugString("\n");
-	lphdr += size;
-#else
 	lphdr += m_text.toUnicode((LPWSTR)lphdr);
-#endif
-	
 	/*	EXDATA of DLGITEMTEMPLATE should be aligned to DWORD boundary */
 	if (((DWORD)lphdr) & (sizeof(DWORD) - 1)) lphdr++;
 	else lphdr += 2;
@@ -165,7 +154,6 @@ CtrlListItem::CtrlProperty::changeFont()
 		hFont = reinterpret_cast<HFONT>(::GetStockObject(SYSTEM_FIXED_FONT));
 	LOGFONT lf;
 	::GetObject(hFont,sizeof(LOGFONT), &lf);
-	lf.lfCharSet = ANSI_CHARSET;
 	lf.lfWeight		= 400 + (m_fontprop.m_fface & 1) * 300;
 	lf.lfItalic		= (m_fontprop.m_fface & 2) >> 1;
 	lf.lfUnderline	= (m_fontprop.m_fface & 4) >> 2;
@@ -226,18 +214,6 @@ CtrlListItem::CtrlProperty::init(HWND hDlg)
 												(LONG)CtrlListItemProc);
 	::SetWindowLong(m_hwndCtrl, GWL_USERDATA, (LONG)this);
 	return TRUE;
-}
-
-BOOL
-CtrlListItem::CtrlProperty::setText()
-{
-	return MySetWindowText(m_hwndCtrl, m_text);
-}
-
-BOOL
-CtrlListItem::CtrlProperty::getText()
-{
-	return MyGetWindowText(m_hwndCtrl, m_text);
 }
 
 BOOL
@@ -988,8 +964,7 @@ SimpleCtrl::sendData()
 {
 	//	on default, set text of first control
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
-//	::SetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text);
-	m_pcp->setText();
+	::SetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text);
 	if (m_pcp->m_fontprop.m_bchanged) m_pcp->changeFont();
 	return TRUE;
 }
@@ -999,11 +974,10 @@ SimpleCtrl::receiveData()
 {
 	//	on default, get text of first control
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
-//	int	len = ::SendMessage(m_pcp->m_hwndCtrl, WM_GETTEXTLENGTH, 0, 0);
-//	m_pcp->m_text.resize(len);
-//	::GetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text.getBufPtr(), len + 1);
-//	return (m_pcp->m_text.length() == len);
-	return m_pcp->getText();
+	int	len = ::SendMessage(m_pcp->m_hwndCtrl, WM_GETTEXTLENGTH, 0, 0);
+	m_pcp->m_text.resize(len);
+	::GetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text.getBufPtr(), len + 1);
+	return (m_pcp->m_text.length() == len);
 }
 
 BOOL
@@ -1156,6 +1130,11 @@ HBRUSH
 TextCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDc)
 {
 	if (m_pDlgPage->getDlgFrame().isThemeActive()) {
+#ifdef _DEBUG
+		char buf[80];
+		wsprintf(buf, "color=%08x\n", m_pcp->m_fontprop.m_color);
+		::OutputDebugString(buf);
+#endif
 		::SetTextColor(hDc, m_pcp->m_fontprop.m_color);
 		return NULL;
 	} else {
@@ -1226,10 +1205,8 @@ BOOL
 EditCtrl::sendData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
-//	::SetWindowText(m_pcp->m_hwndCtrl,
-//					StringBuffer(m_pcp->m_text).replaceStr("\n", "\r\n",-1));
-	MySetWindowText(m_pcp->m_hwndCtrl,
-					StringBuffer(m_pcp->m_text).replaceStr("\n", "\r\n", -1));
+	::SetWindowText(m_pcp->m_hwndCtrl,
+					StringBuffer(m_pcp->m_text).replaceStr("\n", "\r\n",-1));
 	if (m_pcp->m_fontprop.m_bchanged) m_pcp->changeFont();
 	return TRUE;
 }
@@ -1238,15 +1215,11 @@ BOOL
 EditCtrl::receiveData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
-//	int	len = ::SendMessage(m_pcp->m_hwndCtrl, WM_GETTEXTLENGTH, 0, 0);
-//	m_pcp->m_text.resize(len);
-//	::GetWindowText(m_pcp->m_hwndCtrl,m_pcp->m_text.getBufPtr(), len + 1);
-//	m_pcp->m_text.replaceStr("\r\n","\n",-1);
-	BOOL bRet = m_pcp->getText();
-	if (bRet) {
-		m_pcp->m_text.replaceStr("\r\n", "\n", -1);
-	}
-	return bRet;
+	int	len = ::SendMessage(m_pcp->m_hwndCtrl, WM_GETTEXTLENGTH, 0, 0);
+	m_pcp->m_text.resize(len);
+	::GetWindowText(m_pcp->m_hwndCtrl,m_pcp->m_text.getBufPtr(), len + 1);
+	m_pcp->m_text.replaceStr("\r\n","\n",-1);
+	return TRUE;
 }
 
 BOOL
@@ -1915,8 +1888,7 @@ RadioCtrl::sendData()
 		hwndBtn = ::GetDlgItem(hDlg, m_pcp->m_id + i);
 		if (bFontChanged)
 			::SendMessage(hwndBtn, WM_SETFONT, (WPARAM)m_pcp->m_fontprop.m_hfont, NULL);
-//		::SetWindowText(hwndBtn,id->getText());
-		MySetWindowText(hwndBtn, id->getText());
+		::SetWindowText(hwndBtn,id->getText());
 		::SendMessage(hwndBtn,BM_SETCHECK,
 					(i == m_state) ? BST_CHECKED : BST_UNCHECKED, 0L);
 	}
@@ -1929,19 +1901,16 @@ RadioCtrl::receiveData()
 	if (!HasListCtrl::receiveData()) return FALSE;
 	m_state = 0;
 	HWND hDlg = m_pDlgPage->gethwndPage(), hwndBtn;
-	int num = m_item->initSequentialGet();
+	int num = m_item->initSequentialGet(), len;
 	ItemData* id;
 	for (int i = 1; i <= num; i++) {
 		id = m_item->getNextItem();
 		StringBuffer& buf = id->getText();
 		hwndBtn = ::GetDlgItem(hDlg, m_pcp->m_id + i);
-//		int len = ::SendMessage(hwndBtn, WM_GETTEXTLENGTH, 0, 0);
-//		buf.resize(len);
-//		::GetWindowText(hwndBtn, buf.getBufPtr(), len + 1);
-//		if (buf.length() != len) return FALSE;
-		if (!::MyGetWindowText(hwndBtn, buf)) {
-			return FALSE;
-		}
+		len = ::SendMessage(hwndBtn, WM_GETTEXTLENGTH, 0, 0);
+		buf.resize(len);
+		::GetWindowText(hwndBtn, buf.getBufPtr(), len + 1);
+		if (buf.length() != len) return FALSE;
 		if (::SendMessage(hwndBtn, BM_GETCHECK, 0, 0L)) m_state = i;
 	}
 	return TRUE;
@@ -1963,10 +1932,8 @@ RadioCtrl::onSetItem(CmdLineParser& text, const StringBuffer& pos)
 	if (m_pcp->m_hwndCtrl != NULL) {
 		ItemData* id = m_item->getItemByIndex(ind);
 		if (id == NULL) return FALSE;
-//		::SetWindowText(::GetDlgItem(m_pDlgPage->gethwndPage(),
-//									m_pcp->m_id + ind + 1),
-		MySetWindowText(::GetDlgItem(m_pDlgPage->gethwndPage(),
-									 m_pcp->m_id + ind + 1),
+		::SetWindowText(::GetDlgItem(m_pDlgPage->gethwndPage(),
+									m_pcp->m_id + ind + 1),
 						id->getText());
 	}
 	return TRUE;
@@ -2387,8 +2354,7 @@ ComboCtrl::initCtrl(HWND hDlg)
 									   (LONG)ComboChildCtrlProc);
 #endif
 	}
-//	::SetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text);
-	m_pcp->setText();
+	::SetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text);
 	if (m_height > 0) {
 		::SendMessage(m_pcp->m_hwndCtrl, CB_SETMINVISIBLE, m_height, 0);
 	}
@@ -4634,8 +4600,7 @@ SpinCtrl::sendData()
 	if (!MultipleCtrl::sendData()) return FALSE;
 	m_pcp[0].m_text.reset();
 	m_pcp[0].m_text.append(m_val);
-//	::SetWindowText(m_pcp[0].m_hwndCtrl, m_pcp[0].m_text);
-	m_pcp[0].setText();
+	::SetWindowText(m_pcp[0].m_hwndCtrl, m_pcp[0].m_text);
 	::SendMessage(m_pcp[1].m_hwndCtrl, UDM_SETPOS,
 					0, (LPARAM)(0x0000FFFF&(short)m_val));
 	return TRUE;
