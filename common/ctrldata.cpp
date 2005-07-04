@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.42 2005-02-22 15:33:19 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.42.2.1 2005-07-04 14:50:22 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -1130,6 +1130,11 @@ HBRUSH
 TextCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDc)
 {
 	if (m_pDlgPage->getDlgFrame().isThemeActive()) {
+#ifdef _DEBUG
+		char buf[80];
+		wsprintf(buf, "color=%08x\n", m_pcp->m_fontprop.m_color);
+		::OutputDebugString(buf);
+#endif
 		::SetTextColor(hDc, m_pcp->m_fontprop.m_color);
 		return NULL;
 	} else {
