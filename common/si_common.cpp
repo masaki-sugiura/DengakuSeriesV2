@@ -1,4 +1,4 @@
-//	$Id: si_common.cpp,v 1.3 2005-01-16 11:07:48 sugiura Exp $
+//	$Id: si_common.cpp,v 1.3.2.1 2005-08-01 16:39:03 sugiura Exp $
 /*
  *	si_common.cpp
  *	共通サービスの関数
@@ -143,5 +143,52 @@ SessionInstance::si_sleep(int nTime)
 {
 	::Sleep((DWORD)nTime);
 	return 1;
+}
+
+#if 0
+static void CALLBACK
+TimeoutProc()
+{
+	::();
+}
+
+static DWORD WINAPI
+MessageProc(LPVOID pvParam)
+{
+	UINT nTimerID = (UINT)-1;
+	if (nTimeout != -1) {
+		nTimerID = ::SetTimer(NULL, 0, (UINT)nTimeout, TimeoutProc);
+	}
+
+	int nResult = ::MessageBox(hwndParent, msg, caption, (UINT)nFlags);
+
+	if (nTimeout != -1) {
+		::KillTimer(NULL, nTimerID);
+
+		MSG msg;
+		if (::PeekMessage(&msg, NULL, WM_QUIT, WM_QUIT, PM_REMOVE)) {
+			nResult = 0;
+		}
+	}
+
+	return nResult;
+}
+#endif
+
+int
+SessionInstance::si_msgbox(int nHwnd, const StringBuffer& msg, const StringBuffer& caption,
+						   int nFlags, int nTimeout)
+{
+	HWND hwndParent = (HWND)nHwnd;
+	if (nHwnd == -1) {
+		HWND hwndDlg = m_DlgFrame.getUserDlg();
+		if (hwndDlg) {
+			hwndParent = hwndDlg;
+		}
+	}
+
+	int nResult = ::MessageBox(hwndParent, msg, caption, (UINT)nFlags);
+
+	return nResult;
 }
 

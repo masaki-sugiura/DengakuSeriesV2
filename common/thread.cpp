@@ -1,4 +1,4 @@
-//	$Id: thread.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: thread.cpp,v 1.1.1.1.2.1 2005-08-01 16:39:03 sugiura Exp $
 /*
  *	thread.cpp
  *	Thread ƒNƒ‰ƒX‚ÌÀ‘•
