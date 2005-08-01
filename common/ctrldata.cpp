@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.42.2.3 2005-07-06 14:20:48 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.42.2.4 2005-08-01 16:29:56 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -2251,17 +2251,25 @@ ComboChildCtrlProc(HWND hCtrl, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			int cursel = ::SendMessage(hwndCombo, CB_GETCURSEL, 0, 0);
 			if (cursel == CB_ERR) cursel = 0;
 			::SendMessage(hwndCombo, CB_SETCURSEL, cursel, 0);
-		} else {
-			return ::CallWindowProc(pCCSci->m_pfnDefCallback, hCtrl, uMsg, wParam, lParam);
+			return 0;
+		}
+		break;
+	case WM_CHAR:
+		if (wParam == '\r' &&
+			::SendMessage(hwndCombo, CB_GETDROPPEDSTATE, 0, 0)) {
+			// ドロップダウン表示中にエンターキーを押されたとき、
+			// エディットボックスの内容がクリアされないように自前で処理を行う
+			::SendMessage(hwndCombo, CB_SHOWDROPDOWN, FALSE, 0);
+			return 0;
 		}
 		break;
 	case WM_DESTROY:
 		delete pCCSci;
 		// fall down
 	default:
-		return ::CallWindowProc(pCCSci->m_pfnDefCallback, hCtrl, uMsg, wParam, lParam);
+		break;
 	}
-	return 0;
+	return ::CallWindowProc(pCCSci->m_pfnDefCallback, hCtrl, uMsg, wParam, lParam);
 }
 
 //	combo
