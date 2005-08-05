@@ -1,4 +1,4 @@
-//	$Id: cs_func.cpp,v 1.5 2005-01-16 11:07:48 sugiura Exp $
+//	$Id: cs_func.cpp,v 1.5.2.1 2005-08-05 18:39:54 sugiura Exp $
 /*
  *	cs_func.cpp
  *	共通サービスの関数
@@ -79,6 +79,19 @@ SLEEP(HIDEDLL_NUMTYPE nTime)
 		return g_pSessionInstance->si_sleep(nTime);
 	} catch (...) {
 		return 0;
+	}
+}
+
+//	メッセージボックスを表示する
+DENGAKUDLL_API LPCSTR
+MSGBOX(LPCSTR msg, LPCSTR opt, LPCSTR caption)
+{
+	try {
+		RealCmdLineParser argv(opt);
+		g_strBuffer = g_pSessionInstance->si_msgbox(msg, argv, caption);
+		return g_strBuffer;
+	} catch (...) {
+		return "";
 	}
 }
 
