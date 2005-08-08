@@ -1,4 +1,4 @@
-//	$Id: si_common.cpp,v 1.3.2.2 2005-08-05 18:39:54 sugiura Exp $
+//	$Id: si_common.cpp,v 1.3.2.3 2005-08-08 15:30:20 sugiura Exp $
 /*
  *	si_common.cpp
  *	共通サービスの関数
@@ -228,10 +228,12 @@ struct MsgThreadProcArgs {
 						strDefButton = opt.getNextArgvStr();
 					}
 					break;
+#if 0
 				case 's':	// システムモーダルにするかどうか
 					m_uFlags &= ~(MB_APPLMODAL|MB_SYSTEMMODAL|MB_TASKMODAL);
 					m_uFlags |= MB_SYSTEMMODAL;
 					break;
+#endif
 				case 't':	// タイムアウト時間指定
 					if (num-- > 0) {
 						int nTimeout = ival(opt.getNextArgv());

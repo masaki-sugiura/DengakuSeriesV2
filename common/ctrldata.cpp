@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.42.2.4 2005-08-01 16:29:56 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.42.2.5 2005-08-08 15:30:20 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -1151,7 +1151,7 @@ EditCtrl::EditCtrl(
 							WS_BORDER|WS_CHILD|WS_TABSTOP|WS_VISIBLE|WS_GROUP;
 	switch (type) {
 	case CTRLID_MLEDIT:
-		m_pcp->m_style |= ES_AUTOVSCROLL|ES_MULTILINE|ES_WANTRETURN;
+		m_pcp->m_style |= ES_AUTOVSCROLL|ES_MULTILINE|ES_WANTRETURN|WS_VSCROLL;
 		break;
 	case CTRLID_PWDEDIT:
 		m_pcp->m_style |= ES_PASSWORD;
