@@ -1,4 +1,4 @@
-//	$Id: cmdname.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: cmdname.cpp,v 1.1.1.1.2.1 2005-09-19 09:01:08 sugiura Exp $
 /*
  *	cmdname.cpp
  *	コマンド名検索テーブル
