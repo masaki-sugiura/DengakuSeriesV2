@@ -1,4 +1,4 @@
-//	$Id: ms_func.cpp,v 1.6 2003-10-18 13:42:34 sugiura Exp $
+//	$Id: ms_func.cpp,v 1.6.2.1 2005-10-05 17:03:21 sugiura Exp $
 /*
  *	ms_func.cpp
  *	メニュー表示関数
@@ -6,18 +6,58 @@
 
 #include "DengakuDLL.h"
 
+static HWND
+GetActualHavingCaretWindow(HWND hWndHavingCaretCandidate)
+{
+	OSVERSIONINFO osi;
+	osi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	if (!::GetVersionEx(&osi)) {
+		return hWndHavingCaretCandidate;
+	}
+
+	switch (osi.dwPlatformId) {
+	case VER_PLATFORM_WIN32_NT:
+		// 本当は WinNT4.0SP3以降だが、めんどいのでWin2K以降とする
+		if (osi.dwMajorVersion < 5) {
+			return hWndHavingCaretCandidate;
+		}
+		break;
+	case VER_PLATFORM_WIN32_WINDOWS:
+		// Win98以降
+		if (osi.dwMinorVersion == 0) {
+			return hWndHavingCaretCandidate;
+		}
+		break;
+	default:
+		return hWndHavingCaretCandidate;
+	}
+
+	DWORD dwThreadID = ::GetWindowThreadProcessId(hWndHavingCaretCandidate, NULL);
+
+	GUITHREADINFO guiInfo;
+	guiInfo.cbSize = sizeof(guiInfo);
+	if (::GetGUIThreadInfo(dwThreadID, &guiInfo)) {
+		return guiInfo.hwndCaret;
+	}
+
+	return hWndHavingCaretCandidate;
+}
+
 static LPCSTR
 show_menu(LPCSTR menuname, HIDEDLL_NUMTYPE hWndHavingCaret,
 		  HIDEDLL_NUMTYPE x_offset, HIDEDLL_NUMTYPE y_offset)
 {
 	try {
 		POINT pt;
-		if (hWndHavingCaret != 0) {
+		if (hWndHavingCaret > 0) {
+			// キャレット位置基準
 			::GetCaretPos(&pt);
-			::ClientToScreen((HWND)hWndHavingCaret, &pt);
+			HWND hWndActualHavingCaret = GetActualHavingCaretWindow((HWND)hWndHavingCaret);
+			::ClientToScreen(hWndActualHavingCaret, &pt);
 			pt.x += x_offset;
 			pt.y += y_offset;
 		} else {
+			// 絶対値指定(hWndHavingCaret==0の場合はマウスカーソルの位置になる)
 			pt.x = x_offset;
 			pt.y = y_offset;
 		}
