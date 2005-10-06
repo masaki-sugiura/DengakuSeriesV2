@@ -1,4 +1,4 @@
-//	$Id: ms_func.cpp,v 1.6.2.2 2005-10-06 15:49:02 sugiura Exp $
+//	$Id: ms_func.cpp,v 1.6.2.3 2005-10-06 16:12:02 sugiura Exp $
 /*
  *	ms_func.cpp
  *	メニュー表示関数
@@ -54,7 +54,7 @@ show_menu(LPCSTR menuname, HIDEDLL_NUMTYPE hWndHavingCaret,
 {
 	try {
 		POINT pt;
-		if (hWndHavingCaret > 0) {
+		if (hWndHavingCaret != 0) {
 			// キャレット位置基準
 			::GetCaretPos(&pt);
 			HWND hWndActualHavingCaret = GetActualHavingCaretWindow((HWND)hWndHavingCaret);
@@ -62,7 +62,7 @@ show_menu(LPCSTR menuname, HIDEDLL_NUMTYPE hWndHavingCaret,
 			pt.x += x_offset;
 			pt.y += y_offset;
 		} else {
-			// 絶対値指定(hWndHavingCaret==0の場合はマウスカーソルの位置になる)
+			// マウスカーソル位置基準(マウスカーソル位置は後で取得)
 			pt.x = x_offset;
 			pt.y = y_offset;
 		}
