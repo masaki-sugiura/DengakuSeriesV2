@@ -1,4 +1,4 @@
-//	$Id: ms_func.cpp,v 1.6.2.1 2005-10-05 17:03:21 sugiura Exp $
+//	$Id: ms_func.cpp,v 1.6.2.2 2005-10-06 15:49:02 sugiura Exp $
 /*
  *	ms_func.cpp
  *	メニュー表示関数
@@ -17,9 +17,13 @@ GetActualHavingCaretWindow(HWND hWndHavingCaretCandidate)
 
 	switch (osi.dwPlatformId) {
 	case VER_PLATFORM_WIN32_NT:
-		// 本当は WinNT4.0SP3以降だが、めんどいのでWin2K以降とする
-		if (osi.dwMajorVersion < 5) {
-			return hWndHavingCaretCandidate;
+		// WinNT4.0SP3以降
+		{
+			int len = lstrlen(osi.szCSDVersion);
+			if (osi.dwMajorVersion < 4 ||
+				osi.dwMajorVersion == 4 && (len == 0 || osi.szCSDVersion[len - 1] < '3')) {
+				return hWndHavingCaretCandidate;
+			}
 		}
 		break;
 	case VER_PLATFORM_WIN32_WINDOWS:
@@ -36,7 +40,8 @@ GetActualHavingCaretWindow(HWND hWndHavingCaretCandidate)
 
 	GUITHREADINFO guiInfo;
 	guiInfo.cbSize = sizeof(guiInfo);
-	if (::GetGUIThreadInfo(dwThreadID, &guiInfo)) {
+	if (::GetGUIThreadInfo(dwThreadID, &guiInfo) &&
+		guiInfo.hwndCaret != NULL) {
 		return guiInfo.hwndCaret;
 	}
 
