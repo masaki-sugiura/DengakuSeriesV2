@@ -1,4 +1,4 @@
-//	$Id: si_menu.cpp,v 1.6 2003-10-18 13:42:34 sugiura Exp $
+//	$Id: si_menu.cpp,v 1.6.2.1 2005-10-31 15:43:22 sugiura Exp $
 /*
  *	si_menu.cpp
  *	メニュー表示関数
@@ -49,7 +49,7 @@ UserMenuProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			//	ウィンドウを可視化(透明だけど(^^;)
 			::SetWindowPos(hWnd,HWND_TOPMOST,0,0,0,0,
 						SWP_SHOWWINDOW|SWP_NOREDRAW|SWP_NOSIZE|SWP_NOMOVE);
-			::SetForegroundWindow(hWnd);
+//			::SetForegroundWindow(hWnd);
 			//	メニューの表示
 			lpsmpa->m_wSelectedID
 				= (WORD)::TrackPopupMenu(lpsmpa->m_hMenu,
@@ -122,7 +122,7 @@ ShowMenuProc(LPVOID pThreadArgs)
 
 	DWORD ret = (DWORD)-1;
 	//	(透明な)ダミーウィンドウの作成
-	HWND hwndDummy = ::CreateWindowEx(WS_EX_TRANSPARENT | WS_EX_TOOLWINDOW,
+	HWND hwndDummy = ::CreateWindowEx(WS_EX_TRANSPARENT /* | WS_EX_TOOLWINDOW */ | WS_EX_NOACTIVATE,
 									pszClassName,
 									"DengakuDLL DummyWindow",
 									WS_POPUP,
