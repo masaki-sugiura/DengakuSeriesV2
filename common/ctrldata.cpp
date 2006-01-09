@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.42.2.5 2005-08-08 15:30:20 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.42.2.6 2006-01-09 12:22:04 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -2648,6 +2648,14 @@ ChkListCtrl::ChkListCtrl(
 }
 
 BOOL
+ChkListCtrl::createCtrlTemplate(CtrlTemplateArgs& cta)
+{
+	if (m_bSorted) m_pcp->m_style |= LVS_SORTASCENDING;
+	else           m_pcp->m_style &= ~LVS_SORTASCENDING;
+	return HasListCtrl::createCtrlTemplate(cta);
+}
+
+BOOL
 ChkListCtrl::initCtrl(HWND hDlg)
 {
 	if (!HasListCtrl::initCtrl(hDlg)) return FALSE;
@@ -3073,14 +3081,6 @@ WORD
 LViewCtrl::getHeight()
 {
 	return HasListCtrl::getHeight() + NARROWHEIGHT * (m_hdr != 0);
-}
-
-BOOL
-LViewCtrl::createCtrlTemplate(CtrlTemplateArgs& cta)
-{
-	if (m_bSorted) m_pcp->m_style |= LVS_SORTASCENDING;
-	else           m_pcp->m_style &= ~LVS_SORTASCENDING;
-	return ChkListCtrl::createCtrlTemplate(cta);
 }
 
 static void
