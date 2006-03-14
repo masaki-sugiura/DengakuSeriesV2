@@ -1,4 +1,4 @@
-//	$Id: hmjre_mngr.cpp,v 1.2 2003-12-10 14:33:49 sugiura Exp $
+//	$Id: hmjre_mngr.cpp,v 1.2.2.1 2006-03-14 14:55:29 sugiura Exp $
 /*
  *	hmjre_mngr.cpp
  *	HmJre_Manager ƒNƒ‰ƒX‚ÌŽÀ‘•
@@ -7,9 +7,8 @@
 #include "hmjre_mngr.h"
 
 HmJre_Manager::HmJre_Manager(const StringBuffer& filename)
+	:	REDLL_Manager(filename)
 {
-	m_hModuleDll = ::LoadLibrary(filename);
-	if (m_hModuleDll == NULL) throw DllNotFoundError();
 	m_pfnJreGetVersion = (PFN_JREGETVERSION)::GetProcAddress(m_hModuleDll,HMJRE_JREGETVERSION);
 	m_pfnDecodeEscSeq = (PFN_DECODEESCSEQ)::GetProcAddress(m_hModuleDll,HMJRE_DECODEESCSEQ);
 	m_pfnGetJreMessage = (PFN_GETJREMESSAGE)::GetProcAddress(m_hModuleDll,HMJRE_GETJREMESSAGE);
@@ -32,8 +31,6 @@ HmJre_Manager::~HmJre_Manager()
 	while ((pJre2 = m_Jre_Pool.getNextItem())) {
 		(*m_pfnJre2Close)(pJre2);
 	}
-
-	::FreeLibrary(m_hModuleDll);
 }
 
 void
@@ -62,12 +59,12 @@ HmJre_Manager::match(const StringBuffer& ptn, const StringBuffer& str, int nFlag
 		try {
 			pJre2 = new JRE2;
 		} catch (...) {
-			return HMJRE_RESULT_FAILED;
+			return REDLL_RESULT_FAILED;
 		}
 
 		if (!(*m_pfnJre2Compile)(pJre2, (LPCSTR)ptn)) {
 			setErrorMessage();
-			return HMJRE_RESULT_FAILED;
+			return REDLL_RESULT_FAILED;
 		}
 
 		m_htblJre.setValue(ptn, pJre2);
@@ -79,7 +76,7 @@ HmJre_Manager::match(const StringBuffer& ptn, const StringBuffer& str, int nFlag
 
 	if (!(*m_pfnJre2GetMatchInfo)(pJre2, (LPCSTR)str)) {
 		setErrorMessage();
-		return HMJRE_RESULT_FAILED;
+		return REDLL_RESULT_FAILED;
 	}
 
 	DWORD result = make_dword(pJre2->nPosition, pJre2->nLength);

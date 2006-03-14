@@ -80,6 +80,8 @@ CLEAN :
 	-@erase "$(INTDIR)\rec_op.sbr"
 	-@erase "$(INTDIR)\recfind.obj"
 	-@erase "$(INTDIR)\recfind.sbr"
+	-@erase "$(INTDIR)\redll_mngr.obj"
+	-@erase "$(INTDIR)\redll_mngr.sbr"
 	-@erase "$(INTDIR)\refcount.obj"
 	-@erase "$(INTDIR)\refcount.sbr"
 	-@erase "$(INTDIR)\seldir.obj"
@@ -183,7 +185,8 @@ BSC32_SBRS= \
 	"$(INTDIR)\strbuf.sbr" \
 	"$(INTDIR)\strutils.sbr" \
 	"$(INTDIR)\thread.sbr" \
-	"$(INTDIR)\tokenizer.sbr"
+	"$(INTDIR)\tokenizer.sbr" \
+	"$(INTDIR)\redll_mngr.sbr"
 
 "$(OUTDIR)\common.bsc" : "$(OUTDIR)" $(BSC32_SBRS)
     $(BSC32) @<<
@@ -236,7 +239,8 @@ LIB32_OBJS= \
 	"$(INTDIR)\strbuf.obj" \
 	"$(INTDIR)\strutils.obj" \
 	"$(INTDIR)\thread.obj" \
-	"$(INTDIR)\tokenizer.obj"
+	"$(INTDIR)\tokenizer.obj" \
+	"$(INTDIR)\redll_mngr.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -275,6 +279,7 @@ CLEAN :
 	-@erase "$(INTDIR)\pathname.obj"
 	-@erase "$(INTDIR)\rec_op.obj"
 	-@erase "$(INTDIR)\recfind.obj"
+	-@erase "$(INTDIR)\redll_mngr.obj"
 	-@erase "$(INTDIR)\refcount.obj"
 	-@erase "$(INTDIR)\seldir.obj"
 	-@erase "$(INTDIR)\seq_op.obj"
@@ -358,7 +363,8 @@ LIB32_OBJS= \
 	"$(INTDIR)\strbuf.obj" \
 	"$(INTDIR)\strutils.obj" \
 	"$(INTDIR)\thread.obj" \
-	"$(INTDIR)\tokenizer.obj"
+	"$(INTDIR)\tokenizer.obj" \
+	"$(INTDIR)\redll_mngr.obj"
 
 "$(OUTDIR)\common.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -724,6 +730,22 @@ SOURCE=.\recfind.cpp
 
 
 "$(INTDIR)\recfind.obj" : $(SOURCE) "$(INTDIR)"
+
+
+!ENDIF 
+
+SOURCE=.\redll_mngr.cpp
+
+!IF  "$(CFG)" == "common - Win32 Release"
+
+
+"$(INTDIR)\redll_mngr.obj"	"$(INTDIR)\redll_mngr.sbr" : $(SOURCE) "$(INTDIR)"
+
+
+!ELSEIF  "$(CFG)" == "common - Win32 Debug"
+
+
+"$(INTDIR)\redll_mngr.obj" : $(SOURCE) "$(INTDIR)"
 
 
 !ENDIF 

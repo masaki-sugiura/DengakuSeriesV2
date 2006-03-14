@@ -171,6 +171,10 @@ SOURCE=.\recfind.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\redll_mngr.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\refcount.cpp
 # End Source File
 # Begin Source File
@@ -380,6 +384,10 @@ SOURCE=.\rec_op.h
 # Begin Source File
 
 SOURCE=.\recfind.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\redll_mngr.h
 # End Source File
 # Begin Source File
 

@@ -1,4 +1,4 @@
-//	$Id: hmjre_mngr.h,v 1.2 2003-12-10 14:33:49 sugiura Exp $
+//	$Id: hmjre_mngr.h,v 1.2.2.1 2006-03-14 14:55:29 sugiura Exp $
 /*
  *	hmjre_mngr.h
  *	hmjre.dll を利用するためのラッパークラス
@@ -7,9 +7,9 @@
 #ifndef DENGAKUSERIES_CLASSES_HMJRE_MANAGER
 #define DENGAKUSERIES_CLASSES_HMJRE_MANAGER
 
+#include "redll_mngr.h"
 #include "hashtbl.h"
 #include "linklist.h"
-#include "auto_ptr.h"
 #include "strutils.h"
 #include "jreusr.h"
 
@@ -30,43 +30,7 @@ typedef BOOL (EXTAPI *PFN_JRE2CLOSE)(LPJRE2 lpJre2);
 #define HMJRE_JRE2GETMATCHINFO  "Jre2GetMatchInfo"
 #define HMJRE_JRE2CLOSE         "Jre2Close"
 
-#define HMJRE_RESULT_FAILED (DWORD)-1
-
-inline StringBuffer
-make_result(DWORD res)
-{
-	if (res == HMJRE_RESULT_FAILED) return nullStr;
-	return StringBuffer(16).append((DWORD)LOWORD(res))
-						   .append((TCHAR)':')
-						   .append((DWORD)HIWORD(res));
-}
-
-inline DWORD
-make_dword(int low, int high)
-{
-	return (DWORD)((USHORT)low | (high << 16));
-}
-
-inline DWORD
-make_dword_from_pos(const StringBuffer& pos)
-{
-	int sep = pos.find(':');
-	if (sep == -1 || sep == 0 || sep >= pos.length() - 1)
-		return HMJRE_RESULT_FAILED;
-	return make_dword(ival(pos.extract(0, sep)),
-					  ival(pos.extract(sep + 1, -1)));
-}
-
-typedef struct _ResultList {
-	int m_nHead;
-	int m_nSize;
-	DWORD* m_pResults;
-	_ResultList(int size) : m_nHead(0), m_nSize(size), m_pResults(new DWORD[size])
-	{}
-	~_ResultList() { delete [] m_pResults; }
-} ResultList;
-
-class HmJre_Manager {
+class HmJre_Manager : REDLL_Manager {
 public:
 	HmJre_Manager(const StringBuffer&);
 	~HmJre_Manager();
@@ -77,11 +41,8 @@ public:
 						 const StringBuffer& strDst,
 						 int nFlags);
 	const StringBuffer& jreGetVersion();
-	const StringBuffer& getErrorMessage() const
-	{ return m_strErrMsg; }
 
 private:
-	HMODULE m_hModuleDll;
 	PFN_JREGETVERSION m_pfnJreGetVersion;
 	PFN_DECODEESCSEQ m_pfnDecodeEscSeq;
 	PFN_GETJREMESSAGE m_pfnGetJreMessage;
@@ -93,13 +54,8 @@ private:
 	HashTable<JRE2*,11> m_htblJre;
 	LinkList<JRE2> m_Jre_Pool;
 	StringBuffer m_strVersion;
-	StringBuffer m_strErrMsg;
 
 	void setErrorMessage();
 };
-
-class DllLoadError {};
-class DllNotFoundError : public DllLoadError {};
-class DllProcAddressNotFoundError : public DllLoadError {};
 
 #endif
