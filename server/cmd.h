@@ -1,4 +1,4 @@
-//	$Id: cmd.h,v 1.16 2005-01-16 11:07:48 sugiura Exp $
+//	$Id: cmd.h,v 1.17 2006-03-16 14:46:56 sugiura Exp $
 /*
  *	cmd.h
  *	ƒRƒ}ƒ“ƒh–¼ˆê——
@@ -71,6 +71,7 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_REQUEST(getosinfo)
 	DECLARE_DDECMD_REQUEST(getcaretpos)
 	DECLARE_DDECMD_REQUEST(getcursorpos)
+	DECLARE_DDECMD_REQUEST(msgbox)
 	DECLARE_DDECMD_REQUEST(getcurdir)
 	DECLARE_DDECMD_REQUEST(isreadonly)
 	DECLARE_DDECMD_REQUEST(sizeof)

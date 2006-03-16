@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.19 2005-01-16 11:07:48 sugiura Exp $
+//	$Id: session.h,v 1.20 2006-03-16 14:46:56 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -70,6 +70,7 @@ public:
 	StringBuffer si_getcaretpos();
 	StringBuffer si_getcursorpos();
 	int si_sleep(int);
+	StringBuffer si_msgbox(const StringBuffer&, CmdLineParser&, const StringBuffer&);
 
 	//	グローバル変数操作系
 	int si_setvar(const StringBuffer&, const StringBuffer&);

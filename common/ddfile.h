@@ -1,4 +1,4 @@
-//	$Id: ddfile.h,v 1.2 2002-02-28 15:32:30 sugiura Exp $
+//	$Id: ddfile.h,v 1.3 2006-03-16 14:46:56 sugiura Exp $
 /*
  *	ddfile.h
  *	ダイアログデータのデータファイルを扱うクラス
@@ -29,6 +29,93 @@ public:
 	BOOL write(WORD, const StringBuffer&, const StringBuffer& sec = nullStr);
 	BOOL write(DWORD, const StringBuffer&, const StringBuffer& sec = nullStr);
 	BOOL write(const StringBuffer&, const StringBuffer&, const StringBuffer& sec = nullStr);
+
+	//	2nd + 3rd and 4th args of all of functions are keyname and secname.
+#if 1	// 0 にするとdlgdata.cppで内部コンパイルエラー...？？
+	BOOL read(int* pnData, StringBuffer& key, const StringBuffer& subkey, const StringBuffer& sec = nullStr)
+	{
+		int len = key.length();
+		key.append(subkey);
+		BOOL bRet = read(pnData, key, sec);
+		key.setlength(len);
+		return bRet;
+	}
+	BOOL read(WORD* pwData, StringBuffer& key, const StringBuffer& subkey, const StringBuffer& sec = nullStr)
+	{
+		int len = key.length();
+		key.append(subkey);
+		BOOL bRet = read(pwData, key, sec);
+		key.setlength(len);
+		return bRet;
+	}
+	BOOL read(DWORD* pdwData, StringBuffer& key, const StringBuffer& subkey, const StringBuffer& sec = nullStr)
+	{
+		int len = key.length();
+		key.append(subkey);
+		BOOL bRet = read(pdwData, key, sec);
+		key.setlength(len);
+		return bRet;
+	}
+	BOOL read(StringBuffer& strData, StringBuffer& key, const StringBuffer& subkey, const StringBuffer& sec = nullStr)
+	{
+		int len = key.length();
+		key.append(subkey);
+		BOOL bRet = read(strData, key, sec);
+		key.setlength(len);
+		return bRet;
+	}
+	BOOL write(int nData, StringBuffer& key, const StringBuffer& subkey, const StringBuffer& sec = nullStr)
+	{
+		int len = key.length();
+		key.append(subkey);
+		BOOL bRet = write(nData, key, sec);
+		key.setlength(len);
+		return bRet;
+	}
+	BOOL write(WORD wData, StringBuffer& key, const StringBuffer& subkey, const StringBuffer& sec = nullStr)
+	{
+		int len = key.length();
+		key.append(subkey);
+		BOOL bRet = write(wData, key, sec);
+		key.setlength(len);
+		return bRet;
+	}
+	BOOL write(DWORD dwData, StringBuffer& key, const StringBuffer& subkey, const StringBuffer& sec = nullStr)
+	{
+		int len = key.length();
+		key.append(subkey);
+		BOOL bRet = write(dwData, key, sec);
+		key.setlength(len);
+		return bRet;
+	}
+	BOOL write(const StringBuffer& strData, StringBuffer& key, const StringBuffer& subkey, const StringBuffer& sec = nullStr)
+	{
+		int len = key.length();
+		key.append(subkey);
+		BOOL bRet = write(strData, key, sec);
+		key.setlength(len);
+		return bRet;
+	}
+#else
+	template<class T>
+	BOOL read(T val, StringBuffer& key, const StringBuffer& subkey, const StringBuffer& sec = nullStr)
+	{
+		int len = key.length();
+		key.append(subkey);
+		BOOL bRet = read(val, key, sec);
+		key.setlength(len);
+		return bRet;
+	}
+	template<class T>
+	BOOL write(T val, StringBuffer& key, const StringBuffer& subkey, const StringBuffer& sec = nullStr)
+	{
+		int len = key.length();
+		key.append(subkey);
+		BOOL bRet = write(val, key, sec);
+		key.setlength(len);
+		return bRet;
+	}
+#endif
 
 private:
 	const StringBuffer m_filename;

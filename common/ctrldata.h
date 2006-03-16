@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.21 2005-07-04 15:53:29 sugiura Exp $
+//	$Id: ctrldata.h,v 1.22 2006-03-16 14:46:56 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -769,6 +769,7 @@ public:
 
 	HWND getFocusedCtrl() const { return m_pcp->m_hwndCtrl; }
 
+	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
 	BOOL initCtrl(HWND);
 	BOOL sendData();
 	BOOL receiveData();
@@ -809,7 +810,6 @@ public:
 
 	WORD getHeight();
 
-	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
 	BOOL initCtrl(HWND);
 	BOOL sendData();
 	BOOL receiveData();

@@ -1,4 +1,4 @@
-//	$Id: cmdline.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: cmdline.h,v 1.2 2006-03-16 14:46:56 sugiura Exp $
 /*
  *	cmdline.h
  *	文字列のパース＆リスト化

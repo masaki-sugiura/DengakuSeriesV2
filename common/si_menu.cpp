@@ -1,4 +1,4 @@
-//	$Id: si_menu.cpp,v 1.6 2003-10-18 13:42:34 sugiura Exp $
+//	$Id: si_menu.cpp,v 1.7 2006-03-16 14:46:56 sugiura Exp $
 /*
  *	si_menu.cpp
  *	メニュー表示関数
@@ -122,7 +122,7 @@ ShowMenuProc(LPVOID pThreadArgs)
 
 	DWORD ret = (DWORD)-1;
 	//	(透明な)ダミーウィンドウの作成
-	HWND hwndDummy = ::CreateWindowEx(WS_EX_TRANSPARENT | WS_EX_TOOLWINDOW,
+	HWND hwndDummy = ::CreateWindowEx(WS_EX_TRANSPARENT /* | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE */,
 									pszClassName,
 									"DengakuDLL DummyWindow",
 									WS_POPUP,

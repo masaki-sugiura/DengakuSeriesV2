@@ -1,4 +1,4 @@
-//	$Id: si_bregexp.cpp,v 1.6 2005-01-15 06:53:48 sugiura Exp $
+//	$Id: si_bregexp.cpp,v 1.7 2006-03-16 14:46:56 sugiura Exp $
 /*
  *	si_bregexp.cpp
  *	BRegexp ‚ÉŠÖ‚·‚éƒNƒ‰ƒX
@@ -84,7 +84,7 @@ SessionInstance::si_bregexp_split(
 	const StringBuffer& str,
 	int limit)
 {
-	if (m_pBRegExp_Manager.ptr() == NULL) return (int)BREGEXP_RESULT_FAILED;
+	if (m_pBRegExp_Manager.ptr() == NULL) return (int)REDLL_RESULT_FAILED;
 	return m_pBRegExp_Manager->bSplit(pattern,str,limit);
 }
 

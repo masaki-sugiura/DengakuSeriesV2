@@ -7,10 +7,10 @@
 #ifndef DENGAKUSERIES_CLASSES_BREGEXP_MANAGER
 #define DENGAKUSERIES_CLASSES_BREGEXP_MANAGER
 
+#include "redll_mngr.h"
 #include "hashtbl.h"
 #include "linklist.h"
 #include "auto_ptr.h"
-#include "strutils.h"
 #include "bregexp.h"
 
 typedef int (*PFN_BMATCH)(LPCSTR, LPCSTR, LPCSTR, BREGEXP**, char*);
@@ -28,21 +28,13 @@ typedef char* (*PFN_BREGEXPVERSION)(void);
 #define BREGEXP_BREGFREE "BRegfree"
 #define BREGEXP_BREGEXPVERSION "BRegexpVersion"
 
-#define BREGEXP_RESULT_FAILED (DWORD)-1
-
 inline StringBuffer
 make_result(DWORD res)
 {
-	if (res == BREGEXP_RESULT_FAILED) return nullStr;
+	if (res == REDLL_RESULT_FAILED) return nullStr;
 	return StringBuffer(16).append((DWORD)LOWORD(res))
 						   .append((TCHAR)':')
 						   .append((DWORD)HIWORD(res));
-}
-
-inline DWORD
-make_dword(int low, int high)
-{
-	return (DWORD)((USHORT)low | (high << 16));
 }
 
 inline DWORD
@@ -50,7 +42,7 @@ make_dword_from_pos(const StringBuffer& pos)
 {
 	int sep = pos.find(':');
 	if (sep == -1 || sep == 0 || sep >= pos.length() - 1)
-		return BREGEXP_RESULT_FAILED;
+		return REDLL_RESULT_FAILED;
 	return make_dword(ival(pos.extract(0, sep)),
 					  ival(pos.extract(sep + 1, -1)));
 }
@@ -64,7 +56,7 @@ typedef struct _ResultList {
 	~_ResultList() { delete [] m_pResults; }
 } ResultList;
 
-class BRegExp_Manager {
+class BRegExp_Manager : public REDLL_Manager {
 public:
 	BRegExp_Manager(const StringBuffer&);
 	~BRegExp_Manager();
@@ -80,11 +72,7 @@ public:
 
 	StringBuffer posToString(DWORD pos) const;
 
-	const StringBuffer& getErrorMessage() const
-	{ return m_strErrMsg; }
-
 private:
-	HMODULE m_hModuleDll;
 	PFN_BMATCH m_pfnBMatch;
 	PFN_BSUBST m_pfnBSubst;
 	PFN_BTRANS m_pfnBTrans;
@@ -97,11 +85,6 @@ private:
 	Auto_Ptr<ResultList> m_pResultList;
 	StringBuffer m_strSplitted;
 	StringBuffer m_strVersion;
-	StringBuffer m_strErrMsg;
 };
-
-class DllLoadError {};
-class DllNotFoundError : public DllLoadError {};
-class DllProcAddressNotFoundError : public DllLoadError {};
 
 #endif

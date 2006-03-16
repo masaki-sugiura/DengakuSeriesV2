@@ -7,10 +7,9 @@
 #include "bregexp_mngr.h"
 
 BRegExp_Manager::BRegExp_Manager(const StringBuffer& filename)
-	: m_pResultList(NULL)
+	:	REDLL_Manager(filename)
+	,	m_pResultList(NULL)
 {
-	m_hModuleDll = ::LoadLibrary(filename);
-	if (m_hModuleDll == NULL) throw DllNotFoundError();
 	m_pfnBMatch = (PFN_BMATCH)::GetProcAddress(m_hModuleDll,BREGEXP_BMATCH);
 	m_pfnBSubst = (PFN_BSUBST)::GetProcAddress(m_hModuleDll,BREGEXP_BSUBST);
 	m_pfnBTrans = (PFN_BTRANS)::GetProcAddress(m_hModuleDll,BREGEXP_BTRANS);
@@ -19,8 +18,9 @@ BRegExp_Manager::BRegExp_Manager(const StringBuffer& filename)
 	m_pfnBRegexpversion
 		= (PFN_BREGEXPVERSION)::GetProcAddress(m_hModuleDll,BREGEXP_BREGEXPVERSION);
 	if (m_pfnBMatch == NULL || m_pfnBSubst == NULL || m_pfnBTrans == NULL ||
-		m_pfnBSplit == NULL || m_pfnBRegfree == NULL || m_pfnBRegexpversion == NULL)
+		m_pfnBSplit == NULL || m_pfnBRegfree == NULL || m_pfnBRegexpversion == NULL) {
 		throw DllProcAddressNotFoundError();
+	}
 }
 
 BRegExp_Manager::~BRegExp_Manager()
@@ -31,7 +31,6 @@ BRegExp_Manager::~BRegExp_Manager()
 			(*m_pfnBRegfree)(m_BRegExp_Pool.getItemByIndex(0));
 			m_BRegExp_Pool.delItemByIndex(0);
 		}
-		::FreeLibrary(m_hModuleDll);
 	}
 }
 
@@ -53,10 +52,11 @@ BRegExp_Manager::bMatch(const StringBuffer& ptn, const StringBuffer& str)
 		m_BRegExp_Pool.addItem(pBRegExp);
 		m_htblBRegExp.setValue(ptn, pBRegExp);
 	}
+
 	DWORD result;
 	ResultList* pResultList = NULL;
 	if (ret <= 0) {
-		result = BREGEXP_RESULT_FAILED;
+		result = REDLL_RESULT_FAILED;
 	} else {
 		result = make_dword(pBRegExp->startp[0] - pstr,
 							pBRegExp->endp[0] - pBRegExp->startp[0]);
@@ -68,7 +68,9 @@ BRegExp_Manager::bMatch(const StringBuffer& ptn, const StringBuffer& str)
 								 pBRegExp->endp[i] - pBRegExp->startp[i]);
 		}
 	}
+
 	m_pResultList = pResultList;
+
 	return result;
 }
 
@@ -79,10 +81,12 @@ BRegExp_Manager::bSubst(const StringBuffer& ptn, const StringBuffer& str)
 	BREGEXP* pBRegExp = pBRegExp_Org;
 	LPCSTR pstr = str;
 	char msg[80];
+
 	int ret = (*m_pfnBSubst)(pBRegExp_Org != NULL ? NULL : (LPCSTR)ptn,
 							 pstr, pstr + str.length(),
 							 &pBRegExp,
 							 msg);
+
 	m_strErrMsg = msg;
 
 //	m_strSplitted = nullStr;
@@ -111,10 +115,12 @@ BRegExp_Manager::bTrans(const StringBuffer& ptn, const StringBuffer& str)
 	BREGEXP* pBRegExp = pBRegExp_Org;
 	LPCSTR pstr = str;
 	char msg[80];
+
 	int ret = (*m_pfnBTrans)(pBRegExp_Org != NULL ? NULL : (LPCSTR)ptn,
 							 pstr, pstr + str.length(),
 							 &pBRegExp,
 							 msg);
+
 	m_strErrMsg = msg;
 
 //	m_strSplitted = nullStr;
@@ -134,10 +140,12 @@ BRegExp_Manager::bSplit(const StringBuffer& ptn, const StringBuffer& str, int li
 	BREGEXP* pBRegExp = pBRegExp_Org;
 	LPCSTR pstr = str;
 	char msg[80];
+
 	int ret = (*m_pfnBSplit)(pBRegExp_Org != NULL ? NULL : (LPCSTR)ptn,
 							 pstr, pstr + str.length(), limit,
 							 &pBRegExp,
 							 msg);
+
 	m_strErrMsg = msg;
 
 	m_strSplitted = str;
@@ -145,10 +153,11 @@ BRegExp_Manager::bSplit(const StringBuffer& ptn, const StringBuffer& str, int li
 		m_BRegExp_Pool.addItem(pBRegExp);
 		m_htblBRegExp.setValue(ptn, pBRegExp);
 	}
+
 	int result;
 	ResultList* pResultList = NULL;
 	if (ret <= 0) {
-		result = BREGEXP_RESULT_FAILED;
+		result = REDLL_RESULT_FAILED;
 	} else {
 		result = ret;
 		if (ret > 0) {
@@ -160,7 +169,9 @@ BRegExp_Manager::bSplit(const StringBuffer& ptn, const StringBuffer& str, int li
 			}
 		}
 	}
+
 	m_pResultList = pResultList;
+
 	return result;
 }
 
@@ -175,16 +186,18 @@ DWORD
 BRegExp_Manager::getNextResult()
 {
 	if (m_pResultList.ptr() == NULL ||
-		m_pResultList->m_nHead >= m_pResultList->m_nSize)
-		return (DWORD)-1;
+		m_pResultList->m_nHead >= m_pResultList->m_nSize) {
+		return REDLL_RESULT_FAILED;
+	}
 	return m_pResultList->m_pResults[m_pResultList->m_nHead++];
 }
 
 StringBuffer
 BRegExp_Manager::posToString(DWORD pos) const
 {
-	if (pos == BREGEXP_RESULT_FAILED || m_strSplitted.length() == 0)
+	if (pos == REDLL_RESULT_FAILED || m_strSplitted.length() == 0) {
 		return nullStr;
+	}
 	return m_strSplitted.extract(LOWORD(pos), HIWORD(pos));
 }
 

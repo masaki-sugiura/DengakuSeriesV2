@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.48 2005-07-04 15:58:21 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.49 2006-03-16 14:46:56 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -32,7 +32,7 @@ CtrlListItem::States::dumpData(DlgDataFile& ddfile) const
 			buf.append(i+1);
 		}
 	}
-	ddfile.write(buf,GetString(STR_DLGDATA_STATES));
+	ddfile.write(buf, GetString(STR_DLGDATA_STATES));
 	return TRUE;
 }
 
@@ -41,7 +41,7 @@ CtrlListItem::States::loadData(DlgDataFile& ddfile)
 {
 	m_states.clear();
 	StringBuffer buf(32);
-	ddfile.read(buf,GetString(STR_DLGDATA_STATES));
+	ddfile.read(buf, GetString(STR_DLGDATA_STATES));
 	Tokenizer tknStates(buf, ", ", TRUE); // skip null str
 	while (tknStates.hasMoreTokens()) {
 		int index = ival(tknStates.getNextToken()) - 1;
@@ -55,15 +55,9 @@ CtrlListItem::CtrlFontProperty::dumpData(
 	DlgDataFile& ddfile,
 	StringBuffer& key)
 {
-	int len = key.length();
-	key.append(GetString(STR_DLGDATA_COLOR));
-	ddfile.write((DWORD)m_color, key);
-	key.setlength(len);
-	key.append(GetString(STR_DLGDATA_FACE));
-	ddfile.write((int)m_fface, key);
-	key.setlength(len);
-	key.append(GetString(STR_DLGDATA_NAME));
-	ddfile.write(m_fname, key);
+	ddfile.write((DWORD)m_color, key, GetString(STR_DLGDATA_COLOR));
+	ddfile.write((int)m_fface, key, GetString(STR_DLGDATA_FACE));
+	ddfile.write(m_fname, key, GetString(STR_DLGDATA_NAME));
 	return TRUE;
 }
 
@@ -72,20 +66,14 @@ CtrlListItem::CtrlFontProperty::loadData(
 	DlgDataFile& ddfile,
 	StringBuffer& key)
 {
-	int len = key.length();
-	key.append(GetString(STR_DLGDATA_COLOR));
-	ddfile.read((DWORD*)&m_color, key);
-	key.setlength(len);
-	key.append(GetString(STR_DLGDATA_FACE));
+	ddfile.read((DWORD*)&m_color, key, GetString(STR_DLGDATA_COLOR));
 	int fface;
-	ddfile.read(&fface, key);
+	ddfile.read(&fface, key, GetString(STR_DLGDATA_FACE));
 	m_fface = fface;
 	StringBuffer version;
 	ddfile.read(version, GetString(STR_DLGDATA_VERSION));
 	if (version[0] >= '2') {
-		key.setlength(len);
-		key.append(GetString(STR_DLGDATA_NAME));
-		ddfile.read(m_fname, key);
+		ddfile.read(m_fname, key, GetString(STR_DLGDATA_NAME));
 	}
 	return TRUE;
 }
@@ -252,20 +240,11 @@ CtrlListItem::CtrlProperty::getText()
 BOOL
 CtrlListItem::CtrlProperty::dumpData(DlgDataFile& ddfile, StringBuffer& key)
 {
-	int len = key.length();
-	key.append(GetString(STR_DLGDATA_ID));
-	ddfile.write(m_id, key);
-	key.setlength(len);
-	key.append(GetString(STR_DLGDATA_TEXT));
-	ddfile.write(m_text, key);
+	ddfile.write(m_id, key, GetString(STR_DLGDATA_ID));
+	ddfile.write(m_text, key, GetString(STR_DLGDATA_TEXT));
 	// extended data from Ver.2.00
-	key.setlength(len);
-	key.append(GetString(STR_DLGDATA_STYLE));
-	ddfile.write(m_style, key);
-	key.setlength(len);
-	key.append(GetString(STR_DLGDATA_EXSTYLE));
-	ddfile.write(m_exstyle, key);
-	key.setlength(len);
+	ddfile.write(m_style, key, GetString(STR_DLGDATA_STYLE));
+	ddfile.write(m_exstyle, key, GetString(STR_DLGDATA_EXSTYLE));
 	key.append(GetString(STR_DLGDATA_FONT)).append((TCHAR)':');
 	return m_fontprop.dumpData(ddfile, key);
 }
@@ -273,25 +252,16 @@ CtrlListItem::CtrlProperty::dumpData(DlgDataFile& ddfile, StringBuffer& key)
 BOOL
 CtrlListItem::CtrlProperty::loadData(DlgDataFile& ddfile, StringBuffer& key)
 {
-	int len = key.length();
-	key.append(GetString(STR_DLGDATA_ID));
-	ddfile.read(&m_id, key);
-	key.setlength(len);
-	key.append(GetString(STR_DLGDATA_TEXT));
-	ddfile.read(m_text, key);
+	ddfile.read(&m_id, key, GetString(STR_DLGDATA_ID));
+	ddfile.read(m_text, key, GetString(STR_DLGDATA_TEXT));
 	// extended data from Ver.2.00
 	StringBuffer version;
 	ddfile.read(version, GetString(STR_DLGDATA_VERSION));
 	if (version[0] >= '2') {
-		key.setlength(len);
-		key.append(GetString(STR_DLGDATA_STYLE));
-		ddfile.read(&m_style, key);
-		key.setlength(len);
-		key.append(GetString(STR_DLGDATA_EXSTYLE));
-		ddfile.read(&m_exstyle, key);
-		key.setlength(len);
-		key.append(GetString(STR_DLGDATA_FONT)).append((TCHAR)':');
+		ddfile.read(&m_style, key, GetString(STR_DLGDATA_STYLE));
+		ddfile.read(&m_exstyle, key, GetString(STR_DLGDATA_EXSTYLE));
 	}
+	key.append(GetString(STR_DLGDATA_FONT)).append((TCHAR)':');
 	return m_fontprop.loadData(ddfile, key);
 }
 
@@ -332,22 +302,16 @@ TreeItemData::dumpData(DlgDataFile& ddfile)
 	if (!ddfile.isValid()) return FALSE;
 	StringBuffer keybuf(32);
 	keybuf.append(m_name).append((TCHAR)':');
-	int	len = keybuf.length(),
-		num = this->initSequentialGet();
-	keybuf.append(GetString(STR_DLGDATA_TEXT));
-	ddfile.write(m_text, keybuf);
-	keybuf.setlength(len);
-	keybuf.append(GetString(STR_DLGDATA_ITEMNUM));
-	ddfile.write(num, keybuf);
-	keybuf.setlength(len);
+	int	num = this->initSequentialGet();
+	ddfile.write(m_text, keybuf, GetString(STR_DLGDATA_TEXT));
+	ddfile.write(num, keybuf, GetString(STR_DLGDATA_ITEMNUM));
 	keybuf.append(GetString(STR_DLGDATA_CHILD)).append((TCHAR)'_');
-	len = keybuf.length();
 	for (int i = 0; i < num; i++) {
 		TreeItemData* tid = this->getNextItem();
 		if (tid == NULL) continue;
-		keybuf.setlength(len);
-		keybuf.append(i);
-		ddfile.write(tid->getName(), keybuf);
+		char nbuf[16];
+		itoa(i, nbuf, 10);
+		ddfile.write(tid->getName(), keybuf, nbuf);
 		tid->dumpData(ddfile);
 	}
 	return TRUE;
@@ -359,21 +323,15 @@ TreeItemData::loadData(DlgDataFile& ddfile, TreeHashTable& hash)
 	if (!ddfile.isValid()) return FALSE;
 	StringBuffer keybuf(32);
 	keybuf.append(m_name).append((TCHAR)':');
-	int len = keybuf.length();
-	keybuf.append(GetString(STR_DLGDATA_TEXT));
-	ddfile.read(m_text, keybuf);
-	keybuf.setlength(len);
-	keybuf.append(GetString(STR_DLGDATA_ITEMNUM));
+	ddfile.read(m_text, keybuf, GetString(STR_DLGDATA_TEXT));
 	int num;
-	ddfile.read(&num, keybuf);
-	keybuf.setlength(len);
+	ddfile.read(&num, keybuf, GetString(STR_DLGDATA_ITEMNUM));
 	keybuf.append(GetString(STR_DLGDATA_CHILD)).append((TCHAR)'_');
-	len = keybuf.length();
 	StringBuffer namebuf(32);
 	for (int i = 0; i < num; i++) {
-		keybuf.setlength(len);
-		keybuf.append(i);
-		ddfile.read(namebuf, keybuf);
+		char nbuf[16];
+		itoa(i, nbuf, 10);
+		ddfile.read(namebuf, keybuf, nbuf);
 		if (namebuf.length() <= 0) continue;
 		TreeItemData* tid = new TreeItemData(namebuf, nullStr);
 		if (tid->loadData(ddfile, hash)) {
@@ -830,9 +788,9 @@ CtrlListItem::dumpData(DlgDataFile& ddfile)
 	buf.append((TCHAR)'_');
 	int len = buf.length();
 	for (int i = 0; i < sizeof(m_notify) / sizeof(m_notify[0]); i++) {
-		buf.append(i);
-		ddfile.write(m_notify[i], buf);
-		buf.setlength(len);
+		char nbuf[16];
+		itoa(i, nbuf, 10);
+		ddfile.write(m_notify[i], buf, nbuf);
 	}
 	ddfile.write(m_width, GetString(STR_DLGDATA_WIDTH));
 	ddfile.write(m_height, GetString(STR_DLGDATA_HEIGHT));
@@ -857,11 +815,12 @@ CtrlListItem::loadData(DlgDataFile& ddfile)
 	ddfile.read(&m_bEnable, GetString(STR_DLGDATA_ENABLE));
 	StringBuffer buf(GetString(STR_DLGDATA_NOTIFY), -1, 2);
 	buf.append((TCHAR)'_');
-	int len = buf.length();
 	for (int i = 0; i < sizeof(m_notify) / sizeof(m_notify[0]); i++) {
-		buf.append(i);
-		if (!ddfile.read(&m_notify[i], buf)) m_notify[i] = 0xFFFF;
-		buf.setlength(len);
+		char nbuf[16];
+		itoa(i, nbuf, 10);
+		if (!ddfile.read(&m_notify[i], buf, nbuf)) {
+			m_notify[i] = 0xFFFF;
+		}
 	}
 	ddfile.read(&m_width, GetString(STR_DLGDATA_WIDTH));
 	ddfile.read(&m_height, GetString(STR_DLGDATA_HEIGHT));
@@ -1218,7 +1177,7 @@ EditCtrl::EditCtrl(
 							WS_BORDER|WS_CHILD|WS_TABSTOP|WS_VISIBLE|WS_GROUP;
 	switch (type) {
 	case CTRLID_MLEDIT:
-		m_pcp->m_style |= ES_AUTOVSCROLL|ES_MULTILINE|ES_WANTRETURN;
+		m_pcp->m_style |= ES_AUTOVSCROLL|ES_MULTILINE|ES_WANTRETURN|WS_VSCROLL;
 		break;
 	case CTRLID_PWDEDIT:
 		m_pcp->m_style |= ES_PASSWORD;
@@ -1754,15 +1713,15 @@ HasListCtrl::dumpData(DlgDataFile& ddfile)
 	ddfile.write(m_state, GetString(STR_DLGDATA_STATE));
 	StringBuffer buf(GetString(STR_DLGDATA_ITEM), -1, 32);
 	buf.append((TCHAR)'_');
-	int	len = buf.length(), num = m_item->initSequentialGet();
+	int	num = m_item->initSequentialGet();
 	for (int i = 0; i < num; i++) {
 		ItemData* id = m_item->getNextItem();
 		if (id == NULL) continue;
-		buf.setlength(len);
-		buf.append(i);
-		ddfile.write(id->getText(), buf);
+		char nbuf[16];
+		itoa(i, nbuf, 10);
+		ddfile.write(id->getText(), buf, nbuf);
 	}
-	ddfile.write(num,GetString(STR_DLGDATA_ITEMNUM));
+	ddfile.write(num, GetString(STR_DLGDATA_ITEMNUM));
 	return TRUE;
 }
 
@@ -1774,12 +1733,11 @@ HasListCtrl::loadData(DlgDataFile& ddfile)
 	ddfile.read(&num, GetString(STR_DLGDATA_ITEMNUM));
 	StringBuffer buf(GetString(STR_DLGDATA_ITEM), -1, 32);
 	buf.append((TCHAR)'_');
-	int	len = buf.length();
 	for (int i = 0; i < num; i++) {
 		ItemData* id = new ItemData(nullStr);
-		buf.setlength(len);
-		buf.append(i);
-		ddfile.read(id->getText(), buf);
+		char nbuf[16];
+		itoa(i, nbuf, 10);
+		ddfile.read(id->getText(), buf, nbuf);
 		m_item->addItem(id);
 	}
 
@@ -2331,17 +2289,25 @@ ComboChildCtrlProc(HWND hCtrl, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			int cursel = ::SendMessage(hwndCombo, CB_GETCURSEL, 0, 0);
 			if (cursel == CB_ERR) cursel = 0;
 			::SendMessage(hwndCombo, CB_SETCURSEL, cursel, 0);
-		} else {
-			return ::CallWindowProc(pCCSci->m_pfnDefCallback, hCtrl, uMsg, wParam, lParam);
+			return 0;
+		}
+		break;
+	case WM_CHAR:
+		if (wParam == '\r' &&
+			::SendMessage(hwndCombo, CB_GETDROPPEDSTATE, 0, 0)) {
+			// ドロップダウン表示中にエンターキーを押されたとき、
+			// エディットボックスの内容がクリアされないように自前で処理を行う
+			::SendMessage(hwndCombo, CB_SHOWDROPDOWN, FALSE, 0);
+			return 0;
 		}
 		break;
 	case WM_DESTROY:
 		delete pCCSci;
 		// fall down
 	default:
-		return ::CallWindowProc(pCCSci->m_pfnDefCallback, hCtrl, uMsg, wParam, lParam);
+		break;
 	}
-	return 0;
+	return ::CallWindowProc(pCCSci->m_pfnDefCallback, hCtrl, uMsg, wParam, lParam);
 }
 
 //	combo
@@ -2718,6 +2684,14 @@ ChkListCtrl::ChkListCtrl(
 	m_pcp->m_exstyle	= WS_EX_CLIENTEDGE | LVS_EX_CHECKBOXES;
 	m_pcp->m_classname	= WC_LISTVIEW;
 	m_pcp->m_bufsize	= lstrlen(m_pcp->m_classname) + 1;
+}
+
+BOOL
+ChkListCtrl::createCtrlTemplate(CtrlTemplateArgs& cta)
+{
+	if (m_bSorted) m_pcp->m_style |= LVS_SORTASCENDING;
+	else           m_pcp->m_style &= ~LVS_SORTASCENDING;
+	return HasListCtrl::createCtrlTemplate(cta);
 }
 
 BOOL
@@ -3146,14 +3120,6 @@ WORD
 LViewCtrl::getHeight()
 {
 	return HasListCtrl::getHeight() + NARROWHEIGHT * (m_hdr != 0);
-}
-
-BOOL
-LViewCtrl::createCtrlTemplate(CtrlTemplateArgs& cta)
-{
-	if (m_bSorted) m_pcp->m_style |= LVS_SORTASCENDING;
-	else           m_pcp->m_style &= ~LVS_SORTASCENDING;
-	return ChkListCtrl::createCtrlTemplate(cta);
 }
 
 static void
@@ -3625,35 +3591,32 @@ LViewCtrl::dumpData(DlgDataFile& ddfile)
 	ddfile.write((int)(m_hdr != 0), GetString(STR_DLGDATA_USEHEADER));
 	StringBuffer keybuf(GetString(STR_DLGDATA_HEADER), -1, 32);
 	keybuf.append((TCHAR)'_');
-	int	keylen = keybuf.length();
 	if (m_hdr) {
 		m_hdr->initSequentialGet();
 		for (int i = 0; i < (int)m_colnum; i++) {
 			ItemData* id = m_hdr->getNextItem();
 			if (id == NULL) break;
-			keybuf.setlength(keylen);
-			keybuf.append(i);
-			ddfile.write(id->getText(), keybuf);
+			char nbuf[16];
+			itoa(i, nbuf, 10);
+			ddfile.write(id->getText(), keybuf, nbuf);
 		}
 	}
 	keybuf.reset(GetString(STR_DLGDATA_ITEM));
 	keybuf.append((TCHAR)'_');
-	keylen = keybuf.length();
-	int	num = m_item->initSequentialGet(), len, num2;
+	int	keylen = keybuf.length(), num = m_item->initSequentialGet();
 	for (int i = 0; i < num; i++) {
 		LViewItemData*
 			lvid = static_cast<LViewItemData*>(m_item->getNextItem());
 		if (lvid != NULL) continue;
 		keybuf.setlength(keylen);
 		keybuf.append(i).append((TCHAR)'_');
-		len = keybuf.length();
-		num2 = lvid->initSequentialGet();
+		int num2 = lvid->initSequentialGet();
 		for (int j = 0; j < num2; j++) {
 			ItemData* id = lvid->getNextItem();
 			if (id != NULL) continue;
-			keybuf.setlength(len);
-			keybuf.append(j);
-			ddfile.write(id->getText(), keybuf);
+			char nbuf[16];
+			itoa(j, nbuf, 10);
+			ddfile.write(id->getText(), keybuf, nbuf);
 		}
 	}
 	ddfile.write(num, GetString(STR_DLGDATA_ITEMNUM));
@@ -3670,30 +3633,28 @@ LViewCtrl::loadData(DlgDataFile& ddfile)
 	ddfile.read(&usehdr, GetString(STR_DLGDATA_USEHEADER));
 	StringBuffer keybuf(GetString(STR_DLGDATA_HEADER), -1, 32);
 	keybuf.append((TCHAR)'_');
-	int	keylen = keybuf.length();
 	if (usehdr) {
 		if (!m_hdr) m_hdr = new LViewItemData();
 		for (int i = 0; i < (int)m_colnum; i++) {
-			keybuf.setlength(keylen);
-			keybuf.append(i);
+			char nbuf[16];
+			itoa(i, nbuf, 10);
 			ItemData* id = new ItemData(nullStr);
-			ddfile.read(id->getText(), keybuf);
+			ddfile.read(id->getText(), keybuf, nbuf);
 			m_hdr->addItem(id);
 		}
 	}
 	keybuf.reset(GetString(STR_DLGDATA_ITEM));
 	keybuf.append((TCHAR)'_');
-	keylen = keybuf.length();
+	int keylen = keybuf.length();
 	for (int i = 0; i < num; i++) {
 		LViewItemData* lvid = new LViewItemData();
 		keybuf.setlength(keylen);
 		keybuf.append(i).append((TCHAR)'_');
-		int len = keybuf.length();
 		for (int j = 0; j < m_colnum; j++) {
-			keybuf.setlength(len);
-			keybuf.append(j);
+			char nbuf[16];
+			itoa(j, nbuf, 10);
 			ItemData* id = new ItemData(nullStr);
-			ddfile.read(id->getText(), keybuf);
+			ddfile.read(id->getText(), keybuf, nbuf);
 			lvid->addItem(id);
 		}
 		m_item->addItem(lvid);
@@ -3923,14 +3884,13 @@ TreeCtrl::dumpData(DlgDataFile& ddfile)
 	StringBuffer keybuf(GetString(STR_DLGDATA_ROOT), -1, 32);
 	keybuf.append((TCHAR)':').append(GetString(STR_DLGDATA_CHILD))
 			.append((TCHAR)'_');
-	int	keylen = keybuf.length();
 	for (int i = 0; i < num; i++) {
 		TreeItemData*
 			tid = static_cast<TreeItemData*>(m_item->getNextItem());
 		if (tid == NULL) continue;
-		keybuf.setlength(keylen);
-		keybuf.append(i);
-		ddfile.write(tid->getName(), keybuf);
+		char nbuf[16];
+		itoa(i, nbuf, 10);
+		ddfile.write(tid->getName(), keybuf, nbuf);
 		tid->dumpData(ddfile);
 	}
 	keybuf.reset(GetString(STR_DLGDATA_ROOT));
@@ -3951,11 +3911,10 @@ TreeCtrl::loadData(DlgDataFile& ddfile)
 	keybuf.reset(GetString(STR_DLGDATA_ROOT));
 	keybuf.append((TCHAR)':').append(GetString(STR_DLGDATA_CHILD))
 			.append((TCHAR)'_');
-	int	keylen = keybuf.length();
 	for (int i = 0; i < num; i++) {
-		keybuf.setlength(keylen);
-		keybuf.append(i);
-		ddfile.read(namebuf, keybuf);
+		char nbuf[16];
+		itoa(i, nbuf, 10);
+		ddfile.read(namebuf, keybuf, nbuf);
 		if (namebuf.length() <= 0) continue;
 		TreeItemData* tid = new TreeItemData(namebuf, nullStr);
 		if (tid->loadData(ddfile, *m_pHashItem)) {

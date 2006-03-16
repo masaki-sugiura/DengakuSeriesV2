@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.31 2005-07-04 15:58:21 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.32 2006-03-16 14:46:56 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -698,14 +698,15 @@ DlgPage::loadData(DlgDataFile& ddfile)
 	ddfile.read(&num,GetString(STR_DLGDATA_CTRLNUM),secname);
 	secname.reset(GetString(STR_DLGDATA_CTRLPROPERTY));
 	secname.append((TCHAR)'_').append(m_strName).append((TCHAR)':');
-	int	len = secname.length(), type;
+	int	len = secname.length();
 	StringBuffer namebuf(32), textbuf(80);
 	for (int i = 0; i < num; i++) {
 		secname.setlength(len);
 		secname.append(i);
-		ddfile.read(&type,GetString(STR_DLGDATA_TYPE),secname);
-		ddfile.read(namebuf,GetString(STR_DLGDATA_NAME),secname);
-		ddfile.read(textbuf,GetString(STR_DLGDATA_TEXT),secname);
+		int type;
+		ddfile.read(&type, GetString(STR_DLGDATA_TYPE), secname);
+		ddfile.read(namebuf, GetString(STR_DLGDATA_NAME), secname);
+		ddfile.read(textbuf, GetString(STR_DLGDATA_TEXT), secname);
 		m_pCurCtrlData = CtrlListItem::createCtrl(type,namebuf,textbuf);
 		if (m_pCurCtrlData == NULL) continue;
 		ddfile.setSecName(secname);
