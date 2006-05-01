@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.49 2006-03-16 14:46:56 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.50 2006-05-01 14:53:53 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -936,8 +936,9 @@ BOOL
 SimpleCtrl::enableCtrl(BOOL bEnable, BOOL bChange)
 {
 	if (bChange) m_bEnable = bEnable;
+	BOOL bActualState = bChange ? bEnable : (m_bEnable && bEnable);
 	if (m_pcp->m_hwndCtrl != NULL) {
-		::EnableWindow(m_pcp->m_hwndCtrl, m_bEnable && bEnable);
+		::EnableWindow(m_pcp->m_hwndCtrl, bActualState);
 	}
 	return TRUE;
 }
@@ -1869,10 +1870,12 @@ RadioCtrl::enableCtrl(BOOL bEnable, BOOL bChange)
 	if (HasListCtrl::enableCtrl(bEnable,bChange)) {
 		HWND hDlg = m_pDlgPage->gethwndPage();
 		if (hDlg != NULL) {
+			BOOL bActualState = bChange ? bEnable : (m_bEnable && bEnable);
 			int num = m_item->itemNum();
-			for (int i = 1; i <= num; i++)
+			for (int i = 1; i <= num; i++) {
 				::EnableWindow(::GetDlgItem(hDlg, m_pcp->m_id + i),
-								m_bEnable && bEnable);
+								bActualState);
+			}
 		}
 	}
 	return TRUE;
@@ -3958,6 +3961,19 @@ FrameCtrl::~FrameCtrl()
 	delete [] m_page;
 }
 
+DlgPage*
+FrameCtrl::getPageByIndex(int index)
+{
+	ItemData* id = m_item->getItemByIndex(index);
+	if (!id) {
+		return NULL;
+	}
+
+	DlgPage* pPage = m_pDlgPage->getDlgFrame().getPage(id->getText());
+
+	return pPage;
+}
+
 HWND
 FrameCtrl::getFocusedCtrl() const
 {
@@ -4071,12 +4087,15 @@ FrameCtrl::enableCtrl(BOOL bEnable, BOOL bChange)
 {
 	if (m_state <= 0) m_state = 1;
 	if (bChange) m_bEnable = bEnable;
-	if (m_pcp->m_hwndCtrl != NULL &&
-		m_page != NULL &&
-		m_state <= m_item->itemNum() &&
-		m_page[m_state-1] != NULL) {
-		m_page[m_state-1]->enablePage(bEnable);
+	BOOL bActualState = bChange ? bEnable : (m_bEnable && bEnable);
+	if (m_pcp->m_hwndCtrl) {
+		::EnableWindow(m_pcp->m_hwndCtrl, bActualState);
 	}
+	DlgPage* pPage = getPageByIndex(m_state - 1);
+	if (!pPage) {
+		return FALSE;
+	}
+	pPage->enablePage(bActualState);
 	return TRUE;
 }
 
@@ -4084,12 +4103,11 @@ BOOL
 FrameCtrl::showCtrl(BOOL bVisible)
 {
 	if (m_state <= 0) m_state = 1;
-	if (m_pcp->m_hwndCtrl != NULL &&
-		m_page != NULL &&
-		m_state <= m_item->itemNum() &&
-		m_page[m_state-1] != NULL) {
-		m_page[m_state-1]->showPage(bVisible);
+	DlgPage* pPage = getPageByIndex(m_state - 1);
+	if (!pPage) {
+		return FALSE;
 	}
+	pPage->showPage(bVisible);
 	return TRUE;
 }
 
@@ -4169,6 +4187,19 @@ TabCtrl::TabCtrl(
 	m_poffset.y = UHEIGHT * NARROWHEIGHT;
 	m_pmargin.x = 2;
 	m_pmargin.y = 6;
+}
+
+DlgPage*
+TabCtrl::getPageByIndex(int index)
+{
+	NamedItemData* id = static_cast<NamedItemData*>(m_item->getItemByIndex(index));
+	if (!id) {
+		return NULL;
+	}
+
+	DlgPage* pPage = m_pDlgPage->getDlgFrame().getPage(id->getName());
+
+	return pPage;
 }
 
 HWND
@@ -4269,11 +4300,21 @@ TabCtrl::enableCtrl(BOOL bEnable, BOOL bChange)
 {
 	if (!HasListCtrl::enableCtrl(bEnable, bChange)) return FALSE;
 	if (m_state <= 0 || m_state > m_item->itemNum()) m_state = 1;
-	TC_ITEM	tci;
-	tci.mask = TCIF_PARAM;
-	TabCtrl_GetItem(m_pcp->m_hwndCtrl, m_state-1, &tci);
-	if (tci.lParam != 0)
-		reinterpret_cast<DlgPage*>(tci.lParam)->enablePage(bEnable);
+	BOOL bActualState = bChange ? bEnable : (m_bEnable && bEnable);
+	if (m_pcp->m_hwndCtrl) {
+		TC_ITEM	tci;
+		tci.mask = TCIF_PARAM;
+		TabCtrl_GetItem(m_pcp->m_hwndCtrl, m_state-1, &tci);
+		if (tci.lParam != 0) {
+			reinterpret_cast<DlgPage*>(tci.lParam)->enablePage(bActualState);
+		}
+	} else {
+		DlgPage* pPage = getPageByIndex(m_state - 1);
+		if (!pPage) {
+			return FALSE;
+		}
+		pPage->enablePage(bActualState);
+	}
 	return TRUE;
 }
 
@@ -4282,11 +4323,19 @@ TabCtrl::showCtrl(BOOL bVisible)
 {
 	if (!HasListCtrl::showCtrl(bVisible)) return FALSE;
 	if (m_state <= 0 || m_state > m_item->itemNum()) m_state = 1;
-	TC_ITEM	tci;
-	tci.mask = TCIF_PARAM;
-	TabCtrl_GetItem(m_pcp->m_hwndCtrl, m_state-1, &tci);
-	if (tci.lParam != 0)
-		reinterpret_cast<DlgPage*>(tci.lParam)->showPage(bVisible);
+	if (m_pcp->m_hwndCtrl) {
+		TC_ITEM	tci;
+		tci.mask = TCIF_PARAM;
+		TabCtrl_GetItem(m_pcp->m_hwndCtrl, m_state-1, &tci);
+		if (tci.lParam != 0)
+			reinterpret_cast<DlgPage*>(tci.lParam)->showPage(bVisible);
+	} else {
+		DlgPage* pPage = getPageByIndex(m_state - 1);
+		if (!pPage) {
+			return FALSE;
+		}
+		pPage->showPage(bVisible);
+	}
 	return TRUE;
 }
 
@@ -4295,7 +4344,9 @@ TabCtrl::sendData()
 {
 	if (!HasListCtrl::sendData()) return FALSE;
 	if (m_state <= 0 || m_state > m_item->itemNum()) m_state = 1;
-	TabCtrl_SetCurSel(m_pcp->m_hwndCtrl, m_state-1);
+	if (m_pcp->m_hwndCtrl) {
+		TabCtrl_SetCurSel(m_pcp->m_hwndCtrl, m_state-1);
+	}
 	return TRUE;
 }
 
@@ -4303,7 +4354,9 @@ BOOL
 TabCtrl::receiveData()
 {
 	if (!HasListCtrl::receiveData()) return FALSE;
-	m_state = TabCtrl_GetCurSel(m_pcp->m_hwndCtrl) + 1;
+	if (m_pcp->m_hwndCtrl) {
+		m_state = TabCtrl_GetCurSel(m_pcp->m_hwndCtrl) + 1;
+	}
 	if (m_state <= 0 || m_state > m_item->itemNum()) m_state = 1;
 	return TRUE;
 }
@@ -4511,9 +4564,10 @@ BOOL
 MultipleCtrl::enableCtrl(BOOL bEnable, BOOL bChange)
 {
 	if (bChange) m_bEnable = bEnable;
+	BOOL bActualState = bChange ? bEnable : (m_bEnable && bEnable);
 	for (int i = 0; i < m_cnum; i++) {
 		if (m_pcp[i].m_hwndCtrl == NULL) continue;
-		::EnableWindow(m_pcp[i].m_hwndCtrl, m_bEnable && bEnable);
+		::EnableWindow(m_pcp[i].m_hwndCtrl, bActualState);
 	}
 	return TRUE;
 }

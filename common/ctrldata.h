@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.22 2006-03-16 14:46:56 sugiura Exp $
+//	$Id: ctrldata.h,v 1.23 2006-05-01 14:53:53 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -873,6 +873,8 @@ protected:
 	BOOL m_bVisible;
 
 	HBRUSH onCtlColor(HWND hwndCtrl, UINT, HDC);
+
+	virtual DlgPage* getPageByIndex(int index);
 };
 
 //	tab
@@ -900,6 +902,9 @@ public:
 
 	BOOL dumpData(DlgDataFile&);
 	BOOL loadData(DlgDataFile&);
+
+protected:
+	DlgPage* getPageByIndex(int index);
 };
 
 
