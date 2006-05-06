@@ -1,4 +1,4 @@
-//	$Id: common.cpp,v 1.42 2006-05-01 15:12:54 sugiura Exp $
+//	$Id: common.cpp,v 1.43 2006-05-06 11:42:37 sugiura Exp $
 /*
  *	common.cpp
  *	その他サーバ特有の定義
@@ -8,7 +8,7 @@
 
 LPCSTR svr_strings[] = {
 	"",
-	"2.84",
+	"2.85",
 	"田楽(でんがく)サーバ",
 	"DengakuServer",
 	"HideMacroServer",

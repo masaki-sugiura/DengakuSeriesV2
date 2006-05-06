@@ -1,4 +1,4 @@
-//	$Id: misc.cpp,v 1.11 2005-06-19 17:53:49 sugiura Exp $
+//	$Id: misc.cpp,v 1.12 2006-05-06 11:42:37 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数
@@ -64,11 +64,11 @@ MyGetWindowText(HWND hWnd, StringBuffer& strText)
 	WCHAR wBuf[128];
 	LPWSTR pwszText = wBuf;
 
-	if (nSize > 128) {
-		pwszText = new WCHAR[nSize];
+	if (nSize + 1 > 128) {
+		pwszText = new WCHAR[nSize + 1];
 	}
 
-	::GetWindowTextW(hWnd, pwszText, nSize);
+	::GetWindowTextW(hWnd, pwszText, nSize + 1);
 
 	strText.reset(pwszText);
 
@@ -90,8 +90,8 @@ MySetWindowText(HWND hWnd, const StringBuffer& strText)
 	LPWSTR pwszText = wBuf;
 
 	int nSize = strText.toUnicode(NULL);
-	if (nSize > 128) {
-		pwszText = new WCHAR[nSize];
+	if (nSize + 1 > 128) {
+		pwszText = new WCHAR[nSize + 1];
 	}
 
 	strText.toUnicode(pwszText);
