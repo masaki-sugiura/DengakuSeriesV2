@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.23 2006-05-01 14:53:53 sugiura Exp $
+//	$Id: ctrldata.h,v 1.24 2006-05-20 17:02:50 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -262,6 +262,8 @@ public:
 	virtual int onGetImeState();	//	IME の初期状態を設定
 	virtual BOOL onSetSort(CmdLineParser&); // ソートの状態を変更
 	virtual StringBuffer onGetSort(); // ソートの状態を取得
+	virtual int onSetFocusedItem(const StringBuffer& item);	//	フォーカスを得る項目の指定
+	virtual StringBuffer onGetFocusedItem();	//	フォーカスを得ている項目の取得
 
 	//	datafile handlers
 	virtual	BOOL dumpData(DlgDataFile&);	//	データの書き込み
@@ -549,6 +551,8 @@ protected:
 	WORD m_val;
 	WORD m_tic;
 	WORD m_wPrevNotify;
+
+	HBRUSH onCtlColor(HWND hwndCtrl, UINT, HDC);
 };
 
 //	tree
@@ -575,6 +579,8 @@ public:
 	BOOL onSetCtrlFont(CmdLineParser&);	//	フォントの変更
 	StringBuffer onGetState();
 	StringBuffer onGetItem(const StringBuffer&);
+	int onSetFocusedItem(const StringBuffer& item);	//	フォーカスを得る項目の指定
+	StringBuffer onGetFocusedItem();	//	フォーカスを得ている項目の取得
 
 	WORD onNotify(WPARAM, LPARAM);
 
@@ -670,6 +676,8 @@ public:
 	BOOL onDeleteItem(const StringBuffer&);
 	BOOL onResetList();
 	StringBuffer onGetString();
+	int onSetFocusedItem(const StringBuffer& item);	//	フォーカスを得る項目の指定
+	StringBuffer onGetFocusedItem();	//	フォーカスを得ている項目の取得
 
 	BOOL isCommand(WORD);
 
@@ -700,6 +708,8 @@ public:
 	BOOL onInsertItem(CmdLineParser&,const StringBuffer&);
 	BOOL onDeleteItem(const StringBuffer&);
 	BOOL onResetList();
+	int onSetFocusedItem(const StringBuffer& item);	//	フォーカスを得る項目の指定
+	StringBuffer onGetFocusedItem();	//	フォーカスを得ている項目の取得
 
 	WORD onCommand(WPARAM, LPARAM);
 
@@ -720,6 +730,8 @@ protected:
 	UINT m_msg_err;
 
 	BOOL m_bSorted;
+
+	StringBuffer m_strFocusedItem;
 
 	void setViewIndex();
 	void getStateFromView();
@@ -784,6 +796,8 @@ public:
 	BOOL onResetList();
 	StringBuffer onGetState();
 	BOOL onSetCtrlFont(CmdLineParser&);	//	フォントの変更
+	int onSetFocusedItem(const StringBuffer& item);	//	フォーカスを得る項目の指定
+	StringBuffer onGetFocusedItem();	//	フォーカスを得ている項目の取得
 
 	WORD onNotify(WPARAM, LPARAM);
 
@@ -792,6 +806,7 @@ public:
 
 protected:
 	States m_states;
+	StringBuffer m_strFocusedItem;
 
 	BOOL m_bSorted;
 

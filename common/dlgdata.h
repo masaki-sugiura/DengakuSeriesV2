@@ -1,4 +1,4 @@
-//	$Id: dlgdata.h,v 1.15 2005-01-16 11:07:48 sugiura Exp $
+//	$Id: dlgdata.h,v 1.16 2006-05-20 17:02:50 sugiura Exp $
 /*
  *	dlgdata.h
  *	ダイアログを扱うクラス
@@ -220,7 +220,7 @@ public:
 
 //	コントロールの取得
 	CtrlListItem* getCtrl(const StringBuffer& ctrlname = nullStr,
-						const StringBuffer& pagename = nullStr);
+						const StringBuffer& pagename = nullStr) const;
 
 //	フォーカスを得(てい)るコントロール
 	int setFocusedCtrl(const StringBuffer& name);
@@ -245,6 +245,10 @@ public:
 	{
 		return m_bAlreadyFocused;
 	}
+
+	//	コントロール内のフォーカスを得る項目を指定＆取得
+	int setCtrlFocusedItem(const StringBuffer& ctrl, const StringBuffer& item);
+	StringBuffer getCtrlFocusedItem(const StringBuffer& ctrl) const;
 
 //	ダイアログの背景をTABコントロールと同色にする
 	void setBackGroundTheme(HWND hwndPage, BOOL bInTab)

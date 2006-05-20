@@ -1,4 +1,4 @@
-//	$Id: misc.h,v 1.8 2005-06-19 17:53:49 sugiura Exp $
+//	$Id: misc.h,v 1.9 2006-05-20 17:02:50 sugiura Exp $
 /*
  *	misc.h
  *	雑多なユーティリティ関数
@@ -24,9 +24,11 @@ void InternalError(LPCSTR file, int line);
 
 BOOL MySetWindowText(HWND hWnd, LPCSTR pszText);
 
+#if 0
 #ifdef SetWindowText
 #undef SetWindowText
 #endif
 #define SetWindowText(hWnd,lpString)	MySetWindowText(hWnd, lpString)
+#endif
 
 #endif

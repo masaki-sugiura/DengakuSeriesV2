@@ -1,4 +1,4 @@
-//	$Id: ds_handler.cpp,v 1.7 2005-01-16 07:38:33 sugiura Exp $
+//	$Id: ds_handler.cpp,v 1.8 2006-05-20 17:02:50 sugiura Exp $
 /*
  *	ds_handler.cpp
  *	ダイアログサービスの実装
@@ -138,6 +138,12 @@ ConvData::On_setctrlfont(CmdLineParser& params)
 }
 
 int
+ConvData::On_setfocuseditem(CmdLineParser& params)
+{
+	return this->si_setctrlfocuseditem(params.getArgvStr(0), params.getArgvStr(1));
+}
+
+int
 ConvData::On_message(CmdLineParser& params)
 {
 	return this->si_showmessage(params.getArgvStr(0),params.getArgvStr(1));
@@ -224,6 +230,12 @@ StringBuffer
 ConvData::On_getitem(CmdLineParser& params)
 {
 	return this->si_getctrlitem(params.getArgvStr(0),params.getArgvStr(1));
+}
+
+StringBuffer
+ConvData::On_getfocuseditem(CmdLineParser& params)
+{
+	return this->si_getctrlfocuseditem(params.getArgvStr(0));
 }
 
 StringBuffer
@@ -340,6 +352,12 @@ int
 ConvData::On_ctrlfont(CmdLineParser& params)
 {
 	return this->si_setctrlfont(nullStr,params);
+}
+
+int
+ConvData::On_focuseditem(CmdLineParser& params)
+{
+	return this->si_setctrlfocuseditem(nullStr, params.getArgvStr(0));
 }
 
 int

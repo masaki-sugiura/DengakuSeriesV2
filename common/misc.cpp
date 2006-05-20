@@ -1,4 +1,4 @@
-//	$Id: misc.cpp,v 1.12 2006-05-06 11:42:37 sugiura Exp $
+//	$Id: misc.cpp,v 1.13 2006-05-20 17:02:50 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数
@@ -51,7 +51,7 @@ MyGetWindowText(HWND hWnd, StringBuffer& strText)
 		return FALSE;
 	}
 
-	int nSize = ::GetWindowTextLengthW(hWnd);
+	int nSize = ::GetWindowTextLength(hWnd);
 	if (nSize == 0) {
 		DWORD dwErr = ::GetLastError();
 		if (dwErr != NOERROR) {
@@ -61,19 +61,19 @@ MyGetWindowText(HWND hWnd, StringBuffer& strText)
 		return TRUE;
 	}
 
-	WCHAR wBuf[128];
-	LPWSTR pwszText = wBuf;
+	TCHAR szBuf[128];
+	LPTSTR pszText = szBuf;
 
 	if (nSize + 1 > 128) {
-		pwszText = new WCHAR[nSize + 1];
+		pszText = new TCHAR[nSize + 1];
 	}
 
-	::GetWindowTextW(hWnd, pwszText, nSize + 1);
+	::GetWindowText(hWnd, pszText, nSize + 1);
 
-	strText.reset(pwszText);
+	strText.reset(pszText);
 
-	if (pwszText != wBuf) {
-		delete [] pwszText;
+	if (pszText != szBuf) {
+		delete [] pszText;
 	}
 
 	return TRUE;
@@ -86,8 +86,9 @@ MySetWindowText(HWND hWnd, const StringBuffer& strText)
 		return FALSE;
 	}
 
-	WCHAR wBuf[128];
-	LPWSTR pwszText = wBuf;
+#if 0
+	TCHAR wBuf[128];
+	LPTSTR pszText = szBuf;
 
 	int nSize = strText.toUnicode(NULL);
 	if (nSize + 1 > 128) {
@@ -101,6 +102,9 @@ MySetWindowText(HWND hWnd, const StringBuffer& strText)
 	if (pwszText != wBuf) {
 		delete [] pwszText;
 	}
+#else
+	::SetWindowText(hWnd, (LPCSTR)strText);
+#endif
 
 	return TRUE;
 }
@@ -163,6 +167,7 @@ InternalError(LPCSTR file, int line)
 BOOL
 MySetWindowText(HWND hWnd, LPCSTR pszText)
 {
+#if 0
 	int size = ::MultiByteToWideChar(CP_THREAD_ACP,
 									 MB_PRECOMPOSED,
 									 pszText,-1,
@@ -178,6 +183,9 @@ MySetWindowText(HWND hWnd, LPCSTR pszText)
 	BOOL bRet = ::SetWindowTextW(hWnd, wbuf);
 
 	delete [] wbuf;
+#else
+	BOOL bRet = ::SetWindowText(hWnd, pszText);
+#endif
 
 	return bRet;
 }

@@ -1,4 +1,4 @@
-//	$Id: env_var.cpp,v 1.3 2002-09-26 13:13:24 sugiura Exp $
+//	$Id: env_var.cpp,v 1.4 2006-05-20 17:02:50 sugiura Exp $
 /*
  *	env_var.cpp
  *	環境変数の管理に関するクラス
@@ -127,6 +127,13 @@ void
 EnvManager::del(const StringBuffer& env_name)
 {
 	if (env_name.length() <= 0) return;
+#ifdef _DEBUG
+	{
+		char msgbuf[80];
+		wsprintf(msgbuf, "Del: %s\n", (LPCSTR)env_name);
+		::OutputDebugString(msgbuf);
+	}
+#endif
 	m_psma->lock();
 	LPENV_HEADER
 		pEnvHeader = (LPENV_HEADER)m_psma->addr(m_psma->getMasterIndex()),
@@ -245,6 +252,13 @@ EnvManager::loadEnv()
 					(BYTE*)m_psma->addr(pHeader->m_pEnvString),
 					&++dwVarLength
 				);
+#ifdef _DEBUG
+			{
+				char msgbuf[80];
+				wsprintf(msgbuf, "Load: %s = %s\n", namebuf, (const char*)m_psma->addr(pHeader->m_pEnvString));
+				::OutputDebugString(msgbuf);
+			}
+#endif
 			dwNameLength = MAX_PATH;
 			dwVarLength = 0;
 			dwIndex++;
@@ -272,19 +286,18 @@ EnvManager::saveEnv()
 				&dwExist
 			) != ERROR_SUCCESS) throw InvalidObjectNameException();
 	//	既存のレジストリデータの削除
-	DWORD	dwIndex = 0, dwType = REG_SZ,
+	DWORD	dwType = REG_SZ,
 			dwNameLength = MAX_PATH, dwVarLength = 0;
 	while (::RegEnumValue(
 					hDgKey,
-					dwIndex,
-					namebuf,&dwNameLength,
-					NULL,&dwType,
-					NULL,&dwVarLength
+					0,	//	常に先頭を削除
+					namebuf, &dwNameLength,
+					NULL, &dwType,
+					NULL, &dwVarLength
 				) != ERROR_NO_MORE_ITEMS) {
 		::RegDeleteValue(hDgKey,namebuf);
 		dwNameLength = MAX_PATH;
 		dwVarLength = 0;
-		dwIndex++;
 	}
 	//	永続的変数の登録
 	for (LPENV_HEADER
@@ -296,6 +309,13 @@ EnvManager::saveEnv()
 		if (*name == '@') {
 			//	永続的変数
 			const BYTE* value = (const BYTE*)m_psma->addr(pHeader->m_pEnvString);
+#ifdef _DEBUG
+			{
+				char msgbuf[80];
+				wsprintf(msgbuf, "Save: %s = %s\n", name, (const char*)value);
+				::OutputDebugString(msgbuf);
+			}
+#endif
 			assert(!IsBadStringPtr((LPCSTR)value, 1));
 			::RegSetValueEx(
 					hDgKey,

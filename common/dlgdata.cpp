@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.32 2006-03-16 14:46:56 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.33 2006-05-20 17:02:50 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -217,6 +217,7 @@ DlgPageProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_CTLCOLOREDIT:
 		//	コントロールのフォントの色を変更
 		return reinterpret_cast<BOOL>(pdp->onCtlColor(uMsg, wParam, lParam));
+//		return FALSE;
 
 #if 0
 	case WM_CTLCOLORSTATIC:
@@ -324,7 +325,7 @@ DlgPage::createPage(
 	//	ダイアログの作成
 	HWND hwndFrame = m_pDlgFrame->getUserDlg();
 	m_bInTabCtrl = bInTabCtrl;
-	m_hwndPage = ::CreateDialogIndirectParamW(
+	m_hwndPage = ::CreateDialogIndirectParam(
 					m_pDlgFrame->getSessionInstance()->getInstanceHandle(),
 					(LPDLGTEMPLATE)(BYTE*)pDlgTemplate,
 					hwndFrame,
@@ -965,7 +966,7 @@ DlgFrame::createFrame(HWND hwndOwner, BOOL bOnTop)
 	if (bOnTop) m_flags |= 0x10;	//	alwaysontop
 
 	//	親ダイアログのウィンドウの生成
-	m_hwndFrame = ::CreateDialogIndirectParamW(
+	m_hwndFrame = ::CreateDialogIndirectParam(
 								m_pSessionInstance->getInstanceHandle(),
 								(LPDLGTEMPLATE)(BYTE*)pDlgTemplate,
 								hwndOwner,
@@ -1184,7 +1185,7 @@ DlgFrame::createPage(
 
 //	コントロールを名前で取得
 CtrlListItem*
-DlgFrame::getCtrl(const StringBuffer& ctrlname, const StringBuffer& pagename)
+DlgFrame::getCtrl(const StringBuffer& ctrlname, const StringBuffer& pagename) const
 {
 	if (ctrlname.length() <= 0 && pagename.length() <= 0) {
 		//	現在の子ダイアログから現在のコントロールを取得
@@ -1252,6 +1253,28 @@ DlgFrame::getFocusedCtrl() const
 		}
 	}
 	return nullStr;
+}
+
+int
+DlgFrame::setCtrlFocusedItem(const StringBuffer& ctrl, const StringBuffer& item)
+{
+	CtrlListItem* pCtrl = getCtrl(ctrl);
+	if (!pCtrl) {
+		return 0;
+	}
+
+	return pCtrl->onSetFocusedItem(item);
+}
+
+StringBuffer
+DlgFrame::getCtrlFocusedItem(const StringBuffer& ctrl) const
+{
+	CtrlListItem* pCtrl = getCtrl(ctrl);
+	if (!pCtrl) {
+		return nullStr;
+	}
+
+	return pCtrl->onGetFocusedItem();
 }
 
 int

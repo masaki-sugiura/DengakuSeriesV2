@@ -1,4 +1,4 @@
-//	$Id: ds_func.cpp,v 1.10 2005-01-16 09:00:25 sugiura Exp $
+//	$Id: ds_func.cpp,v 1.11 2006-05-20 17:02:50 sugiura Exp $
 /*
  *	ds_func.cpp
  *	ダイアログ操作関数
@@ -160,6 +160,17 @@ SETCTRLFONT(LPCSTR str1, LPCSTR str2)
 	}
 }
 
+//	コントロール中のフォーカスを得る項目の変更
+DENGAKUDLL_API HIDEDLL_NUMTYPE
+SETCTRLFOCUSEDITEM(LPCSTR str1, LPCSTR str2)
+{
+	try {
+		return g_pSessionInstance->si_setctrlfocuseditem(str1, str2);
+	} catch (...) {
+		return 0;
+	}
+}
+
 //	メッセージボックスを表示する
 DENGAKUDLL_API HIDEDLL_NUMTYPE
 SHOWMESSAGE(LPCSTR str1, LPCSTR str2)
@@ -316,6 +327,18 @@ GETCTRLITEM(LPCSTR str1, LPCSTR str2)
 {
 	try {
 		g_strBuffer = g_pSessionInstance->si_getctrlitem(str1,str2);
+		return g_strBuffer;
+	} catch (...) {
+		return "";
+	}
+}
+
+//	コントロール中のフォーカスを得ている項目を返す
+DENGAKUDLL_API LPCSTR
+GETCTRLFOCUSEDITEM(LPCSTR str1)
+{
+	try {
+		g_strBuffer = g_pSessionInstance->si_getctrlfocuseditem(str1);
 		return g_strBuffer;
 	} catch (...) {
 		return "";

@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.20 2006-05-01 14:53:53 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.21 2006-05-20 17:02:50 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -625,5 +625,17 @@ SessionInstance::si_getdlgimestate()
 	TCHAR buf[32];
 	wsprintf(buf, "%d", nState);
 	return buf;
+}
+
+int
+SessionInstance::si_setctrlfocuseditem(const StringBuffer& ctrl, const StringBuffer& item)
+{
+	return m_DlgFrame.setCtrlFocusedItem(ctrl, item);
+}
+
+StringBuffer
+SessionInstance::si_getctrlfocuseditem(const StringBuffer& ctrl)
+{
+	return m_DlgFrame.getCtrlFocusedItem(ctrl);
 }
 

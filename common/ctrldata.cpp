@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.50 2006-05-01 14:53:53 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.51 2006-05-20 17:02:49 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -157,7 +157,7 @@ CtrlListItem::CtrlProperty::changeFont()
 		hFont = reinterpret_cast<HFONT>(::GetStockObject(SYSTEM_FIXED_FONT));
 	LOGFONT lf;
 	::GetObject(hFont,sizeof(LOGFONT), &lf);
-	lf.lfCharSet = ANSI_CHARSET;
+	lf.lfCharSet = DEFAULT_CHARSET;
 	lf.lfWeight		= 400 + (m_fontprop.m_fface & 1) * 300;
 	lf.lfItalic		= (m_fontprop.m_fface & 2) >> 1;
 	lf.lfUnderline	= (m_fontprop.m_fface & 4) >> 2;
@@ -678,6 +678,18 @@ CtrlListItem::onGetImeState()
 	return -1;
 }
 
+int
+CtrlListItem::onSetFocusedItem(const StringBuffer& item)
+{
+	return 0;
+}
+
+StringBuffer
+CtrlListItem::onGetFocusedItem()
+{
+	return nullStr;
+}
+
 BOOL
 CtrlListItem::isCommand(WORD)
 {
@@ -1023,12 +1035,24 @@ SimpleCtrl::onGetCtrlFont()
 HBRUSH
 SimpleCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDc)
 {
-	if (!m_pcp->m_hbrBackground) {
-		LOGBRUSH lbr;
-		lbr.lbColor = ::GetBkColor(hDc);
-		lbr.lbStyle = BS_SOLID;
-		m_pcp->m_hbrBackground = ::CreateBrushIndirect(&lbr);
+	if (!::IsWindowEnabled(hwndCtrl)) {
+		return NULL;
 	}
+	if (m_pcp->m_hbrBackground) {
+		::DeleteObject(m_pcp->m_hbrBackground);
+		m_pcp->m_hbrBackground = NULL;
+	}
+	LOGBRUSH lbr;
+	lbr.lbColor = ::GetBkColor(hDc);
+	lbr.lbStyle = BS_SOLID;
+	m_pcp->m_hbrBackground = ::CreateBrushIndirect(&lbr);
+#ifdef _DEBUG
+	{
+		char msgbuf[80];
+		wsprintf(msgbuf, "TextColor = %08x, BkColor = %08x\n", m_pcp->m_fontprop.m_color, lbr.lbColor);
+		::OutputDebugString(msgbuf);
+	}
+#endif
 	::SetTextColor(hDc, m_pcp->m_fontprop.m_color);
 	return m_pcp->m_hbrBackground;
 }
@@ -1498,6 +1522,12 @@ TrackCtrl::onGetState()
 	m_pcp->m_text.reset();
 	m_pcp->m_text.append((DWORD)m_val);
 	return m_pcp->m_text;
+}
+
+HBRUSH
+TrackCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDc)
+{
+	return NULL;
 }
 
 WORD
@@ -2002,6 +2032,18 @@ RadioCtrl::onGetString()
 	return m_pcp->m_text;
 }
 
+int
+RadioCtrl::onSetFocusedItem(const StringBuffer& pos)
+{
+	return onSetState(CmdLineParser(pos));
+}
+
+StringBuffer
+RadioCtrl::onGetFocusedItem()
+{
+	return onGetState();
+}
+
 BOOL
 RadioCtrl::isCommand(WORD id)
 {
@@ -2227,6 +2269,18 @@ ListCtrl::onResetList()
 		::SendMessage(m_pcp->m_hwndCtrl, m_msg_delall, 0, 0);
 	}
 	return HasListCtrl::onResetList();
+}
+
+int
+ListCtrl::onSetFocusedItem(const StringBuffer& pos)
+{
+	return onSetState(CmdLineParser(pos));
+}
+
+StringBuffer
+ListCtrl::onGetFocusedItem()
+{
+	return onGetState();
 }
 
 WORD
@@ -2744,15 +2798,26 @@ ChkListCtrl::sendData()
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
 	if (m_state > 0 && !m_states.getState(m_state-1))
 		m_states.setState(m_state-1, TRUE);
+	int nFocused = m_strFocusedItem.length() > 0 ? ival(m_strFocusedItem) - 1 : -1;
 	LVITEM	lvi;
 	lvi.mask	  = LVIF_STATE;
 	lvi.iSubItem  = 0;
-	lvi.stateMask = 0xF000;
+	lvi.stateMask = 0xFFFF;
 	int	num = m_item->initSequentialGet();	//	skip dummy
 	for (int i = 0; i < num; i++) {
 		ItemData* id = m_item->getItemByIndex(i);
 		lvi.iItem = id->getViewIndex();
-		lvi.state = m_states.getState(i) ? 0x2000 : 0x1000;
+
+		if (m_states.getState(i)) {
+			lvi.state = 0x2000;
+		} else {
+			lvi.state = 0x1000;
+		}
+
+		if (i == nFocused) {
+			lvi.state |= LVIS_FOCUSED;
+		}
+
 		ListView_SetItem(m_pcp->m_hwndCtrl, &lvi);
 	}
 	if (m_pcp->m_fontprop.m_bchanged) m_pcp->changeFont();
@@ -2766,10 +2831,11 @@ BOOL
 ChkListCtrl::receiveData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
+	m_strFocusedItem = nullStr;
 	LVITEM	lvi;
 	lvi.mask	  = LVIF_STATE | LVIF_PARAM;
 	lvi.iSubItem  = 0;
-	lvi.stateMask = 0xF000;
+	lvi.stateMask = 0xFFFF;
 	int	num = m_item->itemNum();
 	for (int i = 0; i < num; i++) {
 		lvi.iItem = i;
@@ -2778,6 +2844,10 @@ ChkListCtrl::receiveData()
 		id->setViewIndex(i);
 		int pos = m_item->getItemIndexByPtr(id);
 		m_states.setState(pos, (lvi.state & 0xF000) == 0x2000);
+		if (lvi.state & LVIS_FOCUSED) {
+			m_strFocusedItem.reset();
+			m_strFocusedItem.append(pos + 1);
+		}
 	}
 	m_state = m_states.getFirstIndex(num) + 1;
 	return TRUE;
@@ -2966,6 +3036,20 @@ ChkListCtrl::onSetCtrlFont(CmdLineParser& argv)
 	ListView_SetTextColor(m_pcp->m_hwndCtrl, m_pcp->m_fontprop.m_color);
 	this->sendData();
 	return TRUE;
+}
+
+int
+ChkListCtrl::onSetFocusedItem(const StringBuffer& item)
+{
+	m_strFocusedItem = item;
+	return this->sendData();
+}
+
+StringBuffer
+ChkListCtrl::onGetFocusedItem()
+{
+	this->receiveData();
+	return m_strFocusedItem;
 }
 
 WORD
@@ -3228,9 +3312,10 @@ LViewCtrl::sendData()
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
 	if (m_state > 0 && !m_states.getState(m_state-1))
 		m_states.setState(m_state-1, TRUE);
+	int nFocused = m_strFocusedItem.length() > 0 ? ival(m_strFocusedItem) - 1 : -1;
 	LVITEM	lvi;
 	lvi.mask		= LVIF_STATE;
-	lvi.stateMask	= LVIS_SELECTED;
+	lvi.stateMask	= LVIS_SELECTED | LVIS_FOCUSED;
 	lvi.iSubItem	= 0;
 	int	num = m_item->itemNum();
 	for (int i = 0; i < num; i++) {
@@ -3238,6 +3323,9 @@ LViewCtrl::sendData()
 			lvid = static_cast<LViewItemData*>(m_item->getItemByIndex(i));
 		lvi.iItem = lvid->getViewIndex();
 		lvi.state = m_states.getState(i) ? LVIS_SELECTED : 0;
+		if (i == nFocused) {
+			lvi.state |= LVIS_FOCUSED;
+		}
 		ListView_SetItem(m_pcp->m_hwndCtrl, &lvi);
 	}
 	if (m_pcp->m_fontprop.m_bchanged) m_pcp->changeFont();
@@ -3250,9 +3338,10 @@ BOOL
 LViewCtrl::receiveData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
+	m_strFocusedItem = nullStr;
 	LVITEM	lvi;
 	lvi.mask		= LVIF_STATE | LVIF_PARAM;
-	lvi.stateMask	= LVIS_SELECTED;
+	lvi.stateMask	= LVIS_SELECTED | LVIS_FOCUSED;
 	lvi.iSubItem	= 0;
 	int	num = m_item->itemNum();
 	for (int i = 0; i < num; i++) {
@@ -3260,8 +3349,12 @@ LViewCtrl::receiveData()
 		ListView_GetItem(m_pcp->m_hwndCtrl, &lvi);
 		LViewItemData* lvid = (LViewItemData*)lvi.lParam;
 		lvid->setViewIndex(i);
-		m_states.setState(m_item->getItemIndexByPtr(lvid),
-						  (lvi.state & LVIS_SELECTED) != 0);
+		int pos = m_item->getItemIndexByPtr(lvid);
+		m_states.setState(pos, (lvi.state & LVIS_SELECTED) != 0);
+		if (lvi.state & LVIS_FOCUSED) {
+			m_strFocusedItem.reset();
+			m_strFocusedItem.append(pos + 1);
+		}
 	}
 	m_state = m_states.getFirstIndex(num) + 1;
 	return TRUE;
@@ -3865,6 +3958,18 @@ TreeCtrl::onGetItem(const StringBuffer& pos)
 		tid = m_pHashItem->getValue(pos.length() > 0 ? pos : m_state);
 	if (tid == NULL) return FALSE;
 	return tid->getText();
+}
+
+int
+TreeCtrl::onSetFocusedItem(const StringBuffer& pos)
+{
+	return onSetState(CmdLineParser(pos));
+}
+
+StringBuffer
+TreeCtrl::onGetFocusedItem()
+{
+	return onGetState();
 }
 
 WORD
