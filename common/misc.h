@@ -1,4 +1,4 @@
-//	$Id: misc.h,v 1.9 2006-05-20 17:02:50 sugiura Exp $
+//	$Id: misc.h,v 1.10 2006-06-16 15:43:57 sugiura Exp $
 /*
  *	misc.h
  *	雑多なユーティリティ関数
@@ -17,6 +17,7 @@ DWORD GetDialogBaseUnits(HWND hDlg, LPCSTR str = "M");
 void GetWindowCenter(HWND hWnd, HWND hWndOwner, RECT& rect);
 BOOL MyGetWindowText(HWND hWnd, StringBuffer& strText);
 BOOL MySetWindowText(HWND hWnd, const StringBuffer& strText);
+HWND SetFocusForced(HWND hwndFocus);
 
 BOOL TimeStampToFileTime(LPCSTR pszTimeStamp, FILETIME* pft);
 

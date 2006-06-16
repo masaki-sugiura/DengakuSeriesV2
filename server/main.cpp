@@ -1,4 +1,4 @@
-//	$Id: main.cpp,v 1.5 2002-04-03 16:13:14 sugiura Exp $
+//	$Id: main.cpp,v 1.6 2006-06-16 15:43:57 sugiura Exp $
 /*
  *	main.cpp
  *	田楽サーバ本体
@@ -483,16 +483,19 @@ WinMain(
 	//	複数のインスタンスの起動を抑止するため Mutex オブジェクトを作成。
 	//	但し、Mutex の名前は基本サービス名毎に固有なので、
 	//	別の基本サービス名を持つインスタンスは複数起動できる。
+	::SetLastError(0);
 	HANDLE hMutex = ::CreateMutex(NULL,FALSE,pDdeSI->m_sbMutexName);
 	if (::GetLastError() == ERROR_ALREADY_EXISTS) {
 		HWND hwndPrev = ::FindWindow(GetServerString(SVR_STR_DSCLASSNAME),
 									 pDdeSI->m_sbWndTitle);
 		//	タスクトレイのアイコンの状態を変更
-		if (hwndPrev != NULL)
+		if (hwndPrev != NULL) {
 			::SendMessage(hwndPrev, WM_USER_SHOWICON, pDdeSI->m_bHideIcon, 0);
+		}
 
 		//	このプロセスは終了
 		::CloseHandle(hMutex);
+
 		return 0;
 	}
 

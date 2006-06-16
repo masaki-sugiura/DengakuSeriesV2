@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.21 2006-05-20 17:02:50 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.22 2006-06-16 15:43:57 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -168,7 +168,7 @@ int
 SessionInstance::si_enddialog(DWORD waittime)
 {
 	if (!m_DlgFrame.closeFrame()) return FALSE;
-//	this->resetNotify();
+	//	this->resetNotify();
 	m_pDlgThread->stop(waittime); // スレッドが終了するまで待つ
 	DWORD ret = m_pDlgThread->getExitCode();
 	m_pDlgThread = NULL;

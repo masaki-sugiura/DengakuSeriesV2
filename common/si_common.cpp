@@ -1,9 +1,10 @@
-//	$Id: si_common.cpp,v 1.4 2006-03-16 14:46:56 sugiura Exp $
+//	$Id: si_common.cpp,v 1.5 2006-06-16 15:43:57 sugiura Exp $
 /*
  *	si_common.cpp
  *	共通サービスの関数
  */
 
+#include "misc.h"
 #include "session.h"
 #include "cmdline.h"
 // 中途半端な実装のため削除
@@ -331,9 +332,18 @@ GetResultStr(int nResult)
 static DWORD WINAPI
 MessageProc(LPVOID pvParam)
 {
+	GUITHREADINFO thInfo;
+	thInfo.cbSize = sizeof(thInfo);
+	BOOL bRet = ::GetGUIThreadInfo(0, &thInfo);
+
 	MsgThreadProcArgs* pArgs = (MsgThreadProcArgs*)pvParam;
 	
 	pArgs->m_nResult = ::MessageBox(NULL, pArgs->m_strMessage, pArgs->m_strCaption, pArgs->m_uFlags);
+
+	if (bRet) {
+		::SetForegroundWindow(thInfo.hwndActive);
+		::SetFocusForced(thInfo.hwndFocus);
+	}
 
 	return 0;
 }
@@ -342,20 +352,26 @@ StringBuffer
 SessionInstance::si_msgbox(const StringBuffer& msg, CmdLineParser& opt, const StringBuffer& caption)
 {
 	MsgThreadProcArgs args(msg, caption, opt);
-	Thread thread(MessageProc, &args);
 
-	if (!thread.run()) {
-		return "!";
-	}
+	if (args.m_dwTimeout == INFINITE) {
+		//	direct call
+		MessageProc(&args);
+	} else {
+		Thread thread(MessageProc, &args);
 
-	switch (thread.stop(args.m_dwTimeout)) {
-	case WAIT_TIMEOUT:
-		args.m_nResult = -1;
-		break;
-	case WAIT_OBJECT_0:
-		break;
-	default:
-		return "!";
+		if (!thread.run()) {
+			return "!";
+		}
+
+		switch (thread.stop(args.m_dwTimeout)) {
+		case WAIT_TIMEOUT:
+			args.m_nResult = -1;
+			break;
+		case WAIT_OBJECT_0:
+			break;
+		default:
+			return "!";
+		}
 	}
 
 	return GetResultStr(args.m_nResult);

@@ -1,4 +1,4 @@
-//	$Id: smalloc.cpp,v 1.4 2003-02-15 18:37:02 sugiura Exp $
+//	$Id: smalloc.cpp,v 1.5 2006-06-16 15:43:57 sugiura Exp $
 /*
  *	smalloc.cpp
  *	共有メモリ領域についての malloc, free インターフェイスの提供
@@ -71,8 +71,14 @@ SMAlloc::SMAlloc(const StringBuffer& name, UINT inipagenum)
 	//	access control 用の mutex の作成
 	StringBuffer mtxName(name);
 	mtxName.append("_mutex");
+
+	::SetLastError(0);
+	
 	m_hMutex = ::CreateMutex(NULL, FALSE, mtxName);
-	if (m_hMutex == NULL) throw InvalidObjectNameException();
+	if (m_hMutex == NULL) {
+		throw InvalidObjectNameException();
+	}
+
 	BOOL bAlreadyExist = (::GetLastError() == ERROR_ALREADY_EXISTS);
 
 	SMA_AutoLock lock(*this);

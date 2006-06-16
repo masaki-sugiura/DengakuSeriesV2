@@ -42,6 +42,7 @@
 #define IDC_UNC_PATH                    1028
 #define IDC_USERNAME                    1029
 #define IDC_PASSWD                      1030
+#define IDC_LIST1                       1031
 #define IDM_ABOUT                       40001
 #define IDM_QUIT                        40002
 #define IDM_HELP                        40003
@@ -55,7 +56,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        124
 #define _APS_NEXT_COMMAND_VALUE         40007
-#define _APS_NEXT_CONTROL_VALUE         1031
+#define _APS_NEXT_CONTROL_VALUE         1032
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

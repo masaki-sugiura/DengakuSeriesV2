@@ -1,4 +1,4 @@
-//	$Id: strbuf.cpp,v 1.12 2005-06-19 17:53:49 sugiura Exp $
+//	$Id: strbuf.cpp,v 1.13 2006-06-16 15:43:57 sugiura Exp $
 /*
  *	strbuf.cpp
  *	•¶Žš—ñƒNƒ‰ƒX
@@ -249,7 +249,8 @@ void
 StringBuffer::reset(LPCWSTR wstr, int head, int len)
 {
 	if (!IsValidPtr((LPCSTR)wstr)) return;
-	int size = ::WideCharToMultiByte(CP_THREAD_ACP,
+//	int size = ::WideCharToMultiByte(CP_THREAD_ACP,
+	int size = ::WideCharToMultiByte(CP_ACP,
 									WC_COMPOSITECHECK,
 									wstr + head, len,
 									NULL, 0,
@@ -258,7 +259,8 @@ StringBuffer::reset(LPCWSTR wstr, int head, int len)
 	if (!m_sbuf->isShareable()) m_sbuf->recalc();
 	this->dup();
 	m_sbuf->resize(size);
-	::WideCharToMultiByte(CP_THREAD_ACP,
+//	::WideCharToMultiByte(CP_THREAD_ACP,
+	::WideCharToMultiByte(CP_ACP,
 							WC_COMPOSITECHECK,
 							wstr + head, len,
 							m_sbuf->m_buf, size,
@@ -268,7 +270,8 @@ StringBuffer::reset(LPCWSTR wstr, int head, int len)
 int
 StringBuffer::toUnicode(LPWSTR wbuf) const
 {
-	return ::MultiByteToWideChar(CP_THREAD_ACP,
+//	return ::MultiByteToWideChar(CP_THREAD_ACP,
+	return ::MultiByteToWideChar(CP_ACP,
 								MB_PRECOMPOSED,
 								m_sbuf->m_buf, -1,
 								wbuf, wbuf != NULL ? this->length() + 1 : 0);

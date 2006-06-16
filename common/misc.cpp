@@ -1,4 +1,4 @@
-//	$Id: misc.cpp,v 1.13 2006-05-20 17:02:50 sugiura Exp $
+//	$Id: misc.cpp,v 1.14 2006-06-16 15:43:57 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数
@@ -48,13 +48,20 @@ BOOL
 MyGetWindowText(HWND hWnd, StringBuffer& strText)
 {
 	if (!hWnd) {
+		MessageBox(NULL, "ウィンドウハンドルがNULLのため文字列の取得に失敗", NULL, MB_OK);
 		return FALSE;
 	}
+
+	//	エラーコードをクリア
+	::SetLastError(0);
 
 	int nSize = ::GetWindowTextLength(hWnd);
 	if (nSize == 0) {
 		DWORD dwErr = ::GetLastError();
 		if (dwErr != NOERROR) {
+			TCHAR buf[80];
+			wsprintf(buf, "エラーコード 0x%08x のため文字列の取得に失敗", dwErr);
+			MessageBox(NULL, buf, NULL, MB_OK);
 			return FALSE;
 		}
 		strText.reset();
@@ -107,6 +114,37 @@ MySetWindowText(HWND hWnd, const StringBuffer& strText)
 #endif
 
 	return TRUE;
+}
+
+HWND SetFocusForced(HWND hwndFocus)
+{
+	DWORD dwCurThreadID = ::GetCurrentThreadId();
+
+	DWORD dwDlgThreadID;
+	::GetWindowThreadProcessId(hwndFocus, &dwDlgThreadID);
+
+	if (dwDlgThreadID != dwCurThreadID) {
+		BOOL bRet = ::AttachThreadInput(dwDlgThreadID, dwCurThreadID, TRUE);
+		if (!bRet) {
+//			::OutputDebugString("Failed to attach thread!");
+		}
+	}
+
+	HWND hwndPrevFocus = ::SetFocus(hwndFocus);
+	if (hwndPrevFocus == NULL) {
+#ifdef _DEBUG
+		DWORD dwErr = ::GetLastError();
+		TCHAR buf[80];
+		wsprintf(buf, "Failed to set focus: err = %08x", dwErr);
+		::OutputDebugString(buf);
+#endif
+	}
+
+	if (dwDlgThreadID != dwCurThreadID) {
+		::AttachThreadInput(dwDlgThreadID, dwCurThreadID, FALSE);
+	}
+
+	return hwndPrevFocus;
 }
 
 BOOL

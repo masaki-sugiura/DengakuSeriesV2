@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.33 2006-05-20 17:02:50 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.34 2006-06-16 15:43:57 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -190,20 +190,25 @@ DlgPageProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_NOTIFY:
 	case WM_HSCROLL:
 		{
+//			::OutputDebugString("Enter DlgPage WM_COMMAND(1)\n");
 			WORD notify = 0xFFFF;
 			switch (uMsg) {
 			case WM_COMMAND:
+//				::OutputDebugString("Enter DlgPage WM_COMMAND(2)\n");
 				notify = pdp->onCommand(wParam,lParam);
 				break;
 			case WM_NOTIFY:
+//				::OutputDebugString("Enter DlgPage WM_COMMAND(3)\n");
 				notify = pdp->onNotify(wParam,lParam);
 				break;
 			case WM_HSCROLL:	//	トラックバーの通知コードを取得する
+//				::OutputDebugString("Enter DlgPage WM_COMMAND(4)\n");
 				notify = pdp->onHScroll(wParam,lParam);
 				break;
 			}
 			if (notify != 0xFFFF) {
 				//	通知コードの送信
+//				::OutputDebugString("Enter DlgPage WM_COMMAND(5)\n");
 				hwndFrame = pdp->getDlgFrame().getUserDlg();
 				if (hwndFrame != NULL)
 					::PostMessage(hwndFrame,WM_USER_NOTIFY,(WPARAM)notify,0L);
@@ -810,17 +815,20 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_COMMAND:
 		{
+//			::OutputDebugString("Enter DlgFrame WM_COMMAND(1)\n");
 			//	リターンキーを押した時、DlgFrame に DM_GETDEFID が送られ、
 			//	その後送られてくる WM_COMMAND を正しい DlgPage に渡す
 			int	index = HIBYTE(LOWORD(wParam));	//	ctrlID の HIBYTE は
 												//	DlgPage の index
 			if (index > 0) {
+//				::OutputDebugString("Enter DlgFrame WM_COMMAND(2)\n");
 				DlgPage* pdp = pdf->getPage(--index);
 				if (pdp != NULL) {
 					::PostMessage(pdp->gethwndPage(),WM_COMMAND,wParam,lParam);
 					return TRUE;
 				}
 			} else if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL) {
+//				::OutputDebugString("Enter DlgFrame WM_COMMAND(3)\n");
 				return ::SendMessage(hDlg,
 									WM_USER_NOTIFY,
 									(LOWORD(wParam) == IDOK),
@@ -1219,22 +1227,30 @@ DlgFrame::setFocusedCtrl(const StringBuffer& name)
 			if (pdproot == NULL) return FALSE;
 			HWND hwndFocused = pdproot->getFocusedCtrl();
 			if (hwndFocused) {
-				::SetFocus(hwndFocused);
+				::SetFocusForced(hwndFocused);
 			}
 		}
 	} else {
+//		::OutputDebugString("Enter SetFocusedControl!!");
 		CtrlListItem* pctrl = this->getCtrl(name);
-		if (pctrl == NULL) return FALSE;
+		if (pctrl == NULL) {
+//			::OutputDebugString("Failed to find control!!");
+			return FALSE;
+		}
 		m_sbFocusedCtrl = name;
 		if (m_hwndFrame != NULL) {
 #if 0
 			TCHAR buf[80];
 			wsprintf(buf, "setFocusedCtrl(%s)", (LPCSTR)name);
-			::MessageBox(NULL, buf, NULL, MB_OK);
+			::OutputDebugString(buf);
 #endif
 			HWND hwndFocused = pctrl->getCtrlHWND();
-			if (hwndFocused == NULL) return FALSE;
-			::SetFocus(hwndFocused);
+			if (hwndFocused == NULL) {
+//				::OutputDebugString("Failed to find focused control!!");
+				return FALSE;
+			}
+
+			SetFocusForced(hwndFocused);
 		}
 	}
 	return TRUE;
