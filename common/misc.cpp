@@ -1,4 +1,4 @@
-//	$Id: misc.cpp,v 1.14 2006-06-16 15:43:57 sugiura Exp $
+//	$Id: misc.cpp,v 1.15 2007-02-10 19:00:01 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数
@@ -7,6 +7,20 @@
 #include "strutils.h"
 #include "strbuf.h"
 #include "misc.h"
+
+#include <stdarg.h>
+
+void
+DebugOutput(LPCSTR pszFormat, ...)
+{
+	va_list list;
+	va_start(list, pszFormat);
+
+	char buf[256];
+	wvsprintf(buf, pszFormat, list);
+	::OutputDebugString(buf);
+	::OutputDebugString("\n");
+}
 
 BOOL
 isWinNT()

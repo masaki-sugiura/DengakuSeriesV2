@@ -1,4 +1,4 @@
-//	$Id: sharedbuf.h,v 1.2 2005-01-15 06:56:49 sugiura Exp $
+//	$Id: sharedbuf.h,v 1.3 2007-02-10 19:00:01 sugiura Exp $
 /*
  *	sharedbuf.h
  *	スレッド間で共有可能な文字列バッファ
@@ -10,6 +10,7 @@
 #include "linklist.h"
 #include "thread.h"
 
+#if 0
 class Monitor {
 public:
 	Monitor() { hMutex = ::CreateMutex(NULL,FALSE,NULL); }
@@ -22,6 +23,20 @@ protected:
 	virtual DWORD lock() { return WaitObjectWithDispatchMsg(hMutex,INFINITE); }
 	virtual void release() { ::ReleaseMutex(hMutex); }
 };
+#else
+class Monitor {
+public:
+	Monitor() { ::InitializeCriticalSection(&m_critSec); }
+	virtual ~Monitor() { ::DeleteCriticalSection(&m_critSec); }
+
+	friend class Condition;
+
+protected:
+	CRITICAL_SECTION m_critSec;
+	virtual DWORD lock() { ::EnterCriticalSection(&m_critSec); return WAIT_OBJECT_0; }
+	virtual void release() { ::LeaveCriticalSection(&m_critSec); }
+};
+#endif
 
 class Semaphore {
 public:

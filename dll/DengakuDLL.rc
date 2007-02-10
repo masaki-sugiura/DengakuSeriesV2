@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -27,18 +27,18 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "\r\n"
     "\0"
@@ -53,34 +53,27 @@ END
 //
 
 IDD_DIRBROWSE DIALOGEX 0, 0, 187, 207
-STYLE DS_MODALFRAME | DS_SETFOREGROUND | DS_CENTER | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "フォルダの選択"
 FONT 9, "ＭＳ Ｐゴシック", 0, 0, 0x1
 BEGIN
     PUSHBUTTON      "OK",IDC_OK,76,186,50,14
     PUSHBUTTON      "ｷｬﾝｾﾙ",IDC_CANCEL,130,186,50,14
-    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | 
-                    TVS_HASLINES | TVS_EDITLABELS | TVS_DISABLEDRAGDROP | 
-                    TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,34,173,149,
-                    WS_EX_CLIENTEDGE
+    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_EDITLABELS | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,34,173,149,WS_EX_CLIENTEDGE
     PUSHBUTTON      "サブフォルダの追加",IDC_NEWFOLDER,7,19,80,13
     PUSHBUTTON      "名前の変更",IDC_RENAME,91,19,48,13
     PUSHBUTTON      "削除",IDC_DELETE,143,19,37,13
-    CONTROL         "Static",IDC_TITLE,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,
-                    7,7,173,10
+    CONTROL         "Static",IDC_TITLE,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,7,7,173,10
 END
 
-IDD_NETACCOUNT DIALOG DISCARDABLE  0, 0, 293, 79
-STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
-    WS_SYSMENU
+IDD_NETACCOUNT DIALOG  0, 0, 293, 79
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "ネットワーク パスワードの入力"
 FONT 9, "ＭＳ Ｐゴシック"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,236,7,50,14
     PUSHBUTTON      "ｷｬﾝｾﾙ",IDCANCEL,236,25,50,14
-    LTEXT           "アクセスするにはパスワードおよびユーザー名が必要です:",
-                    IDC_STATIC,7,7,174,10
+    LTEXT           "アクセスするにはパスワードおよびユーザー名が必要です:",IDC_STATIC,7,7,174,10
     LTEXT           "",IDC_UNC_PATH,19,19,208,13
     LTEXT           "ユーザー名(&C):",IDC_STATIC,7,41,46,10
     EDITTEXT        IDC_USERNAME,58,39,168,12,ES_AUTOHSCROLL
@@ -95,7 +88,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO 
 BEGIN
     IDD_DIRBROWSE, DIALOG
     BEGIN
@@ -113,17 +106,16 @@ END
 // RT_MANIFEST
 //
 
-1                       RT_MANIFEST DISCARDABLE "DengakuDLL.dll.manifest"
+1                       RT_MANIFEST             "DengakuDLL.dll.manifest"
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,9,1,0
- PRODUCTVERSION 2,9,1,0
+ FILEVERSION 2,9,2,0
+ PRODUCTVERSION 2,9,2,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -138,18 +130,15 @@ BEGIN
     BEGIN
         BLOCK "041104b0"
         BEGIN
-            VALUE "Comments", "田楽(でんがく)ＤＬＬ\0"
-            VALUE "CompanyName", "M. Sugiura\0"
-            VALUE "FileDescription", "DengakuDLL\0"
-            VALUE "FileVersion", "2, 9, 1, 0\0"
-            VALUE "InternalName", "DengakuDLL\0"
-            VALUE "LegalCopyright", "Copyright (C) 1998-2006, M. Sugiura\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "DengakuDLL.dll\0"
-            VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "田楽(でんがく)ＤＬＬ\0"
-            VALUE "ProductVersion", "2, 9, 1, 0\0"
-            VALUE "SpecialBuild", "\0"
+            VALUE "Comments", "田楽(でんがく)ＤＬＬ"
+            VALUE "CompanyName", "M. Sugiura"
+            VALUE "FileDescription", "DengakuDLL"
+            VALUE "FileVersion", "2, 9, 2, 0"
+            VALUE "InternalName", "DengakuDLL"
+            VALUE "LegalCopyright", "Copyright (C) 1998-2007, M. Sugiura"
+            VALUE "OriginalFilename", "DengakuDLL.dll"
+            VALUE "ProductName", "田楽(でんがく)ＤＬＬ"
+            VALUE "ProductVersion", "2, 9, 2, 0"
         END
     END
     BLOCK "VarFileInfo"
@@ -157,8 +146,6 @@ BEGIN
         VALUE "Translation", 0x411, 1200
     END
 END
-
-#endif    // !_MAC
 
 #endif    // 日本語 resources
 /////////////////////////////////////////////////////////////////////////////

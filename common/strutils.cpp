@@ -1,4 +1,4 @@
-//	$Id: strutils.cpp,v 1.5 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: strutils.cpp,v 1.6 2007-02-10 19:00:02 sugiura Exp $
 /*
  *	strutils.cpp
  *	C 文字列のためのユーティリティ関数群の実装
@@ -444,8 +444,8 @@ reverse2(LPSTR str)
 	delete [] buf;
 #else
 	// とりあえず何も考えずに反転
-	int hnum = num / 2;
-	for (int i = 0; i < hnum; i++) {
+	int hnum = num / 2, i;
+	for (i = 0; i < hnum; i++) {
 		TCHAR ch = str[i];
 		str[i] = str[num - i - 1];
 		str[num - i - 1] = ch;

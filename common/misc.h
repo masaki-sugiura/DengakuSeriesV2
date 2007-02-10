@@ -1,4 +1,4 @@
-//	$Id: misc.h,v 1.10 2006-06-16 15:43:57 sugiura Exp $
+//	$Id: misc.h,v 1.11 2007-02-10 19:00:01 sugiura Exp $
 /*
  *	misc.h
  *	雑多なユーティリティ関数
@@ -30,6 +30,13 @@ BOOL MySetWindowText(HWND hWnd, LPCSTR pszText);
 #undef SetWindowText
 #endif
 #define SetWindowText(hWnd,lpString)	MySetWindowText(hWnd, lpString)
+#endif
+
+void DebugOutput(LPCSTR pszFormat, ...);
+#ifdef	_DEBUG
+#define	DEBUG_OUTPUT(x)	DebugOutput x
+#else
+#define	DEBUG_OUTPUT(x)	/* nothing to do */
 #endif
 
 #endif

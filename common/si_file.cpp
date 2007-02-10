@@ -1,4 +1,4 @@
-//	$Id: si_file.cpp,v 1.18 2004-11-16 17:03:51 sugiura Exp $
+//	$Id: si_file.cpp,v 1.19 2007-02-10 19:00:01 sugiura Exp $
 /*
  *	si_file.cpp
  *	SessionInstance: ファイルサービスの関数
@@ -128,8 +128,8 @@ RecycleBin(int srcidx,
 
 	int pnOffset = 0, pnLen = enumFiles.getBufferSize();
 	LPSTR pBuf = new TCHAR[pnLen];
-	int fnum = pnList.initSequentialGet();
-	for (int i = 0; i < fnum; i++) {
+	int fnum = pnList.initSequentialGet(), i;
+	for (i = 0; i < fnum; i++) {
 		PathName* pFile = pnList.getNextItem();
 		int len = pFile->length() + 1;
 		::CopyMemory(pBuf + pnOffset, (LPCSTR)*pFile, len);

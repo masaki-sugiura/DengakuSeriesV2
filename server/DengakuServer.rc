@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -28,7 +28,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON                ICON    DISCARDABLE     "DengakuServer.ico"
+IDI_ICON                ICON                    "DengakuServer.ico"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -36,18 +36,18 @@ IDI_ICON                ICON    DISCARDABLE     "DengakuServer.ico"
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "\r\n"
     "\0"
@@ -61,8 +61,8 @@ END
 // Dialog
 //
 
-IDD_ABOUT DIALOG DISCARDABLE  0, 0, 229, 109
-STYLE WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUT DIALOG  0, 0, 229, 109
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "田楽サーバについて"
 CLASS "DengakuServerClass"
 FONT 9, "ＭＳ Ｐゴシック"
@@ -70,10 +70,8 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,57,88,50,14
     PUSHBUTTON      "ヘルプ",IDC_SHOWHELP,114,88,50,14
     PUSHBUTTON      "終了",IDC_CLOSE,171,88,50,14
-    LTEXT           "田楽 (でんがく) サーバ  Ver.0.01β",IDC_APPNAME,33,13,
-                    108,8
-    LTEXT           "Copyright(C) 1998-2001, M. Sugiura (sugiura@ceres.dti.ne.jp)",
-                    IDC_STATIC,33,23,187,8
+    LTEXT           "田楽 (でんがく) サーバ  Ver.0.01β",IDC_APPNAME,33,13,108,8
+    LTEXT           "Copyright(C) 1998-2001, M. Sugiura (sugiura@ceres.dti.ne.jp)",IDC_STATIC,33,23,187,8
     GROUPBOX        "現在の DDE 通信",IDC_STATIC,7,39,215,47
     LTEXT           "サービス名：",IDC_STATIC,13,52,41,8
     LTEXT           "通信数：",IDC_STATIC,26,65,28,8
@@ -83,34 +81,27 @@ BEGIN
 END
 
 IDD_DIRBROWSE DIALOGEX 0, 0, 187, 207
-STYLE DS_MODALFRAME | DS_SETFOREGROUND | DS_CENTER | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "フォルダの選択"
 FONT 9, "ＭＳ Ｐゴシック", 0, 0, 0x1
 BEGIN
     PUSHBUTTON      "OK",IDC_OK,76,186,50,14
     PUSHBUTTON      "ｷｬﾝｾﾙ",IDC_CANCEL,130,186,50,14
-    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | 
-                    TVS_HASLINES | TVS_EDITLABELS | TVS_DISABLEDRAGDROP | 
-                    TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,34,173,149,
-                    WS_EX_CLIENTEDGE
+    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_EDITLABELS | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,34,173,149,WS_EX_CLIENTEDGE
     PUSHBUTTON      "サブフォルダの追加",IDC_NEWFOLDER,7,19,80,13
     PUSHBUTTON      "名前の変更",IDC_RENAME,91,19,48,13
     PUSHBUTTON      "削除",IDC_DELETE,143,19,37,13
-    CONTROL         "Static",IDC_TITLE,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,
-                    7,7,173,10
+    CONTROL         "Static",IDC_TITLE,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,7,7,173,10
 END
 
-IDD_NETACCOUNT DIALOG DISCARDABLE  0, 0, 293, 79
-STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
-    WS_SYSMENU
+IDD_NETACCOUNT DIALOG  0, 0, 293, 79
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "ネットワーク パスワードの入力"
 FONT 9, "ＭＳ Ｐゴシック"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,236,7,50,14
     PUSHBUTTON      "ｷｬﾝｾﾙ",IDCANCEL,236,25,50,14
-    LTEXT           "アクセスするにはパスワードおよびユーザー名が必要です:",
-                    IDC_STATIC,7,7,174,10
+    LTEXT           "アクセスするにはパスワードおよびユーザー名が必要です:",IDC_STATIC,7,7,174,10
     LTEXT           "",IDC_UNC_PATH,19,19,208,13
     LTEXT           "ユーザー名(&C):",IDC_STATIC,7,41,46,10
     EDITTEXT        IDC_USERNAME,58,39,168,12,ES_AUTOHSCROLL
@@ -125,7 +116,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO 
 BEGIN
     IDD_ABOUT, DIALOG
     BEGIN
@@ -159,14 +150,14 @@ END
 // Menu
 //
 
-IDR_MENU MENU DISCARDABLE 
+IDR_MENU MENU 
 BEGIN
     POPUP "Dummy"
     BEGIN
-        MENUITEM "田楽サーバについて(&A)",      IDM_ABOUT
-        MENUITEM "ヘルプ(&H)",                  IDM_HELP
+        MENUITEM "田楽サーバについて(&A)",               IDM_ABOUT
+        MENUITEM "ヘルプ(&H)",                     IDM_HELP
         MENUITEM SEPARATOR
-        MENUITEM "田楽サーバの終了(&X)",        IDM_QUIT
+        MENUITEM "田楽サーバの終了(&X)",                IDM_QUIT
     END
 END
 
@@ -176,17 +167,16 @@ END
 // RT_MANIFEST
 //
 
-1                       RT_MANIFEST DISCARDABLE "dgserver.exe.manifest"
+1                       RT_MANIFEST             "dgserver.exe.manifest"
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,9,1,0
- PRODUCTVERSION 2,9,1,0
+ FILEVERSION 2,9,2,0
+ PRODUCTVERSION 2,9,2,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -201,18 +191,15 @@ BEGIN
     BEGIN
         BLOCK "041104b0"
         BEGIN
-            VALUE "Comments", "田楽(でんがく)サーバ\0"
-            VALUE "CompanyName", "M. Sugiura\0"
-            VALUE "FileDescription", "dgserver\0"
-            VALUE "FileVersion", "2, 9, 1, 0\0"
-            VALUE "InternalName", "dgserver\0"
-            VALUE "LegalCopyright", "Copyright (C) 1998-2006, M. Sugiura\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "dgserver.exe\0"
-            VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "田楽(でんがく)サーバ\0"
-            VALUE "ProductVersion", "2, 9, 1, 0\0"
-            VALUE "SpecialBuild", "\0"
+            VALUE "Comments", "田楽(でんがく)サーバ"
+            VALUE "CompanyName", "M. Sugiura"
+            VALUE "FileDescription", "dgserver"
+            VALUE "FileVersion", "2, 9, 2, 0"
+            VALUE "InternalName", "dgserver"
+            VALUE "LegalCopyright", "Copyright (C) 1998-2007, M. Sugiura"
+            VALUE "OriginalFilename", "dgserver.exe"
+            VALUE "ProductName", "田楽(でんがく)サーバ"
+            VALUE "ProductVersion", "2, 9, 2, 0"
         END
     END
     BLOCK "VarFileInfo"
@@ -220,8 +207,6 @@ BEGIN
         VALUE "Translation", 0x411, 1200
     END
 END
-
-#endif    // !_MAC
 
 #endif    // 日本語 resources
 /////////////////////////////////////////////////////////////////////////////
