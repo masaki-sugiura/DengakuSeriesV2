@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.22 2006-06-16 15:43:57 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.23 2007-02-16 16:04:09 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -119,6 +119,8 @@ ParseDlgPosUnit(const StringBuffer& str)
 	return DLGPOS_UNIT_FONTSIZE;
 }
 
+//static HWND s_hwndOwner;
+
 int
 SessionInstance::si_showdialog(HWND hwndOwner, BOOL bOnTop)
 {
@@ -161,6 +163,9 @@ SessionInstance::si_showdialog(HWND hwndOwner, BOOL bOnTop)
 	m_DlgFrame.setFocusedCtrl(m_DlgFrame.getFocusedCtrlName());
 	m_DlgFrame.showFrame();
 
+//	::EnableWindow(hwndOwner, FALSE);
+//	s_hwndOwner = hwndOwner;
+
 	return TRUE;
 }
 
@@ -169,9 +174,11 @@ SessionInstance::si_enddialog(DWORD waittime)
 {
 	if (!m_DlgFrame.closeFrame()) return FALSE;
 	//	this->resetNotify();
+//	::EnableWindow(s_hwndOwner, TRUE);
 	m_pDlgThread->stop(waittime); // スレッドが終了するまで待つ
 	DWORD ret = m_pDlgThread->getExitCode();
 	m_pDlgThread = NULL;
+	DebugOutput("Dengaku::enddialog finished!!");
 	return ret == 0;
 }
 

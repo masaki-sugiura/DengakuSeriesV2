@@ -1,4 +1,4 @@
-//	$Id: cs_handler.cpp,v 1.4 2006-03-16 14:46:56 sugiura Exp $
+//	$Id: cs_handler.cpp,v 1.5 2007-02-16 16:04:09 sugiura Exp $
 /*
  *	cs_handler.cpp
  *	共通サービスの実装
@@ -8,6 +8,7 @@
 #include "convdata.h"
 #include "cmdline.h"
 #include "common.h"
+#include "misc.h"
 
 int
 ConvData::On_exit(CmdLineParser& params)

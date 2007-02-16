@@ -1,4 +1,4 @@
-//	$Id: misc.cpp,v 1.15 2007-02-10 19:00:01 sugiura Exp $
+//	$Id: misc.cpp,v 1.16 2007-02-16 16:04:09 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数
@@ -140,18 +140,14 @@ HWND SetFocusForced(HWND hwndFocus)
 	if (dwDlgThreadID != dwCurThreadID) {
 		BOOL bRet = ::AttachThreadInput(dwDlgThreadID, dwCurThreadID, TRUE);
 		if (!bRet) {
-//			::OutputDebugString("Failed to attach thread!");
+			DEBUG_OUTPUT(("Failed to attach thread!"));
 		}
 	}
 
 	HWND hwndPrevFocus = ::SetFocus(hwndFocus);
 	if (hwndPrevFocus == NULL) {
-#ifdef _DEBUG
 		DWORD dwErr = ::GetLastError();
-		TCHAR buf[80];
-		wsprintf(buf, "Failed to set focus: err = %08x", dwErr);
-		::OutputDebugString(buf);
-#endif
+		DEBUG_OUTPUT(("Failed to set focus: err = %08x", dwErr));
 	}
 
 	if (dwDlgThreadID != dwCurThreadID) {
