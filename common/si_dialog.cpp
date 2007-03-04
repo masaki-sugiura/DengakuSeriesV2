@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.23 2007-02-16 16:04:09 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.24 2007-03-04 18:06:56 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -175,7 +175,9 @@ SessionInstance::si_enddialog(DWORD waittime)
 	if (!m_DlgFrame.closeFrame()) return FALSE;
 	//	this->resetNotify();
 //	::EnableWindow(s_hwndOwner, TRUE);
+	DebugOutput("Enter DlgThread Stop");
 	m_pDlgThread->stop(waittime); // スレッドが終了するまで待つ
+	DebugOutput("Leave DlgThread Stop");
 	DWORD ret = m_pDlgThread->getExitCode();
 	m_pDlgThread = NULL;
 	DebugOutput("Dengaku::enddialog finished!!");

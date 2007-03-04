@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.34 2006-06-16 15:43:57 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.35 2007-03-04 18:06:55 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -786,6 +786,7 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_USER_NOTIFY:
 		{
 			//	子ダイアログからの通知コード
+			DebugOutput("WM_USER_NOTIFY handled");
 			pdf->setNotify(StringBuffer(16).append((int)wParam));
 		}
 		break;
@@ -794,6 +795,10 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			::SetWindowLong(hDlg, DWL_MSGRESULT, (LONG)(LPCSTR)pdf->getFocusedCtrl());
 		}
+		break;
+
+	case WM_USER_SETFOCUSEDCTRL:
+		pdf->setFocusedCtrl();
 		break;
 
 	case DM_SETDEFID:
@@ -829,7 +834,7 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				}
 			} else if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL) {
 //				::OutputDebugString("Enter DlgFrame WM_COMMAND(3)\n");
-				return ::SendMessage(hDlg,
+				return ::PostMessage(hDlg,
 									WM_USER_NOTIFY,
 									(LOWORD(wParam) == IDOK),
 									0);
@@ -843,7 +848,9 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_CLOSE:
 //		::SendMessage(hDlg,WM_USER_NOTIFY,0,0);	//	"0" を通知
-		::PostMessage(hDlg,WM_USER_NOTIFY,0,0);	//	"0" を通知
+		::SendMessage(hDlg,WM_USER_NOTIFY,0,0);	//	"0" を通知
+		pdf->setDialogClosed();
+		DebugOutput("WM_CLOSE handled");
 //		::DestroyWindow(hDlg);
 		return FALSE;
 
@@ -855,7 +862,7 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 //	秀丸ウィンドウをクリックすると「マクロを終了しますか？」と出るけど
 //	まぁしかたがない。
 //				::EnableWindow(hwndOwner,TRUE);
-				::SetForegroundWindow(hwndOwner);
+//				::SetForegroundWindow(hwndOwner);
 			}
 			pdf->uninitFrame();
 			::PostQuitMessage(0L);
@@ -906,7 +913,9 @@ DlgFrame::~DlgFrame()
 void
 DlgFrame::setNotify(const StringBuffer& newvalue)
 {
-	m_pSessionInstance->setNotify(newvalue);
+	if (!m_bAlreadyClosed) {
+		m_pSessionInstance->setNotify(newvalue);
+	}
 }
 
 BOOL
@@ -972,6 +981,8 @@ DlgFrame::createFrame(HWND hwndOwner, BOOL bOnTop)
 						m_pFontProp->m_fontname,
 						(WORD)m_pFontProp->m_fontsize);
 	if (bOnTop) m_flags |= 0x10;	//	alwaysontop
+
+	m_bAlreadyClosed = FALSE;
 
 	//	親ダイアログのウィンドウの生成
 	m_hwndFrame = ::CreateDialogIndirectParam(
@@ -1222,36 +1233,43 @@ DlgFrame::setFocusedCtrl(const StringBuffer& name)
 {
 	if (name.length() <= 0) {
 		m_sbFocusedCtrl = nullStr;
-		if (m_hwndFrame != NULL) {
-			DlgPage* pdproot = this->getPage(strRootPageName);
-			if (pdproot == NULL) return FALSE;
-			HWND hwndFocused = pdproot->getFocusedCtrl();
-			if (hwndFocused) {
-				::SetFocusForced(hwndFocused);
-			}
-		}
 	} else {
-//		::OutputDebugString("Enter SetFocusedControl!!");
 		CtrlListItem* pctrl = this->getCtrl(name);
 		if (pctrl == NULL) {
-//			::OutputDebugString("Failed to find control!!");
 			return FALSE;
 		}
 		m_sbFocusedCtrl = name;
-		if (m_hwndFrame != NULL) {
-#if 0
-			TCHAR buf[80];
-			wsprintf(buf, "setFocusedCtrl(%s)", (LPCSTR)name);
-			::OutputDebugString(buf);
-#endif
-			HWND hwndFocused = pctrl->getCtrlHWND();
-			if (hwndFocused == NULL) {
-//				::OutputDebugString("Failed to find focused control!!");
-				return FALSE;
-			}
+	}
 
-			SetFocusForced(hwndFocused);
+	if (m_hwndFrame != NULL) {
+		::PostMessage(m_hwndFrame, WM_USER_SETFOCUSEDCTRL, 0, 0);
+	}
+
+	return TRUE;
+}
+
+int
+DlgFrame::setFocusedCtrl()
+{
+	if (m_sbFocusedCtrl.length() <= 0) {
+		DlgPage* pdproot = this->getPage(strRootPageName);
+		if (pdproot == NULL) return FALSE;
+		HWND hwndFocused = pdproot->getFocusedCtrl();
+		if (hwndFocused) {
+			::SetFocusForced(hwndFocused);
 		}
+	} else {
+		CtrlListItem* pctrl = this->getCtrl(m_sbFocusedCtrl);
+		if (pctrl == NULL) {
+			return FALSE;
+		}
+
+		HWND hwndFocused = pctrl->getCtrlHWND();
+		if (hwndFocused == NULL) {
+			return FALSE;
+		}
+
+		::SetFocusForced(hwndFocused);
 	}
 	return TRUE;
 }

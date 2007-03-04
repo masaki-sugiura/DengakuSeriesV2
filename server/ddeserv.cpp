@@ -1,4 +1,4 @@
-// $Id: ddeserv.cpp,v 1.4 2002-12-15 12:09:49 sugiura Exp $
+// $Id: ddeserv.cpp,v 1.5 2007-03-04 18:06:56 sugiura Exp $
 /*
  *	ddeserv.cpp
  *	DdeServer クラスの実装
@@ -193,6 +193,8 @@ DdeServer::uninit()
 		m_bActive = FALSE;
 	}
 
+	m_pdsServiceName = NULL;
+
 	//	Ddeml ライブラリからコールバック関数の登録を削除
 	BOOL bRet = ::DdeUninitialize(m_ddeInst);
 	m_ddeInst = 0;
@@ -250,7 +252,9 @@ DdeServer::addConvData(const HCONV hconv, const HSZ hszTn)
 		ret = m_ConvDataList.addItem(pCd);
 	}
 	//	getConvData() のため、通信データにポインタを登録
-	::DdeSetUserHandle(hconv,QID_SYNC,reinterpret_cast<DWORD>(pCd));
+	if (!::DdeSetUserHandle(hconv,QID_SYNC,reinterpret_cast<DWORD>(pCd))) {
+		DebugOutput("DdeSetUserHandle() error = %08x", ::DdeGetLastError(m_ddeInst));
+	}
 	return ret;
 }
 
@@ -264,7 +268,9 @@ DelCD(ConvData* pCd, LinkList<ConvData>& cdlist)
 			DdeServer::ldisconnect(hconv,NULL,NULL,HDDE_NULL);
 		else
 			DdeServer::disconnect(hconv,NULL,NULL,HDDE_NULL);
-		::DdeDisconnect(hconv);
+		if (!::DdeDisconnect(hconv)) {
+			DebugOutput("DdeDisconnect() error = %08x", ::DdeGetLastError(DdeServer::getddeInst()));
+		}
 	} else {
 		cdlist.delItemByPtr(pCd);
 	}
@@ -303,7 +309,9 @@ DdeServer::getConvData(const HCONV hconv)
 	CONVINFO ci;
 	ci.cb = sizeof(CONVINFO);
 	ci.hUser = 0L;
-	::DdeQueryConvInfo(hconv,QID_SYNC,&ci);
+	if (!::DdeQueryConvInfo(hconv,QID_SYNC,&ci)) {
+		DebugOutput("DdeQueryConvInfo() error = %08x", ::DdeGetLastError(m_ddeInst));
+	}
 	return reinterpret_cast<ConvData*>(ci.hUser);
 }
 
@@ -313,9 +321,13 @@ DdeServer::notifyPostAdvise(ConvData* pCd)
 {
 	//	時間が惜しいので最低限のチェックしかしない
 	if (pCd != NULL) {
-		::DdePostAdvise(m_ddeInst,
-						pCd->getAdvTopicName(),
-						pCd->getAdvItemName());
+		DebugOutput("Enter notifyPostAdvise()");
+		if (!::DdePostAdvise(m_ddeInst,
+							 pCd->getAdvTopicName(),
+							 pCd->getAdvItemName())) {
+			DebugOutput("DdePostAdvise() error = %08x", ::DdeGetLastError(m_ddeInst));
+		}
+		DebugOutput("Leave notifyPostAdvise()");
 	}
 }
 
@@ -486,6 +498,7 @@ DdeServer::execute(
 
 	try {
 		ReceivedDdeData rdd(hdata);
+		DEBUG_OUTPUT(("DDE Execute: %s", (LPCSTR)rdd));
 		RealCmdLineParser argv((const StringBuffer&)rdd);
 		if (argv.itemNum() <= 0) return HDDE_FNOTPROCESSED;
 		PFNDDECMD_EXECUTE pfnCmd = getExecCmd(argv.getArgvStr(0));
@@ -509,6 +522,7 @@ DdeServer::request(
 
 	try {
 		DdeString dsItem(m_ddeInst,hsz2);
+		DEBUG_OUTPUT(("DDE Request: %s", (LPCSTR)dsItem));
 		RealCmdLineParser argv((const StringBuffer&)dsItem);
 		if (argv.itemNum() <= 0) return HDDE_FNOTPROCESSED;
 		PFNDDECMD_REQUEST pfnCmd = getReqCmd(argv.getArgvStr(0));
@@ -531,9 +545,11 @@ DdeServer::poke(
 	if (cd == NULL) return HDDE_FNOTPROCESSED;
 
 	try {
-		PFNDDECMD_POKE pfnCmd = getPokeCmd(DdeString(m_ddeInst,hsz2));
+		DdeString dsCmd(m_ddeInst, hsz2);
+		PFNDDECMD_POKE pfnCmd = getPokeCmd(dsCmd);
 		if (pfnCmd == 0) return HDDE_FNOTPROCESSED;
 		ReceivedDdeData rdd(hdata);
+		DEBUG_OUTPUT(("DDE Poke: [%s] %s", (LPCSTR)dsCmd, (LPCSTR)rdd));
 		PokeDataParser argv((const StringBuffer&)rdd);
 		return cd->ddePoke(pfnCmd,argv);
 	} catch (...) {

@@ -1,4 +1,4 @@
-//	$Id: misc.cpp,v 1.16 2007-02-16 16:04:09 sugiura Exp $
+//	$Id: misc.cpp,v 1.17 2007-03-04 18:06:56 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数
@@ -13,10 +13,15 @@
 void
 DebugOutput(LPCSTR pszFormat, ...)
 {
+	char buf[256];
+
+	DWORD dwThreadID = ::GetCurrentThreadId();
+	wsprintf(buf, "[tid:%08x] ", dwThreadID);
+	::OutputDebugString(buf);
+
 	va_list list;
 	va_start(list, pszFormat);
 
-	char buf[256];
 	wvsprintf(buf, pszFormat, list);
 	::OutputDebugString(buf);
 	::OutputDebugString("\n");
@@ -134,13 +139,13 @@ HWND SetFocusForced(HWND hwndFocus)
 {
 	DWORD dwCurThreadID = ::GetCurrentThreadId();
 
-	DWORD dwDlgThreadID;
-	::GetWindowThreadProcessId(hwndFocus, &dwDlgThreadID);
+	DWORD dwDlgThreadID = ::GetWindowThreadProcessId(hwndFocus, NULL);
 
 	if (dwDlgThreadID != dwCurThreadID) {
+		DebugOutput("Dialog Thread ID = %d, Current Thread ID = %d", dwDlgThreadID, dwCurThreadID);
 		BOOL bRet = ::AttachThreadInput(dwDlgThreadID, dwCurThreadID, TRUE);
 		if (!bRet) {
-			DEBUG_OUTPUT(("Failed to attach thread!"));
+			DEBUG_OUTPUT(("Failed to attach thread!!"));
 		}
 	}
 

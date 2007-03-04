@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.21 2006-05-20 17:02:50 sugiura Exp $
+//	$Id: session.h,v 1.22 2007-03-04 18:06:56 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -21,6 +21,7 @@
 #include "thread.h"
 #include "bregexp_mngr.h"
 #include "colortbl.h"
+#include "misc.h"
 
 class PathName;
 class CmdLineParser;
@@ -49,9 +50,18 @@ public:
 
 	//	Server で override される
 	virtual void setNotify(const StringBuffer& msg)
-	{ m_sharedBuf.set(msg); }
+	{
+		DebugOutput("Enter setNotify(%s)", (LPCSTR)msg);
+		m_sharedBuf.set(msg);
+		DebugOutput("Leave setNotify(%s)", (LPCSTR)msg);
+	}
 	virtual BOOL getNotify(StringBuffer& buf, DWORD wait)
-	{ return m_sharedBuf.get(buf,wait); }
+	{
+		DebugOutput("Enter getNotify()");
+		BOOL bRet = m_sharedBuf.get(buf,wait);
+		DebugOutput("Leave getNotify(%s)", (LPCSTR)buf);
+		return bRet;
+	}
 	virtual void resetNotify()
 	{ m_sharedBuf.reset(); }
 

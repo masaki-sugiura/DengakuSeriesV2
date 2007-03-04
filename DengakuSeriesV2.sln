@@ -10,7 +10,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BRE_Wrapper", "BRE_Wrapper\
 		{01FA06AF-EE93-481C-9CCB-5C9386A602D1} = {01FA06AF-EE93-481C-9CCB-5C9386A602D1}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DLL", "DLL\DLL.vcproj", "{266D49F8-1D82-4026-942F-B5FFF767F93A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DLL", "dll\DLL.vcproj", "{266D49F8-1D82-4026-942F-B5FFF767F93A}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -28,7 +28,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DllTest", "dll\DllTest.vcpr
 		{266D49F8-1D82-4026-942F-B5FFF767F93A} = {266D49F8-1D82-4026-942F-B5FFF767F93A}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "Server\Server.vcproj", "{8D0A29F1-92E5-4C00-85FA-3079273C60E0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "server\Server.vcproj", "{8D0A29F1-92E5-4C00-85FA-3079273C60E0}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -38,6 +38,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "Server\Server.vcp
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "common\common.vcproj", "{01FA06AF-EE93-481C-9CCB-5C9386A602D1}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DdeClientTestApp", "DdeClientTestApp\DdeClientTestApp.vcproj", "{9628E285-BA66-4B07-824E-E5BE4B6265F8}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -69,6 +75,10 @@ Global
 		{01FA06AF-EE93-481C-9CCB-5C9386A602D1}.Debug|Win32.Build.0 = Debug|Win32
 		{01FA06AF-EE93-481C-9CCB-5C9386A602D1}.Release|Win32.ActiveCfg = Release|Win32
 		{01FA06AF-EE93-481C-9CCB-5C9386A602D1}.Release|Win32.Build.0 = Release|Win32
+		{9628E285-BA66-4B07-824E-E5BE4B6265F8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9628E285-BA66-4B07-824E-E5BE4B6265F8}.Debug|Win32.Build.0 = Debug|Win32
+		{9628E285-BA66-4B07-824E-E5BE4B6265F8}.Release|Win32.ActiveCfg = Release|Win32
+		{9628E285-BA66-4B07-824E-E5BE4B6265F8}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

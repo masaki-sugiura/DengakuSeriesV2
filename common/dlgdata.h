@@ -1,4 +1,4 @@
-//	$Id: dlgdata.h,v 1.16 2006-05-20 17:02:50 sugiura Exp $
+//	$Id: dlgdata.h,v 1.17 2007-03-04 18:06:56 sugiura Exp $
 /*
  *	dlgdata.h
  *	ダイアログを扱うクラス
@@ -162,6 +162,11 @@ public:
 	BOOL getNotify(StringBuffer& buf, DWORD wait) const;
 	void resetNotify();
 
+	void setDialogClosed()
+	{
+		m_bAlreadyClosed = TRUE;
+	}
+
 //	メンバ値の取得・変更
 	HWND getUserDlg() const { return m_hwndFrame; }
 	const StringBuffer&	getDlgTitle() const { return m_DlgTitle; }
@@ -224,6 +229,7 @@ public:
 
 //	フォーカスを得(てい)るコントロール
 	int setFocusedCtrl(const StringBuffer& name);
+	int setFocusedCtrl();	//	m_sbFocusedCtrlにフォーカスを移動する
 	const StringBuffer& getFocusedCtrl() const;
 
 	// 純粋にフォーカスを得るコントロールの名前を返すメソッド
@@ -309,6 +315,7 @@ private:
 	WORD m_flags;	//	表示位置に関するフラグ
 	int m_imestate;	//	IMEの状態を表す
 	BOOL m_bAlreadyFocused; // 入力フォーカスを持ついずれかのコントロールにフォーカスが移ったかどうか
+	BOOL m_bAlreadyClosed;	// WM_CLOSEを処理済かどうか（Vista対策）
 };
 
 extern const StringBuffer strRootPageName;

@@ -1,4 +1,4 @@
-// $Id: ddeobjs.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+// $Id: ddeobjs.h,v 1.2 2007-03-04 18:06:56 sugiura Exp $
 /*
  *	ddeobjs.h
  *	DDE 通信で使うデータをラップするクラスの定義
@@ -8,6 +8,7 @@
 #define	DENGAKUSERVER_CLASSES_DDEOBJS
 
 #include "strbuf.h"
+#include "misc.h"
 
 //	DDE 文字列
 class DdeString {
@@ -18,7 +19,9 @@ public:
 
 	~DdeString()
 	{
-		::DdeFreeStringHandle(m_ddeInst,m_Handle);
+		if (!::DdeFreeStringHandle(m_ddeInst,m_Handle)) {
+			DebugOutput("DdeFreeStringHandle() error = %08x", ::DdeGetLastError(m_ddeInst));
+		}
 	}
 
 	operator const HSZ() const
@@ -105,7 +108,9 @@ public:
 	}
 	~ReceivedDdeData()
 	{
-		::DdeFreeDataHandle(m_hData);
+		if (!::DdeFreeDataHandle(m_hData)) {
+			DebugOutput("DdeFreeStringHandle()!!");
+		}
 	}
 };
 
@@ -123,6 +128,9 @@ public:
 										hszContent,
 										CF_TEXT,
 										0);
+		if (m_hData == NULL) {
+			DebugOutput("DdeCreateDataHandle() error = %08x", ::DdeGetLastError(ddeInst));
+		}
 	}
 
 	//	破棄時に DdeFreeDataHandle() を呼ばないことに注意！！
