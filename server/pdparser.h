@@ -1,4 +1,4 @@
-// $Id: pdparser.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+// $Id: pdparser.h,v 1.2 2007-03-05 13:04:54 sugiura Exp $
 /*
  *	pdparser.h
  *	Poke データをパースするクラスの定義

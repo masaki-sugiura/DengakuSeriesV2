@@ -1,4 +1,4 @@
-// $Id: convdata.cpp,v 1.3 2007-03-04 18:06:56 sugiura Exp $
+// $Id: convdata.cpp,v 1.4 2007-03-05 13:04:54 sugiura Exp $
 /*
  *	convdata.cpp
  *	ConvData クラスのコア部分の実装
@@ -40,7 +40,11 @@ ConvData::ddeAdvStart(HSZ hsz1, HSZ hsz2)
 {
 	DebugOutput("Enter ddeAdvStart()");
 	if (m_dsAdvTopicName.compareTo(hsz1) != 0 ||
-		m_dsAdvItemName.compareTo(hsz2)  != 0) return HDDE_FALSE;
+		m_dsAdvItemName.compareTo(hsz2)  != 0) {
+		DdeString ds1(m_ddeInst, hsz1), ds2(m_ddeInst, hsz2);
+		DEBUG_OUTPUT(("topic = %s, item = %s", (LPCSTR)ds1, (LPCSTR)ds2));
+		return HDDE_FALSE;
+	}
 	::SetEvent(m_hAdvEvent); // setAdvData() の呼出しを許可
 	DebugOutput("Leave ddeAdvStart()");
 	return HDDE_TRUE;

@@ -186,6 +186,24 @@ HDDEDATA CDdeClientTestAppDlg::DdeExecute(LPCSTR pszCommand)
 	return hData;
 }
 
+HDDEDATA CDdeClientTestAppDlg::DdeRequest(LPCSTR pszCommand, CString& strReturn)
+{
+	DdeStringHandle hszCommand(m_dwIdInst, pszCommand);
+
+	DWORD dwResult;
+	HDDEDATA hData = ::DdeClientTransaction(NULL, 0, m_hConv, hszCommand, 0,
+											XTYP_REQUEST, DDE_TRANSACTION_TIMEOUT, &dwResult);
+	if (hData) {
+		DWORD dwLength = ::DdeGetData(hData, NULL, 0, 0);
+		char* buf = new char[dwLength];
+		::DdeGetData(hData, (LPBYTE)buf, dwLength, 0);
+		strReturn = buf;
+		delete [] buf;
+	}
+
+	return hData;
+}
+
 HDDEDATA CDdeClientTestAppDlg::DdePoke(LPCTSTR pszCommand, LPCSTR pszData)
 {
 	DdeStringHandle hszCommand(m_dwIdInst, pszCommand);
@@ -209,6 +227,51 @@ void CDdeClientTestAppDlg::OnDdeAdvData(HDDEDATA hData)
 
 	if (strcmp((LPCSTR)pDst, "1") == 0 || strcmp((LPCSTR)pDst, "0") == 0) {
 		PostMessage(WM_USER_ENDDIALOG);
+	} else if (strcmp((LPCSTR)pDst, "11") == 0) {
+		CString strReturn;
+		hData = DdeRequest("getstate skipsearch", strReturn);
+		if (strReturn == __TEXT("0")) {
+			// スキップ検索のチェックが外された
+			hData = DdeExecute("enablectrl 0 skip");
+        } else if (strReturn == __TEXT("1")) {
+			// スキップ検索がチェックされた
+			hData = DdeExecute("enablectrl 1 skip");
+			hData = DdeExecute("setstate field 0");
+			hData = DdeExecute("enablectrl 0 mark number");
+			hData = DdeRequest("getstate search_option", strReturn);
+			if (strReturn == __TEXT("1")) {
+				hData = DdeExecute("setstate search_option 2");
+			}
+		}
+	} else if (strcmp((LPCSTR)pDst, "12") == 0) {
+		CString strReturn;
+		hData = DdeRequest("getstate field", strReturn);
+        if (strReturn == __TEXT("1")) {
+			// field がチェックされた
+			hData = DdeExecute("enablectrl 1 mark number");
+			hData = DdeExecute("setstate skipsearch 0");
+			hData = DdeExecute("enablectrl 0 skip");
+			hData = DdeRequest("getstate search_option", strReturn);
+			if (strReturn == __TEXT("1")) {
+				hData = DdeExecute("setstate search_option 2");
+			}
+		} else if (strReturn == __TEXT("0")) {
+			hData = DdeExecute("enablectrl 0 mark number");
+		}
+	} else if (strcmp((LPCSTR)pDst, "13") == 0) {
+		CString strReturn;
+		hData = DdeRequest("getstate search_option", strReturn);
+		if (strReturn == __TEXT("1")) {
+			// 通常 がチェックされた
+			hData = DdeExecute("setstate skipsearch 0");
+			hData = DdeExecute("setstate field 0");
+			hData = DdeExecute("enablectrl 0 skip mark number");
+        }
+	} else if (strcmp((LPCSTR)pDst, "14") == 0) {
+		CString strReturn;
+		hData = DdeRequest("getstring folderref", strReturn);
+		hData = DdeExecute(CString("setstring folder \"") + strReturn + "\"");
+		hData = DdeExecute(CString("changeitem folderref \"") + strReturn + "\" 2");
 	}
 
 	delete [] pDst;
@@ -236,31 +299,161 @@ HDDEDATA CALLBACK CDdeClientTestAppDlg::DdeClientCallback(UINT uType,
 	return (HDDEDATA)DDE_FACK;
 }
 
+BOOL CDdeClientTestAppDlg::CreateDengakuDialog()
+{
+	HDDEDATA hData;
+
+	// グループボックスで囲まれる部分(子ダイアログ)
+	hData = DdePoke(__TEXT("newdlgpage"), "page1,38");
+	hData = DdePoke(__TEXT("newcontrol"), "check,skipsearch,スキップ検索をする(TXK)");
+	hData = DdePoke(__TEXT("default"), "0");
+	hData = DdePoke(__TEXT("notify"), "11");
+	hData = DdePoke(__TEXT("newcontrol"), "text,,");	//(ダミー)
+	hData = DdePoke(__TEXT("part"), "4");
+	hData = DdePoke(__TEXT("newcontrol"), "text,,スキップ文字・記号");
+	hData = DdePoke(__TEXT("part"), "16");
+	hData = DdePoke(__TEXT("newcontrol"), "combo,skip,");
+	for (int i = 0; i < 6; i++) {
+		char buf[2] = { 'A' + i, 0 };
+		hData = DdePoke(__TEXT("item"), buf);
+    }
+	hData = DdePoke(__TEXT("part"), "16");
+	hData = DdePoke(__TEXT("newcontrol"), "text,,");	//(ダミー)
+
+	hData = DdePoke(__TEXT("newdlgpage"), "page2,38");
+	hData = DdePoke(__TEXT("newcontrol"), "check,field,行の検索フィールドを指定する(app)");
+	hData = DdePoke(__TEXT("default"), "0");
+	hData = DdePoke(__TEXT("notify"), "12");
+	hData = DdePoke(__TEXT("newcontrol"), "text,,"); //(ダミー)
+	hData = DdePoke(__TEXT("part"), "4");
+	hData = DdePoke(__TEXT("newcontrol"), "text,,区切り記号");
+	hData = DdePoke(__TEXT("part"), "10");
+	hData = DdePoke(__TEXT("newcontrol"), "edit,mark,\",\"");
+	hData = DdePoke(__TEXT("imestate"), "2"); // IME を OFF
+	hData = DdePoke(__TEXT("part"), "4");
+	hData = DdePoke(__TEXT("newcontrol"), "text,,"); //(ダミー)
+	hData = DdePoke(__TEXT("newcontrol"), "text,,"); //(ダミー)
+	hData = DdePoke(__TEXT("part"), "6");
+	hData = DdePoke(__TEXT("newcontrol"), "text,,不検索範囲の行頭からの記号数");
+	hData = DdePoke(__TEXT("part"), "25");
+	hData = DdePoke(__TEXT("newcontrol"), "edit,number,0");
+	hData = DdePoke(__TEXT("imestate"), "2"); // IME を OFF
+	hData = DdePoke(__TEXT("part"), "4");
+	hData = DdePoke(__TEXT("newcontrol"), "text,,"); //(ダミー)
+
+	// 親ダイアログ
+	hData = DdePoke(__TEXT("newdialog"), "40,§ 前後行表示・２行渡り検索・検索語強調 §     Ver.3.20");
+	hData = DdePoke(__TEXT("newcontrol"), "text,,検索語");
+	hData = DdePoke(__TEXT("part"), "7");
+	hData = DdePoke(__TEXT("newcontrol"), "combo,search,");
+	for (int i = 0; i < 21; i++) {
+		char buf[2] = { 'A' + i, 0 };
+		hData = DdePoke(__TEXT("item"), buf);
+    }
+	hData = DdePoke(__TEXT("part"), "30");
+	hData = DdePoke(__TEXT("newcontrol"), "text,,"); //(ダミー)
+	hData = DdePoke(__TEXT("newcontrol"), "text,,前取得行数");
+	hData = DdePoke(__TEXT("part"), "10");
+	hData = DdePoke(__TEXT("newcontrol"), "edit,prev,1");
+	hData = DdePoke(__TEXT("default"), "2"); // IME を OFF
+	hData = DdePoke(__TEXT("part"), "4");
+	hData = DdePoke(__TEXT("newcontrol"), "text,,"); //(ダミー)
+	hData = DdePoke(__TEXT("part"), "3");
+	hData = DdePoke(__TEXT("newcontrol"), "text,,後取得行数");
+	hData = DdePoke(__TEXT("part"), "10");
+	hData = DdePoke(__TEXT("newcontrol"), "edit,next,1");
+	hData = DdePoke(__TEXT("default"), "2"); // IME を OFF
+	hData = DdePoke(__TEXT("part"), "4");
+	hData = DdePoke(__TEXT("newcontrol"), "text,,"); //(ダミー)
+
+	hData = DdePoke(__TEXT("newcontrol"), "radio,search_option,検索方法");
+	hData = DdePoke(__TEXT("item"), "通　常");
+	hData = DdePoke(__TEXT("item"), "正規表現");
+	hData = DdePoke(__TEXT("item"), "あいまい（正規表現を含む）検索");
+	hData = DdePoke(__TEXT("default"), "1");
+	hData = DdePoke(__TEXT("notify"), "13");
+
+	hData = DdePoke(__TEXT("newcontrol"), "radio,searchfile,検索対象ファイル");
+	hData = DdePoke(__TEXT("item"), "このファイル");
+	hData = DdePoke(__TEXT("item"), "現在開いているファイル全部");
+	hData = DdePoke(__TEXT("item"), "フォルダー内のファイル全部");
+	hData = DdePoke(__TEXT("item"), "サブフォルダーを含むファイル全部");
+	hData = DdePoke(__TEXT("default"), "1");
+
+	hData = DdePoke(__TEXT("newcontrol"), "text,,フォルダの選択");
+	hData = DdePoke(__TEXT("newcontrol"), "combo,folder,");
+	for (int i = 0; i < 11; i++) {
+		char buf[2] = { 'A' + i, 0 };
+		hData = DdePoke(__TEXT("item"), buf);
+    }
+	hData = DdePoke(__TEXT("part"), "34");
+	hData = DdePoke(__TEXT("newcontrol"), "refdirbutton,folderref,");
+	hData = DdePoke(__TEXT("notify"), "14");
+	hData = DdePoke(__TEXT("item"), "フォルダを選んで下さい。");
+	hData = DdePoke(__TEXT("item"), "");
+	hData = DdePoke(__TEXT("item"), "0");
+
+	hData = DdePoke(__TEXT("newcontrol"), "text,,ファイル選択（ ; で区切る）");
+	hData = DdePoke(__TEXT("part"), "18");
+	hData = DdePoke(__TEXT("newcontrol"), "edit,objectfile,");
+	hData = DdePoke(__TEXT("default"), "2"); // IME を OFF
+
+	hData = DdePoke(__TEXT("newcolumn"), "40");
+
+	hData = DdePoke(__TEXT("newcontrol"), "text,,区切り線");
+	hData = DdePoke(__TEXT("newcontrol"), "list,sep,");
+	hData = DdePoke(__TEXT("item"), "-");
+	hData = DdePoke(__TEXT("item"), "--");
+	hData = DdePoke(__TEXT("item"), "---");
+	hData = DdePoke(__TEXT("item"), "空　行");
+	hData = DdePoke(__TEXT("height"), "4");
+	hData = DdePoke(__TEXT("default"), "1");
+
+	hData = DdePoke(__TEXT("newcontrol"), "group,,スキップ（行渡り）検索");
+	hData = DdePoke(__TEXT("item"), "page1"); // 中に表示する子ダイアログの名前を指定
+	hData = DdePoke(__TEXT("newcontrol"), "group,,フィールド検索");
+	hData = DdePoke(__TEXT("item"), "page2");
+
+	hData = DdePoke(__TEXT("newcontrol"), "check,color,結果の強調表示");
+	hData = DdePoke(__TEXT("default"), "0");
+	hData = DdePoke(__TEXT("part"), "17");
+
+	hData = DdePoke(__TEXT("newcontrol"), "check,numbering,出力データに番号をつける");
+	hData = DdePoke(__TEXT("default"), "0");
+
+	hData = DdePoke(__TEXT("newcontrol"), "check,stealth,途中経過の表示");
+	hData = DdePoke(__TEXT("default"), "1");
+	hData = DdePoke(__TEXT("part"), "17");
+
+	hData = DdePoke(__TEXT("newcontrol"), "check,checkline,出力データのチェック");
+	hData = DdePoke(__TEXT("default"), "0");
+
+	hData = DdePoke(__TEXT("newcontrol"), "okcancel");
+
+	return TRUE;
+}
+
 LRESULT CDdeClientTestAppDlg::OnShowDialog(WPARAM wParam, LPARAM lParam)
 {
-	HDDEDATA hRet = DdePoke(__TEXT("newdialog"), "40, TestDialog");
-//	ASSERT(hRet == (HDDEDATA)DDE_FACK);
-
-	hRet = DdePoke(__TEXT("newcontrol"), "okcancel");
-//	ASSERT(hRet == (HDDEDATA)DDE_FACK);
-
-	if (!DdeControlAdviseLoop(TRUE)) {
-		return 1;
-	}
+	CreateDengakuDialog();
 
 	char cmdbuf[32];
 	sprintf_s(cmdbuf, sizeof(cmdbuf), "dialog %d", (int)this->GetSafeHwnd());
-	hRet = DdeExecute(cmdbuf);
+	HDDEDATA hRet = DdeExecute(cmdbuf);
+
+	if (!DdeControlAdviseLoop(TRUE)) {
+		return 0;
+	}
 
 	return (LRESULT)hRet;
 }
 
 LRESULT CDdeClientTestAppDlg::OnEndDialog(WPARAM wParam, LPARAM lParam)
 {
+	DdeControlAdviseLoop(FALSE);
+
 	HDDEDATA hRet = DdeExecute("enddialog");
 //	ASSERT(hRet == (HDDEDATA)DDE_FACK);
-
-	DdeControlAdviseLoop(FALSE);
 
 	return 0;
 }

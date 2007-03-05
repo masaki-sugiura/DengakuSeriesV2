@@ -1,4 +1,4 @@
-//	$Id: opencomdlg.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: opencomdlg.h,v 1.2 2007-03-05 13:04:54 sugiura Exp $
 /*
  *	opencomdlg.h
  *	コモンダイアログを表示するための関数

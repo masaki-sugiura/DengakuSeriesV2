@@ -1,4 +1,4 @@
-// $Id: ddeserv.cpp,v 1.5 2007-03-04 18:06:56 sugiura Exp $
+// $Id: ddeserv.cpp,v 1.6 2007-03-05 13:04:54 sugiura Exp $
 /*
  *	ddeserv.cpp
  *	DdeServer ƒNƒ‰ƒX‚ÌŽÀ‘•
@@ -565,7 +565,9 @@ DdeServer::advstart(
 	const HDDEDATA) // not used
 {
 	ConvData* cd = getConvData(hconv);
-	return cd != NULL ? cd->ddeAdvStart(hsz1,hsz2) : HDDE_FALSE;
+	HDDEDATA hData = cd != NULL ? cd->ddeAdvStart(hsz1,hsz2) : HDDE_FALSE;
+	DEBUG_OUTPUT(("AdvStart() return = %08x", hData));
+	return hData;
 }
 
 HDDEDATA
@@ -577,7 +579,9 @@ DdeServer::advstop(
 {
 	ConvData* cd = getConvData(hconv);
 	//	Ddeml ignores it.
-	return cd != NULL ? cd->ddeAdvStop(hsz1,hsz2) : HDDE_FALSE;
+	HDDEDATA hData = cd != NULL ? cd->ddeAdvStop(hsz1,hsz2) : HDDE_FALSE;
+	DEBUG_OUTPUT(("AdvStop() return = %08x", hData));
+	return hData;
 }
 
 HDDEDATA

@@ -32,7 +32,10 @@ protected:
 	BOOL DdeControlAdviseLoop(BOOL bStart);
 
 	HDDEDATA DdeExecute(LPCSTR pszCommand);
+	HDDEDATA DdeRequest(LPCSTR pszCommand, CString& strReturn);
 	HDDEDATA DdePoke(LPCTSTR pszCommand, LPCSTR pszData);
+
+	BOOL CreateDengakuDialog();
 
 	void OnDdeAdvData(HDDEDATA hData);
 
