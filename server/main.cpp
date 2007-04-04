@@ -1,4 +1,4 @@
-//	$Id: main.cpp,v 1.6 2006-06-16 15:43:57 sugiura Exp $
+//	$Id: main.cpp,v 1.7 2007-04-04 17:04:32 sugiura Exp $
 /*
  *	main.cpp
  *	田楽サーバ本体
@@ -535,11 +535,13 @@ WinMain(
 		//	これまたお約束のメッセージループ
 		MSG msg;
 		while (::GetMessage(&msg,NULL,0,0)) {
+			DebugOutput("Enter: msg=%08x,w=%08x,l=%08x", msg.message, msg.wParam, msg.lParam);
 			//	メインウィンドウ(ダイアログ)へのメッセージ配送
 			if (!::IsDialogMessage(hwndDlg,&msg)) {
 				::TranslateMessage(&msg);
 				::DispatchMessage(&msg);
 			}
+			DebugOutput("Leave: msg=%08x,w=%08x,l=%08x", msg.message, msg.wParam, msg.lParam);
 		}
 		ret_code = msg.wParam;
 	} else {

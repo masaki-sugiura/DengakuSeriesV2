@@ -10,41 +10,17 @@
 #define	WM_USER_SHOWDIALOG	(WM_APP+100)
 #define	WM_USER_ENDDIALOG	(WM_APP+101)
 
-#define	DDE_TRANSACTION_TIMEOUT	30
+#define	WM_USER_DDEEXECUTE	(WM_APP+200)
+#define	WM_USER_DDEREQUEST	(WM_APP+201)
+#define	WM_USER_DDEPOKE		(WM_APP+202)
+#define	WM_USER_DDEADVICE	(WM_APP+203)
 
-#ifdef	_UNICODE
-#define	CODE_PAGE	CP_WINUNICODE
-#else
-#define	CODE_PAGE	CP_WINANSI
-#endif
+#define	DDE_TRANSACTION_TIMEOUT	30000
 
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-
-class DdeStringHandle
-{
-public:
-	DdeStringHandle(DWORD dwIdInst, LPCTSTR pszString)
-		:	m_dwIdInst(dwIdInst)
-	{
-		m_hszString = ::DdeCreateStringHandle(dwIdInst, pszString, CODE_PAGE);
-		ASSERT(m_hszString != NULL);
-	}
-	~DdeStringHandle()
-	{
-		if (m_hszString != NULL) {
-			::DdeFreeStringHandle(m_dwIdInst, m_hszString);
-		}
-	}
-
-	operator HSZ() { return m_hszString; }
-
-private:
-	DWORD	m_dwIdInst;
-	HSZ		m_hszString;
-};
 
 
 // CDdeClientTestAppDlg ダイアログ
@@ -53,7 +29,10 @@ CDdeClientTestAppDlg* CDdeClientTestAppDlg::m_pThis;
 
 
 CDdeClientTestAppDlg::CDdeClientTestAppDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CDdeClientTestAppDlg::IDD, pParent)
+	:	CDialog(CDdeClientTestAppDlg::IDD, pParent)
+	,	m_evtNotify(FALSE, FALSE)
+	,	m_pdshService(NULL)
+	,	m_pdshTopic(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -72,6 +51,10 @@ BEGIN_MESSAGE_MAP(CDdeClientTestAppDlg, CDialog)
 	ON_WM_QUERYDRAGICON()
 	ON_MESSAGE(WM_USER_SHOWDIALOG, &CDdeClientTestAppDlg::OnShowDialog)
 	ON_MESSAGE(WM_USER_ENDDIALOG, &CDdeClientTestAppDlg::OnEndDialog)
+	ON_MESSAGE(WM_USER_DDEEXECUTE, &CDdeClientTestAppDlg::OnDdeExecute)
+	ON_MESSAGE(WM_USER_DDEREQUEST, &CDdeClientTestAppDlg::OnDdeRequest)
+	ON_MESSAGE(WM_USER_DDEPOKE, &CDdeClientTestAppDlg::OnDdePoke)
+	ON_MESSAGE(WM_USER_DDEADVICE, &CDdeClientTestAppDlg::OnDdeAdvice)
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDOK, &CDdeClientTestAppDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_SHOWDIALOG, &CDdeClientTestAppDlg::OnBnClickedShowdialog)
@@ -144,77 +127,60 @@ BOOL CDdeClientTestAppDlg::InitializeDde()
 		return FALSE;
 	}
 
-	DdeStringHandle hszService(m_dwIdInst, __TEXT("DengakuServer")),
-					hszTopic(m_dwIdInst, __TEXT("AllService"));
+	m_pdshService = new DdeStringHandle(m_dwIdInst, __TEXT("DengakuServer"));
+	m_pdshTopic = new DdeStringHandle(m_dwIdInst, __TEXT("AllService"));
 
-	if (hszService == NULL || hszTopic == NULL) {
+//	DdeStringHandle hszService(m_dwIdInst, __TEXT("DengakuServer")),
+//					hszTopic(m_dwIdInst, __TEXT("AllService"));
+
+//	if (hszService == NULL || hszTopic == NULL) {
+//		return FALSE;
+//	}
+
+//	m_hConv = ::DdeConnect(m_dwIdInst, hszService, hszTopic, NULL);
+
+//	return m_hConv != NULL;
+
+	if (m_pdshService == NULL || m_pdshTopic == NULL) {
 		return FALSE;
 	}
 
-	m_hConv = ::DdeConnect(m_dwIdInst, hszService, hszTopic, NULL);
+	m_hConv = ::DdeConnect(m_dwIdInst, *m_pdshService, *m_pdshTopic, NULL);
+	if (m_hConv == NULL) {
+		DWORD dwErr = ::DdeGetLastError(m_dwIdInst);
+		return FALSE;
+	}
 
-	return m_hConv != NULL;
+	return TRUE;
 }
 
 void CDdeClientTestAppDlg::UninitializeDde()
 {
 	::DdeDisconnect(m_hConv);
+	delete m_pdshTopic;
+	delete m_pdshService;
 
 	::DdeUninitialize(m_dwIdInst);
 }
 
 BOOL CDdeClientTestAppDlg::DdeControlAdviseLoop(BOOL bStart)
 {
-	DdeStringHandle hszItem(m_dwIdInst, __TEXT("dlgresult"));
-
-	DWORD dwResult;
-	HDDEDATA hData = ::DdeClientTransaction(NULL, 0, m_hConv, hszItem, CF_TEXT,
-											bStart ? XTYP_ADVSTART : XTYP_ADVSTOP,
-											DDE_TRANSACTION_TIMEOUT, &dwResult);
-
-	ASSERT(hData != NULL);
-
-	return (hData != NULL);
+	return SendMessage(WM_USER_DDEADVICE, bStart);
 }
 
 HDDEDATA CDdeClientTestAppDlg::DdeExecute(LPCSTR pszCommand)
 {
-	DWORD dwResult;
-	HDDEDATA hData = ::DdeClientTransaction((LPBYTE)pszCommand, strlen(pszCommand) + 1, m_hConv, NULL, 0,
-											XTYP_EXECUTE, DDE_TRANSACTION_TIMEOUT, &dwResult);
-
-	return hData;
+	return (HDDEDATA)SendMessage(WM_USER_DDEEXECUTE, 0, (LPARAM)pszCommand);
 }
 
 HDDEDATA CDdeClientTestAppDlg::DdeRequest(LPCSTR pszCommand, CString& strReturn)
 {
-	DdeStringHandle hszCommand(m_dwIdInst, pszCommand);
-
-	DWORD dwResult;
-	HDDEDATA hData = ::DdeClientTransaction(NULL, 0, m_hConv, hszCommand, 0,
-											XTYP_REQUEST, DDE_TRANSACTION_TIMEOUT, &dwResult);
-	if (hData) {
-		DWORD dwLength = ::DdeGetData(hData, NULL, 0, 0);
-		char* buf = new char[dwLength];
-		::DdeGetData(hData, (LPBYTE)buf, dwLength, 0);
-		strReturn = buf;
-		delete [] buf;
-	}
-
-	return hData;
+	return (HDDEDATA)SendMessage(WM_USER_DDEREQUEST, (WPARAM)pszCommand, (LPARAM)&strReturn);
 }
 
 HDDEDATA CDdeClientTestAppDlg::DdePoke(LPCTSTR pszCommand, LPCSTR pszData)
 {
-	DdeStringHandle hszCommand(m_dwIdInst, pszCommand);
-
-	HDDEDATA hPokeData = ::DdeCreateDataHandle(m_dwIdInst, (LPBYTE)pszData, strlen(pszData) + 1, 0, hszCommand, CF_TEXT, 0);
-
-	DWORD dwResult;
-	HDDEDATA hData = ::DdeClientTransaction((LPBYTE)hPokeData, -1, m_hConv, hszCommand, 0,
-											XTYP_POKE, DDE_TRANSACTION_TIMEOUT, &dwResult);
-
-	return hData;
+	return (HDDEDATA)SendMessage(WM_USER_DDEPOKE, (WPARAM)pszCommand, (LPARAM)pszData);
 }
 
 void CDdeClientTestAppDlg::OnDdeAdvData(HDDEDATA hData)
@@ -225,57 +191,84 @@ void CDdeClientTestAppDlg::OnDdeAdvData(HDDEDATA hData)
 
 	::DdeGetData(hData, pDst, dwLength, 0);
 
-	if (strcmp((LPCSTR)pDst, "1") == 0 || strcmp((LPCSTR)pDst, "0") == 0) {
-		PostMessage(WM_USER_ENDDIALOG);
-	} else if (strcmp((LPCSTR)pDst, "11") == 0) {
-		CString strReturn;
-		hData = DdeRequest("getstate skipsearch", strReturn);
-		if (strReturn == __TEXT("0")) {
-			// スキップ検索のチェックが外された
-			hData = DdeExecute("enablectrl 0 skip");
-        } else if (strReturn == __TEXT("1")) {
-			// スキップ検索がチェックされた
-			hData = DdeExecute("enablectrl 1 skip");
-			hData = DdeExecute("setstate field 0");
-			hData = DdeExecute("enablectrl 0 mark number");
-			hData = DdeRequest("getstate search_option", strReturn);
-			if (strReturn == __TEXT("1")) {
-				hData = DdeExecute("setstate search_option 2");
-			}
-		}
-	} else if (strcmp((LPCSTR)pDst, "12") == 0) {
-		CString strReturn;
-		hData = DdeRequest("getstate field", strReturn);
-        if (strReturn == __TEXT("1")) {
-			// field がチェックされた
-			hData = DdeExecute("enablectrl 1 mark number");
-			hData = DdeExecute("setstate skipsearch 0");
-			hData = DdeExecute("enablectrl 0 skip");
-			hData = DdeRequest("getstate search_option", strReturn);
-			if (strReturn == __TEXT("1")) {
-				hData = DdeExecute("setstate search_option 2");
-			}
-		} else if (strReturn == __TEXT("0")) {
-			hData = DdeExecute("enablectrl 0 mark number");
-		}
-	} else if (strcmp((LPCSTR)pDst, "13") == 0) {
-		CString strReturn;
-		hData = DdeRequest("getstate search_option", strReturn);
-		if (strReturn == __TEXT("1")) {
-			// 通常 がチェックされた
-			hData = DdeExecute("setstate skipsearch 0");
-			hData = DdeExecute("setstate field 0");
-			hData = DdeExecute("enablectrl 0 skip mark number");
-        }
-	} else if (strcmp((LPCSTR)pDst, "14") == 0) {
-		CString strReturn;
-		hData = DdeRequest("getstring folderref", strReturn);
-		hData = DdeExecute(CString("setstring folder \"") + strReturn + "\"");
-		hData = DdeExecute(CString("changeitem folderref \"") + strReturn + "\" 2");
+	{
+		CSingleLock lock(&m_csNotifyLock, TRUE);
+
+		m_lstNotifies.AddTail((LPCTSTR)pDst);
+
+		m_evtNotify.PulseEvent();
 	}
 
 	delete [] pDst;
 }
+
+LRESULT CDdeClientTestAppDlg::OnDdeAdvice(WPARAM bStart, LPARAM)
+{
+	DdeStringHandle hszItem(m_dwIdInst, __TEXT("dlgresult"));
+
+	DWORD dwResult;
+	HDDEDATA hData = ::DdeClientTransaction(NULL, 0, m_hConv, hszItem, CF_TEXT,
+											bStart ? XTYP_ADVSTART : XTYP_ADVSTOP,
+											DDE_TRANSACTION_TIMEOUT, &dwResult);
+	if (hData == NULL) {
+		DWORD dwDdeErr = ::DdeGetLastError(m_dwIdInst);
+		CString msg;
+		msg.Format(__TEXT("ddeerror = %d"), dwDdeErr);
+		::OutputDebugString(msg);
+	}
+
+//	ASSERT(hData != NULL);
+
+	return (hData != NULL);
+}
+
+LRESULT CDdeClientTestAppDlg::OnDdeExecute(WPARAM, LPARAM lParam)
+{
+	LPCSTR pszCommand = (LPCSTR)lParam;
+
+	DWORD dwResult;
+	HDDEDATA hData = ::DdeClientTransaction((LPBYTE)pszCommand, strlen(pszCommand) + 1, m_hConv, NULL, 0,
+											XTYP_EXECUTE, DDE_TRANSACTION_TIMEOUT, &dwResult);
+
+	return (LRESULT)hData;
+}
+
+LRESULT CDdeClientTestAppDlg::OnDdeRequest(WPARAM wParam, LPARAM lParam)
+{
+	LPCSTR pszCommand = (LPCSTR)wParam;
+	CString* pstrReturn = (CString*)lParam;
+
+	DdeStringHandle hszCommand(m_dwIdInst, pszCommand);
+
+	DWORD dwResult;
+	HDDEDATA hData = ::DdeClientTransaction(NULL, 0, m_hConv, hszCommand, CF_TEXT,
+											XTYP_REQUEST, DDE_TRANSACTION_TIMEOUT, &dwResult);
+	if (hData) {
+		DWORD dwLength = ::DdeGetData(hData, NULL, 0, 0);
+		char* buf = new char[dwLength];
+		::DdeGetData(hData, (LPBYTE)buf, dwLength, 0);
+		*pstrReturn = buf;
+		delete [] buf;
+	}
+
+	return (LRESULT)hData;
+}
+
+LRESULT CDdeClientTestAppDlg::OnDdePoke(WPARAM wParam, LPARAM lParam)
+{
+	LPCSTR pszCommand = (LPCSTR)wParam, pszData = (LPCSTR)lParam;
+
+	DdeStringHandle hszCommand(m_dwIdInst, pszCommand);
+
+	HDDEDATA hPokeData = ::DdeCreateDataHandle(m_dwIdInst, (LPBYTE)pszData, strlen(pszData) + 1, 0, hszCommand, CF_TEXT, 0);
+
+	DWORD dwResult;
+	HDDEDATA hData = ::DdeClientTransaction((LPBYTE)hPokeData, -1, m_hConv, hszCommand, 0,
+											XTYP_POKE, DDE_TRANSACTION_TIMEOUT, &dwResult);
+
+	return (LRESULT)hData;
+}
+
 
 HDDEDATA CALLBACK CDdeClientTestAppDlg::DdeClientCallback(UINT uType,
 														  UINT uFmt,
@@ -461,7 +454,7 @@ LRESULT CDdeClientTestAppDlg::OnEndDialog(WPARAM wParam, LPARAM lParam)
 void CDdeClientTestAppDlg::OnBnClickedOk()
 {
 	// TODO: ここにコントロール通知ハンドラ コードを追加します。
-	UninitializeDde();
+//	UninitializeDde();
 
 	OnOK();
 }
@@ -469,5 +462,118 @@ void CDdeClientTestAppDlg::OnBnClickedOk()
 void CDdeClientTestAppDlg::OnBnClickedShowdialog()
 {
 	// TODO: ここにコントロール通知ハンドラ コードを追加します。
-	PostMessage(WM_USER_SHOWDIALOG);
+//	PostMessage(WM_USER_SHOWDIALOG);
+	CWinThread* pThread = ::AfxBeginThread(MacroThreadProc, this);
+}
+
+UINT WINAPIV CDdeClientTestAppDlg::MacroThreadProc(LPVOID pParam)
+{
+	ASSERT(pParam);
+
+	CDdeClientTestAppDlg* pThis = (CDdeClientTestAppDlg*)pParam;
+
+	return pThis->MacroThreadProcMain();
+}
+
+UINT CDdeClientTestAppDlg::MacroThreadProcMain()
+{
+#if 0
+	if (m_pdshService == NULL || m_pdshTopic == NULL) {
+		return FALSE;
+	}
+
+	m_hConv = ::DdeConnect(m_dwIdInst, *m_pdshService, *m_pdshTopic, NULL);
+	if (m_hConv == NULL) {
+		DWORD dwErr = ::DdeGetLastError(m_dwIdInst);
+		return 0;
+	}
+#endif
+
+	LRESULT lResult = OnShowDialog(0, 0);
+	if (lResult == 0) {
+		return 0;
+	}
+
+	for (;;) {
+		HDDEDATA hData;
+		CString strNotify;
+		WaitNotify(strNotify, 100);
+		if (strNotify == __TEXT("1") || strNotify == __TEXT("0")) {
+//			PostMessage(WM_USER_ENDDIALOG);
+			break;
+		} else if (strNotify == __TEXT("11")) {
+			CString strReturn;
+			hData = DdeRequest("getstate skipsearch", strReturn);
+			if (strReturn == __TEXT("0")) {
+				// スキップ検索のチェックが外された
+				hData = DdeExecute("enablectrl 0 skip");
+			} else if (strReturn == __TEXT("1")) {
+				// スキップ検索がチェックされた
+				hData = DdeExecute("enablectrl 1 skip");
+				hData = DdeExecute("setstate field 0");
+				hData = DdeExecute("enablectrl 0 mark number");
+				hData = DdeRequest("getstate search_option", strReturn);
+				if (strReturn == __TEXT("1")) {
+					hData = DdeExecute("setstate search_option 2");
+				}
+			}
+		} else if (strNotify == __TEXT("12")) {
+			CString strReturn;
+			hData = DdeRequest("getstate field", strReturn);
+			if (strReturn == __TEXT("1")) {
+				// field がチェックされた
+				hData = DdeExecute("enablectrl 1 mark number");
+				hData = DdeExecute("setstate skipsearch 0");
+				hData = DdeExecute("enablectrl 0 skip");
+				hData = DdeRequest("getstate search_option", strReturn);
+				if (strReturn == __TEXT("1")) {
+					hData = DdeExecute("setstate search_option 2");
+				}
+			} else if (strReturn == __TEXT("0")) {
+				hData = DdeExecute("enablectrl 0 mark number");
+			}
+		} else if (strNotify == __TEXT("13")) {
+			CString strReturn;
+			hData = DdeRequest("getstate search_option", strReturn);
+			if (strReturn == __TEXT("1")) {
+				// 通常 がチェックされた
+				hData = DdeExecute("setstate skipsearch 0");
+				hData = DdeExecute("setstate field 0");
+				hData = DdeExecute("enablectrl 0 skip mark number");
+			}
+		} else if (strNotify == __TEXT("14")) {
+			CString strReturn;
+			hData = DdeRequest("getstring folderref", strReturn);
+			hData = DdeExecute(CString("setstring folder \"") + strReturn + "\"");
+			hData = DdeExecute(CString("changeitem folderref \"") + strReturn + "\" 2");
+		}
+	}
+
+	lResult = OnEndDialog(0, 0);
+
+#if 0
+	::DdeDisconnect(m_hConv);
+
+	UninitializeDde();
+#endif
+
+	return 0;
+}
+
+void CDdeClientTestAppDlg::WaitNotify(CString& strNotify, DWORD dwTimeout)
+{
+	CSingleLock lock(&m_csNotifyLock, TRUE);
+
+	if (m_lstNotifies.GetSize() == 0) {
+		lock.Unlock();
+		BOOL bRet = m_evtNotify.Lock(dwTimeout);
+		if (!bRet) {
+			strNotify = __TEXT("");
+			return;
+		}
+		m_evtNotify.Unlock();
+		lock.Lock();
+	}
+
+	strNotify = m_lstNotifies.RemoveHead();
 }

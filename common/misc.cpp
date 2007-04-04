@@ -1,4 +1,4 @@
-//	$Id: misc.cpp,v 1.17 2007-03-04 18:06:56 sugiura Exp $
+//	$Id: misc.cpp,v 1.18 2007-04-04 17:04:32 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数
@@ -13,18 +13,24 @@
 void
 DebugOutput(LPCSTR pszFormat, ...)
 {
-	char buf[256];
+	char buf[1024];
 
 	DWORD dwThreadID = ::GetCurrentThreadId();
 	wsprintf(buf, "[tid:%08x] ", dwThreadID);
-	::OutputDebugString(buf);
+
+	int len = strlen(buf);
 
 	va_list list;
 	va_start(list, pszFormat);
 
-	wvsprintf(buf, pszFormat, list);
+	wvsprintf(buf + len, pszFormat, list);
+
+	len += strlen(buf + len);
+	if (len < sizeof(buf) - 1) {
+		strcpy(buf + len, "\n");
+	}
+
 	::OutputDebugString(buf);
-	::OutputDebugString("\n");
 }
 
 BOOL

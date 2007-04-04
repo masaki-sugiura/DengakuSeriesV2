@@ -5,6 +5,35 @@
 
 #include <ddeml.h>
 
+#ifdef	_UNICODE
+#define	CODE_PAGE	CP_WINUNICODE
+#else
+#define	CODE_PAGE	CP_WINANSI
+#endif
+
+class DdeStringHandle
+{
+public:
+	DdeStringHandle(DWORD dwIdInst, LPCTSTR pszString)
+		:	m_dwIdInst(dwIdInst)
+	{
+		m_hszString = ::DdeCreateStringHandle(dwIdInst, pszString, CODE_PAGE);
+		ASSERT(m_hszString != NULL);
+	}
+	~DdeStringHandle()
+	{
+		if (m_hszString != NULL) {
+			::DdeFreeStringHandle(m_dwIdInst, m_hszString);
+		}
+	}
+
+	operator HSZ() { return m_hszString; }
+
+private:
+	DWORD	m_dwIdInst;
+	HSZ		m_hszString;
+};
+
 // CDdeClientTestAppDlg ダイアログ
 class CDdeClientTestAppDlg : public CDialog
 {
@@ -25,6 +54,11 @@ protected:
 	DWORD		m_dwIdInst;
 	HCONV		m_hConv;
 	static CDdeClientTestAppDlg* m_pThis;
+	CList<CString>		m_lstNotifies;
+	CEvent		m_evtNotify;
+	CCriticalSection	m_csNotifyLock;
+	DdeStringHandle*	m_pdshService;
+	DdeStringHandle*	m_pdshTopic;
 
 	BOOL InitializeDde();
 	void UninitializeDde();
@@ -38,7 +72,7 @@ protected:
 	BOOL CreateDengakuDialog();
 
 	void OnDdeAdvData(HDDEDATA hData);
-
+	
 	// 生成された、メッセージ割り当て関数
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
@@ -46,6 +80,11 @@ protected:
 
 	afx_msg LRESULT OnShowDialog(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnEndDialog(WPARAM wParam, LPARAM lParam);
+
+	afx_msg LRESULT OnDdeExecute(WPARAM, LPARAM);
+	afx_msg LRESULT OnDdeRequest(WPARAM, LPARAM);
+	afx_msg LRESULT OnDdePoke(WPARAM, LPARAM);
+	afx_msg LRESULT OnDdeAdvice(WPARAM, LPARAM);
 
 	DECLARE_MESSAGE_MAP()
 
@@ -57,6 +96,13 @@ protected:
 											   HDDEDATA hdata,
 											   ULONG_PTR dwData1,
 											   ULONG_PTR dwData2);
+
+	static UINT WINAPIV MacroThreadProc(LPVOID pParam);
+
+	UINT MacroThreadProcMain();
+
+	void WaitNotify(CString& strNotify, DWORD dwTimeout);
+
 public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedShowdialog();

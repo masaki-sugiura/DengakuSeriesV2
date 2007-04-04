@@ -1,4 +1,4 @@
-// $Id: convdata.cpp,v 1.4 2007-03-05 13:04:54 sugiura Exp $
+// $Id: convdata.cpp,v 1.5 2007-04-04 17:04:32 sugiura Exp $
 /*
  *	convdata.cpp
  *	ConvData クラスのコア部分の実装
@@ -103,7 +103,7 @@ ConvData::ddeAdvReq(HSZ hsz1, HSZ hsz2)
 		HDDEDATA hData = SendingDdeData(m_ddeInst,
 							m_dsAdvItemName.getHandle(),
 							buf).getHandle();
-		DebugOutput("Leave Create DDE Data");
+		DebugOutput("Leave Create DDE Data : hData = %08x", hData);
 
 		return hData;
 	} catch (...) {

@@ -1,4 +1,4 @@
-//	$Id: str_tbl.h,v 1.7 2007-03-04 18:06:56 sugiura Exp $
+//	$Id: str_tbl.h,v 1.8 2007-04-04 17:04:32 sugiura Exp $
 /*
  *	str_tbl.h
  *	文字列テーブルの定義
@@ -16,7 +16,7 @@
 #define	WM_USER_NOTIFY			(WM_USER+1005)
 #define WM_USER_GETFOCUSEDCTRL  (WM_USER+1006)
 #define	WM_USER_SETFOCUSEDCTRL	(WM_USER+1007)
-#define WM_USER_MAX				(WM_USER_GETFOCUSEDCTRL + 1)
+#define WM_USER_MAX				(WM_USER_SETFOCUSEDCTRL + 1)
 
 enum StrTableIndex {
 	STR_UNKNOWNSTR = 0,
