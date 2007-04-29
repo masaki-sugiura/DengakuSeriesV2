@@ -1,4 +1,4 @@
-// $Id: ddeobjs.cpp,v 1.3 2007-03-04 18:06:56 sugiura Exp $
+// $Id: ddeobjs.cpp,v 1.4 2007-04-29 16:03:25 sugiura Exp $
 /*
  *	ddeobjs.cpp
  *	DdeString ƒNƒ‰ƒX‚ÌŽÀ‘•
@@ -20,12 +20,12 @@ DdeString::DdeString(DWORD ddeInst, const HSZ hstr)
 		m_str(::DdeQueryString(ddeInst,hstr,NULL,0,CP_WINANSI)+1)
 {
 	if (!::DdeKeepStringHandle(m_ddeInst,m_Handle)) {
-		DebugOutput("DdeKeepStringHandle() error = %08x", ::DdeGetLastError(m_ddeInst));
+		DEBUG_OUTPUT("DdeKeepStringHandle() error = %08x", ::DdeGetLastError(m_ddeInst));
 	}
 	if (::DdeQueryString(m_ddeInst,m_Handle,
 						 m_str.getBufPtr(),m_str.size(),
 						 CP_WINANSI) == 0) {
-		DebugOutput("DdeQueryString() error = %08x", ::DdeGetLastError(m_ddeInst));
+		DEBUG_OUTPUT("DdeQueryString() error = %08x", ::DdeGetLastError(m_ddeInst));
 	}
 }
 
@@ -35,7 +35,7 @@ DdeString::DdeString(const DdeString& ds)
 		m_str(ds.m_str)
 {
 	if (!::DdeKeepStringHandle(m_ddeInst,m_Handle)) {	//	increment reference count.
-		DebugOutput("DdeKeepStringHandle() error = %08x", ::DdeGetLastError(m_ddeInst));
+		DEBUG_OUTPUT("DdeKeepStringHandle() error = %08x", ::DdeGetLastError(m_ddeInst));
 	}
 }
 
@@ -44,11 +44,11 @@ DdeString::operator=(const DdeString& ds)
 {
 	if (this != &ds && m_Handle != ds.m_Handle) {
 		if (!::DdeFreeStringHandle(m_ddeInst,m_Handle)) {
-			DebugOutput("DdeFreeStringHandle() error = %08x", ::DdeGetLastError(m_ddeInst));
+			DEBUG_OUTPUT("DdeFreeStringHandle() error = %08x", ::DdeGetLastError(m_ddeInst));
 		}
 		m_Handle = ds.m_Handle;
 		if (!::DdeKeepStringHandle(m_ddeInst,m_Handle)) {
-			DebugOutput("DdeKeepStringHandle() error = %08x", ::DdeGetLastError(m_ddeInst));
+			DEBUG_OUTPUT("DdeKeepStringHandle() error = %08x", ::DdeGetLastError(m_ddeInst));
 		}
 		m_str = ds.m_str;
 	}

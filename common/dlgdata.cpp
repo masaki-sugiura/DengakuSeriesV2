@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.35 2007-03-04 18:06:55 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.36 2007-04-29 16:03:25 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -786,7 +786,7 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_USER_NOTIFY:
 		{
 			//	子ダイアログからの通知コード
-			DebugOutput("WM_USER_NOTIFY handled");
+			DEBUG_OUTPUT("WM_USER_NOTIFY handled");
 			pdf->setNotify(StringBuffer(16).append((int)wParam));
 		}
 		break;
@@ -850,7 +850,7 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 //		::SendMessage(hDlg,WM_USER_NOTIFY,0,0);	//	"0" を通知
 		::SendMessage(hDlg,WM_USER_NOTIFY,0,0);	//	"0" を通知
 		pdf->setDialogClosed();
-		DebugOutput("WM_CLOSE handled");
+		DEBUG_OUTPUT("WM_CLOSE handled");
 //		::DestroyWindow(hDlg);
 		return FALSE;
 

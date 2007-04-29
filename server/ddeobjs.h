@@ -1,4 +1,4 @@
-// $Id: ddeobjs.h,v 1.2 2007-03-04 18:06:56 sugiura Exp $
+// $Id: ddeobjs.h,v 1.3 2007-04-29 16:03:25 sugiura Exp $
 /*
  *	ddeobjs.h
  *	DDE 通信で使うデータをラップするクラスの定義
@@ -20,7 +20,7 @@ public:
 	~DdeString()
 	{
 		if (!::DdeFreeStringHandle(m_ddeInst,m_Handle)) {
-			DebugOutput("DdeFreeStringHandle() error = %08x", ::DdeGetLastError(m_ddeInst));
+			DEBUG_OUTPUT("DdeFreeStringHandle() error = %08x", ::DdeGetLastError(m_ddeInst));
 		}
 	}
 
@@ -109,7 +109,7 @@ public:
 	~ReceivedDdeData()
 	{
 		if (!::DdeFreeDataHandle(m_hData)) {
-			DebugOutput("DdeFreeStringHandle()!!");
+			DEBUG_OUTPUT("DdeFreeStringHandle()!!");
 		}
 	}
 };
@@ -129,7 +129,7 @@ public:
 										CF_TEXT,
 										0);
 		if (m_hData == NULL) {
-			DebugOutput("DdeCreateDataHandle() error = %08x", ::DdeGetLastError(ddeInst));
+			DEBUG_OUTPUT("DdeCreateDataHandle() error = %08x", ::DdeGetLastError(ddeInst));
 		}
 	}
 

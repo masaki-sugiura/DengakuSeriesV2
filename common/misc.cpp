@@ -1,4 +1,4 @@
-//	$Id: misc.cpp,v 1.18 2007-04-04 17:04:32 sugiura Exp $
+//	$Id: misc.cpp,v 1.19 2007-04-29 16:03:25 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数
@@ -148,7 +148,7 @@ HWND SetFocusForced(HWND hwndFocus)
 	DWORD dwDlgThreadID = ::GetWindowThreadProcessId(hwndFocus, NULL);
 
 	if (dwDlgThreadID != dwCurThreadID) {
-		DebugOutput("Dialog Thread ID = %d, Current Thread ID = %d", dwDlgThreadID, dwCurThreadID);
+		DEBUG_OUTPUT("Dialog Thread ID = %d, Current Thread ID = %d", dwDlgThreadID, dwCurThreadID);
 		BOOL bRet = ::AttachThreadInput(dwDlgThreadID, dwCurThreadID, TRUE);
 		if (!bRet) {
 			DEBUG_OUTPUT(("Failed to attach thread!!"));

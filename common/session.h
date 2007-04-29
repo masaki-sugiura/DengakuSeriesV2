@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.22 2007-03-04 18:06:56 sugiura Exp $
+//	$Id: session.h,v 1.23 2007-04-29 16:03:25 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -51,15 +51,15 @@ public:
 	//	Server で override される
 	virtual void setNotify(const StringBuffer& msg)
 	{
-		DebugOutput("Enter setNotify(%s)", (LPCSTR)msg);
+		DEBUG_OUTPUT("Enter setNotify(%s)", (LPCSTR)msg);
 		m_sharedBuf.set(msg);
-		DebugOutput("Leave setNotify(%s)", (LPCSTR)msg);
+		DEBUG_OUTPUT("Leave setNotify(%s)", (LPCSTR)msg);
 	}
 	virtual BOOL getNotify(StringBuffer& buf, DWORD wait)
 	{
-		DebugOutput("Enter getNotify()");
+		DEBUG_OUTPUT("Enter getNotify()");
 		BOOL bRet = m_sharedBuf.get(buf,wait);
-		DebugOutput("Leave getNotify(%s)", (LPCSTR)buf);
+		DEBUG_OUTPUT("Leave getNotify(%s)", (LPCSTR)buf);
 		return bRet;
 	}
 	virtual void resetNotify()

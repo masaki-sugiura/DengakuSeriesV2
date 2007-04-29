@@ -1,4 +1,4 @@
-// $Id: convdata.cpp,v 1.5 2007-04-04 17:04:32 sugiura Exp $
+// $Id: convdata.cpp,v 1.6 2007-04-29 16:03:25 sugiura Exp $
 /*
  *	convdata.cpp
  *	ConvData クラスのコア部分の実装
@@ -38,7 +38,7 @@ ConvData::~ConvData()
 HDDEDATA
 ConvData::ddeAdvStart(HSZ hsz1, HSZ hsz2)
 {
-	DebugOutput("Enter ddeAdvStart()");
+	DEBUG_OUTPUT("Enter ddeAdvStart()");
 	if (m_dsAdvTopicName.compareTo(hsz1) != 0 ||
 		m_dsAdvItemName.compareTo(hsz2)  != 0) {
 		DdeString ds1(m_ddeInst, hsz1), ds2(m_ddeInst, hsz2);
@@ -46,7 +46,7 @@ ConvData::ddeAdvStart(HSZ hsz1, HSZ hsz2)
 		return HDDE_FALSE;
 	}
 	::SetEvent(m_hAdvEvent); // setAdvData() の呼出しを許可
-	DebugOutput("Leave ddeAdvStart()");
+	DEBUG_OUTPUT("Leave ddeAdvStart()");
 	return HDDE_TRUE;
 }
 
@@ -54,11 +54,11 @@ ConvData::ddeAdvStart(HSZ hsz1, HSZ hsz2)
 HDDEDATA
 ConvData::ddeAdvStop(HSZ hsz1, HSZ hsz2)
 {
-	DebugOutput("Enter ddeAdvStop()");
+	DEBUG_OUTPUT("Enter ddeAdvStop()");
 	if (m_dsAdvTopicName.compareTo(hsz1) != 0 ||
 		m_dsAdvItemName.compareTo(hsz2)  != 0) return HDDE_FALSE;
 	::ResetEvent(m_hAdvEvent); // setAdvData() の呼出しを禁止
-	DebugOutput("Leave ddeAdvStop()");
+	DEBUG_OUTPUT("Leave ddeAdvStop()");
 	return HDDE_TRUE;
 }
 
@@ -99,11 +99,11 @@ ConvData::ddeAdvReq(HSZ hsz1, HSZ hsz2)
 		//	クライアントに渡す DDE データを作成
 		//	SendingDdeData は破棄時に DdeFreeDataHandle() を呼ばない
 		//	(からローカルオブジェクトでもよい)
-		DebugOutput("Enter Create DDE Data");
+		DEBUG_OUTPUT("Enter Create DDE Data");
 		HDDEDATA hData = SendingDdeData(m_ddeInst,
 							m_dsAdvItemName.getHandle(),
 							buf).getHandle();
-		DebugOutput("Leave Create DDE Data : hData = %08x", hData);
+		DEBUG_OUTPUT("Leave Create DDE Data : hData = %08x", hData);
 
 		return hData;
 	} catch (...) {

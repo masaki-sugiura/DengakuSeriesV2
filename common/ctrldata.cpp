@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.52 2007-02-10 19:00:01 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.53 2007-04-29 16:03:25 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -56,9 +56,9 @@ CtrlListItem::CtrlFontProperty::dumpData(
 	StringBuffer& key)
 {
 	ddfile.write((DWORD)m_color, key, GetString(STR_DLGDATA_COLOR), nullStr);
-//	DebugOutput("Write:Face = %d", m_fface);
+//	DEBUG_OUTPUT("Write:Face = %d", m_fface);
 	ddfile.write((int)m_fface, key, GetString(STR_DLGDATA_FACE), nullStr);
-//	DebugOutput("Write:FontName = %s", (LPCSTR)m_fname);
+//	DEBUG_OUTPUT("Write:FontName = %s", (LPCSTR)m_fname);
 	ddfile.write(m_fname, key, GetString(STR_DLGDATA_NAME), nullStr);
 	return TRUE;
 }
@@ -72,12 +72,12 @@ CtrlListItem::CtrlFontProperty::loadData(
 	int fface;
 	ddfile.read(&fface, key, GetString(STR_DLGDATA_FACE), nullStr);
 	m_fface = fface;
-//	DebugOutput("Read:Face = %d", m_fface);
+//	DEBUG_OUTPUT("Read:Face = %d", m_fface);
 	StringBuffer version;
 	ddfile.read(version, GetString(STR_DLGDATA_VERSION), GetString(STR_DLGDATA_COMMONPROPERTY));
 	if (version[0] >= '2') {
 		ddfile.read(m_fname, key, GetString(STR_DLGDATA_NAME), nullStr);
-//		DebugOutput("Read:FontName = %s", (LPCSTR)m_fname);
+//		DEBUG_OUTPUT("Read:FontName = %s", (LPCSTR)m_fname);
 	}
 	return TRUE;
 }
