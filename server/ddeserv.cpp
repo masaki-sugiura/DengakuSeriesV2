@@ -1,4 +1,4 @@
-// $Id: ddeserv.cpp,v 1.7 2007-04-29 16:03:25 sugiura Exp $
+// $Id: ddeserv.cpp,v 1.8 2007-04-29 16:11:35 sugiura Exp $
 /*
  *	ddeserv.cpp
  *	DdeServer クラスの実装
@@ -253,7 +253,7 @@ DdeServer::addConvData(const HCONV hconv, const HSZ hszTn)
 	}
 	//	getConvData() のため、通信データにポインタを登録
 	if (!::DdeSetUserHandle(hconv,QID_SYNC,reinterpret_cast<DWORD>(pCd))) {
-		DEBUG_OUTPUT("DdeSetUserHandle() error = %08x", ::DdeGetLastError(m_ddeInst));
+		DEBUG_OUTPUT(("DdeSetUserHandle() error = %08x", ::DdeGetLastError(m_ddeInst)));
 	}
 	return ret;
 }
@@ -269,7 +269,7 @@ DelCD(ConvData* pCd, LinkList<ConvData>& cdlist)
 		else
 			DdeServer::disconnect(hconv,NULL,NULL,HDDE_NULL);
 		if (!::DdeDisconnect(hconv)) {
-			DEBUG_OUTPUT("DdeDisconnect() error = %08x", ::DdeGetLastError(DdeServer::getddeInst()));
+			DEBUG_OUTPUT(("DdeDisconnect() error = %08x", ::DdeGetLastError(DdeServer::getddeInst())));
 		}
 	} else {
 		cdlist.delItemByPtr(pCd);
@@ -310,7 +310,7 @@ DdeServer::getConvData(const HCONV hconv)
 	ci.cb = sizeof(CONVINFO);
 	ci.hUser = 0L;
 	if (!::DdeQueryConvInfo(hconv,QID_SYNC,&ci)) {
-		DEBUG_OUTPUT("DdeQueryConvInfo() error = %08x", ::DdeGetLastError(m_ddeInst));
+		DEBUG_OUTPUT(("DdeQueryConvInfo() error = %08x", ::DdeGetLastError(m_ddeInst)));
 	}
 	return reinterpret_cast<ConvData*>(ci.hUser);
 }
@@ -321,13 +321,13 @@ DdeServer::notifyPostAdvise(ConvData* pCd)
 {
 	//	時間が惜しいので最低限のチェックしかしない
 	if (pCd != NULL) {
-		DEBUG_OUTPUT("Enter notifyPostAdvise()");
+		DEBUG_OUTPUT(("Enter notifyPostAdvise()"));
 		if (!::DdePostAdvise(m_ddeInst,
 							 pCd->getAdvTopicName(),
 							 pCd->getAdvItemName())) {
-			DEBUG_OUTPUT("DdePostAdvise() error = %08x", ::DdeGetLastError(m_ddeInst));
+			DEBUG_OUTPUT(("DdePostAdvise() error = %08x", ::DdeGetLastError(m_ddeInst)));
 		}
-		DEBUG_OUTPUT("Leave notifyPostAdvise()");
+		DEBUG_OUTPUT(("Leave notifyPostAdvise()"));
 	}
 }
 
