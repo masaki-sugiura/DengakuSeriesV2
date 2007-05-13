@@ -1,4 +1,4 @@
-//	$Id: misc.h,v 1.11 2007-02-10 19:00:01 sugiura Exp $
+//	$Id: misc.h,v 1.12 2007-05-13 17:02:41 sugiura Exp $
 /*
  *	misc.h
  *	雑多なユーティリティ関数
@@ -12,6 +12,7 @@
 class StringBuffer;
 
 BOOL isWinNT();
+DWORD GetVersionInfo(HINSTANCE hInstance);
 
 DWORD GetDialogBaseUnits(HWND hDlg, LPCSTR str = "M");
 void GetWindowCenter(HWND hWnd, HWND hWndOwner, RECT& rect);

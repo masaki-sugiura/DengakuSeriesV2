@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="common"
 	ProjectGUID="{01FA06AF-EE93-481C-9CCB-5C9386A602D1}"
+	RootNamespace="common"
 	>
 	<Platforms>
 		<Platform
@@ -69,7 +70,9 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="version.lib"
 				OutputFile=".\Debug\common.lib"
+				AdditionalLibraryDirectories=""
 				SuppressStartupBanner="true"
 			/>
 			<Tool
@@ -148,7 +151,9 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="version.lib"
 				OutputFile=".\Release\common.lib"
+				AdditionalLibraryDirectories=""
 				SuppressStartupBanner="true"
 			/>
 			<Tool

@@ -1,4 +1,4 @@
-//	$Id: misc.cpp,v 1.20 2007-04-29 16:11:35 sugiura Exp $
+//	$Id: misc.cpp,v 1.21 2007-05-13 17:02:41 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数
@@ -9,6 +9,7 @@
 #include "misc.h"
 
 #include <stdarg.h>
+#include <stdio.h>
 
 void
 DebugOutput(LPCSTR pszFormat, ...)
@@ -40,6 +41,40 @@ isWinNT()
 	osi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	if (!::GetVersionEx(&osi)) return FALSE;
 	return osi.dwPlatformId == VER_PLATFORM_WIN32_NT;
+}
+
+DWORD
+GetVersionInfo(HINSTANCE hInstance)
+{
+	HRSRC hVersion = ::FindResource((HMODULE)hInstance, MAKEINTRESOURCE(VS_VERSION_INFO), RT_VERSION);
+	if (hVersion == NULL)
+	{
+		return 0;
+	}
+
+	HGLOBAL hVersion2 = ::LoadResource((HMODULE)hInstance, hVersion);
+	if (hVersion2 == NULL)
+	{
+		return 0;
+	}
+
+	LPVOID pVersionString = ::LockResource(hVersion2);
+	if (pVersionString == NULL)
+	{
+		return 0;
+	}
+
+	VS_FIXEDFILEINFO* pVerInfo;
+	UINT uLength;
+	if (!::VerQueryValue(pVersionString, "\\", (LPVOID*)&pVerInfo, &uLength))
+	{
+		return 0;
+	}
+
+	int nMajor = (WORD)(pVerInfo->dwFileVersionMS >> 16), nMinor = (WORD)pVerInfo->dwFileVersionMS,
+		nRevision = (WORD)(pVerInfo->dwFileVersionLS >> 16), nRelease = (WORD)pVerInfo->dwFileVersionLS;
+
+	return ((BYTE)nMajor << 24) | ((BYTE)nMinor << 16) | ((BYTE)nRevision << 8) | (BYTE)nRelease;
 }
 
 DWORD

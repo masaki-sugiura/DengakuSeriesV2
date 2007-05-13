@@ -1,4 +1,4 @@
-//	$Id: session.cpp,v 1.5 2002-02-17 08:00:41 sugiura Exp $
+//	$Id: session.cpp,v 1.6 2007-05-13 17:02:41 sugiura Exp $
 /*
  *	session.cpp
  *	SessionInstance クラスのコア部分の実装
@@ -20,6 +20,13 @@ SessionInstance::SessionInstance(HINSTANCE hInstance, BOOL bTrueCD)
 		m_pBRegExp_Manager(NULL)
 {
 	m_DlgFrame.setSessionInstance(this);
+
+	DWORD dwVersion = GetVersionInfo(hInstance);
+
+	TCHAR buf[16];
+	wsprintf(buf, "%d.%d%d%s", (BYTE)(dwVersion >> 24), (BYTE)(dwVersion >> 16), (BYTE)(dwVersion >> 8),
+			(BYTE)dwVersion == 0 ? "" : "b");
+	m_strVersion = buf;
 }
 
 SessionInstance::~SessionInstance()

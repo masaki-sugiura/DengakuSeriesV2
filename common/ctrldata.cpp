@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.53 2007-04-29 16:03:25 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.54 2007-05-13 17:02:41 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -974,9 +974,9 @@ SimpleCtrl::sendData()
 	//	on default, set text of first control
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
 //	::SetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text);
-	m_pcp->setText();
 //	if (m_pcp->m_fontprop.m_bchanged)
 		m_pcp->changeFont();
+	m_pcp->setText();
 	return TRUE;
 }
 
@@ -1249,12 +1249,12 @@ BOOL
 EditCtrl::sendData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
+//	if (m_pcp->m_fontprop.m_bchanged)
+		m_pcp->changeFont();
 //	::SetWindowText(m_pcp->m_hwndCtrl,
 //					StringBuffer(m_pcp->m_text).replaceStr("\n", "\r\n",-1));
 	MySetWindowText(m_pcp->m_hwndCtrl,
 					StringBuffer(m_pcp->m_text).replaceStr("\n", "\r\n", -1));
-//	if (m_pcp->m_fontprop.m_bchanged)
-		m_pcp->changeFont();
 	return TRUE;
 }
 
@@ -2370,6 +2370,12 @@ ComboChildCtrlProc(HWND hCtrl, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	default:
 		break;
 	}
+
+	if (uMsg == WM_SETTEXT)
+	{
+		DEBUG_OUTPUT(("combo settext: %s", (LPCSTR)lParam));
+	}
+
 	return ::CallWindowProc(pCCSci->m_pfnDefCallback, hCtrl, uMsg, wParam, lParam);
 }
 
@@ -2802,6 +2808,8 @@ BOOL
 ChkListCtrl::sendData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
+//	if (m_pcp->m_fontprop.m_bchanged)
+		m_pcp->changeFont();
 	if (m_state > 0 && !m_states.getState(m_state-1))
 		m_states.setState(m_state-1, TRUE);
 	int nFocused = m_strFocusedItem.length() > 0 ? ival(m_strFocusedItem) - 1 : -1;
@@ -2826,8 +2834,6 @@ ChkListCtrl::sendData()
 
 		ListView_SetItem(m_pcp->m_hwndCtrl, &lvi);
 	}
-//	if (m_pcp->m_fontprop.m_bchanged)
-		m_pcp->changeFont();
 	ListView_SetColumnWidth(m_pcp->m_hwndCtrl, 0, LVSCW_AUTOSIZE);
 	ListView_RedrawItems(m_pcp->m_hwndCtrl, 0, num);
 	::UpdateWindow(m_pcp->m_hwndCtrl);
@@ -3317,6 +3323,8 @@ BOOL
 LViewCtrl::sendData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
+//	if (m_pcp->m_fontprop.m_bchanged)
+		m_pcp->changeFont();
 	if (m_state > 0 && !m_states.getState(m_state-1))
 		m_states.setState(m_state-1, TRUE);
 	int nFocused = m_strFocusedItem.length() > 0 ? ival(m_strFocusedItem) - 1 : -1;
@@ -3335,8 +3343,6 @@ LViewCtrl::sendData()
 		}
 		ListView_SetItem(m_pcp->m_hwndCtrl, &lvi);
 	}
-//	if (m_pcp->m_fontprop.m_bchanged)
-		m_pcp->changeFont();
 	ListView_RedrawItems(m_pcp->m_hwndCtrl, 0, num);
 	::UpdateWindow(m_pcp->m_hwndCtrl);
 	return TRUE;

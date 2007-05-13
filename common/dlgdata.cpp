@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.37 2007-04-29 16:11:35 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.38 2007-05-13 17:02:41 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -862,7 +862,7 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 //	秀丸ウィンドウをクリックすると「マクロを終了しますか？」と出るけど
 //	まぁしかたがない。
 //				::EnableWindow(hwndOwner,TRUE);
-//				::SetForegroundWindow(hwndOwner);
+				::SetForegroundWindow(hwndOwner);
 			}
 			pdf->uninitFrame();
 			::PostQuitMessage(0L);

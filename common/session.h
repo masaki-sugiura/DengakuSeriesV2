@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.24 2007-04-29 16:11:35 sugiura Exp $
+//	$Id: session.h,v 1.25 2007-05-13 17:02:41 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -39,6 +39,7 @@ public:
 
 	//	メンバ取得メソッド
 	HINSTANCE getInstanceHandle() const { return m_hInstance; }
+	const StringBuffer& getVersion() const { return m_strVersion; }
 	DlgFrame& getDlgFrame() { return m_DlgFrame; }
 	MenuList& getUserMenu() { return m_UserMenu; }
 	ColorTable& getColorTable() { return m_ColorTbl; }
@@ -255,6 +256,7 @@ public:
 
 protected:
 	HINSTANCE m_hInstance; // インスタンスハンドル
+	StringBuffer m_strVersion;		//	exe/dll のバージョンリソースから得られたバージョン
 	DWORD m_dwLastError; // 最後の Execute コマンドのエラー値
 	DlgFrame m_DlgFrame; // ユーザー定義ダイアログのクラス
 	DirList m_DirList; // ドライブ毎のカレントフォルダのリスト

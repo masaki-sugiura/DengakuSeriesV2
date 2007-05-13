@@ -1,4 +1,4 @@
-//	$Id: cs_handler.cpp,v 1.5 2007-02-16 16:04:09 sugiura Exp $
+//	$Id: cs_handler.cpp,v 1.6 2007-05-13 17:02:41 sugiura Exp $
 /*
  *	cs_handler.cpp
  *	共通サービスの実装
@@ -84,7 +84,8 @@ ConvData::On_getlibversion(CmdLineParser&)
 StringBuffer
 ConvData::On_getversion(CmdLineParser&)
 {
-	return GetServerString(SVR_STR_VERSION);
+//	return GetServerString(SVR_STR_VERSION);
+	return getVersion();
 }
 
 StringBuffer

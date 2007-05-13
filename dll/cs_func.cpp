@@ -1,4 +1,4 @@
-//	$Id: cs_func.cpp,v 1.6 2006-03-16 14:46:56 sugiura Exp $
+//	$Id: cs_func.cpp,v 1.7 2007-05-13 17:02:41 sugiura Exp $
 /*
  *	cs_func.cpp
  *	共通サービスの関数
@@ -12,7 +12,13 @@
 DENGAKUDLL_API LPCSTR
 GETVERSION()
 {
-	return g_versionStr;
+//	return g_versionStr;
+	try {
+		g_strBuffer = g_pSessionInstance->getVersion();
+		return g_strBuffer;
+	} catch (...) {
+		return "";
+	}
 }
 
 //	ライブラリのバージョン文字列を返す
