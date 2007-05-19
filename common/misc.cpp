@@ -1,4 +1,4 @@
-//	$Id: misc.cpp,v 1.21 2007-05-13 17:02:41 sugiura Exp $
+//	$Id: misc.cpp,v 1.22 2007-05-19 04:36:10 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数
@@ -43,6 +43,28 @@ isWinNT()
 	return osi.dwPlatformId == VER_PLATFORM_WIN32_NT;
 }
 
+static BOOL
+MyVerQueryValue(LPVOID pVersionString, VS_FIXEDFILEINFO** ppVerInfo)
+{
+	LPBYTE pBuf = (LPBYTE)pVersionString;
+
+	//	find signature 0xFEEFO4BD
+	for (int i = 0; i < 256; i++)
+	{
+		LPBYTE ptr = pBuf + i;
+		if (*ptr == 0xBD)
+		{
+			if (*(DWORD*)ptr == 0xFEEF04BD)
+			{
+				*ppVerInfo = (VS_FIXEDFILEINFO*)ptr;
+				return TRUE;
+			}
+		}
+	}
+
+	return FALSE;
+}
+
 DWORD
 GetVersionInfo(HINSTANCE hInstance)
 {
@@ -65,8 +87,7 @@ GetVersionInfo(HINSTANCE hInstance)
 	}
 
 	VS_FIXEDFILEINFO* pVerInfo;
-	UINT uLength;
-	if (!::VerQueryValue(pVersionString, "\\", (LPVOID*)&pVerInfo, &uLength))
+	if (!::MyVerQueryValue(pVersionString, &pVerInfo))
 	{
 		return 0;
 	}

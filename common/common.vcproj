@@ -70,7 +70,6 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="version.lib"
 				OutputFile=".\Debug\common.lib"
 				AdditionalLibraryDirectories=""
 				SuppressStartupBanner="true"
@@ -151,7 +150,6 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="version.lib"
 				OutputFile=".\Release\common.lib"
 				AdditionalLibraryDirectories=""
 				SuppressStartupBanner="true"
