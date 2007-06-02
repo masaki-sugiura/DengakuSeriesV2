@@ -430,23 +430,30 @@ LRESULT CDdeClientTestAppDlg::OnShowDialog(WPARAM wParam, LPARAM lParam)
 {
 	CreateDengakuDialog();
 
-	char cmdbuf[32];
-	sprintf_s(cmdbuf, sizeof(cmdbuf), "dialog %d", (int)this->GetSafeHwnd());
-	HDDEDATA hRet = DdeExecute(cmdbuf);
-
 	if (!DdeControlAdviseLoop(TRUE)) {
 		return 0;
 	}
+
+	char cmdbuf[32];
+	sprintf_s(cmdbuf, sizeof(cmdbuf), "dialog %d", (int)this->GetSafeHwnd());
+//	sprintf_s(cmdbuf, sizeof(cmdbuf), "dialog alwaysontop");
+	HDDEDATA hRet = DdeExecute(cmdbuf);
+
+//	if (!DdeControlAdviseLoop(TRUE)) {
+//		return 0;
+//	}
 
 	return (LRESULT)hRet;
 }
 
 LRESULT CDdeClientTestAppDlg::OnEndDialog(WPARAM wParam, LPARAM lParam)
 {
-	DdeControlAdviseLoop(FALSE);
+//	DdeControlAdviseLoop(FALSE);
 
 	HDDEDATA hRet = DdeExecute("enddialog");
 //	ASSERT(hRet == (HDDEDATA)DDE_FACK);
+
+	DdeControlAdviseLoop(FALSE);
 
 	return 0;
 }

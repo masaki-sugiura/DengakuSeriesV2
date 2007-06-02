@@ -1,4 +1,4 @@
-// $Id: convdata.cpp,v 1.7 2007-04-29 16:11:35 sugiura Exp $
+// $Id: convdata.cpp,v 1.8 2007-06-02 17:40:59 sugiura Exp $
 /*
  *	convdata.cpp
  *	ConvData クラスのコア部分の実装
@@ -89,7 +89,12 @@ ConvData::ddeAdvReq(HSZ hsz1, HSZ hsz2)
 			m_dsAdvItemName.compareTo(hsz2)  != 0) return HDDE_NULL;
 		//	通知コードの取得
 		StringBuffer buf;
-		this->getNotify(buf,INFINITE);
+		if (!this->getNotify(buf, 0))
+		{
+			//	複数のプロセスと通信中の時、全てのインスタンスのddeAdvReq()が呼ばれるので、
+			//	バッファが空の時に呼ばれる可能性がある。
+			return HDDE_NULL;
+		}
 		//	メニュースレッドの停止…ここしかタイミングがないのかなぁ…？？
 		if (m_pMenuThread.ptr() != NULL) this->stopMenuThread();
 		if (m_pComDlgThread.ptr() != NULL) {
