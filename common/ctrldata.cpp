@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.54 2007-05-13 17:02:41 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.55 2007-06-03 15:25:17 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -1051,7 +1051,7 @@ SimpleCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDc)
 	lbr.lbColor = ::GetBkColor(hDc);
 	lbr.lbStyle = BS_SOLID;
 	m_pcp->m_hbrBackground = ::CreateBrushIndirect(&lbr);
-#ifdef _DEBUG
+#if 0
 	{
 		char msgbuf[80];
 		wsprintf(msgbuf, "TextColor = %08x, BkColor = %08x\n", m_pcp->m_fontprop.m_color, lbr.lbColor);
@@ -4545,10 +4545,12 @@ TabCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 			NMTCKEYDOWN* pnm = reinterpret_cast<NMTCKEYDOWN*>(lParam);
 			if (pnm->wVKey != VK_TAB || !::GetKeyState(VK_CONTROL)) break;
 			int sel = TabCtrl_GetCurSel(m_pcp->m_hwndCtrl);
-			if (!::GetKeyState(VK_SHIFT)) {
+			if ((::GetKeyState(VK_SHIFT) & 0x8000) == 0) {
+				DEBUG_OUTPUT(("CTRL+TAB is pressed!!"));
 				sel += 1;
 				if (sel >= m_item->itemNum()) sel = 0;
 			} else {
+				DEBUG_OUTPUT(("CTRL+SHIFT+TAB is pressed!!"));
 				sel -= 1;
 				if (sel < 0) sel = m_item->itemNum() - 1;
 			}

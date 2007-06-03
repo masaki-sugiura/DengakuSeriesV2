@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.26 2007-04-29 16:11:35 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.27 2007-06-03 15:25:17 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -19,7 +19,7 @@ PreDispatchKeyPress(HWND hDlg, MSG* lpMsg)
 {
 	if (lpMsg->message != WM_KEYDOWN ||
 		lpMsg->wParam != VK_TAB ||
-		(GetKeyState(VK_CONTROL) & 0x80000000) == 0) return FALSE;
+		(GetKeyState(VK_CONTROL) & 0x8000) == 0) return FALSE;
 
 	HWND hFocusedCtrl = ::GetFocus();
 	if (hFocusedCtrl == NULL) return FALSE;
