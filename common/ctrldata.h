@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.24 2006-05-20 17:02:50 sugiura Exp $
+//	$Id: ctrldata.h,v 1.25 2007-09-02 15:50:03 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -176,7 +176,7 @@ public:
 		StringBuffer m_fname;
 
 		CtrlFontProperty()
-			: m_hfont(NULL), m_bchanged(FALSE), m_color(0), m_fface(0), m_fname(nullStr)
+			: m_hfont(NULL), m_bchanged(TRUE), m_color(0), m_fface(0), m_fname(nullStr)
 		{}
 
 		BOOL dumpData(DlgDataFile&, StringBuffer& key);

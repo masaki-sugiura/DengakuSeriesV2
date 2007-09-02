@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.55 2007-06-03 15:25:17 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.56 2007-09-02 15:50:03 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -176,6 +176,7 @@ CtrlListItem::CtrlProperty::changeFont()
 	m_fontprop.m_hfont = ::CreateFontIndirect(&lf);
 	if (m_fontprop.m_hfont != NULL) {
 		DlgFrame& dlgFrame = m_pCtrl->getParentPage().getDlgFrame();
+#if 1
 		if (dlgFrame.isThemeActive() && m_classname == (LPCSTR)0x82) {
 			// XP Theme が有効の場合、タブコントロール内にないスタティックテキストの色が
 			// 変わらないことへの対策(何だかなぁ。。。)
@@ -200,10 +201,14 @@ CtrlListItem::CtrlProperty::changeFont()
 			::SetTextColor(m_hDC, m_fontprop.m_color);
 			::SetBkMode(m_hDC, TRANSPARENT);
 			::SelectObject(m_hDC, m_fontprop.m_hfont);
-			::TextOut(m_hDC, 0, 0, m_text, m_text.length());
+//			::TextOut(m_hDC, 0, 0, m_text, m_text.length());
+			::DrawText(m_hDC, m_text, m_text.length(), &rcCtrl, DT_LEFT | DT_TOP);
 		} else {
 			::SendMessage(m_hwndCtrl, WM_SETFONT, (WPARAM)m_fontprop.m_hfont, TRUE);
 		}
+#else
+		::SendMessage(m_hwndCtrl, WM_SETFONT, (WPARAM)m_fontprop.m_hfont, TRUE);
+#endif
 	}
 	m_fontprop.m_bchanged = FALSE;
 }
@@ -974,7 +979,7 @@ SimpleCtrl::sendData()
 	//	on default, set text of first control
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
 //	::SetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text);
-//	if (m_pcp->m_fontprop.m_bchanged)
+	if (m_pcp->m_fontprop.m_bchanged)
 		m_pcp->changeFont();
 	m_pcp->setText();
 	return TRUE;
@@ -1051,10 +1056,12 @@ SimpleCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDc)
 	lbr.lbColor = ::GetBkColor(hDc);
 	lbr.lbStyle = BS_SOLID;
 	m_pcp->m_hbrBackground = ::CreateBrushIndirect(&lbr);
-#if 0
+#if 1
 	{
 		char msgbuf[80];
-		wsprintf(msgbuf, "TextColor = %08x, BkColor = %08x\n", m_pcp->m_fontprop.m_color, lbr.lbColor);
+		wsprintf(msgbuf, "%s: TextColor = %08x, BkColor = %08x\n",
+				 (LPCSTR)this->m_name,
+				 m_pcp->m_fontprop.m_color, lbr.lbColor);
 		::OutputDebugString(msgbuf);
 	}
 #endif
@@ -1175,9 +1182,13 @@ TextCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDc)
 {
 	if (m_pDlgPage->getDlgFrame().isThemeActive()) {
 #ifdef _DEBUG
-		char buf[80];
-		wsprintf(buf, "color=%08x\n", m_pcp->m_fontprop.m_color);
-		::OutputDebugString(buf);
+		{
+			char msgbuf[80];
+			wsprintf(msgbuf, "%s: TextColor = %08x",
+					 (LPCSTR)this->m_name,
+					 m_pcp->m_fontprop.m_color);
+			::OutputDebugString(msgbuf);
+		}
 #endif
 		::SetTextColor(hDc, m_pcp->m_fontprop.m_color);
 		return NULL;
@@ -1249,7 +1260,7 @@ BOOL
 EditCtrl::sendData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
-//	if (m_pcp->m_fontprop.m_bchanged)
+	if (m_pcp->m_fontprop.m_bchanged)
 		m_pcp->changeFont();
 //	::SetWindowText(m_pcp->m_hwndCtrl,
 //					StringBuffer(m_pcp->m_text).replaceStr("\n", "\r\n",-1));
@@ -1936,7 +1947,7 @@ RadioCtrl::showCtrl(BOOL bVisible)
 BOOL
 RadioCtrl::sendData()
 {
-//	BOOL bFontChanged = m_pcp->m_fontprop.m_bchanged;
+	BOOL bFontChanged = m_pcp->m_fontprop.m_bchanged;
 	if (!HasListCtrl::sendData()) return FALSE;
 	HWND hDlg = m_pDlgPage->gethwndPage(), hwndBtn;
 	int num = m_item->initSequentialGet();
@@ -1944,7 +1955,7 @@ RadioCtrl::sendData()
 	for (int i = 1; i <= num; i++) {
 		id = m_item->getNextItem();
 		hwndBtn = ::GetDlgItem(hDlg, m_pcp->m_id + i);
-//		if (bFontChanged)
+		if (bFontChanged)
 			::SendMessage(hwndBtn, WM_SETFONT, (WPARAM)m_pcp->m_fontprop.m_hfont, NULL);
 //		::SetWindowText(hwndBtn,id->getText());
 		::MySetWindowText(hwndBtn, id->getText());
@@ -2808,7 +2819,7 @@ BOOL
 ChkListCtrl::sendData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
-//	if (m_pcp->m_fontprop.m_bchanged)
+	if (m_pcp->m_fontprop.m_bchanged)
 		m_pcp->changeFont();
 	if (m_state > 0 && !m_states.getState(m_state-1))
 		m_states.setState(m_state-1, TRUE);
@@ -3323,7 +3334,7 @@ BOOL
 LViewCtrl::sendData()
 {
 	if (m_pcp->m_hwndCtrl == NULL) return FALSE;
-//	if (m_pcp->m_fontprop.m_bchanged)
+	if (m_pcp->m_fontprop.m_bchanged)
 		m_pcp->changeFont();
 	if (m_state > 0 && !m_states.getState(m_state-1))
 		m_states.setState(m_state-1, TRUE);
@@ -4708,7 +4719,7 @@ MultipleCtrl::sendData()
 {
 	for (int i = 0; i < m_cnum; i++) {
 		if (m_pcp[i].m_hwndCtrl == NULL) return FALSE;
-//		if (m_pcp[i].m_fontprop.m_bchanged)
+		if (m_pcp[i].m_fontprop.m_bchanged)
 			m_pcp->changeFont();
 	}
 	return TRUE;

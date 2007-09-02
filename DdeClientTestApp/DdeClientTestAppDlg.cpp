@@ -77,6 +77,9 @@ BOOL CDdeClientTestAppDlg::OnInitDialog()
 //		PostMessage(WM_USER_SHOWDIALOG);
 	}
 
+	HWND hCtrl = ::GetDlgItem(this->GetSafeHwnd(), IDC_DUMMY);
+	::SetWindowText(hCtrl, __TEXT("This is \n a Test."));
+
 	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
 }
 
