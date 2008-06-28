@@ -1,0 +1,185 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 日本語 resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+#ifdef _WIN32
+LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+#pragma code_page(932)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_FUZZY_OPTION DIALOG DISCARDABLE  30, 20, 227, 211
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "あいまい検索の設定"
+FONT 9, "ＭＳ Ｐゴシック"
+BEGIN
+    CONTROL         "半角/全角を区別しない(&Z)",IDB_FUZZYOPTION_NOHANZEN,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,7,119,10
+    CONTROL         "全角文字で、ひらがなとカタカナを区別しない(&I)",
+                    IDB_FUZZYOPTION_NOHIRAKATA,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,7,22,159,10
+    CONTROL         "大きい「あ」と小さい「ぁ」を区別しない(&B)",
+                    IDB_FUZZYOPTION_NOBIGSMALLKANA,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,7,37,134,10
+    CONTROL         "濁音/半濁音を無視する(&D)",IDB_FUZZYOPTION_NODAKUON,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,52,109,10
+    CONTROL         "かなの「ー」と英数字の「－」を同一視する(&K)",
+                    IDB_FUZZYOPTION_KANAHYPHEN,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,7,67,158,10
+    CONTROL         "空白/タブ文字を無視する(&S)",IDB_FUZZYOPTION_NOSPACE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,82,131,10
+    CONTROL         "改行を無視する(&R)",IDB_FUZZYOPTION_NORETURN,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,97,83,10
+    LTEXT           "最大改行数(&M):",IDC_STATIC,93,98,51,8
+    EDITTEXT        IDE_NORETURN_MAX,145,95,30,14,ES_RIGHT | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    CONTROL         "Spin1",IDV_NORETURN_MAX,"msctls_updown32",
+                    UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | 
+                    UDS_ARROWKEYS | UDS_NOTHOUSANDS,177,93,10,14
+    CONTROL         "特定文字を無視する(&G) -",IDB_FUZZYOPTION_CUSTOMIGNORE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,114,92,10
+    EDITTEXT        IDE_CUSTOMIGNORE,103,112,117,14,ES_AUTOHSCROLL
+    CONTROL         "同一視指定&1 - ",IDB_FUZZY_CUSTOM1,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,131,156,10
+    CONTROL         "同一視指定&2 - ",IDB_FUZZY_CUSTOM2,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,146,156,10
+    CONTROL         "同一視指定&3 - ",IDB_FUZZY_CUSTOM3,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,161,156,10
+    CONTROL         "同一視指定&4 - ",IDB_FUZZY_CUSTOM4,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,176,156,10
+    PUSHBUTTON      "参照...",IDB_CUSTOM_BROWSE1,170,129,50,13
+    PUSHBUTTON      "参照...",IDB_CUSTOM_BROWSE2,170,144,50,13
+    PUSHBUTTON      "参照...",IDB_CUSTOM_BROWSE3,170,159,50,13
+    PUSHBUTTON      "参照...",IDB_CUSTOM_BROWSE4,170,174,50,13
+    DEFPUSHBUTTON   "&OK",IDOK,170,7,50,15
+    PUSHBUTTON      "ｷｬﾝｾﾙ",IDCANCEL,170,25,50,15
+    PUSHBUTTON      "リセット(&T)",IDB_RESET,170,43,50,15
+    PUSHBUTTON      "ヘルプ(&H)",IDB_HELP,170,61,50,14
+    LTEXT           "",IDT_CUSTOM1,158,82,8,8,NOT WS_VISIBLE
+    LTEXT           "",IDT_CUSTOM2,171,82,8,8,NOT WS_VISIBLE
+    LTEXT           "",IDT_CUSTOM3,186,83,8,10,NOT WS_VISIBLE
+    LTEXT           "",IDT_CUSTOM4,205,83,8,10,NOT WS_VISIBLE
+    RTEXT           "HmJre.dll Version 1.69 (C) 2003-2005 有限会社サイトー企画",
+                    IDC_STATIC,7,195,213,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_FUZZY_OPTION, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 220
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 204
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,6,9,0
+ PRODUCTVERSION 1,6,9,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041104b0"
+        BEGIN
+            VALUE "CompanyName", " \0"
+            VALUE "FileDescription", "HmJre (Japanese Regular Expression / Fuzzy Search DLL)\0"
+            VALUE "FileVersion", "1, 6, 9, 0\0"
+            VALUE "InternalName", "HmJre\0"
+            VALUE "LegalCopyright", "Copyright (C) 2003-2005 Yuugen-gaisha Saito-Kikaku\0"
+            VALUE "OriginalFilename", "HmJre.dll\0"
+            VALUE "ProductName", "  HmJre\0"
+            VALUE "ProductVersion", "1, 6, 9, 0\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x411, 1200
+    END
+END
+
+#endif    // !_MAC
+
+#endif    // 日本語 resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

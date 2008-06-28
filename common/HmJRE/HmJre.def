@@ -1,0 +1,30 @@
+LIBRARY HMJRE
+
+SECTIONS
+;	.bss	READ WRITE SHARED
+;	.data	READ WRITE SHARED
+
+EXPORTS
+	Jre2Open
+	Jre2Compile
+	Jre2GetMatchInfo
+	Jre2Close
+	JreGetVersion
+	Jre2SetCodePage
+	GetJreMessage
+	DecodeEscSeq
+	Fuzzy_Open
+	Fuzzy_Close
+	Fuzzy_ConvertTarget
+	Fuzzy_ConvertFindString
+	Fuzzy_FindPos2RealPos
+	Fuzzy_FindArea2RealArea
+	Fuzzy_RealPos2FindPos
+	Fuzzy_GetFuzzyDataInJre
+	Fuzzy_OptionDialog
+	Fuzzy_SetOptionAtJre
+	JreGetTagPosition
+	FindRegular
+	FindRegularNoCaseSense
+	GetLastMatchLength
+	Jre2GetMatchInfo_HmJre
