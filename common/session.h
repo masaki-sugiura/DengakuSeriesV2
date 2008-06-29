@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.26 2007-06-03 15:25:17 sugiura Exp $
+//	$Id: session.h,v 1.27 2008-06-29 15:19:43 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -20,6 +20,7 @@
 #include "tokenizer.h"
 #include "thread.h"
 #include "bregexp_mngr.h"
+#include "hmjre_mngr.h"
 #include "colortbl.h"
 #include "misc.h"
 
@@ -240,6 +241,18 @@ public:
 	StringBuffer si_bregexp_postostr(const StringBuffer&);
 	int si_bregexp_hasmoreresults();
 
+	// HmJre系
+	int si_hmjre_load(const StringBuffer&);
+	int si_hmjre_free();
+	StringBuffer si_hmjre_get_version();
+	StringBuffer si_hmjre_match(const StringBuffer&, const StringBuffer&, int, int, int);
+	StringBuffer si_hmjre_get_tag_position(int);
+	StringBuffer si_hmjre_get_match_string(const StringBuffer&, const StringBuffer&);
+	int si_hmjre_find_regular(const StringBuffer&, const StringBuffer&, int);
+	int si_hmjre_find_regular_no_case_sense(const StringBuffer&, const StringBuffer&, int);
+	int si_hmjre_get_last_match_length();
+	int si_hmjre_option_dialog(int, int);
+
 	// カラーテーブル操作系
 	int si_setcolorref(const StringBuffer&, const StringBuffer&);
 	StringBuffer si_getcolorref(const StringBuffer&);
@@ -270,6 +283,7 @@ protected:
 	Auto_Ptr<Thread> m_pMenuThread; // メニュー表示で使うスレッド
 	Auto_Ptr<Thread> m_pDlgThread; // ダイアログ表示で使うスレッド
 	Auto_Ptr<BRegExp_Manager> m_pBRegExp_Manager; // BRegexp をコントロールするクラス
+	Auto_Ptr<HmJre_Manager>	m_pHmJre_Manager;	// HmJre をコントロールするクラス
 
 	SharedBuffer<StringBuffer> m_sharedBuf;
 

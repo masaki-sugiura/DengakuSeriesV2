@@ -1,4 +1,4 @@
-//	$Id: cmd.h,v 1.18 2006-05-20 17:02:50 sugiura Exp $
+//	$Id: cmd.h,v 1.19 2008-06-29 15:19:43 sugiura Exp $
 /*
  *	cmd.h
  *	ƒRƒ}ƒ“ƒh–¼ˆê——
@@ -62,6 +62,12 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_EXECUTE(freespi)
 	DECLARE_DDECMD_EXECUTE(bre_load)
 	DECLARE_DDECMD_EXECUTE(bre_free)
+	DECLARE_DDECMD_EXECUTE(hmjre_load)
+	DECLARE_DDECMD_EXECUTE(hmjre_free)
+	DECLARE_DDECMD_EXECUTE(hmjre_find_regular)
+	DECLARE_DDECMD_EXECUTE(hmjre_find_regular_no_case_sense)
+	DECLARE_DDECMD_EXECUTE(hmjre_get_last_match_length)
+	DECLARE_DDECMD_EXECUTE(hmjre_option_dialog)
 	DECLARE_DDECMD_EXECUTE(clr_setname)
 	DECLARE_DDECMD_EXECUTE(clr_load)
 	DECLARE_DDECMD_EXECUTE(clr_save)
@@ -145,6 +151,10 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_REQUEST(bre_getnext)
 	DECLARE_DDECMD_REQUEST(bre_postostr)
 	DECLARE_DDECMD_REQUEST(bre_hasmoreresults)
+	DECLARE_DDECMD_REQUEST(hmjre_get_version)
+	DECLARE_DDECMD_REQUEST(hmjre_match)
+	DECLARE_DDECMD_REQUEST(hmjre_get_tag_position)
+	DECLARE_DDECMD_REQUEST(hmjre_get_match_string)
 	DECLARE_DDECMD_REQUEST(clr_getrgb)
 	DECLARE_DDECMD_REQUEST(clr_getname)
 #if 0

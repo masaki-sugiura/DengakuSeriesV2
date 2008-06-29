@@ -481,6 +481,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\hs_handler.cpp"
+				>
+			</File>
+			<File
 				RelativePath="is_handler.cpp"
 				>
 				<FileConfiguration

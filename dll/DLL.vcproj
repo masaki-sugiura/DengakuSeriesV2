@@ -394,6 +394,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\hs_func.cpp"
+				>
+			</File>
+			<File
 				RelativePath="is_func.cpp"
 				>
 				<FileConfiguration

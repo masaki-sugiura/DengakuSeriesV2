@@ -1,4 +1,4 @@
-//	$Id: hmjre_mngr.cpp,v 1.3 2006-03-16 14:46:56 sugiura Exp $
+//	$Id: hmjre_mngr.cpp,v 1.4 2008-06-29 15:19:42 sugiura Exp $
 /*
  *	hmjre_mngr.cpp
  *	HmJre_Manager クラスの実装
@@ -6,93 +6,266 @@
 
 #include "hmjre_mngr.h"
 
+
 HmJre_Manager::HmJre_Manager(const StringBuffer& filename)
 	:	REDLL_Manager(filename)
+	,	m_pLastJre2(NULL)
+	,	m_pLastFuzzyData(NULL)
+	,	m_bLastIsFuzzy(FALSE)
 {
 	m_pfnJreGetVersion = (PFN_JREGETVERSION)::GetProcAddress(m_hModuleDll,HMJRE_JREGETVERSION);
-	m_pfnDecodeEscSeq = (PFN_DECODEESCSEQ)::GetProcAddress(m_hModuleDll,HMJRE_DECODEESCSEQ);
-	m_pfnGetJreMessage = (PFN_GETJREMESSAGE)::GetProcAddress(m_hModuleDll,HMJRE_GETJREMESSAGE);
-	m_pfnJre2Open = (PFN_JRE2OPEN)::GetProcAddress(m_hModuleDll,HMJRE_JRE2OPEN);
-	m_pfnJre2Compile = (PFN_JRE2COMPILE)::GetProcAddress(m_hModuleDll,HMJRE_JRE2COMPILE);
-	m_pfnJre2GetMatchInfo
-		= (PFN_JRE2GETMATCHINFO)::GetProcAddress(m_hModuleDll,HMJRE_JRE2GETMATCHINFO);
-	m_pfnJre2Close = (PFN_JRE2CLOSE)::GetProcAddress(m_hModuleDll,HMJRE_JRE2CLOSE);
-	if (m_pfnJreGetVersion == NULL ||
-		m_pfnDecodeEscSeq == NULL || m_pfnGetJreMessage == NULL ||
-		m_pfnJre2Open == NULL || m_pfnJre2Compile == NULL ||
-		m_pfnJre2GetMatchInfo == NULL || m_pfnJre2Close == NULL)
+
+	m_pfnJreGetTagPosition			= (PFN_JREGETTAGPOSITION)::GetProcAddress(m_hModuleDll, HMJRE_JREGETTAGPOSITION);
+	m_pfnJre2Open					= (PFN_JRE2OPEN)::GetProcAddress(m_hModuleDll, HMJRE_JRE2OPEN);
+	m_pfnJre2Close					= (PFN_JRE2CLOSE)::GetProcAddress(m_hModuleDll, HMJRE_JRE2CLOSE);
+	m_pfnJre2Compile				= (PFN_JRE2COMPILE)::GetProcAddress(m_hModuleDll, HMJRE_JRE2COMPILE);
+	m_pfnJre2GetMatchInfo			= (PFN_JRE2GETMATCHINFO)::GetProcAddress(m_hModuleDll, HMJRE_JRE2GETMATCHINFO);
+	m_pfnFuzzy_Open					= (PFN_FUZZY_OPEN)::GetProcAddress(m_hModuleDll, HMJRE_FUZZY_OPEN);
+	m_pfnFuzzy_Close				= (PFN_FUZZY_CLOSE)::GetProcAddress(m_hModuleDll, HMJRE_FUZZY_CLOSE);
+	m_pfnFuzzy_ConvertTarget		= (PFN_FUZZY_CONVERTTARGET)::GetProcAddress(m_hModuleDll, HMJRE_FUZZY_CONVERTTARGET);
+	m_pfnFuzzy_ConvertFindString	= (PFN_FUZZY_CONVERTFINDSTRING)::GetProcAddress(m_hModuleDll, HMJRE_FUZZY_CONVERTFINDSTRING);
+	m_pfnFuzzy_FindPos2RealPos		= (PFN_FUZZY_FINDPOS2REALPOS)::GetProcAddress(m_hModuleDll, HMJRE_FUZZY_FINDPOS2REALPOS);
+	m_pfnFuzzy_FindArea2RealArea	= (PFN_FUZZY_FINDAREA2REALAREA)::GetProcAddress(m_hModuleDll, HMJRE_FUZZY_FINDAREA2REALAREA);
+	m_pfnFuzzy_RealPos2FindPos		= (PFN_FUZZY_REALPOS2FINDPOS)::GetProcAddress(m_hModuleDll, HMJRE_FUZZY_REALPOS2FINDPOS);
+	m_pfnFuzzy_GetFuzzyDataInJre	= (PFN_FUZZY_GETFUZZYDATAINJRE)::GetProcAddress(m_hModuleDll, HMJRE_FUZZY_GETFUZZYDATAINJRE);
+	m_pfnFuzzy_OptionDialog			= (PFN_FUZZY_OPTIONDIALOG)::GetProcAddress(m_hModuleDll, HMJRE_FUZZY_OPTIONDIALOG);
+	m_pfnFindRegular				= (PFN_FINDREGULAR)::GetProcAddress(m_hModuleDll, HMJRE_FINDREGULAR);
+	m_pfnFindRegularNoCaseSense		= (PFN_FINDREGULARNOCASESENSE)::GetProcAddress(m_hModuleDll, HMJRE_FINDREGULARNOCASESENSE);
+	m_pfnGetLastMatchLength			= (PFN_GETLASTMATCHLENGTH)::GetProcAddress(m_hModuleDll, HMJRE_GETLASTMATCHLENGTH);
+
+	if (m_pfnJreGetVersion == NULL				||
+		m_pfnJre2Open == NULL					||
+		m_pfnJre2Close == NULL					||
+		m_pfnJre2Compile == NULL				||
+		m_pfnJre2GetMatchInfo == NULL			||
+		m_pfnJreGetTagPosition == NULL			||
+		m_pfnFuzzy_Open == NULL					||
+		m_pfnFuzzy_Close == NULL				||
+		m_pfnFuzzy_ConvertTarget == NULL		||
+		m_pfnFuzzy_ConvertFindString == NULL	||
+		m_pfnFuzzy_FindPos2RealPos == NULL		||
+		m_pfnFuzzy_FindArea2RealArea == NULL	||
+		m_pfnFuzzy_RealPos2FindPos == NULL		||
+		m_pfnFuzzy_GetFuzzyDataInJre == NULL	||
+		m_pfnFuzzy_OptionDialog == NULL			||
+		m_pfnFindRegular == NULL				||
+		m_pfnFindRegularNoCaseSense == NULL		||
+		m_pfnGetLastMatchLength == NULL)
+	{
 		throw DllProcAddressNotFoundError();
+	}
 }
 
 HmJre_Manager::~HmJre_Manager()
 {
-	m_Jre_Pool.initSequentialGet();
-	JRE2* pJre2;
-	while ((pJre2 = m_Jre_Pool.getNextItem())) {
+	m_Jre2_Pool.initSequentialGet();
+	JRE2*	pJre2;
+	while ((pJre2 = m_Jre2_Pool.getNextItem()))
+	{
 		(*m_pfnJre2Close)(pJre2);
 	}
+
+	if (m_pLastFuzzyData != NULL)
+	{
+		m_pfnFuzzy_Close(m_pLastFuzzyData);
+		delete m_pLastFuzzyData;
+	}
 }
 
-void
-HmJre_Manager::setErrorMessage()
+//	return "pos:len"
+StringBuffer
+HmJre_Manager::match(const StringBuffer& strFind, const StringBuffer& strTarget, int nOffset, int nFlags, int nRegExp)
 {
-	int len = (*m_pfnGetJreMessage)(0, GJM_JPN, NULL, 0);
-	if (!len) {
-		m_strErrMsg = "メッセージの取得に失敗";
-		return;
+	if (m_pLastFuzzyData != NULL)
+	{
+		m_pfnFuzzy_Close(m_pLastFuzzyData);
+		delete m_pLastFuzzyData;
+		m_pLastFuzzyData = NULL;
 	}
 
-	LPSTR buf = new char[len + 1];
-	(*m_pfnGetJreMessage)(0, GJM_JPN, buf, len + 1);
+	JREFUZZYDATA*	pFuzzyData = new JREFUZZYDATA;
 
-	m_strErrMsg = buf;
+	memset(pFuzzyData, 0, sizeof(*pFuzzyData));
+	pFuzzyData->dwSize	= sizeof(*pFuzzyData);
 
-	delete [] buf;
+	BOOL	bRet = m_pfnFuzzy_Open(pFuzzyData, FALSE);
+	if (!bRet)
+	{
+		delete pFuzzyData;
+		return nullStr;
+	}
+
+	m_pLastFuzzyData	= pFuzzyData;
+
+	if ((nFlags & FUZZYOPTION_NORETURN) != 0)
+	{
+		int	nBreaks = strTarget.count("\n");
+		if (nBreaks <= 0)
+		{
+			nFlags	&= ~FUZZYOPTION_NORETURN;
+		}
+		else
+		{
+			if (nBreaks > 0x100)
+			{
+				nBreaks = 0x100;
+			}
+
+			nFlags	|= (nBreaks - 1) << FUZZYOPTION_NORETURN_SHIFT;
+		}
+	}
+
+	pFuzzyData->flags	= nFlags;
+
+	bRet = m_pfnFuzzy_ConvertFindString(pFuzzyData, strFind, nRegExp);
+	if (!bRet)
+	{
+		m_pfnFuzzy_Close(pFuzzyData);
+		return nullStr;
+	}
+
+	bRet = m_pfnFuzzy_ConvertTarget(pFuzzyData, strTarget);
+	if (!bRet)
+	{
+		m_pfnFuzzy_Close(pFuzzyData);
+		return nullStr;
+	}
+
+	JRE2*	pJre2 = GetJre2(pFuzzyData->pszFindConved, 1);	//	常に case sense
+	if (pJre2 == NULL)
+	{
+		m_pfnFuzzy_Close(pFuzzyData);
+		return nullStr;
+	}
+
+	pJre2->nStart	= m_pfnFuzzy_RealPos2FindPos(pFuzzyData, nOffset);
+
+	int	nPos = -1, nLength = 0;
+
+	bRet = m_pfnJre2GetMatchInfo(pJre2, pFuzzyData->pszTargetConved);
+	if (bRet)
+	{
+		m_pLastJre2	= pJre2;
+		m_pLastFuzzyData = pFuzzyData;
+		m_bLastIsFuzzy	= TRUE;
+		nLength	= pJre2->nLength;
+		nPos	= m_pfnFuzzy_FindArea2RealArea(pFuzzyData, pJre2->nPosition, &nLength);
+	}
+	else
+	{
+		m_pfnFuzzy_Close(pFuzzyData);
+	}
+
+	return make_pos_result(nPos, nLength);
 }
 
-DWORD
-HmJre_Manager::match(const StringBuffer& ptn, const StringBuffer& str, int nFlags)
+//	return "pos:len"
+StringBuffer
+HmJre_Manager::getTagPosition(int nTagNumber)
 {
-	JRE2* pJre2 = m_htblJre.getValue(ptn);
-	if (!pJre2) {
-		// 初めて登場するパターン
-		try {
-			pJre2 = new JRE2;
-		} catch (...) {
-			return REDLL_RESULT_FAILED;
-		}
-
-		if (!(*m_pfnJre2Compile)(pJre2, (LPCSTR)ptn)) {
-			setErrorMessage();
-			return REDLL_RESULT_FAILED;
-		}
-
-		m_htblJre.setValue(ptn, pJre2);
-		m_Jre_Pool.addItem(pJre2);
+	if (m_pLastJre2 == NULL || nTagNumber < 1 || nTagNumber > 9)
+	{
+		return nullStr;
 	}
 
-	pJre2->nStart = 0;
-	pJre2->wTranslate = (nFlags != 0);
+	int	nLength = 0;
+	int	nPos = m_pfnJreGetTagPosition(m_pLastJre2, (char)('0' + nTagNumber), &nLength);
 
-	if (!(*m_pfnJre2GetMatchInfo)(pJre2, (LPCSTR)str)) {
-		setErrorMessage();
-		return REDLL_RESULT_FAILED;
+	if (nPos >= 0 && m_pLastFuzzyData != NULL && m_bLastIsFuzzy)
+	{
+		nPos = m_pfnFuzzy_FindArea2RealArea(m_pLastFuzzyData, nPos, &nLength);
 	}
 
-	DWORD result = make_dword(pJre2->nPosition, pJre2->nLength);
+	return make_pos_result(nPos, nLength);
+}
 
-	return result;
+StringBuffer
+HmJre_Manager::getMatchString(const StringBuffer& strTarget, const StringBuffer& strMatchResult)
+{
+	int	nPos, nLength;
+
+	get_pos_and_length_from_pos_result(strMatchResult, nPos, nLength);
+
+	if (nPos == -1 || nLength == 0)
+	{
+		return nullStr;
+	}
+
+	return strTarget.extract(nPos, nLength);
+}
+
+int
+HmJre_Manager::findRegular(const StringBuffer& strRE, const StringBuffer& strTarget, int nOffset)
+{
+	return m_pfnFindRegular(strRE, strTarget, nOffset);
+}
+
+int
+HmJre_Manager::findRegularNoCaseSense(const StringBuffer& strRE, const StringBuffer& strTarget, int nOffset)
+{
+	return m_pfnFindRegularNoCaseSense(strRE, strTarget, nOffset);
+}
+
+int
+HmJre_Manager::getLastMatchLength()
+{
+	return m_pfnGetLastMatchLength();
+}
+
+int
+HmJre_Manager::optionDialog(int nHwnd, int nDisableFlags)
+{
+	return m_pfnFuzzy_OptionDialog((HWND)nHwnd, nDisableFlags);
 }
 
 const StringBuffer&
 HmJre_Manager::jreGetVersion()
 {
-	if (m_strVersion.length() == 0) {
+	if (m_strVersion.length() == 0)
+	{
 		WORD wVer = (*m_pfnJreGetVersion)();
 		char buf[80];
 		wsprintf(buf, "%01x.%02x", (wVer >> 8), (wVer & 0xFF));
 		m_strVersion = buf;
 	}
+
 	return m_strVersion;
 }
 
+JRE2*
+HmJre_Manager::GetJre2(const StringBuffer& strRE, int nCaseSense)
+{
+	JRE2*	pJre2 = m_htblJre2.getValue(strRE);
+	if (pJre2 == NULL)
+	{
+		pJre2	= new JRE2;
+
+		memset(pJre2, 0, sizeof(*pJre2));
+		pJre2->dwSize	= sizeof(*pJre2);
+
+		BOOL	bRet = m_pfnJre2Open(pJre2);
+		if (!bRet)
+		{
+			delete pJre2;
+			return NULL;
+		}
+
+		pJre2->wTranslate	= -1;	//	下記でコンパイルさせるため
+
+		m_htblJre2.setValue(strRE, pJre2);
+		m_Jre2_Pool.addItem(pJre2);
+	}
+
+	if (pJre2->wTranslate != (nCaseSense == 0))
+	{
+		pJre2->wTranslate	= (nCaseSense == 0);
+
+		BOOL	bRet = m_pfnJre2Compile(pJre2, strRE);
+		if (!bRet)
+		{
+			return NULL;
+		}
+	}
+
+	return pJre2;
+}

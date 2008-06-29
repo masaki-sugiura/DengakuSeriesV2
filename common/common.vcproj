@@ -907,6 +907,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\si_hmjre.cpp"
+				>
+			</File>
+			<File
 				RelativePath="si_image.cpp"
 				>
 				<FileConfiguration
@@ -1253,6 +1257,10 @@
 			</File>
 			<File
 				RelativePath="hmjre_mngr.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HmJRE\JreFuzzy.h"
 				>
 			</File>
 			<File

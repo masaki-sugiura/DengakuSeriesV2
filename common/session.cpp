@@ -1,4 +1,4 @@
-//	$Id: session.cpp,v 1.6 2007-05-13 17:02:41 sugiura Exp $
+//	$Id: session.cpp,v 1.7 2008-06-29 15:19:43 sugiura Exp $
 /*
  *	session.cpp
  *	SessionInstance クラスのコア部分の実装
@@ -17,7 +17,8 @@ SessionInstance::SessionInstance(HINSTANCE hInstance, BOOL bTrueCD)
 		m_pStrToken(NULL), // gettoken の結果を保持するクラスへのポインタ
 		m_pMenuThread(NULL), // メニュー表示スレッドへのポインタ
 		m_pDlgThread(NULL), // ダイアログ表示スレッドへのポインタ
-		m_pBRegExp_Manager(NULL)
+		m_pBRegExp_Manager(NULL),
+		m_pHmJre_Manager(NULL)
 {
 	m_DlgFrame.setSessionInstance(this);
 
