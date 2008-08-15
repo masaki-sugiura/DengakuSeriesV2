@@ -1,4 +1,4 @@
-//	$Id: hmjre_mngr.cpp,v 1.5 2008-08-15 05:47:40 sugiura Exp $
+//	$Id: hmjre_mngr.cpp,v 1.6 2008-08-15 06:05:04 sugiura Exp $
 /*
  *	hmjre_mngr.cpp
  *	HmJre_Manager ƒNƒ‰ƒX‚ÌŽÀ‘•
@@ -239,25 +239,25 @@ HmJre_Manager::envChanged()
 }
 
 int
-HmJre_Manager::getLastMatchTagPosition()
+HmJre_Manager::getLastMatchTagPosition(int nTagNumber)
 {
 	if (m_pfnGetLastMatchTagPosition == NULL)
 	{
 		return -1;
 	}
 
-	return m_pfnGetLastMatchTagPosition();
+	return m_pfnGetLastMatchTagPosition(nTagNumber);
 }
 
 int
-HmJre_Manager::getLastMatchTagLength()
+HmJre_Manager::getLastMatchTagLength(int nTagNumber)
 {
 	if (m_pfnGetLastMatchTagLength == NULL)
 	{
 		return -1;
 	}
 
-	return m_pfnGetLastMatchTagLength();
+	return m_pfnGetLastMatchTagLength(nTagNumber);
 }
 
 int

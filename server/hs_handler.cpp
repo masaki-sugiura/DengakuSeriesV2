@@ -1,4 +1,4 @@
-//	$Id: hs_handler.cpp,v 1.1 2008-08-15 05:47:40 sugiura Exp $
+//	$Id: hs_handler.cpp,v 1.2 2008-08-15 06:05:04 sugiura Exp $
 /*
  *	bs_handler.cpp
  *	BRegExp サービスの実装
@@ -69,15 +69,15 @@ ConvData::On_hmjre_get_last_match_length(CmdLineParser&)
 }
 
 int
-ConvData::On_hmjre_get_last_match_tag_position(CmdLineParser&)
+ConvData::On_hmjre_get_last_match_tag_position(CmdLineParser& params)
 {
-	return this->si_hmjre_get_last_match_tag_position();
+	return this->si_hmjre_get_last_match_tag_position(ival(params.getArgvStr(0)));
 }
 
 int
-ConvData::On_hmjre_get_last_match_tag_length(CmdLineParser&)
+ConvData::On_hmjre_get_last_match_tag_length(CmdLineParser& params)
 {
-	return this->si_hmjre_get_last_match_tag_length();
+	return this->si_hmjre_get_last_match_tag_length(ival(params.getArgvStr(0)));
 }
 
 int

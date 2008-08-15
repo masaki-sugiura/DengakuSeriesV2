@@ -1,4 +1,4 @@
-//	$Id: hmjre_mngr.h,v 1.5 2008-08-15 05:47:40 sugiura Exp $
+//	$Id: hmjre_mngr.h,v 1.6 2008-08-15 06:05:04 sugiura Exp $
 /*
  *	hmjre_mngr.h
  *	hmjre.dll を利用するためのラッパークラス
@@ -49,8 +49,8 @@ typedef	int (__cdecl *PFN_GETLASTMATCHLENGTH)();
 // Version 1.71から
 typedef	int (__cdecl *PFN_ENVCHANGED)();
 // Version 1.90から
-typedef	int	(__cdecl *PFN_GETLASTMATCHTAGPOSITION)();
-typedef	int	(__cdecl *PFN_GETLASTMATCHTAGLENGTH)();
+typedef	int	(__cdecl *PFN_GETLASTMATCHTAGPOSITION)(int nTagNumber);
+typedef	int	(__cdecl *PFN_GETLASTMATCHTAGLENGTH)(int nTagNumber);
 
 #define	HMJRE_FUZZY_OPEN				"Fuzzy_Open"
 #define	HMJRE_FUZZY_CLOSE				"Fuzzy_Close"
@@ -88,8 +88,8 @@ public:
 	int	findRegularNoCaseSense(const StringBuffer& strRE, const StringBuffer& strTarget, int nOffset);
 	int	getLastMatchLength();
 	int	envChanged();
-	int	getLastMatchTagPosition();
-	int	getLastMatchTagLength();
+	int	getLastMatchTagPosition(int nTagNumber);
+	int	getLastMatchTagLength(int nTagNumber);
 	int	optionDialog(int nHwnd, int nDisableFlags);
 
 private:

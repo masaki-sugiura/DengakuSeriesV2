@@ -1,4 +1,4 @@
-//	$Id: hs_func.cpp,v 1.1 2008-08-15 05:47:40 sugiura Exp $
+//	$Id: hs_func.cpp,v 1.2 2008-08-15 06:05:04 sugiura Exp $
 /*
  *	hs_func.cpp
  *	HmJre ‚ÉŠÖ‚·‚éAPI
@@ -101,20 +101,20 @@ HMJRE_GET_LAST_MATCH_LENGTH()
 }
 
 DENGAKUDLL_API HIDEDLL_NUMTYPE
-HMJRE_GET_LAST_MATCH_TAG_POSITION()
+HMJRE_GET_LAST_MATCH_TAG_POSITION(int nTagNumber)
 {
 	try {
-		return g_pSessionInstance->si_hmjre_get_last_match_tag_position();
+		return g_pSessionInstance->si_hmjre_get_last_match_tag_position(nTagNumber);
 	} catch (...) {
 		return -1;
 	}
 }
 
 DENGAKUDLL_API HIDEDLL_NUMTYPE
-HMJRE_GET_LAST_MATCH_TAG_LENGTH()
+HMJRE_GET_LAST_MATCH_TAG_LENGTH(int nTagNumber)
 {
 	try {
-		return g_pSessionInstance->si_hmjre_get_last_match_tag_length();
+		return g_pSessionInstance->si_hmjre_get_last_match_tag_length(nTagNumber);
 	} catch (...) {
 		return -1;
 	}
