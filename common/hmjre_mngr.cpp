@@ -1,4 +1,4 @@
-//	$Id: hmjre_mngr.cpp,v 1.4 2008-06-29 15:19:42 sugiura Exp $
+//	$Id: hmjre_mngr.cpp,v 1.5 2008-08-15 05:47:40 sugiura Exp $
 /*
  *	hmjre_mngr.cpp
  *	HmJre_Manager ƒNƒ‰ƒX‚ÌŽÀ‘•
@@ -32,6 +32,9 @@ HmJre_Manager::HmJre_Manager(const StringBuffer& filename)
 	m_pfnFindRegular				= (PFN_FINDREGULAR)::GetProcAddress(m_hModuleDll, HMJRE_FINDREGULAR);
 	m_pfnFindRegularNoCaseSense		= (PFN_FINDREGULARNOCASESENSE)::GetProcAddress(m_hModuleDll, HMJRE_FINDREGULARNOCASESENSE);
 	m_pfnGetLastMatchLength			= (PFN_GETLASTMATCHLENGTH)::GetProcAddress(m_hModuleDll, HMJRE_GETLASTMATCHLENGTH);
+	m_pfnEnvChanged					= (PFN_ENVCHANGED)::GetProcAddress(m_hModuleDll, HMJRE_ENVCHANGED);
+	m_pfnGetLastMatchTagPosition	= (PFN_GETLASTMATCHTAGPOSITION)::GetProcAddress(m_hModuleDll, HMJRE_GETLASTMATCHTAGPOSITION);
+	m_pfnGetLastMatchTagLength		= (PFN_GETLASTMATCHTAGLENGTH)::GetProcAddress(m_hModuleDll, HMJRE_GETLASTMATCHTAGLENGTH);
 
 	if (m_pfnJreGetVersion == NULL				||
 		m_pfnJre2Open == NULL					||
@@ -47,10 +50,7 @@ HmJre_Manager::HmJre_Manager(const StringBuffer& filename)
 		m_pfnFuzzy_FindArea2RealArea == NULL	||
 		m_pfnFuzzy_RealPos2FindPos == NULL		||
 		m_pfnFuzzy_GetFuzzyDataInJre == NULL	||
-		m_pfnFuzzy_OptionDialog == NULL			||
-		m_pfnFindRegular == NULL				||
-		m_pfnFindRegularNoCaseSense == NULL		||
-		m_pfnGetLastMatchLength == NULL)
+		m_pfnFuzzy_OptionDialog == NULL)
 	{
 		throw DllProcAddressNotFoundError();
 	}
@@ -197,19 +197,67 @@ HmJre_Manager::getMatchString(const StringBuffer& strTarget, const StringBuffer&
 int
 HmJre_Manager::findRegular(const StringBuffer& strRE, const StringBuffer& strTarget, int nOffset)
 {
+	if (m_pfnFindRegular == NULL)
+	{
+		return -3;
+	}
+
 	return m_pfnFindRegular(strRE, strTarget, nOffset);
 }
 
 int
 HmJre_Manager::findRegularNoCaseSense(const StringBuffer& strRE, const StringBuffer& strTarget, int nOffset)
 {
+	if (m_pfnFindRegularNoCaseSense == NULL)
+	{
+		return -3;
+	}
+
 	return m_pfnFindRegularNoCaseSense(strRE, strTarget, nOffset);
 }
 
 int
 HmJre_Manager::getLastMatchLength()
 {
+	if (m_pfnGetLastMatchLength == NULL)
+	{
+		return -1;
+	}
+
 	return m_pfnGetLastMatchLength();
+}
+
+int
+HmJre_Manager::envChanged()
+{
+	if (m_pfnEnvChanged == NULL)
+	{
+		return -1;
+	}
+
+	return m_pfnEnvChanged();
+}
+
+int
+HmJre_Manager::getLastMatchTagPosition()
+{
+	if (m_pfnGetLastMatchTagPosition == NULL)
+	{
+		return -1;
+	}
+
+	return m_pfnGetLastMatchTagPosition();
+}
+
+int
+HmJre_Manager::getLastMatchTagLength()
+{
+	if (m_pfnGetLastMatchTagLength == NULL)
+	{
+		return -1;
+	}
+
+	return m_pfnGetLastMatchTagLength();
 }
 
 int

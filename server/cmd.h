@@ -1,4 +1,4 @@
-//	$Id: cmd.h,v 1.19 2008-06-29 15:19:43 sugiura Exp $
+//	$Id: cmd.h,v 1.20 2008-08-15 05:47:40 sugiura Exp $
 /*
  *	cmd.h
  *	ƒRƒ}ƒ“ƒh–¼ˆê——
@@ -68,6 +68,9 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_EXECUTE(hmjre_find_regular_no_case_sense)
 	DECLARE_DDECMD_EXECUTE(hmjre_get_last_match_length)
 	DECLARE_DDECMD_EXECUTE(hmjre_option_dialog)
+	DECLARE_DDECMD_EXECUTE(hmjre_get_last_match_tag_position)
+	DECLARE_DDECMD_EXECUTE(hmjre_get_last_match_tag_length)
+	DECLARE_DDECMD_EXECUTE(hmjre_env_changed)
 	DECLARE_DDECMD_EXECUTE(clr_setname)
 	DECLARE_DDECMD_EXECUTE(clr_load)
 	DECLARE_DDECMD_EXECUTE(clr_save)

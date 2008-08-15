@@ -1,4 +1,4 @@
-//	$Id: hmjre_mngr.h,v 1.4 2008-06-29 15:19:42 sugiura Exp $
+//	$Id: hmjre_mngr.h,v 1.5 2008-08-15 05:47:40 sugiura Exp $
 /*
  *	hmjre_mngr.h
  *	hmjre.dll を利用するためのラッパークラス
@@ -46,6 +46,11 @@ typedef int (WINAPI *PFN_JREGETTAGPOSITION)( LPJRE2 lpjreJre, char chTagWantGet,
 typedef	int (__cdecl *PFN_FINDREGULAR)(LPCSTR pszRE, LPCSTR pszString, int nOffset);
 typedef	int (__cdecl *PFN_FINDREGULARNOCASESENSE)(LPCSTR pszRE, LPCSTR pszString, int nOffset);
 typedef	int (__cdecl *PFN_GETLASTMATCHLENGTH)();
+// Version 1.71から
+typedef	int (__cdecl *PFN_ENVCHANGED)();
+// Version 1.90から
+typedef	int	(__cdecl *PFN_GETLASTMATCHTAGPOSITION)();
+typedef	int	(__cdecl *PFN_GETLASTMATCHTAGLENGTH)();
 
 #define	HMJRE_FUZZY_OPEN				"Fuzzy_Open"
 #define	HMJRE_FUZZY_CLOSE				"Fuzzy_Close"
@@ -60,6 +65,9 @@ typedef	int (__cdecl *PFN_GETLASTMATCHLENGTH)();
 #define	HMJRE_FINDREGULAR				"FindRegular"
 #define	HMJRE_FINDREGULARNOCASESENSE	"FindRegularNoCaseSense"
 #define	HMJRE_GETLASTMATCHLENGTH		"GetLastMatchLength"
+#define	HMJRE_ENVCHANGED				"EnvChanged"
+#define	HMJRE_GETLASTMATCHTAGPOSITION	"GetLastMatchTagPosition"
+#define	HMJRE_GETLASTMATCHTAGLENGTH		"GetLastMatchTagLength"
 
 class HmJre_Manager : REDLL_Manager {
 public:
@@ -79,6 +87,9 @@ public:
 	int	findRegular(const StringBuffer& strRE, const StringBuffer& strTarget, int nOffset);
 	int	findRegularNoCaseSense(const StringBuffer& strRE, const StringBuffer& strTarget, int nOffset);
 	int	getLastMatchLength();
+	int	envChanged();
+	int	getLastMatchTagPosition();
+	int	getLastMatchTagLength();
 	int	optionDialog(int nHwnd, int nDisableFlags);
 
 private:
@@ -100,6 +111,9 @@ private:
 	PFN_FINDREGULAR	m_pfnFindRegular;
 	PFN_FINDREGULARNOCASESENSE	m_pfnFindRegularNoCaseSense;
 	PFN_GETLASTMATCHLENGTH	m_pfnGetLastMatchLength;
+	PFN_ENVCHANGED	m_pfnEnvChanged;
+	PFN_GETLASTMATCHTAGPOSITION	m_pfnGetLastMatchTagPosition;
+	PFN_GETLASTMATCHTAGLENGTH	m_pfnGetLastMatchTagLength;
 
 	StringBuffer m_strVersion;
 

@@ -1,4 +1,4 @@
-//	$Id: si_hmjre.cpp,v 1.1 2008-06-29 15:19:43 sugiura Exp $
+//	$Id: si_hmjre.cpp,v 1.2 2008-08-15 05:47:40 sugiura Exp $
 /*
  *	si_hmjre.cpp
  *	HmJre ‚ÉŠÖ‚·‚éƒNƒ‰ƒX
@@ -128,6 +128,39 @@ SessionInstance::si_hmjre_get_last_match_length()
 	}
 
 	return m_pHmJre_Manager->getLastMatchLength();
+}
+
+int
+SessionInstance::si_hmjre_get_last_match_tag_position()
+{
+	if (m_pHmJre_Manager.ptr() == NULL)
+	{
+		return -1;
+	}
+
+	return m_pHmJre_Manager->getLastMatchTagPosition();
+}
+
+int
+SessionInstance::si_hmjre_get_last_match_tag_length()
+{
+	if (m_pHmJre_Manager.ptr() == NULL)
+	{
+		return -1;
+	}
+
+	return m_pHmJre_Manager->getLastMatchTagLength();
+}
+
+int
+SessionInstance::si_hmjre_env_changed()
+{
+	if (m_pHmJre_Manager.ptr() == NULL)
+	{
+		return -1;
+	}
+
+	return m_pHmJre_Manager->envChanged();
 }
 
 int

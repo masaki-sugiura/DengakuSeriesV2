@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.27 2008-06-29 15:19:43 sugiura Exp $
+//	$Id: session.h,v 1.28 2008-08-15 05:47:40 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -252,6 +252,9 @@ public:
 	int si_hmjre_find_regular_no_case_sense(const StringBuffer&, const StringBuffer&, int);
 	int si_hmjre_get_last_match_length();
 	int si_hmjre_option_dialog(int, int);
+	int si_hmjre_env_changed();
+	int si_hmjre_get_last_match_tag_position();
+	int si_hmjre_get_last_match_tag_length();
 
 	// カラーテーブル操作系
 	int si_setcolorref(const StringBuffer&, const StringBuffer&);
