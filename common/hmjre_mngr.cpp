@@ -1,4 +1,4 @@
-//	$Id: hmjre_mngr.cpp,v 1.6 2008-08-15 06:05:04 sugiura Exp $
+//	$Id: hmjre_mngr.cpp,v 1.7 2008-09-14 15:27:21 sugiura Exp $
 /*
  *	hmjre_mngr.cpp
  *	HmJre_Manager ƒNƒ‰ƒX‚ÌŽÀ‘•
@@ -83,20 +83,6 @@ HmJre_Manager::match(const StringBuffer& strFind, const StringBuffer& strTarget,
 		m_pLastFuzzyData = NULL;
 	}
 
-	JREFUZZYDATA*	pFuzzyData = new JREFUZZYDATA;
-
-	memset(pFuzzyData, 0, sizeof(*pFuzzyData));
-	pFuzzyData->dwSize	= sizeof(*pFuzzyData);
-
-	BOOL	bRet = m_pfnFuzzy_Open(pFuzzyData, FALSE);
-	if (!bRet)
-	{
-		delete pFuzzyData;
-		return nullStr;
-	}
-
-	m_pLastFuzzyData	= pFuzzyData;
-
 	if ((nFlags & FUZZYOPTION_NORETURN) != 0)
 	{
 		int	nBreaks = strTarget.count("\n");
@@ -115,45 +101,83 @@ HmJre_Manager::match(const StringBuffer& strFind, const StringBuffer& strTarget,
 		}
 	}
 
-	pFuzzyData->flags	= nFlags;
-
-	bRet = m_pfnFuzzy_ConvertFindString(pFuzzyData, strFind, nRegExp);
-	if (!bRet)
-	{
-		m_pfnFuzzy_Close(pFuzzyData);
-		return nullStr;
-	}
-
-	bRet = m_pfnFuzzy_ConvertTarget(pFuzzyData, strTarget);
-	if (!bRet)
-	{
-		m_pfnFuzzy_Close(pFuzzyData);
-		return nullStr;
-	}
-
-	JRE2*	pJre2 = GetJre2(pFuzzyData->pszFindConved, 1);	//	í‚É case sense
-	if (pJre2 == NULL)
-	{
-		m_pfnFuzzy_Close(pFuzzyData);
-		return nullStr;
-	}
-
-	pJre2->nStart	= m_pfnFuzzy_RealPos2FindPos(pFuzzyData, nOffset);
+	BOOL	bFuzzy = (nRegExp >= 0);
 
 	int	nPos = -1, nLength = 0;
 
-	bRet = m_pfnJre2GetMatchInfo(pJre2, pFuzzyData->pszTargetConved);
-	if (bRet)
+	if (bFuzzy)
 	{
-		m_pLastJre2	= pJre2;
-		m_pLastFuzzyData = pFuzzyData;
-		m_bLastIsFuzzy	= TRUE;
-		nLength	= pJre2->nLength;
-		nPos	= m_pfnFuzzy_FindArea2RealArea(pFuzzyData, pJre2->nPosition, &nLength);
+		JREFUZZYDATA*	pFuzzyData = new JREFUZZYDATA;
+
+		memset(pFuzzyData, 0, sizeof(*pFuzzyData));
+		pFuzzyData->dwSize	= sizeof(*pFuzzyData);
+
+		BOOL	bRet = m_pfnFuzzy_Open(pFuzzyData, FALSE);
+		if (!bRet)
+		{
+			delete pFuzzyData;
+			return nullStr;
+		}
+
+		m_pLastFuzzyData	= pFuzzyData;
+
+		pFuzzyData->flags	= nFlags;
+
+		bRet = m_pfnFuzzy_ConvertFindString(pFuzzyData, strFind, nRegExp);
+		if (!bRet)
+		{
+			m_pfnFuzzy_Close(pFuzzyData);
+			return nullStr;
+		}
+
+		bRet = m_pfnFuzzy_ConvertTarget(pFuzzyData, strTarget);
+		if (!bRet)
+		{
+			m_pfnFuzzy_Close(pFuzzyData);
+			return nullStr;
+		}
+
+		JRE2*	pJre2 = GetJre2(pFuzzyData->pszFindConved, 1);	//	í‚É case sense
+		if (pJre2 == NULL)
+		{
+			m_pfnFuzzy_Close(pFuzzyData);
+			return nullStr;
+		}
+
+		pJre2->nStart	= m_pfnFuzzy_RealPos2FindPos(pFuzzyData, nOffset);
+
+		bRet = m_pfnJre2GetMatchInfo(pJre2, pFuzzyData->pszTargetConved);
+		if (bRet)
+		{
+			m_pLastJre2			= pJre2;
+			m_pLastFuzzyData	= pFuzzyData;
+			m_bLastIsFuzzy		= TRUE;
+			nLength	= pJre2->nLength;
+			nPos	= m_pfnFuzzy_FindArea2RealArea(pFuzzyData, pJre2->nPosition, &nLength);
+		}
+		else
+		{
+			m_pfnFuzzy_Close(pFuzzyData);
+		}
 	}
 	else
 	{
-		m_pfnFuzzy_Close(pFuzzyData);
+		JRE2*	pJre2 = GetJre2(strFind, 1);	//	í‚É case sense
+		if (pJre2 == NULL)
+		{
+			return nullStr;
+		}
+
+		pJre2->nStart	= nOffset;
+
+		BOOL	bRet = m_pfnJre2GetMatchInfo(pJre2, strTarget);
+		if (bRet)
+		{
+			m_pLastJre2		= pJre2;
+			m_bLastIsFuzzy	= FALSE;
+			nLength	= pJre2->nLength;
+			nPos	= pJre2->nPosition;
+		}
 	}
 
 	return make_pos_result(nPos, nLength);

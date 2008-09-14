@@ -1,4 +1,4 @@
-//	$Id: str_tbl.cpp,v 1.10 2008-08-15 04:23:15 sugiura Exp $
+//	$Id: str_tbl.cpp,v 1.11 2008-09-14 15:27:21 sugiura Exp $
 /*
  *	str_tbl.cpp
  *	文字列テーブル
@@ -8,7 +8,7 @@
 
 LPCSTR	const_strings[] = {
 	"",	//	for undefined string ID
-	"2.97",	//	library version
+	"2.98",	//	library version
 	"メッセージ",
 	"確認",
 	"DlgFrameProperty",

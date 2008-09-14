@@ -114,8 +114,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,9,7,0
- PRODUCTVERSION 2008,8,15,0
+ FILEVERSION 2,9,8,0
+ PRODUCTVERSION 2008,9,15,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -133,12 +133,12 @@ BEGIN
             VALUE "Comments", "“cŠy(‚Å‚ñ‚ª‚­)‚c‚k‚k"
             VALUE "CompanyName", "M. Sugiura"
             VALUE "FileDescription", "DengakuDLL"
-            VALUE "FileVersion", "2, 9, 7, 0"
+            VALUE "FileVersion", "2, 9, 8, 0"
             VALUE "InternalName", "DengakuDLL"
             VALUE "LegalCopyright", "Copyright (C) 1998-2008, M. Sugiura"
             VALUE "OriginalFilename", "DengakuDLL.dll"
             VALUE "ProductName", "“cŠy(‚Å‚ñ‚ª‚­)‚c‚k‚k"
-            VALUE "ProductVersion", "2008, 8, 15, 0"
+            VALUE "ProductVersion", "2008, 9, 15, 0"
         END
     END
     BLOCK "VarFileInfo"
