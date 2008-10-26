@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.56 2007-09-02 15:50:03 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.57 2008-10-26 11:57:46 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -4233,6 +4233,16 @@ BOOL
 FrameCtrl::showCtrl(BOOL bVisible)
 {
 	if (m_state <= 0) m_state = 1;
+
+	if (m_type == CTRLID_GROUP)
+	{
+		::ShowWindow(m_pcp->m_hwndCtrl, bVisible ? SW_SHOW : SW_HIDE);
+	}
+	else
+	{
+		::ShowWindow(m_pcp->m_hwndCtrl, SW_HIDE);
+	}
+
 	DlgPage* pPage = getPageByIndex(m_state - 1);
 	if (!pPage) {
 		return FALSE;

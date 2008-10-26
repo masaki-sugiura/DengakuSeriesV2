@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.38 2007-05-13 17:02:41 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.39 2008-10-26 11:57:46 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -425,8 +425,9 @@ DlgPage::showPage(BOOL bVisible)
 	::ShowWindow(m_hwndPage,m_bVisible ? SW_SHOW : SW_HIDE);
 	if (m_bVisible) {
 		::SetWindowPos(m_hwndPage,HWND_TOP,0,0,0,0,
-						SWP_NOMOVE|SWP_NOSIZE|SWP_SHOWWINDOW);
-		::InvalidateRect(m_hwndPage,NULL,TRUE);
+						SWP_NOMOVE|SWP_NOSIZE/*|SWP_SHOWWINDOW*/);
+//		::InvalidateRect(m_hwndPage,NULL,TRUE);
+		::RedrawWindow(m_hwndPage, NULL, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_UPDATENOW);
 	}
 
 	//	コントロールの可視化

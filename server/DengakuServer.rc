@@ -175,8 +175,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,9,8,0
- PRODUCTVERSION 2008,9,15,0
+ FILEVERSION 2,9,9,0
+ PRODUCTVERSION 2008,10,26,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -194,12 +194,12 @@ BEGIN
             VALUE "Comments", "田楽(でんがく)サーバ"
             VALUE "CompanyName", "M. Sugiura"
             VALUE "FileDescription", "dgserver"
-            VALUE "FileVersion", "2, 9, 8, 0"
+            VALUE "FileVersion", "2, 9, 9, 0"
             VALUE "InternalName", "dgserver"
             VALUE "LegalCopyright", "Copyright (C) 1998-2008, M. Sugiura"
             VALUE "OriginalFilename", "dgserver.exe"
             VALUE "ProductName", "田楽(でんがく)サーバ"
-            VALUE "ProductVersion", "2008, 9, 15, 0"
+            VALUE "ProductVersion", "2008, 10, 26, 0"
         END
     END
     BLOCK "VarFileInfo"
