@@ -1,4 +1,4 @@
-//	$Id: seldir.cpp,v 1.7 2004-11-16 17:03:50 sugiura Exp $
+//	$Id: seldir.cpp,v 1.8 2008-11-16 11:09:40 sugiura Exp $
 /*
  *	seldir.cpp
  *	ディレクトリ選択ダイアログの実装
@@ -507,7 +507,17 @@ SelectDirByDlg::insertTreeItem(
 	is.item.cchTextMax = lptviInfo->m_strbuf.length() + 1;
 	is.item.lParam = (LPARAM)lptviInfo;
 
-	return TreeView_InsertItem(m_hTreeView, &is);
+	HTREEITEM	hTreeItem = TreeView_InsertItem(m_hTreeView, &is);
+	if (hTreeItem != NULL && !isDesktop)
+	{
+		LPTVITEMINFO	ptviParent = GetLPTVITEMINFO(m_hTreeView, hParent);
+		if (ptviParent != NULL)
+		{
+			ptviParent->m_inserted	|= TVITEMINFO_HASSUBFOLDER;
+		}
+	}
+
+	return hTreeItem;
 }
 
 static const LPSF_Wrapper nullLPSF(NULL);
@@ -565,11 +575,27 @@ SelectDirByDlg::getFullPathFolderName(HTREEITEM hItem)
 {
 	if (!::IsWindow(m_hTreeView) || hItem == NULL) return nullStr;
 
+	HTREEITEM	htiParent = TreeView_GetParent(m_hTreeView, hItem);
+	if (htiParent != NULL && htiParent != TVI_ROOT)
+	{
+		LPTVITEMINFO	ptviParent = GetLPTVITEMINFO(m_hTreeView, htiParent);
+		if (ptviParent != NULL)
+		{
+			const LPSF_Wrapper& pSFGrandParent = getParentFolder(htiParent);
+			if (pSFGrandParent != NULL)
+			{
+				ptviParent->m_pShellFolder	= pSFGrandParent.bindTo(ptviParent->m_pItemIDList);
+			}
+		}
+	}
+
 	const LPSF_Wrapper& pShellFolder = getParentFolder(hItem);
 	if (pShellFolder == NULL)
 		return nullStr; // hItem = desktop ?
 
 	LPTVITEMINFO lptviInfo = GetLPTVITEMINFO(m_hTreeView, hItem);
+
+	//	ここで一度
 
 	return pShellFolder.getDisplayNameOf(lptviInfo->m_pItemIDList,
 										 SHGDN_NORMAL|SHGDN_FORPARSING);
@@ -743,6 +769,8 @@ SelectDirByDlg::renameFolder(TVITEM& tvItem)
 	lptviInfo->m_pItemIDList = pidlNew;
 	lptviInfo->m_strbuf = tvItem.pszText;
 
+	lptviInfo->m_pShellFolder	= pShellFolder.bindTo(lptviInfo->m_pItemIDList);
+
 	return TRUE;
 }
 
@@ -858,7 +886,9 @@ DirBrowseProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					ptvItem = &(((NMTREEVIEW*)lParam)->itemNew);
 					LPTVITEMINFO lptviInfo = (LPTVITEMINFO)ptvItem->lParam;
 					if (lptviInfo->m_pShellFolder == NULL)
+					{
 						psdbd->addChildFolders(ptvItem->hItem, lptviInfo);
+					}
 					if (!lptviInfo->m_sorted) {
 						DWORD attr = SFGAO_FILESYSTEM;
 						BOOL bCanOK = psdbd->getItemAttributes(
