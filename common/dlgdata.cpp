@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.39 2008-10-26 11:57:46 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.40 2009-02-28 14:27:38 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -235,6 +235,7 @@ DlgPageProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_CLOSE:
+		::OutputDebugString("Enter WM_CLOSE in DlgPage\n");
 		hwndFrame = pdp->getDlgFrame().getUserDlg();
 		if (hwndFrame != NULL) ::PostMessage(hwndFrame, WM_CLOSE, 0, 0);
 		else ::DestroyWindow(hDlg);
@@ -845,9 +846,13 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_SYSCOMMAND:
 		if (wParam != SC_CLOSE) return FALSE;
-		/* Through Down */
+//		::OutputDebugString("Enter WM_SYSCOMMAND in DlgFrame\n");
+		::SendMessage(hDlg,WM_USER_NOTIFY,0,0);	//	"0" を通知
+		//	pdf->setDialogClosed()を呼ばない!!
+		break;
 
 	case WM_CLOSE:
+//		::OutputDebugString("Enter WM_CLOSE in DlgFrame\n");
 //		::SendMessage(hDlg,WM_USER_NOTIFY,0,0);	//	"0" を通知
 		::SendMessage(hDlg,WM_USER_NOTIFY,0,0);	//	"0" を通知
 		pdf->setDialogClosed();
