@@ -1,4 +1,4 @@
-//	$Id: hs_func.cpp,v 1.2 2008-08-15 06:05:04 sugiura Exp $
+//	$Id: hs_func.cpp,v 1.3 2009-09-20 13:49:01 sugiura Exp $
 /*
  *	hs_func.cpp
  *	HmJre ‚ÉŠÖ‚·‚éAPI
@@ -87,6 +87,28 @@ HMJRE_FIND_REGULAR_NO_CASE_SENSE(LPCSTR pszRE, LPCSTR pszTarget, int nOffset)
 		return g_pSessionInstance->si_hmjre_find_regular_no_case_sense(pszRE, pszTarget, nOffset);
 	} catch (...) {
 		return -1;
+	}
+}
+
+DENGAKUDLL_API LPCSTR
+HMJRE_REPLACE_REGULAR(LPCSTR pszRE, LPCSTR pszTarget, int nOffset, LPCSTR pszReplace, int fReplaceAll)
+{
+	try {
+		g_strBuffer = g_pSessionInstance->si_hmjre_replace_regular(pszRE, pszTarget, nOffset, pszReplace, fReplaceAll);
+		return g_strBuffer;
+	} catch (...) {
+		return "";
+	}
+}
+
+DENGAKUDLL_API LPCSTR
+HMJRE_REPLACE_REGULAR_NO_CASE_SENSE(LPCSTR pszRE, LPCSTR pszTarget, int nOffset, LPCSTR pszReplace, int fReplaceAll)
+{
+	try {
+		g_strBuffer = g_pSessionInstance->si_hmjre_replace_regular_no_case_sense(pszRE, pszTarget, nOffset, pszReplace, fReplaceAll);
+		return g_strBuffer;
+	} catch (...) {
+		return "";
 	}
 }
 

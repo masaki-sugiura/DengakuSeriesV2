@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.27 2007-06-03 15:25:17 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.28 2009-09-20 13:49:01 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -648,3 +648,16 @@ SessionInstance::si_getctrlfocuseditem(const StringBuffer& ctrl)
 	return m_DlgFrame.getCtrlFocusedItem(ctrl);
 }
 
+int
+SessionInstance::si_setctrlexproperty(const StringBuffer& ctrl, const StringBuffer& key, const StringBuffer& value)
+{
+	CtrlListItem* cli = m_DlgFrame.getCtrl(ctrl);
+	return cli != NULL ? cli->onSetCtrlExProperty(key, value) : 0;
+}
+
+StringBuffer
+SessionInstance::si_getctrlexproperty(const StringBuffer& ctrl, const StringBuffer& key)
+{
+	CtrlListItem* cli = m_DlgFrame.getCtrl(ctrl);
+	return cli != NULL ? cli->onGetCtrlExProperty(key) : nullStr;
+}

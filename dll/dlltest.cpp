@@ -1,4 +1,4 @@
-//	$Id: dlltest.cpp,v 1.8 2005-01-24 15:27:51 sugiura Exp $
+//	$Id: dlltest.cpp,v 1.9 2009-09-20 13:49:01 sugiura Exp $
 /*
  *	dlltest.cpp
  *	テスト用アプリ
@@ -631,12 +631,16 @@ int main(int ac, char** av)
 //	LPCSTR pszDirName = GETDIRNAME(0, "test", "\\\\topquark\\smbshare");
 //	MessageBox(NULL, pszDirName, NULL, MB_OK);
 
+#if 0
 	BRE_LOAD("C:\\Program Files\\hidemaru\\bregexp.dll");
 
 	BRE_SUBST("s/ひ/に/gk", "にゃあ");
 	BRE_TRANS("tr/ひ/に/gk", "にゃあ");
 
 	BRE_FREE();
+#endif
+
+	int	nRet = ENUMFILE("/o n c:\\temp\\*.*");
 
 	return 0;
 }

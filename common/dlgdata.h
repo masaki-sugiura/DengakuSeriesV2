@@ -1,4 +1,4 @@
-//	$Id: dlgdata.h,v 1.17 2007-03-04 18:06:56 sugiura Exp $
+//	$Id: dlgdata.h,v 1.18 2009-09-20 13:49:01 sugiura Exp $
 /*
  *	dlgdata.h
  *	ダイアログを扱うクラス
@@ -109,6 +109,8 @@ public:
 	int addCtrl(int type, const StringBuffer& name, const StringBuffer& text);
 	//	コントロールの取得
 	CtrlListItem* getCtrl(const StringBuffer& name = nullStr);
+	CtrlListItem* prevCtrl(const CtrlListItem* pCtrl);
+	CtrlListItem* nextCtrl(const CtrlListItem* pCtrl);
 	HWND getFocusedCtrl();
 
 //	メッセージハンドラ

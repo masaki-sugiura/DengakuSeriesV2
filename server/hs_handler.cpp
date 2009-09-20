@@ -1,4 +1,4 @@
-//	$Id: hs_handler.cpp,v 1.2 2008-08-15 06:05:04 sugiura Exp $
+//	$Id: hs_handler.cpp,v 1.3 2009-09-20 13:49:01 sugiura Exp $
 /*
  *	bs_handler.cpp
  *	BRegExp サービスの実装
@@ -60,6 +60,18 @@ int
 ConvData::On_hmjre_find_regular_no_case_sense(CmdLineParser& params)
 {
 	return this->si_hmjre_find_regular_no_case_sense(params.getArgvStr(0), params.getArgvStr(1), ival(params.getArgvStr(2)));
+}
+
+StringBuffer
+ConvData::On_hmjre_replace_regular(CmdLineParser& params)
+{
+	return this->si_hmjre_replace_regular(params.getArgvStr(0), params.getArgvStr(1), ival(params.getArgvStr(2)), params.getArgvStr(3), ival(params.getArgvStr(4)));
+}
+
+StringBuffer
+ConvData::On_hmjre_replace_regular_no_case_sense(CmdLineParser& params)
+{
+	return this->si_hmjre_replace_regular_no_case_sense(params.getArgvStr(0), params.getArgvStr(1), ival(params.getArgvStr(2)), params.getArgvStr(3), ival(params.getArgvStr(4)));
 }
 
 int

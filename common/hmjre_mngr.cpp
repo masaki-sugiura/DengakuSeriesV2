@@ -1,4 +1,4 @@
-//	$Id: hmjre_mngr.cpp,v 1.7 2008-09-14 15:27:21 sugiura Exp $
+//	$Id: hmjre_mngr.cpp,v 1.8 2009-09-20 13:49:01 sugiura Exp $
 /*
  *	hmjre_mngr.cpp
  *	HmJre_Manager ƒNƒ‰ƒX‚ÌŽÀ‘•
@@ -35,6 +35,8 @@ HmJre_Manager::HmJre_Manager(const StringBuffer& filename)
 	m_pfnEnvChanged					= (PFN_ENVCHANGED)::GetProcAddress(m_hModuleDll, HMJRE_ENVCHANGED);
 	m_pfnGetLastMatchTagPosition	= (PFN_GETLASTMATCHTAGPOSITION)::GetProcAddress(m_hModuleDll, HMJRE_GETLASTMATCHTAGPOSITION);
 	m_pfnGetLastMatchTagLength		= (PFN_GETLASTMATCHTAGLENGTH)::GetProcAddress(m_hModuleDll, HMJRE_GETLASTMATCHTAGLENGTH);
+	m_pfnReplaceRegular				= (PFN_REPLACEREGULAR)::GetProcAddress(m_hModuleDll, HMJRE_REPLACEREGULAR);
+	m_pfnReplaceRegularNoCaseSense	= (PFN_REPLACEREGULARNOCASESENSE)::GetProcAddress(m_hModuleDll, HMJRE_REPLACEREGULARNOCASESENSE);
 
 	if (m_pfnJreGetVersion == NULL				||
 		m_pfnJre2Open == NULL					||
@@ -341,3 +343,26 @@ HmJre_Manager::GetJre2(const StringBuffer& strRE, int nCaseSense)
 
 	return pJre2;
 }
+
+StringBuffer
+HmJre_Manager::replaceRegular(const StringBuffer& strPattern, const StringBuffer& strTarget, int nStart, const StringBuffer& strReplace, int fReplaceAll)
+{
+	if (m_pfnReplaceRegular == NULL)
+	{
+		return nullStr;
+	}
+
+	return m_pfnReplaceRegular(strPattern, strTarget, nStart, strReplace, fReplaceAll);
+}
+
+StringBuffer
+HmJre_Manager::replaceRegularNoCaseSense(const StringBuffer& strPattern, const StringBuffer& strTarget, int nStart, const StringBuffer& strReplace, int fReplaceAll)
+{
+	if (m_pfnReplaceRegularNoCaseSense == NULL)
+	{
+		return nullStr;
+	}
+
+	return m_pfnReplaceRegularNoCaseSense(strPattern, strTarget, nStart, strReplace, fReplaceAll);
+}
+

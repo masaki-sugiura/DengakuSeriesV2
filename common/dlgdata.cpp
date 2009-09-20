@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.40 2009-02-28 14:27:38 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.41 2009-09-20 13:49:00 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -587,6 +587,43 @@ CtrlListItem*
 DlgPage::getCtrl(const StringBuffer& name)
 {
 	return (name.length() > 0) ? m_pHashCtrl->getValue(name) : m_pCurCtrlData;
+}
+
+CtrlListItem*
+DlgPage::prevCtrl(const CtrlListItem* pCtrl)
+{
+	CtrlListItem*	cli;
+	CtrlListItem*	pPrevCtrl = NULL;
+
+	m_pCtrlList->initSequentialGet();
+	while ((cli = m_pCtrlList->getNextItem()) != NULL)
+	{
+		if (cli == pCtrl)
+		{
+			return pPrevCtrl;
+		}
+
+		pPrevCtrl = cli;
+	}
+
+	return NULL;
+}
+
+CtrlListItem*
+DlgPage::nextCtrl(const CtrlListItem* pCtrl)
+{
+	CtrlListItem*	cli;
+
+	m_pCtrlList->initSequentialGet();
+	while ((cli = m_pCtrlList->getNextItem()) != NULL)
+	{
+		if (cli == pCtrl)
+		{
+			return m_pCtrlList->getNextItem();
+		}
+	}
+
+	return NULL;
 }
 
 HWND

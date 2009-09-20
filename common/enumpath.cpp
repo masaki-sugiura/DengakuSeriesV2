@@ -1,4 +1,4 @@
-//	$Id: enumpath.cpp,v 1.3 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: enumpath.cpp,v 1.4 2009-09-20 13:49:01 sugiura Exp $
 /*
  *	enumpath.cpp
  *	enum*** ‚ÉŠÖ‚·‚éƒNƒ‰ƒX‚ÌŽÀ‘•
@@ -80,7 +80,7 @@ PathComparator::PathComparator(const StringBuffer& sbOrder, BOOL bReverse)
 			throw InvalidArgumentException();
 		}
 	}
-	if (!bn || !be || !bs || !bt) throw InvalidArgumentException();
+	if (!bn && !be && !bs && !bt) throw InvalidArgumentException();
 }
 
 int

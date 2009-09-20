@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.25 2007-09-02 15:50:03 sugiura Exp $
+//	$Id: ctrldata.h,v 1.26 2009-09-20 13:49:00 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -264,6 +264,8 @@ public:
 	virtual StringBuffer onGetSort(); // ソートの状態を取得
 	virtual int onSetFocusedItem(const StringBuffer& item);	//	フォーカスを得る項目の指定
 	virtual StringBuffer onGetFocusedItem();	//	フォーカスを得ている項目の取得
+	virtual int onSetCtrlExProperty(const StringBuffer& key, const StringBuffer& value);
+	virtual StringBuffer onGetCtrlExProperty(const StringBuffer& key);
 
 	//	datafile handlers
 	virtual	BOOL dumpData(DlgDataFile&);	//	データの書き込み
@@ -448,7 +450,9 @@ public:
 			const StringBuffer& text = nullStr,
 			CTRL_ID type = CTRLID_CHECK);
 
-	HWND getFocusedCtrl() const { return m_pcp->m_hwndCtrl; }
+	BOOL createCtrlTemplate(CtrlListItem::CtrlTemplateArgs&);
+
+	HWND getFocusedCtrl() const;
 
 	BOOL sendData();
 	BOOL receiveData();
@@ -497,6 +501,8 @@ public:
 	StringBuffer onGetState();
 	BOOL onSetImeState(int);
 	int onGetImeState();
+	int onSetCtrlExProperty(const StringBuffer& key, const StringBuffer& value);
+	StringBuffer onGetCtrlExProperty(const StringBuffer& key);
 
 	WORD onCommand(WPARAM, LPARAM);
 	WORD onImeNotify(WPARAM, LPARAM);
@@ -507,6 +513,7 @@ public:
 protected:
 	DWORD m_imestate;
 	BOOL  m_bAlreadyFocused;
+	BOOL  m_bSelectOnFocused;
 };
 
 //	hline, vline

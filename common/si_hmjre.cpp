@@ -1,4 +1,4 @@
-//	$Id: si_hmjre.cpp,v 1.3 2008-08-15 06:05:04 sugiura Exp $
+//	$Id: si_hmjre.cpp,v 1.4 2009-09-20 13:49:01 sugiura Exp $
 /*
  *	si_hmjre.cpp
  *	HmJre ‚ÉŠÖ‚·‚éƒNƒ‰ƒX
@@ -117,6 +117,28 @@ SessionInstance::si_hmjre_find_regular_no_case_sense(const StringBuffer& strRE, 
 	}
 
 	return m_pHmJre_Manager->findRegularNoCaseSense(strRE, strTarget, nOffset);
+}
+
+StringBuffer
+SessionInstance::si_hmjre_replace_regular(const StringBuffer& strPattern, const StringBuffer& strTarget, int nStart, const StringBuffer& strReplace, int fReplaceAll)
+{
+	if (m_pHmJre_Manager.ptr() == NULL)
+	{
+		return nullStr;
+	}
+
+	return m_pHmJre_Manager->replaceRegular(strPattern, strTarget, nStart, strReplace, fReplaceAll);
+}
+
+StringBuffer
+SessionInstance::si_hmjre_replace_regular_no_case_sense(const StringBuffer& strPattern, const StringBuffer& strTarget, int nStart, const StringBuffer& strReplace, int fReplaceAll)
+{
+	if (m_pHmJre_Manager.ptr() == NULL)
+	{
+		return nullStr;
+	}
+
+	return m_pHmJre_Manager->replaceRegularNoCaseSense(strPattern, strTarget, nStart, strReplace, fReplaceAll);
 }
 
 int

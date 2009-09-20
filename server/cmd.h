@@ -1,4 +1,4 @@
-//	$Id: cmd.h,v 1.20 2008-08-15 05:47:40 sugiura Exp $
+//	$Id: cmd.h,v 1.21 2009-09-20 13:49:01 sugiura Exp $
 /*
  *	cmd.h
  *	ƒRƒ}ƒ“ƒh–¼ˆê——
@@ -44,6 +44,7 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_EXECUTE(enablectrl)
 	DECLARE_DDECMD_EXECUTE(setctrlfont)
 	DECLARE_DDECMD_EXECUTE(setfocuseditem)
+	DECLARE_DDECMD_EXECUTE(setctrlexproperty)
 	DECLARE_DDECMD_EXECUTE(message)
 	DECLARE_DDECMD_EXECUTE(question)
 	DECLARE_DDECMD_EXECUTE(savedialog)
@@ -138,6 +139,7 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_REQUEST(getdlgpos)
 	DECLARE_DDECMD_REQUEST(getdlgimestate)
 	DECLARE_DDECMD_REQUEST(getdlgsize)
+	DECLARE_DDECMD_REQUEST(getctrlexproperty)
 	DECLARE_DDECMD_REQUEST(getvar)
 	DECLARE_DDECMD_REQUEST(existvar)
 	DECLARE_DDECMD_REQUEST(nextvar)
@@ -158,6 +160,8 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_REQUEST(hmjre_match)
 	DECLARE_DDECMD_REQUEST(hmjre_get_tag_position)
 	DECLARE_DDECMD_REQUEST(hmjre_get_match_string)
+	DECLARE_DDECMD_REQUEST(hmjre_replace_regular)
+	DECLARE_DDECMD_REQUEST(hmjre_replace_regular_no_case_sense)
 	DECLARE_DDECMD_REQUEST(clr_getrgb)
 	DECLARE_DDECMD_REQUEST(clr_getname)
 #if 0

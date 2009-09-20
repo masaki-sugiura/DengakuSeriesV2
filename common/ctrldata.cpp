@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.57 2008-10-26 11:57:46 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.58 2009-09-20 13:49:00 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -699,6 +699,18 @@ CtrlListItem::onGetFocusedItem()
 	return nullStr;
 }
 
+int
+CtrlListItem::onSetCtrlExProperty(const StringBuffer& key, const StringBuffer& value)
+{
+	return 0;
+}
+
+StringBuffer
+CtrlListItem::onGetCtrlExProperty(const StringBuffer& key)
+{
+	return nullStr;
+}
+
 BOOL
 CtrlListItem::isCommand(WORD)
 {
@@ -1212,7 +1224,8 @@ EditCtrl::EditCtrl(
 	CTRL_ID type)
 	: SimpleCtrl(name,text,type),
 	  m_imestate(0L),
-	  m_bAlreadyFocused(FALSE)
+	  m_bAlreadyFocused(FALSE),
+	  m_bSelectOnFocused(TRUE)
 {
 	m_pcp->m_style		= /*ES_AUTOHSCROLL|*/
 							WS_BORDER|WS_CHILD|WS_TABSTOP|WS_VISIBLE|WS_GROUP;
@@ -1352,7 +1365,14 @@ EditCtrl::onCommand(WPARAM wParam, LPARAM lParam)
 				}
 				::ImmReleaseContext((HWND)lParam,hImc);
 			}
-			::SendMessage((HWND)lParam, EM_SETSEL, 0, -1);
+			if (m_bSelectOnFocused)
+			{
+				::SendMessage((HWND)lParam, EM_SETSEL, 0, -1);
+			}
+			else
+			{
+				::SendMessage((HWND)lParam, EM_SETSEL, -1, 0);
+			}
 			m_bAlreadyFocused = TRUE;
 			dlgFrame.setImeAlreadyFocused();
 		}
@@ -1365,6 +1385,30 @@ WORD
 EditCtrl::onImeNotify(WPARAM wParam, LPARAM lParam)
 {
 	return 0xFFFF;
+}
+
+int
+EditCtrl::onSetCtrlExProperty(const StringBuffer& key, const StringBuffer& value)
+{
+	if (key.compareTo("select_on_focused") != 0)
+	{
+		return 0;
+	}
+
+	m_bSelectOnFocused = (value.compareTo("true") == 0);
+
+	return 1;
+}
+
+StringBuffer
+EditCtrl::onGetCtrlExProperty(const StringBuffer& key)
+{
+	if (key.compareTo("select_on_focused") != 0)
+	{
+		return nullStr;
+	}
+
+	return m_bSelectOnFocused ? "true" : "false";
 }
 
 BOOL
@@ -1396,6 +1440,22 @@ CheckCtrl::CheckCtrl(
 }
 
 BOOL
+CheckCtrl::createCtrlTemplate(CtrlListItem::CtrlTemplateArgs& cta)
+{
+	if (m_type == CTRLID_RDBTN)
+	{
+		CtrlListItem*	pPrevCtrl = this->getParentPage().prevCtrl(this);
+		if (pPrevCtrl != NULL	&&
+			pPrevCtrl->getCtrlType() == CTRLID_RDBTN)
+		{
+			m_pcp->m_style	&= ~WS_GROUP;
+		}
+	}
+
+	return SimpleCtrl::createCtrlTemplate(cta);
+}
+
+BOOL
 CheckCtrl::sendData()
 {
 	if (!BtnCtrl::sendData()) return FALSE;
@@ -1413,6 +1473,49 @@ CheckCtrl::receiveData()
 		m_state = (::SendMessage(m_pcp->m_hwndCtrl, BM_GETCHECK, 0, 0L)
 					== BST_CHECKED);
 	return TRUE;
+}
+
+HWND
+CheckCtrl::getFocusedCtrl() const
+{
+	if (m_type != CTRLID_RDBTN	||
+		m_state != 0)
+	{
+		return m_pcp->m_hwndCtrl;
+	}
+
+	//	ラジオボタンがフォーカスを得る場合、
+	//	チェックされているラジオボタンにフォーカスを移動
+
+	const CtrlListItem*	cli = this;
+	while ((cli = const_cast<CheckCtrl*>(this)->getParentPage().prevCtrl(cli)) != NULL)
+	{
+		if (cli->getCtrlType() != CTRLID_RDBTN)
+		{
+			break;
+		}
+
+		if (((CheckCtrl*)cli)->m_state != 0)
+		{
+			return cli->getCtrlHWND();
+		}
+	}
+
+	cli = this;
+	while ((cli = const_cast<CheckCtrl*>(this)->getParentPage().nextCtrl(cli)) != NULL)
+	{
+		if (cli->getCtrlType() != CTRLID_RDBTN)
+		{
+			break;
+		}
+
+		if (((CheckCtrl*)cli)->m_state != 0)
+		{
+			return cli->getCtrlHWND();
+		}
+	}
+
+	return m_pcp->m_hwndCtrl;
 }
 
 BOOL

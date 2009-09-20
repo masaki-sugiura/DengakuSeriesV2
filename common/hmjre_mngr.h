@@ -1,4 +1,4 @@
-//	$Id: hmjre_mngr.h,v 1.6 2008-08-15 06:05:04 sugiura Exp $
+//	$Id: hmjre_mngr.h,v 1.7 2009-09-20 13:49:01 sugiura Exp $
 /*
  *	hmjre_mngr.h
  *	hmjre.dll を利用するためのラッパークラス
@@ -51,6 +51,9 @@ typedef	int (__cdecl *PFN_ENVCHANGED)();
 // Version 1.90から
 typedef	int	(__cdecl *PFN_GETLASTMATCHTAGPOSITION)(int nTagNumber);
 typedef	int	(__cdecl *PFN_GETLASTMATCHTAGLENGTH)(int nTagNumber);
+// Version 1.98から
+typedef LPCSTR (__cdecl *PFN_REPLACEREGULAR)(LPCSTR pszPattern, LPCSTR pszTarget, int xStart, LPCSTR pszReplace, BOOL fReplaceAll);
+typedef LPCSTR (__cdecl *PFN_REPLACEREGULARNOCASESENSE)(LPCSTR pszPattern, LPCSTR pszTarget, int xStart, LPCSTR pszReplace, BOOL fReplaceAll);
 
 #define	HMJRE_FUZZY_OPEN				"Fuzzy_Open"
 #define	HMJRE_FUZZY_CLOSE				"Fuzzy_Close"
@@ -68,6 +71,8 @@ typedef	int	(__cdecl *PFN_GETLASTMATCHTAGLENGTH)(int nTagNumber);
 #define	HMJRE_ENVCHANGED				"EnvChanged"
 #define	HMJRE_GETLASTMATCHTAGPOSITION	"GetLastMatchTagPosition"
 #define	HMJRE_GETLASTMATCHTAGLENGTH		"GetLastMatchTagLength"
+#define	HMJRE_REPLACEREGULAR			"ReplaceRegular"
+#define	HMJRE_REPLACEREGULARNOCASESENSE	"ReplaceRegularNoCaseSense"
 
 class HmJre_Manager : REDLL_Manager {
 public:
@@ -91,6 +96,8 @@ public:
 	int	getLastMatchTagPosition(int nTagNumber);
 	int	getLastMatchTagLength(int nTagNumber);
 	int	optionDialog(int nHwnd, int nDisableFlags);
+	StringBuffer	replaceRegular(const StringBuffer& strPattern, const StringBuffer& strTarget, int nStart, const StringBuffer& strReplace, int fReplaceAll);
+	StringBuffer	replaceRegularNoCaseSense(const StringBuffer& strPattern, const StringBuffer& strTarget, int nStart, const StringBuffer& strReplace, int fReplaceAll);
 
 private:
 	PFN_JREGETVERSION m_pfnJreGetVersion;
@@ -114,6 +121,8 @@ private:
 	PFN_ENVCHANGED	m_pfnEnvChanged;
 	PFN_GETLASTMATCHTAGPOSITION	m_pfnGetLastMatchTagPosition;
 	PFN_GETLASTMATCHTAGLENGTH	m_pfnGetLastMatchTagLength;
+	PFN_REPLACEREGULAR				m_pfnReplaceRegular;
+	PFN_REPLACEREGULARNOCASESENSE	m_pfnReplaceRegularNoCaseSense;
 
 	StringBuffer m_strVersion;
 

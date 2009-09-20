@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.29 2008-08-15 06:05:04 sugiura Exp $
+//	$Id: session.h,v 1.30 2009-09-20 13:49:01 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -227,6 +227,8 @@ public:
 	StringBuffer si_getdlgsize();
 	StringBuffer si_getctrlfocuseditem(const StringBuffer&);
 	int si_setctrlfocuseditem(const StringBuffer&, const StringBuffer&);
+	int si_setctrlexproperty(const StringBuffer&, const StringBuffer&, const StringBuffer&);
+	StringBuffer si_getctrlexproperty(const StringBuffer&, const StringBuffer&);
 
 	// BRegexp系
 	int si_bregexp_load(const StringBuffer&);
@@ -250,6 +252,8 @@ public:
 	StringBuffer si_hmjre_get_match_string(const StringBuffer&, const StringBuffer&);
 	int si_hmjre_find_regular(const StringBuffer&, const StringBuffer&, int);
 	int si_hmjre_find_regular_no_case_sense(const StringBuffer&, const StringBuffer&, int);
+	StringBuffer si_hmjre_replace_regular(const StringBuffer&, const StringBuffer&, int, const StringBuffer&, int);
+	StringBuffer si_hmjre_replace_regular_no_case_sense(const StringBuffer&, const StringBuffer&, int, const StringBuffer&, int);
 	int si_hmjre_get_last_match_length();
 	int si_hmjre_option_dialog(int, int);
 	int si_hmjre_env_changed();

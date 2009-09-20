@@ -1,4 +1,4 @@
-//	$Id: ds_func.cpp,v 1.12 2007-02-10 19:00:02 sugiura Exp $
+//	$Id: ds_func.cpp,v 1.13 2009-09-20 13:49:01 sugiura Exp $
 /*
  *	ds_func.cpp
  *	ダイアログ操作関数
@@ -541,6 +541,31 @@ SETCTRLNOTIFY(LPCSTR str1, LPCSTR str2)
 		return g_pSessionInstance->si_setctrlnotify(str1,argv);
 	} catch (...) {
 		return 0;
+	}
+}
+
+//	コントロールの拡張プロパティを設定
+DENGAKUDLL_API HIDEDLL_NUMTYPE
+SETCTRLEXPROPERTY(LPCSTR str1, LPCSTR str2, LPCSTR str3)
+{
+	OUTPUT_TICK_COUNT("SETCTRLEXPROPERTY");
+	try {
+		return g_pSessionInstance->si_setctrlexproperty(str1, str2, str3);
+	} catch (...) {
+		return 0;
+	}
+}
+
+//	コントロールの拡張プロパティを設定
+DENGAKUDLL_API LPCSTR
+GETCTRLEXPROPERTY(LPCSTR str1, LPCSTR str2)
+{
+	OUTPUT_TICK_COUNT("GETCTRLEXPROPERTY");
+	try {
+		g_strBuffer = g_pSessionInstance->si_getctrlexproperty(str1, str2);
+		return g_strBuffer;
+	} catch (...) {
+		return "";
 	}
 }
 
