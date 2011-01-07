@@ -1,4 +1,4 @@
-//	$Id: cmd.h,v 1.21 2009-09-20 13:49:01 sugiura Exp $
+//	$Id: cmd.h,v 1.22 2011-01-07 16:08:38 sugiura Exp $
 /*
  *	cmd.h
  *	ƒRƒ}ƒ“ƒh–¼ˆê——
@@ -54,6 +54,7 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_EXECUTE(setfocusedctrl)
 	DECLARE_DDECMD_EXECUTE(setdlgpos)
 	DECLARE_DDECMD_EXECUTE(setdlgimestate)
+	DECLARE_DDECMD_EXECUTE(setdlgexproperty)
 	DECLARE_DDECMD_EXECUTE(menu)
 	DECLARE_DDECMD_EXECUTE(changemenuitemex)
 	DECLARE_DDECMD_EXECUTE(deletemenuitemex)
@@ -140,6 +141,7 @@ DECLARE_DDECMD_HEADER
 	DECLARE_DDECMD_REQUEST(getdlgimestate)
 	DECLARE_DDECMD_REQUEST(getdlgsize)
 	DECLARE_DDECMD_REQUEST(getctrlexproperty)
+	DECLARE_DDECMD_REQUEST(getdlgexproperty)
 	DECLARE_DDECMD_REQUEST(getvar)
 	DECLARE_DDECMD_REQUEST(existvar)
 	DECLARE_DDECMD_REQUEST(nextvar)

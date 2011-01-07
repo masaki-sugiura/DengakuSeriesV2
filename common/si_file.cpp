@@ -1,4 +1,4 @@
-//	$Id: si_file.cpp,v 1.19 2007-02-10 19:00:01 sugiura Exp $
+//	$Id: si_file.cpp,v 1.20 2011-01-07 16:08:38 sugiura Exp $
 /*
  *	si_file.cpp
  *	SessionInstance: ファイルサービスの関数
@@ -175,7 +175,7 @@ RecycleBin(int srcidx,
 static StringBuffer
 GetLongFileName(const PathName& file)
 {
-	int	olen = file.length();
+	ptrdiff_t	olen = file.length();
 	if (olen < 3 || file.find((TCHAR)'*') >= 0 || file.find((TCHAR)'?') >= 0)
 		//	不正なパス名
 		return nullStr;
@@ -232,7 +232,7 @@ GetLongFileName(const PathName& file)
 static StringBuffer
 GetShortFileName(const PathName& file)
 {
-	int	olen = file.length();
+	ptrdiff_t	olen = file.length();
 	if (olen < 3 || file.find((TCHAR)'*') >= 0 || file.find((TCHAR)'?') >= 0)
 		//	不正なパス名
 		return nullStr;

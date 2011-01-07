@@ -1,4 +1,4 @@
-//	$Id: si_menu.cpp,v 1.7 2006-03-16 14:46:56 sugiura Exp $
+//	$Id: si_menu.cpp,v 1.8 2011-01-07 16:08:38 sugiura Exp $
 /*
  *	si_menu.cpp
  *	メニュー表示関数
@@ -21,7 +21,7 @@ UserMenuProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	if (uMsg == WM_CREATE) {
 		lParam = (LPARAM)((LPCREATESTRUCT)lParam)->lpCreateParams;
-		::SetWindowLong(hWnd,GWL_USERDATA,(LONG)lParam);
+		::SetWindowLongPtr(hWnd,GWLP_USERDATA,(LONG_PTR)lParam);
 		//	ウィンドウ全体を覆うようにサイズ変更
 		RECT rct;
 		::GetWindowRect(::GetDesktopWindow(),&rct);
@@ -31,7 +31,7 @@ UserMenuProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 	LPSHOWMENUPROCARGS
 		lpsmpa = reinterpret_cast<LPSHOWMENUPROCARGS>(
-									::GetWindowLong(hWnd,GWL_USERDATA));
+									::GetWindowLongPtr(hWnd,GWLP_USERDATA));
 
 	switch (uMsg) {
 	case WM_USER_SHOWUSERMENU:

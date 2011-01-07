@@ -1,4 +1,4 @@
-// $Id: ddeserv.cpp,v 1.8 2007-04-29 16:11:35 sugiura Exp $
+// $Id: ddeserv.cpp,v 1.9 2011-01-07 16:08:38 sugiura Exp $
 /*
  *	ddeserv.cpp
  *	DdeServer クラスの実装
@@ -28,7 +28,7 @@ DdeServer::m_sbTopicNames(GetServerString(SVR_STR_TOPICNAMES));
 HDDEDATA CALLBACK
 ddeCallBack(UINT uType, UINT uFmt, HCONV hconv,
 			HSZ hsz1, HSZ hsz2, HDDEDATA hdata,
-			DWORD dwData1, DWORD dwData2)
+			HDDEDATA dwData1, HDDEDATA dwData2)
 {
 	switch (uType) {
 	case XTYP_REGISTER: // DDE サーバの開始
@@ -83,8 +83,8 @@ ddeCallBack_with_Log(
 	HSZ hsz1,
 	HSZ hsz2,
 	HDDEDATA hdata,
-	DWORD dwData1,
-	DWORD dwData2)
+	HDDEDATA dwData1,
+	HDDEDATA dwData2)
 {
 	switch (uType) {
 	case XTYP_REGISTER: // DDE サーバの開始
@@ -144,14 +144,14 @@ DdeServer::init(DDEServerInfo& dsi)
 	//	Ddeml ライブラリに ddeCallBack 関数を登録
 	if (startLog(dsi.m_psbServerLogFileName)) {
 		//	ログあり
-		if (::DdeInitialize(&m_ddeInst,ddeCallBack_with_Log,
+		if (::DdeInitialize(&m_ddeInst,(PFNCALLBACK)ddeCallBack_with_Log,
 							APPCLASS_STANDARD,0) != DMLERR_NO_ERROR) {
 			stopLog();
 			return FALSE;
 		}
 	} else {
 		//	ログなし
-		if (::DdeInitialize(&m_ddeInst,ddeCallBack,
+		if (::DdeInitialize(&m_ddeInst,(PFNCALLBACK)ddeCallBack,
 							APPCLASS_STANDARD,0) != DMLERR_NO_ERROR) {
 			return FALSE;
 		}

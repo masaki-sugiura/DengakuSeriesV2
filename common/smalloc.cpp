@@ -1,4 +1,4 @@
-//	$Id: smalloc.cpp,v 1.5 2006-06-16 15:43:57 sugiura Exp $
+//	$Id: smalloc.cpp,v 1.6 2011-01-07 16:08:38 sugiura Exp $
 /*
  *	smalloc.cpp
  *	共有メモリ領域についての malloc, free インターフェイスの提供
@@ -39,7 +39,7 @@ FileMap::~FileMap()
 }
 
 void*
-FileMap::addr(UINT iptr)
+FileMap::addr(ptrdiff_t iptr)
 {
 	return iptr < m_pagesize ? ((char*)m_header + iptr) : NULL;
 }
@@ -131,7 +131,7 @@ SMAlloc::initAllocator(PageHeader* pHeader)
 	pHeader->m_idxFreeP = allocate_offset(); // current freep index
 }
 
-UINT
+ptrdiff_t
 SMAlloc::alloc(UINT size)
 {
 	UINT nunits = (size + sizeof(SMAHeader) - 1) / sizeof(SMAHeader) + 1;
@@ -168,7 +168,7 @@ SMAlloc::alloc(UINT size)
 }
 
 void
-SMAlloc::free(UINT iptr)
+SMAlloc::free(ptrdiff_t iptr)
 {
 	PageHeader* pHeader = getPageHeader();
 

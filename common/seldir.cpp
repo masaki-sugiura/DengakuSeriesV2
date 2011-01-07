@@ -1,4 +1,4 @@
-//	$Id: seldir.cpp,v 1.8 2008-11-16 11:09:40 sugiura Exp $
+//	$Id: seldir.cpp,v 1.9 2011-01-07 16:08:38 sugiura Exp $
 /*
  *	seldir.cpp
  *	ディレクトリ選択ダイアログの実装
@@ -811,7 +811,7 @@ DirBrowseProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	switch (uMsg) {
 	case WM_INITDIALOG:
 		{
-			::SetWindowLong(hDlg, DWL_USER, lParam);
+			::SetWindowLongPtr(hDlg, DWLP_USER, lParam);
 			SelectDirByDlg* psdbd = (SelectDirByDlg*)lParam;
 			::SetDlgItemText(hDlg, IDC_TITLE, psdbd->getTitle());
 			psdbd->initTreeView(::GetDlgItem(hDlg, IDC_TREE));
@@ -821,7 +821,7 @@ DirBrowseProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 		{
 			SelectDirByDlg*
-				psdbd = (SelectDirByDlg*)::GetWindowLong(hDlg, DWL_USER);
+				psdbd = (SelectDirByDlg*)::GetWindowLongPtr(hDlg, DWLP_USER);
 			HWND hTreeView = ::GetDlgItem(hDlg, IDC_TREE);
 			switch (LOWORD(wParam)) {
 			case IDOK:
@@ -867,7 +867,7 @@ DirBrowseProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_NOTIFY:
 		if (wParam == IDC_TREE) {
 			SelectDirByDlg*
-				psdbd = (SelectDirByDlg*)::GetWindowLong(hDlg, DWL_USER);
+				psdbd = (SelectDirByDlg*)::GetWindowLongPtr(hDlg, DWLP_USER);
 			HWND hTreeView = ::GetDlgItem(hDlg, IDC_TREE);
 			TVITEM* ptvItem;
 			switch (((NMHDR*)lParam)->code) {

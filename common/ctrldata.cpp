@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.58 2009-09-20 13:49:00 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.59 2011-01-07 16:08:38 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス
@@ -217,7 +217,7 @@ LRESULT CALLBACK
 CtrlListItemProc(HWND hCtrl, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	CtrlListItem::CtrlProperty*
-		pCProp = (CtrlListItem::CtrlProperty*)::GetWindowLong(hCtrl, GWL_USERDATA);
+		pCProp = (CtrlListItem::CtrlProperty*)::GetWindowLongPtr(hCtrl, GWLP_USERDATA);
 	return pCProp->m_pCtrl->dispatchRawMsg(pCProp, hCtrl, uMsg, wParam, lParam);
 }
 
@@ -227,10 +227,10 @@ CtrlListItem::CtrlProperty::init(HWND hDlg)
 	m_hwndCtrl = ::GetDlgItem(hDlg, m_id);
 	if (m_hwndCtrl == NULL) return FALSE;
 //	m_pCtrl->getParentPage().getDlgFrame().setWindowTheme(m_hwndCtrl);
-	m_pfnDefCallback = (WNDPROC)::SetWindowLong(m_hwndCtrl,
-												GWL_WNDPROC,
-												(LONG)CtrlListItemProc);
-	::SetWindowLong(m_hwndCtrl, GWL_USERDATA, (LONG)this);
+	m_pfnDefCallback = (WNDPROC)::SetWindowLongPtr(m_hwndCtrl,
+												   GWLP_WNDPROC,
+												   (LONG)CtrlListItemProc);
+	::SetWindowLongPtr(m_hwndCtrl, GWLP_USERDATA, (LONG_PTR)this);
 	return TRUE;
 }
 
@@ -879,6 +879,8 @@ SimpleCtrl::SimpleCtrl(
 	const StringBuffer& text,
 	CTRL_ID type)
 	:	CtrlListItem(type,name,text)
+	,	m_crefBkColor(0)
+	,	m_bSetBkColor(FALSE)
 {
 	m_cnum = 1;
 	m_cy = 1;
@@ -1060,25 +1062,65 @@ SimpleCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDc)
 	if (!::IsWindowEnabled(hwndCtrl)) {
 		return NULL;
 	}
+
 	if (m_pcp->m_hbrBackground) {
 		::DeleteObject(m_pcp->m_hbrBackground);
 		m_pcp->m_hbrBackground = NULL;
 	}
+
 	LOGBRUSH lbr;
-	lbr.lbColor = ::GetBkColor(hDc);
+	if (m_bSetBkColor)
+	{
+		lbr.lbColor = m_crefBkColor;
+	}
+	else
+	{
+		lbr.lbColor = ::GetBkColor(hDc);
+	}
 	lbr.lbStyle = BS_SOLID;
 	m_pcp->m_hbrBackground = ::CreateBrushIndirect(&lbr);
-#if 1
-	{
-		char msgbuf[80];
-		wsprintf(msgbuf, "%s: TextColor = %08x, BkColor = %08x\n",
-				 (LPCSTR)this->m_name,
-				 m_pcp->m_fontprop.m_color, lbr.lbColor);
-		::OutputDebugString(msgbuf);
-	}
-#endif
+
+	DEBUG_OUTPUT(("%s: TextColor = %08x, BkColor = %08x", (LPCSTR)this->m_name, m_pcp->m_fontprop.m_color, lbr.lbColor));
+
 	::SetTextColor(hDc, m_pcp->m_fontprop.m_color);
+	::SetBkColor(hDc, lbr.lbColor);
+
 	return m_pcp->m_hbrBackground;
+}
+
+int
+SimpleCtrl::onSetCtrlExProperty(const StringBuffer& key, const StringBuffer& value)
+{
+	if (key.compareTo("bgcolor") != 0)
+	{
+		return 0;
+	}
+
+	if (value.length() == 0)
+	{
+		m_bSetBkColor	= FALSE;
+		m_crefBkColor	= 0;
+	}
+	else
+	{
+		m_bSetBkColor	= TRUE;
+		m_crefBkColor	= ColorTable::colorStrToColorRef(value);
+	}
+
+	this->sendData();
+
+	return 1;
+}
+
+StringBuffer
+SimpleCtrl::onGetCtrlExProperty(const StringBuffer& key)
+{
+	if (key.compareTo("bgcolor") != 0)
+	{
+		return nullStr;
+	}
+
+	return m_bSetBkColor ? ColorTable::colorRefToColorStr(m_crefBkColor) : nullStr;
 }
 
 BOOL
@@ -1133,8 +1175,34 @@ BtnCtrl::getDefID() const
 HBRUSH
 BtnCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDc)
 {
-	HBRUSH hBrush = SimpleCtrl::onCtlColor(hwndCtrl, uMsg, hDc);
-	return uMsg == WM_CTLCOLORBTN ? hBrush : NULL;
+	if (!::IsWindowEnabled(hwndCtrl)) {
+		return NULL;
+	}
+
+	if (m_pcp->m_hbrBackground) {
+		::DeleteObject(m_pcp->m_hbrBackground);
+		m_pcp->m_hbrBackground = NULL;
+	}
+
+	LOGBRUSH lbr;
+	if (m_bSetBkColor)
+	{
+		lbr.lbColor = m_crefBkColor;
+	}
+	else
+	{
+		lbr.lbColor = m_pDlgPage->getBkColor();
+	}
+
+	lbr.lbStyle = BS_SOLID;
+	m_pcp->m_hbrBackground = ::CreateBrushIndirect(&lbr);
+
+	DEBUG_OUTPUT(("%s: TextColor = %08x, BkColor = %08x", (LPCSTR)this->m_name, m_pcp->m_fontprop.m_color, lbr.lbColor));
+
+	::SetTextColor(hDc, m_pcp->m_fontprop.m_color);
+	::SetBkColor(hDc, lbr.lbColor);
+
+	return uMsg == WM_CTLCOLORBTN ? m_pcp->m_hbrBackground : NULL;
 }
 
 WORD
@@ -1196,16 +1264,36 @@ TextCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDc)
 #ifdef _DEBUG
 		{
 			char msgbuf[80];
-			wsprintf(msgbuf, "%s: TextColor = %08x",
+			wsprintf(msgbuf, "%s: TextColor = %08x, BkColor = %08x\n",
 					 (LPCSTR)this->m_name,
-					 m_pcp->m_fontprop.m_color);
+					 m_pcp->m_fontprop.m_color,
+					 m_crefBkColor);
 			::OutputDebugString(msgbuf);
 		}
 #endif
 		::SetTextColor(hDc, m_pcp->m_fontprop.m_color);
+		if (m_bSetBkColor)
+		{
+			::SetBkColor(hDc, m_crefBkColor);
+		}
+		else
+		{
+			m_pDlgPage->getDlgFrame().drawThemeParentBackground(m_pcp->m_hwndCtrl, hDc, NULL);
+		}
 		return NULL;
 	} else {
-		COLORREF bgColor = ::GetSysColor(COLOR_BTNFACE);
+#if 1
+		COLORREF	bgColor;
+		if (m_bSetBkColor)
+		{
+			bgColor = m_crefBkColor;
+		}
+		else
+		{
+//			bgColor = ::GetBkColor(hDc);
+//			bgColor = ::GetSysColor(COLOR_3DFACE);
+			bgColor = m_pDlgPage->getBkColor();
+		}
 		if (!m_pcp->m_hbrBackground) {
 			LOGBRUSH lbr;
 			lbr.lbColor = bgColor;
@@ -1215,6 +1303,9 @@ TextCtrl::onCtlColor(HWND hwndCtrl, UINT uMsg, HDC hDc)
 		::SetTextColor(hDc, m_pcp->m_fontprop.m_color);
 		::SetBkColor(hDc, bgColor);
 		return m_pcp->m_hbrBackground;
+#else
+		return SimpleCtrl::onCtlColor(hwndCtrl, uMsg, hDc);
+#endif
 	}
 }
 
@@ -1392,7 +1483,7 @@ EditCtrl::onSetCtrlExProperty(const StringBuffer& key, const StringBuffer& value
 {
 	if (key.compareTo("select_on_focused") != 0)
 	{
-		return 0;
+		return SimpleCtrl::onSetCtrlExProperty(key, value);
 	}
 
 	m_bSelectOnFocused = (value.compareTo("true") == 0);
@@ -1405,7 +1496,7 @@ EditCtrl::onGetCtrlExProperty(const StringBuffer& key)
 {
 	if (key.compareTo("select_on_focused") != 0)
 	{
-		return nullStr;
+		return SimpleCtrl::onGetCtrlExProperty(key);
 	}
 
 	return m_bSelectOnFocused ? "true" : "false";
@@ -1911,7 +2002,7 @@ static LRESULT CALLBACK
 ChildCtrlProc(HWND hCtrl, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	ChildCtrlSubClassInfo*
-		pCCSci = (ChildCtrlSubClassInfo*)::GetWindowLong(hCtrl, GWL_USERDATA);
+		pCCSci = (ChildCtrlSubClassInfo*)::GetWindowLongPtr(hCtrl, GWLP_USERDATA);
 	switch (uMsg) {
 	case WM_GET_CTRL_PTR:
 		return (LRESULT)pCCSci->m_pCtrl;
@@ -2006,10 +2097,10 @@ RadioCtrl::initCtrl(HWND hDlg)
 		ChildCtrlSubClassInfo* pCCSci = new ChildCtrlSubClassInfo();
 		pCCSci->m_pCtrl = this;
 		pCCSci->m_pfnDefCallback
-			= (WNDPROC)::SetWindowLong(hCtrl,
-										GWL_WNDPROC,
-										(LONG)ChildCtrlProc);
-		::SetWindowLong(hCtrl, GWL_USERDATA, (LONG)pCCSci);
+			= (WNDPROC)::SetWindowLongPtr(hCtrl,
+										  GWLP_WNDPROC,
+										  (LONG_PTR)ChildCtrlProc);
+		::SetWindowLongPtr(hCtrl, GWLP_USERDATA, (LONG_PTR)pCCSci);
 	}
 	return TRUE;
 }
@@ -2434,6 +2525,85 @@ ListCtrl::getStateFromView()
 	}
 }
 
+StringBuffer
+ListCtrl::onGetCtrlExProperty(const StringBuffer& key)
+{
+	if (key.compareTo("view_order_of_", TRUE, 14) == 0)
+	{
+		int	index = strtol((LPCSTR)key + 14, NULL, 10),
+			itemNum = m_item->itemNum();
+		if (index < 0 || index >= itemNum)
+		{
+			return nullStr;
+		}
+
+		ItemData* id = m_item->getItemByIndex(index);
+		if (id == NULL)
+		{
+			return nullStr;
+		}
+
+		int	viewIndex = id->getViewIndex();
+
+		StringBuffer	ret;
+
+		ret.append(viewIndex);
+
+		return ret;
+	}
+	else if (key.compareTo("index_of_", TRUE, 9) == 0)
+	{
+		int	viewIndex = strtol((LPCSTR)key + 9, NULL, 10),
+			itemNum = m_item->itemNum();
+		if (viewIndex < 0 || viewIndex >= itemNum)
+		{
+			return nullStr;
+		}
+
+		ItemData* id = NULL;
+
+		if (m_pcp->m_hwndCtrl != NULL)
+		{
+			id = (ItemData*)::SendMessage(m_pcp->m_hwndCtrl, m_msg_getdata,
+										  viewIndex, 0);
+		}
+		else
+		{
+			int	num = m_item->initSequentialGet();	//	skip dummy
+			for (int i = 0; i < num; i++)
+			{
+				ItemData*	idTemp = m_item->getItemByIndex(i);
+				if (viewIndex == idTemp->getViewIndex())
+				{
+					id = idTemp;
+					break;
+				}
+			}
+		}
+
+		if (id == NULL)
+		{
+			return nullStr;
+		}
+
+		int	index = m_item->getItemIndexByPtr(id);
+		if (index == -1)
+		{
+			return nullStr;
+		}
+
+		StringBuffer	ret;
+
+		ret.append(index);
+
+		return ret;
+	}
+	else
+	{
+		return SimpleCtrl::onGetCtrlExProperty(key);
+	}
+}
+
 BOOL
 ListCtrl::dumpData(DlgDataFile& ddfile)
 {
@@ -2454,7 +2624,7 @@ static LRESULT CALLBACK
 ComboChildCtrlProc(HWND hCtrl, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	ChildCtrlSubClassInfo*
-		pCCSci = (ChildCtrlSubClassInfo*)::GetWindowLong(hCtrl, GWL_USERDATA);
+		pCCSci = (ChildCtrlSubClassInfo*)::GetWindowLongPtr(hCtrl, GWLP_USERDATA);
 	HWND hwndCombo = pCCSci->m_pCtrl->getCtrlHWND();
 	switch (uMsg) {
 	case WM_GET_CTRL_PTR:
@@ -2556,18 +2726,18 @@ ComboCtrl::initCtrl(HWND hDlg)
 	if (m_bEditable) {
 		// コンボボックス
 		HWND hwndEdit = ::GetTopWindow(m_pcp->m_hwndCtrl);
-		pCCSci->m_pfnDefCallback = (WNDPROC)::GetWindowLong(hwndEdit, GWL_WNDPROC);
-		::SetWindowLong(hwndEdit, GWL_USERDATA, (LONG)pCCSci);
-		::SetWindowLong(hwndEdit, GWL_WNDPROC, (LONG)ComboChildCtrlProc);
+		pCCSci->m_pfnDefCallback = (WNDPROC)::GetWindowLongPtr(hwndEdit, GWLP_WNDPROC);
+		::SetWindowLongPtr(hwndEdit, GWLP_USERDATA, (LONG_PTR)pCCSci);
+		::SetWindowLongPtr(hwndEdit, GWLP_WNDPROC, (LONG_PTR)ComboChildCtrlProc);
 	} else {
 		// ドロップダウンリスト
 #if 0
 		// dispatchRawMsg() で対処
-		::SetWindowLong(m_pcp->m_hwndCtrl, GWL_USERDATA, (LONG)pCCSci);
+		::SetWindowLongPtr(m_pcp->m_hwndCtrl, GWLP_USERDATA, (LONG_PTR)pCCSci);
 		pCCSci->m_pfnDefCallback
-			= (WNDPROC)::SetWindowLong(m_pcp->m_hwndCtrl,
-										GWL_WNDPROC,
-										(LONG)ComboChildCtrlProc);
+			= (WNDPROC)::SetWindowLongPtr(m_pcp->m_hwndCtrl,
+										  GWLP_WNDPROC,
+										  (LONG_PTR)ComboChildCtrlProc);
 #endif
 	}
 //	::SetWindowText(m_pcp->m_hwndCtrl, m_pcp->m_text);
@@ -3179,6 +3349,91 @@ ChkListCtrl::onGetFocusedItem()
 	return m_strFocusedItem;
 }
 
+StringBuffer
+ChkListCtrl::onGetCtrlExProperty(const StringBuffer& key)
+{
+	if (key.compareTo("view_order_of_", TRUE, 14) == 0)
+	{
+		int	index = strtol((LPCSTR)key + 14, NULL, 10),
+			itemNum = m_item->itemNum();
+		if (index < 0 || index >= itemNum)
+		{
+			return nullStr;
+		}
+
+		ItemData* id = m_item->getItemByIndex(index);
+		if (id == NULL)
+		{
+			return nullStr;
+		}
+
+		int	viewIndex = id->getViewIndex();
+
+		StringBuffer	ret;
+
+		ret.append(viewIndex);
+
+		return ret;
+	}
+	else if (key.compareTo("index_of_", TRUE, 9) == 0)
+	{
+		int	viewIndex = strtol((LPCSTR)key + 9, NULL, 10),
+			itemNum = m_item->itemNum();
+		if (viewIndex < 0 || viewIndex >= itemNum)
+		{
+			return nullStr;
+		}
+
+		ItemData* id = NULL;
+
+		if (m_pcp->m_hwndCtrl != NULL)
+		{
+			LVITEM	lvi;
+			memset(&lvi, 0, sizeof(lvi));
+
+			lvi.iItem = viewIndex;
+			lvi.mask = LVIF_PARAM;
+			ListView_GetItem(m_pcp->m_hwndCtrl, &lvi);
+
+			id = (ItemData*)lvi.lParam;
+		}
+		else
+		{
+			int	num = m_item->initSequentialGet();	//	skip dummy
+			for (int i = 0; i < num; i++)
+			{
+				ItemData*	idTemp = m_item->getItemByIndex(i);
+				if (viewIndex == idTemp->getViewIndex())
+				{
+					id = idTemp;
+					break;
+				}
+			}
+		}
+
+		if (id == NULL)
+		{
+			return nullStr;
+		}
+
+		int	index = m_item->getItemIndexByPtr(id);
+		if (index == -1)
+		{
+			return nullStr;
+		}
+
+		StringBuffer	ret;
+
+		ret.append(index);
+
+		return ret;
+	}
+	else
+	{
+		return SimpleCtrl::onGetCtrlExProperty(key);
+	}
+}
+
 WORD
 ChkListCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 {
@@ -3274,7 +3529,7 @@ ChkListCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 		}
 		return 0xFFFF;
 	case LVN_DELETEALLITEMS:
-		::SetWindowLong(m_pDlgPage->gethwndPage(),DWL_MSGRESULT,(LONG)TRUE);
+		::SetWindowLongPtr(m_pDlgPage->gethwndPage(),DWLP_MSGRESULT,(LONG_PTR)TRUE);
 	}
 	return 0xFFFF;
 }
@@ -3765,7 +4020,7 @@ LViewCtrl::onNotify(WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case LVN_DELETEALLITEMS:
-		::SetWindowLong(m_pDlgPage->gethwndPage(), DWL_MSGRESULT, (LONG)TRUE);
+		::SetWindowLongPtr(m_pDlgPage->gethwndPage(), DWLP_MSGRESULT, (LONG_PTR)TRUE);
 		break;
 	}
 	return 0xFFFF;

@@ -1,4 +1,4 @@
-//	$Id: ds_func.cpp,v 1.13 2009-09-20 13:49:01 sugiura Exp $
+//	$Id: ds_func.cpp,v 1.14 2011-01-07 16:08:38 sugiura Exp $
 /*
  *	ds_func.cpp
  *	ダイアログ操作関数
@@ -622,6 +622,29 @@ GETDLGSIZE()
 	OUTPUT_TICK_COUNT("GETDLGSIZE");
 	try {
 		g_strBuffer = g_pSessionInstance->si_getdlgsize();
+		return g_strBuffer;
+	} catch (...) {
+		return "";
+	}
+}
+
+DENGAKUDLL_API HIDEDLL_NUMTYPE
+SETDLGEXPROPERTY(LPCSTR name, LPCSTR key, LPCSTR value)
+{
+	OUTPUT_TICK_COUNT("SETDLGEXPROPERTY");
+	try {
+		return g_pSessionInstance->si_setdlgexproperty(name, key, value);
+	} catch (...) {
+		return 0;
+	}
+}
+
+DENGAKUDLL_API LPCSTR
+GETDLGEXPROPERTY(LPCSTR name, LPCSTR key)
+{
+	OUTPUT_TICK_COUNT("GETDLGEXPROPERTY");
+	try {
+		g_strBuffer = g_pSessionInstance->si_getdlgexproperty(name, key);
 		return g_strBuffer;
 	} catch (...) {
 		return "";

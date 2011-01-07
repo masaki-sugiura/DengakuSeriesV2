@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.26 2009-09-20 13:49:00 sugiura Exp $
+//	$Id: ctrldata.h,v 1.27 2011-01-07 16:08:38 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス
@@ -88,7 +88,7 @@ class CmdLineParser;
 class ItemData {
 public:
 	ItemData(const StringBuffer& str = nullStr)
-		: m_text(str)
+		:	m_text(str)
 	{}	//	nothing to do more.
 	virtual ~ItemData() {}
 
@@ -414,12 +414,17 @@ public:
 	BOOL onSetCtrlFont(CmdLineParser&);
 	StringBuffer onGetString();
 	StringBuffer onGetCtrlFont();
+	int onSetCtrlExProperty(const StringBuffer& key, const StringBuffer& value);
+	StringBuffer onGetCtrlExProperty(const StringBuffer& key);
 
 	HBRUSH onCtlColor(HWND hwndCtrl, UINT, HDC);
 
 	BOOL isCommand(WORD);
 
 protected:
+	COLORREF	m_crefBkColor;
+	BOOL		m_bSetBkColor;
+
 	BOOL setFont(const StringBuffer& fface = nullStr,
 				 const StringBuffer& color = nullStr,
 				 const StringBuffer& fname = nullStr);	//	フォントの変更
@@ -717,6 +722,7 @@ public:
 	BOOL onResetList();
 	int onSetFocusedItem(const StringBuffer& item);	//	フォーカスを得る項目の指定
 	StringBuffer onGetFocusedItem();	//	フォーカスを得ている項目の取得
+	StringBuffer onGetCtrlExProperty(const StringBuffer& key);
 
 	WORD onCommand(WPARAM, LPARAM);
 
@@ -805,6 +811,7 @@ public:
 	BOOL onSetCtrlFont(CmdLineParser&);	//	フォントの変更
 	int onSetFocusedItem(const StringBuffer& item);	//	フォーカスを得る項目の指定
 	StringBuffer onGetFocusedItem();	//	フォーカスを得ている項目の取得
+	StringBuffer onGetCtrlExProperty(const StringBuffer& key);
 
 	WORD onNotify(WPARAM, LPARAM);
 

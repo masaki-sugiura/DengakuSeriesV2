@@ -1,4 +1,4 @@
-//	$Id: ds_handler.cpp,v 1.9 2009-09-20 13:49:01 sugiura Exp $
+//	$Id: ds_handler.cpp,v 1.10 2011-01-07 16:08:38 sugiura Exp $
 /*
  *	ds_handler.cpp
  *	ダイアログサービスの実装
@@ -321,6 +321,18 @@ StringBuffer
 ConvData::On_getctrlexproperty(CmdLineParser& params)
 {
 	return this->si_getctrlexproperty(params.getArgvStr(0), params.getArgvStr(1));
+}
+
+int
+ConvData::On_setdlgexproperty(CmdLineParser& params)
+{
+	return this->si_setdlgexproperty(params.getArgvStr(0), params.getArgvStr(1), params.getArgvStr(2));
+}
+
+StringBuffer
+ConvData::On_getdlgexproperty(CmdLineParser& params)
+{
+	return this->si_getdlgexproperty(params.getArgvStr(0), params.getArgvStr(1));
 }
 
 int

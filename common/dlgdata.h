@@ -1,4 +1,4 @@
-//	$Id: dlgdata.h,v 1.18 2009-09-20 13:49:01 sugiura Exp $
+//	$Id: dlgdata.h,v 1.19 2011-01-07 16:08:38 sugiura Exp $
 /*
  *	dlgdata.h
  *	ダイアログを扱うクラス
@@ -92,6 +92,12 @@ public:
 	WORD getDefID() const;
 	bool isInTabCtrl() const { return m_bInTabCtrl; }
 
+	COLORREF	getBkColor() const
+	{
+		return m_hbkBrush != NULL ? m_crefBkColor : ::GetSysColor(COLOR_3DFACE);
+	}
+	HBRUSH	getBkBrush() const { return m_hbkBrush; }
+
 //	ダイアログの構築/初期化
 	DWORD evalPageSize();	//	m_width, m_height を計算
 	//	子ダイアログの構築
@@ -124,6 +130,9 @@ public:
 	BOOL dumpData(DlgDataFile&);
 	BOOL loadData(DlgDataFile&);
 
+	int setExProperty(const StringBuffer& key, const StringBuffer& value);
+	StringBuffer getExProperty(const StringBuffer& key);
+
 	friend class DlgFrame;
 
 private:
@@ -143,6 +152,8 @@ private:
 	WORD m_width;		//	ダイアログの幅
 	WORD m_height;		//	ダイアログの高さ
 	bool m_bInTabCtrl;  //  Tab コントロールの内部に表示されるかどうか
+	COLORREF	m_crefBkColor;	//	背景色設定
+	HBRUSH		m_hbkBrush;	//	背景色ブラシハンドル
 };
 
 //	コントロール名からコントロール識別ＩＤを求めるハッシュテーブル
@@ -197,6 +208,12 @@ public:
 
 	POINTS getDlgPos() const;
 	void setDlgPos(const POINTS& pos, WORD wOrigin, WORD wPosUnit);
+
+	COLORREF	getBkColor() const
+	{
+		return m_hbkBrush != NULL ? m_crefBkColor : ::GetSysColor(COLOR_3DFACE);
+	}
+	HBRUSH	getBkBrush() const { return m_hbkBrush; }
 
 //	ダイアログの構築・初期化・破棄
 	HWND createFrame(HWND hwndOwner, BOOL bOnTop = FALSE); // ダイアログの構築
@@ -258,13 +275,25 @@ public:
 	int setCtrlFocusedItem(const StringBuffer& ctrl, const StringBuffer& item);
 	StringBuffer getCtrlFocusedItem(const StringBuffer& ctrl) const;
 
+	void enableTheme(HWND hwndDlg, BOOL bEnable)
+	{
+		if (m_pThemeWrapper) {
+			LPCWSTR	pszParam = bEnable ? NULL : L" ";
+			m_pThemeWrapper->SetWindowTheme(hwndDlg, pszParam, pszParam);
+		}
+	}
+
+	void enableThemeDialogTexture(HWND hwndDlg, DWORD dwFlags)
+	{
+		if (m_pThemeWrapper) {
+			m_pThemeWrapper->EnableThemeDialogTexture(hwndDlg, dwFlags);
+		}
+	}
+
 //	ダイアログの背景をTABコントロールと同色にする
 	void setBackGroundTheme(HWND hwndPage, BOOL bInTab)
 	{
-		if (m_pThemeWrapper) {
-			m_pThemeWrapper->EnableThemeDialogTexture(hwndPage,
-													  bInTab ? ETDT_ENABLETAB : ETDT_ENABLE);
-		}
+		enableThemeDialogTexture(hwndPage, bInTab ? ETDT_ENABLETAB : ETDT_ENABLE);
 	}
 	void drawThemeParentBackground(HWND hwndCtrl, HDC hDC, const RECT* pRect)
 	{
@@ -274,9 +303,7 @@ public:
 	}
 	void setWindowTheme(HWND hwndCtrl)
 	{
-		if (m_pThemeWrapper) {
-			m_pThemeWrapper->SetWindowTheme(hwndCtrl, NULL, NULL);
-		}
+		enableTheme(hwndCtrl, TRUE);
 	}
 	BOOL getThemeColor(HWND hwndPage, LPCWSTR pwszClass, int iPart, int iState, int iProp, COLORREF* pCRef)
 	{
@@ -300,6 +327,9 @@ public:
 	BOOL dumpData(DlgDataFile&);
 	BOOL loadData(DlgDataFile&);
 
+	int setExProperty(const StringBuffer& key, const StringBuffer& value);
+	StringBuffer getExProperty(const StringBuffer& key);
+
 private:
 	SessionInstance* m_pSessionInstance; // セッションインスタンスへのポインタ
 	CtrlIdHashTable	m_HashCtrl; // コントロール名→ＩＤ
@@ -318,6 +348,8 @@ private:
 	int m_imestate;	//	IMEの状態を表す
 	BOOL m_bAlreadyFocused; // 入力フォーカスを持ついずれかのコントロールにフォーカスが移ったかどうか
 	BOOL m_bAlreadyClosed;	// WM_CLOSEを処理済かどうか（Vista対策）
+	COLORREF	m_crefBkColor;	//	背景色設定
+	HBRUSH		m_hbkBrush;	//	背景色ブラシハンドル
 };
 
 extern const StringBuffer strRootPageName;

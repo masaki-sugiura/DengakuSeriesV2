@@ -1,4 +1,4 @@
-//	$Id: shobj_wrapper.cpp,v 1.4 2006-06-16 15:43:57 sugiura Exp $
+//	$Id: shobj_wrapper.cpp,v 1.5 2011-01-07 16:08:38 sugiura Exp $
 /*
  *	shobj_wrapper.cpp
  *	Shell オブジェクトをラップするクラスの実装
@@ -120,7 +120,7 @@ NetAccountDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	switch (uMsg) {
 	case WM_INITDIALOG:
-		::SetWindowLong(hDlg, DWL_USER, (LONG)lParam);
+		::SetWindowLongPtr(hDlg, DWLP_USER, (LONG_PTR)lParam);
 		pnap = (NETACCOUNTPARAM*)lParam;
 		hCtrl = ::GetDlgItem(hDlg, IDC_UNC_PATH);
 		::SetWindowText(hCtrl, pnap->uncpath);
@@ -129,7 +129,7 @@ NetAccountDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case IDOK:
-			pnap = (NETACCOUNTPARAM*)::GetWindowLong(hDlg, DWL_USER);
+			pnap = (NETACCOUNTPARAM*)::GetWindowLongPtr(hDlg, DWLP_USER);
 			hCtrl = ::GetDlgItem(hDlg, IDC_USERNAME);
 			::GetWindowText(hCtrl, pnap->username, pnap->username_size - 1);
 			hCtrl = ::GetDlgItem(hDlg, IDC_PASSWD);
@@ -154,7 +154,7 @@ GetNetAccountInfo(HWND hwndOwner,
 				  const StringBuffer& UNC_Path,
 				  NETACCOUNTPARAM* pNAP)
 {
-	HINSTANCE hInst = (HINSTANCE)::GetWindowLong(hwndOwner, GWL_HINSTANCE);
+	HINSTANCE hInst = (HINSTANCE)::GetWindowLongPtr(hwndOwner, GWLP_HINSTANCE);
 	return ::DialogBoxParam(hInst, MAKEINTRESOURCE(IDD_NETACCOUNT),
 							hwndOwner, (DLGPROC)NetAccountDlgProc, (LPARAM)pNAP);
 }

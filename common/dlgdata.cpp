@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.41 2009-09-20 13:49:00 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.42 2011-01-07 16:08:38 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス
@@ -168,12 +168,12 @@ DlgPageProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if (!pdp->initPage(hDlg)) {
 			::PostMessage(pdp->getDlgFrame().getUserDlg(),WM_CLOSE,0,0);
 		}
-		::SetWindowLong(hDlg, DWL_USER, (LONG)lParam);
+		::SetWindowLongPtr(hDlg, DWLP_USER, (LONG_PTR)lParam);
 		return FALSE;
 	}
 
 	//	子ダイアログクラスへのポインタの取得
-	if ((pdp = reinterpret_cast<DlgPage*>(::GetWindowLong(hDlg,DWL_USER)))
+	if ((pdp = reinterpret_cast<DlgPage*>(::GetWindowLongPtr(hDlg,DWLP_USER)))
 		== NULL) return FALSE;
 
 	switch (uMsg) {
@@ -216,6 +216,14 @@ DlgPageProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 
+	case WM_CTLCOLORDLG:
+		{
+			HBRUSH	hBrush = pdp->getBkBrush();
+			const StringBuffer& name = pdp->getName();
+			DEBUG_OUTPUT(("WM_CTLCOLORDLG is posted to DlgPage(%s), returns 0x%08x", (LPCSTR)name, (DWORD)hBrush));
+			return (BOOL)hBrush;
+		}
+
 	case WM_CTLCOLORSTATIC:
 	case WM_CTLCOLORBTN:
 	case WM_CTLCOLORLISTBOX:
@@ -235,7 +243,7 @@ DlgPageProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_CLOSE:
-		::OutputDebugString("Enter WM_CLOSE in DlgPage\n");
+		DEBUG_OUTPUT(("Enter WM_CLOSE in DlgPage"));
 		hwndFrame = pdp->getDlgFrame().getUserDlg();
 		if (hwndFrame != NULL) ::PostMessage(hwndFrame, WM_CLOSE, 0, 0);
 		else ::DestroyWindow(hDlg);
@@ -266,7 +274,9 @@ DlgPage::DlgPage(DlgFrame* pdf, const StringBuffer& name, WORD width)
 		m_cdit(0),
 		m_iniwidth(width),
 		m_width(0),
-		m_height(0)
+		m_height(0),
+		m_crefBkColor(COLOR_3DFACE),
+		m_hbkBrush(NULL)
 {
 	//	nothing to do more.
 }
@@ -769,6 +779,85 @@ DlgPage::loadData(DlgDataFile& ddfile)
 	return TRUE;
 }
 
+int
+DlgPage::setExProperty(const StringBuffer& key, const StringBuffer& value)
+{
+	DEBUG_OUTPUT(("Enter DlgPage(%s)::setExProperty(%s, %s)", (LPCSTR)m_strName, (LPCSTR)key, (LPCSTR)value));
+
+	if (key.compareTo("bgcolor") == 0)
+	{
+		if (value.length() == 0)
+		{
+			m_crefBkColor = COLOR_3DFACE;
+			if (m_hbkBrush != NULL)
+			{
+				::DeleteObject(m_hbkBrush);
+				m_hbkBrush = NULL;
+			}
+		}
+		else
+		{
+			LOGBRUSH	logBrush;
+			memset(&logBrush, 0, sizeof(logBrush));
+			logBrush.lbColor = ColorTable::colorStrToColorRef(value);
+			logBrush.lbStyle = BS_SOLID;
+
+			HBRUSH	hbkBrush = ::CreateBrushIndirect(&logBrush);
+			if (hbkBrush == NULL)
+			{
+				DEBUG_OUTPUT(("Failed to create brush in DlgPage(%s)::setExProperty(%s, %s)", (LPCSTR)m_strName, (LPCSTR)key, (LPCSTR)value));
+				return 0;
+			}
+
+			m_crefBkColor = logBrush.lbColor;
+			if (m_hbkBrush != NULL)
+			{
+				::DeleteObject(m_hbkBrush);
+			}
+			m_hbkBrush = hbkBrush;
+		}
+	}
+
+	int	ret;
+
+	if (m_strName.compareTo("root") != 0)
+	{
+		if (m_hwndPage != NULL)
+		{
+//			::InvalidateRect(m_hwndPage, NULL, TRUE);
+//			::UpdateWindow(m_hwndPage);
+			::RedrawWindow(m_hwndPage, NULL, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+		}
+		ret = 1;
+	}
+	else
+	{
+		ret = m_pDlgFrame->setExProperty(key, value);
+	}
+
+	DEBUG_OUTPUT(("Leave DlgPage(%s)::setExProperty(%s, %s)", (LPCSTR)m_strName, (LPCSTR)key, (LPCSTR)value));
+
+	return ret;
+}
+
+StringBuffer
+DlgPage::getExProperty(const StringBuffer& key)
+{
+	if (key.compareTo("bgcolor") == 0)
+	{
+		if (m_hbkBrush != NULL)
+		{
+			return ColorTable::colorRefToColorStr(m_crefBkColor);
+		}
+		else
+		{
+			return ColorTable::colorRefToColorStr(::GetSysColor(COLOR_3DFACE));
+		}
+	}
+
+	return nullStr;
+}
+
 //	親ダイアログのコールバック関数
 BOOL CALLBACK
 DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -781,11 +870,11 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if (!pdf->initFrame(hDlg)) {
 			::DestroyWindow(hDlg);
 		}
-		::SetWindowLong(hDlg, DWL_USER, (LONG)lParam);
+		::SetWindowLongPtr(hDlg, DWLP_USER, (LONG_PTR)lParam);
 		return FALSE;
 	}
 
-	if ((pdf = reinterpret_cast<DlgFrame*>(::GetWindowLong(hDlg,DWL_USER)))
+	if ((pdf = reinterpret_cast<DlgFrame*>(::GetWindowLongPtr(hDlg,DWLP_USER)))
 		== NULL) return FALSE;
 
 	switch (uMsg) {
@@ -832,7 +921,7 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_USER_GETFOCUSEDCTRL:
 		{
-			::SetWindowLong(hDlg, DWL_MSGRESULT, (LONG)(LPCSTR)pdf->getFocusedCtrl());
+			::SetWindowLongPtr(hDlg, DWLP_MSGRESULT, (LONG_PTR)(LPCSTR)pdf->getFocusedCtrl());
 		}
 		break;
 
@@ -853,9 +942,16 @@ DlgFrameProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				wDefID = IDOK;
 			}
 #endif
-			::SetWindowLong(hDlg, DWL_MSGRESULT, (DC_HASDEFID << 16) | wDefID);
+			::SetWindowLongPtr(hDlg, DWLP_MSGRESULT, (DC_HASDEFID << 16) | wDefID);
 		}
 		break;
+
+	case WM_CTLCOLORDLG:
+		{
+			HBRUSH	hBrush = pdf->getBkBrush();
+			DEBUG_OUTPUT(("WM_CTLCOLORDLG is posted to DlgFrame, returns 0x%08x", (DWORD)hBrush));
+			return (BOOL)hBrush;
+		}
 
 	case WM_COMMAND:
 		{
@@ -930,7 +1026,9 @@ DlgFrame::DlgFrame()
 		m_height(0),
 		m_flags(0),
 		m_imestate(0),
-		m_bAlreadyFocused(FALSE)
+		m_bAlreadyFocused(FALSE),
+		m_crefBkColor(COLOR_3DFACE),
+		m_hbkBrush(NULL)
 {
 	try {
 		m_pThemeWrapper = new ThemeWrapper();
@@ -1491,5 +1589,76 @@ DlgFrame::loadData(DlgDataFile& ddfile)
 		pdp->loadData(ddfile);
 	}
 	return TRUE;
+}
+
+int
+DlgFrame::setExProperty(const StringBuffer& key, const StringBuffer& value)
+{
+	DEBUG_OUTPUT(("Enter DlgFrame::setExProperty(%s, %s)", (LPCSTR)key, (LPCSTR)value));
+
+	if (key.compareTo("bgcolor") != 0)
+	{
+		return 0;
+	}
+
+	if (value.length() == 0)
+	{
+		m_crefBkColor = COLOR_3DFACE;
+		if (m_hbkBrush != NULL)
+		{
+			::DeleteObject(m_hbkBrush);
+			m_hbkBrush = NULL;
+		}
+	}
+	else
+	{
+		LOGBRUSH	logBrush;
+		memset(&logBrush, 0, sizeof(logBrush));
+		logBrush.lbColor = ColorTable::colorStrToColorRef(value);
+		logBrush.lbStyle = BS_SOLID;
+
+		HBRUSH	hbkBrush = ::CreateBrushIndirect(&logBrush);
+		if (hbkBrush == NULL)
+		{
+			DEBUG_OUTPUT(("Failed to create brush in DlgFrame::setExProperty(%s, %s)", (LPCSTR)key, (LPCSTR)value));
+			return 0;
+		}
+
+		m_crefBkColor = logBrush.lbColor;
+		if (m_hbkBrush != NULL)
+		{
+			::DeleteObject(m_hbkBrush);
+		}
+		m_hbkBrush = hbkBrush;
+	}
+
+	if (m_hwndFrame != NULL)
+	{
+//		::InvalidateRect(m_hwndFrame, NULL, TRUE);
+//		::UpdateWindow(m_hwndFrame);
+		::RedrawWindow(m_hwndFrame, NULL, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+	}
+
+	DEBUG_OUTPUT(("Leave DlgFrame::setExProperty(%s, %s)", (LPCSTR)key, (LPCSTR)value));
+
+	return 1;
+}
+
+StringBuffer
+DlgFrame::getExProperty(const StringBuffer& key)
+{
+	if (key.compareTo("bgcolor") == 0)
+	{
+		if (m_hbkBrush != NULL)
+		{
+			return ColorTable::colorRefToColorStr(m_crefBkColor);
+		}
+		else
+		{
+			return ColorTable::colorRefToColorStr(::GetSysColor(COLOR_3DFACE));
+		}
+	}
+
+	return nullStr;
 }
 

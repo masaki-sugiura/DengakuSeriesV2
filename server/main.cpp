@@ -1,4 +1,4 @@
-//	$Id: main.cpp,v 1.9 2007-04-29 16:11:35 sugiura Exp $
+//	$Id: main.cpp,v 1.10 2011-01-07 16:08:38 sugiura Exp $
 /*
  *	main.cpp
  *	田楽サーバ本体
@@ -181,13 +181,12 @@ BOOL CALLBACK
 MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	DDEServerInfo*
-		pdsi = reinterpret_cast<DDEServerInfo*>(::GetWindowLong(hWnd,
-																DWL_USER));
+		pdsi = reinterpret_cast<DDEServerInfo*>(::GetWindowLongPtr(hWnd, DWLP_USER));
 
 	switch (uMsg) {
 	case WM_INITDIALOG:	//	メインウィンドウの初期化処理
 		//	lParam : サーバ情報の入った構造体へのポインタ
-		::SetWindowLong(hWnd,DWL_USER,lParam);
+		::SetWindowLongPtr(hWnd,DWLP_USER,lParam);
 		pdsi = reinterpret_cast<DDEServerInfo*>(lParam);
 
 		//	ウィンドウハンドルの登録

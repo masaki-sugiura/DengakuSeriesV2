@@ -1,4 +1,4 @@
-// $Id: si_comdlg.cpp,v 1.12 2004-04-30 15:27:18 sugiura Exp $
+// $Id: si_comdlg.cpp,v 1.13 2011-01-07 16:08:38 sugiura Exp $
 /*
  *	si_comdlg.cpp
  *	コモンダイアログ表示関数
@@ -80,7 +80,8 @@ SessionInstance::getFileNameByDlg(
 
 	LPSTR pfbuf = pszFilter;
 	LPCSTR av, phead, ptop, pend;
-	int i = 0, slen, flen;
+	int i = 0;
+	ptrdiff_t	slen, flen;
 	while (i < exp_num && (av = exp_list[i++]) != NULL) {
 		//	"explanation(filters)" の "filters" 部分を取得
 		ptop = pend = NULL;

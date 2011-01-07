@@ -1,4 +1,4 @@
-//	$Id: cmdline.cpp,v 1.6 2004-05-07 16:32:33 sugiura Exp $
+//	$Id: cmdline.cpp,v 1.7 2011-01-07 16:08:38 sugiura Exp $
 /*
  *	cmdline.cpp
  *	文字列のパース＆リスト化
@@ -63,7 +63,7 @@ RealCmdLineParser::mergeArgv(const StringBuffer& sbCmdLine)
 
 	//	コマンドラインをパースしてバッファに格納
 	//	（"str1\0str2\0....strN\0\0"）
-	int head, len;
+	ptrdiff_t head, len;
 	LPCSTR pTop = pBuf;
 
 	try {

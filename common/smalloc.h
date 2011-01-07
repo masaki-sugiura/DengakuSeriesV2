@@ -1,4 +1,4 @@
-//	$Id: smalloc.h,v 1.4 2003-02-15 18:37:02 sugiura Exp $
+//	$Id: smalloc.h,v 1.5 2011-01-07 16:08:38 sugiura Exp $
 /*
  *	smalloc.h
  *	共有メモリ領域についての malloc, free インターフェイスの提供
@@ -7,6 +7,7 @@
 #ifndef DENGAKUSERIES_CLASSES_SMALLOC
 #define DENGAKUSERIES_CLASSES_SMALLOC
 
+#include <crtdefs.h>
 #include "strbuf.h"
 
 #define SMA_PAGESIZE     0x01000000  // 16MB
@@ -18,8 +19,8 @@
 struct SMAHeader {
 	DWORD m_dwPreMagic;
 	struct {
-		UINT m_iptr;
-		UINT m_size;
+		ptrdiff_t m_iptr;
+		ptrdiff_t m_size;
 	} m_info;
 	DWORD m_dwPostMagic;
 };
@@ -28,8 +29,8 @@ struct SMAHeader {
 #else
 union SMAHeader {
 	struct {
-		UINT m_iptr; // index of next header
-		UINT m_size; // size of block
+		ptrdiff_t m_iptr; // index of next header
+		ptrdiff_t m_size; // size of block
 	} m_info;
 	ULONG m_align;
 };
@@ -39,8 +40,8 @@ typedef SMAHeader* LPSMAHeader;
 
 struct PageHeader {
 	UINT m_nShareCount;
-	UINT m_idxMaster;
-	UINT m_idxFreeP;
+	ptrdiff_t m_idxMaster;
+	ptrdiff_t m_idxFreeP;
 };
 
 static inline int
@@ -60,9 +61,9 @@ public:
 	BOOL m_bAlreadyExist;
 	const StringBuffer m_name;
 
-	void* addr(UINT iptr);
+	void* addr(ptrdiff_t iptr);
 
-	UINT index(void* ptr) const
+	ptrdiff_t index(void* ptr) const
 	{
 		return isThisPtr(ptr) ? ((char*)ptr - (char*)m_header) : 0;
 	}
@@ -87,15 +88,15 @@ public:
 	SMAlloc(const StringBuffer& name, UINT inipagenum = 1);
 	~SMAlloc();
 
-	UINT alloc(UINT size);
-	void free(UINT iptr);
+	ptrdiff_t alloc(UINT size);
+	void free(ptrdiff_t iptr);
 
-	void* addr(UINT iptr)
+	void* addr(ptrdiff_t iptr)
 	{
 		return m_pFileMap->addr(iptr);
 	}
 
-	UINT index(void* ptr)
+	ptrdiff_t index(void* ptr)
 	{
 		return m_pFileMap->index(ptr);
 	}
@@ -111,7 +112,7 @@ public:
 	UINT sharedNum() { return getPageHeader()->m_nShareCount; }
 	BOOL isShared() { return sharedNum() > 1; }
 
-	UINT getMasterIndex() { return getPageHeader()->m_idxMaster; }
+	ptrdiff_t getMasterIndex() { return getPageHeader()->m_idxMaster; }
 	void setMasterIndex(UINT index);
 
 private:

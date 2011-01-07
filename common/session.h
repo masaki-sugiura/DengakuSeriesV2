@@ -1,4 +1,4 @@
-//	$Id: session.h,v 1.30 2009-09-20 13:49:01 sugiura Exp $
+//	$Id: session.h,v 1.31 2011-01-07 16:08:38 sugiura Exp $
 /*
  *	session.h
  *	セッションインスタンスの基底クラス
@@ -229,6 +229,8 @@ public:
 	int si_setctrlfocuseditem(const StringBuffer&, const StringBuffer&);
 	int si_setctrlexproperty(const StringBuffer&, const StringBuffer&, const StringBuffer&);
 	StringBuffer si_getctrlexproperty(const StringBuffer&, const StringBuffer&);
+	int si_setdlgexproperty(const StringBuffer&, const StringBuffer&, const StringBuffer&);
+	StringBuffer si_getdlgexproperty(const StringBuffer&, const StringBuffer&);
 
 	// BRegexp系
 	int si_bregexp_load(const StringBuffer&);

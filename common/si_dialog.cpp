@@ -1,4 +1,4 @@
-//	$Id: si_dialog.cpp,v 1.28 2009-09-20 13:49:01 sugiura Exp $
+//	$Id: si_dialog.cpp,v 1.29 2011-01-07 16:08:38 sugiura Exp $
 /*
  *	si_dialog.cpp
  *	ダイアログ操作関数
@@ -660,4 +660,28 @@ SessionInstance::si_getctrlexproperty(const StringBuffer& ctrl, const StringBuff
 {
 	CtrlListItem* cli = m_DlgFrame.getCtrl(ctrl);
 	return cli != NULL ? cli->onGetCtrlExProperty(key) : nullStr;
+}
+
+int
+SessionInstance::si_setdlgexproperty(const StringBuffer& name, const StringBuffer& key, const StringBuffer& value)
+{
+	DlgPage*	page = m_DlgFrame.getPage(name);
+	if (page == NULL)
+	{
+		return 0;
+	}
+
+	return page->setExProperty(key, value);
+}
+
+StringBuffer
+SessionInstance::si_getdlgexproperty(const StringBuffer& name, const StringBuffer& key)
+{
+	DlgPage*	page = m_DlgFrame.getPage(name);
+	if (page == NULL)
+	{
+		return nullStr;
+	}
+
+	return page->getExProperty(key);
 }
