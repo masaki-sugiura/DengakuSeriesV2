@@ -168,7 +168,7 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 3,1,1,0
+ FILEVERSION 3,2,0,0
  PRODUCTVERSION 2011,1,8,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -187,7 +187,7 @@ BEGIN
             VALUE "Comments", "田楽(でんがく)サーバ"
             VALUE "CompanyName", "M. Sugiura"
             VALUE "FileDescription", "dgserver"
-            VALUE "FileVersion", "3, 1, 1, 0"
+            VALUE "FileVersion", "3, 2, 0, 0"
             VALUE "InternalName", "dgserver"
             VALUE "LegalCopyright", "Copyright (C) 1998-2011 M. Sugiura, All rights reserved."
             VALUE "OriginalFilename", "dgserver.exe"
