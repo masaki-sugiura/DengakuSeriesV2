@@ -1,4 +1,4 @@
-//	$Id: menu.cpp,v 1.2 2003-10-18 13:42:34 sugiura Exp $
+//	$Id: menu.cpp,v 1.2 2003/10/18 13:42:34 sugiura Exp $
 /*
  *	menu.cpp
  *	メニュー表示に関するクラス

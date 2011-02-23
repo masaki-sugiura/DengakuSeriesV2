@@ -1,4 +1,4 @@
-//	$Id: si_common.cpp,v 1.5 2006-06-16 15:43:57 sugiura Exp $
+//	$Id: si_common.cpp,v 1.5 2006/06/16 15:43:57 sugiura Exp $
 /*
  *	si_common.cpp
  *	共通サービスの関数

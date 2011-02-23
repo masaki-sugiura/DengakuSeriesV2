@@ -1,4 +1,4 @@
-//	$Id: dts_func.cpp,v 1.1 2002-08-05 16:06:17 sugiura Exp $
+//	$Id: dts_func.cpp,v 1.1 2002/08/05 16:06:17 sugiura Exp $
 /*
  *	dts_func.cpp
  *	日付・時刻サービスの関数

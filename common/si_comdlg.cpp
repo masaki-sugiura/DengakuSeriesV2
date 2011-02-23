@@ -1,4 +1,4 @@
-// $Id: si_comdlg.cpp,v 1.13 2011-01-07 16:08:38 sugiura Exp $
+// $Id: si_comdlg.cpp,v 1.13 2011/01/07 16:08:38 sugiura Exp $
 /*
  *	si_comdlg.cpp
  *	コモンダイアログ表示関数

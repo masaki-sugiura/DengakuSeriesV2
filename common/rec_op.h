@@ -1,4 +1,4 @@
-//	$Id: rec_op.h,v 1.4 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: rec_op.h,v 1.4 2003/07/06 16:27:46 sugiura Exp $
 /*
  *	rec_op.h
  *	再帰ファイル操作のためのクラス

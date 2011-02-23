@@ -1,4 +1,4 @@
-// $Id: ctrlname.cpp,v 1.3 2003-12-03 17:17:58 sugiura Exp $
+// $Id: ctrlname.cpp,v 1.3 2003/12/03 17:17:58 sugiura Exp $
 /*
  *	コントロール名テーブル
  */

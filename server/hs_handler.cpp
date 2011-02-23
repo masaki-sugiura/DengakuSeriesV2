@@ -1,4 +1,4 @@
-//	$Id: hs_handler.cpp,v 1.3 2009-09-20 13:49:01 sugiura Exp $
+//	$Id: hs_handler.cpp,v 1.3 2009/09/20 13:49:01 sugiura Exp $
 /*
  *	bs_handler.cpp
  *	BRegExp サービスの実装

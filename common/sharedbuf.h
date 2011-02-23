@@ -1,4 +1,4 @@
-//	$Id: sharedbuf.h,v 1.3 2007-02-10 19:00:01 sugiura Exp $
+//	$Id: sharedbuf.h,v 1.3 2007/02/10 19:00:01 sugiura Exp $
 /*
  *	sharedbuf.h
  *	スレッド間で共有可能な文字列バッファ

@@ -1,4 +1,4 @@
-//	$Id: es_handler.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: es_handler.cpp,v 1.1.1.1 2001/10/07 14:41:22 sugiura Exp $
 /*
  *	es_handler.cpp
  *	環境変数サービスの実装

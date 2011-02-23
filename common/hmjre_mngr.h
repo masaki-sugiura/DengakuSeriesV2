@@ -1,4 +1,4 @@
-//	$Id: hmjre_mngr.h,v 1.7 2009-09-20 13:49:01 sugiura Exp $
+//	$Id: hmjre_mngr.h,v 1.7 2009/09/20 13:49:01 sugiura Exp $
 /*
  *	hmjre_mngr.h
  *	hmjre.dll を利用するためのラッパークラス

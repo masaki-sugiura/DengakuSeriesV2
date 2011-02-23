@@ -1,4 +1,4 @@
-//	$Id: recfind.cpp,v 1.4 2002-03-05 14:19:35 sugiura Exp $
+//	$Id: recfind.cpp,v 1.4 2002/03/05 14:19:35 sugiura Exp $
 /*
  *	recfind.cpp
  *	enum** Œn‚ÌŠÖ”‚Ì‚½‚ß‚ÌƒNƒ‰ƒX

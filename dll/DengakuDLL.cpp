@@ -1,4 +1,4 @@
-//	$Id: DengakuDLL.cpp,v 1.53 2011-01-07 16:49:45 sugiura Exp $
+//	$Id: DengakuDLL.cpp,v 1.53 2011/01/07 16:49:45 sugiura Exp $
 /*
  *	DengakuDLL.cpp
  *	DLL エントリポイントの定義

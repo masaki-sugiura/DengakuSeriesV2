@@ -1,4 +1,4 @@
-//	$Id: tokenizer.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: tokenizer.cpp,v 1.2 2002/01/16 15:57:23 sugiura Exp $
 /*
  *	tokenizer.cpp
  *	文字列のトークン化クラス

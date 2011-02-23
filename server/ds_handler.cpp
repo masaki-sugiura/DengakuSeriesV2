@@ -1,4 +1,4 @@
-//	$Id: ds_handler.cpp,v 1.10 2011-01-07 16:08:38 sugiura Exp $
+//	$Id: ds_handler.cpp,v 1.10 2011/01/07 16:08:38 sugiura Exp $
 /*
  *	ds_handler.cpp
  *	ダイアログサービスの実装

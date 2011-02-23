@@ -1,4 +1,4 @@
-//	$Id: ctrlname.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: ctrlname.h,v 1.1.1.1 2001/10/07 14:41:22 sugiura Exp $
 /*
  *	ctrlname.h
  *	コントロール名のテーブル定義

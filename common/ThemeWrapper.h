@@ -1,4 +1,4 @@
-// $Id: ThemeWrapper.h,v 1.2 2004-04-30 15:27:18 sugiura Exp $
+// $Id: ThemeWrapper.h,v 1.2 2004/04/30 15:27:18 sugiura Exp $
 /*
  *	stack.h
  *	スタッククラス(テンプレート)

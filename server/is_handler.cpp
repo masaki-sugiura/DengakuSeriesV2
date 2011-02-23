@@ -1,4 +1,4 @@
-//	$Id: is_handler.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: is_handler.cpp,v 1.1.1.1 2001/10/07 14:41:22 sugiura Exp $
 /*
  *	is_handler.cpp
  *	Susie Plugin サービスの実装

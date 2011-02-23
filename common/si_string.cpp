@@ -1,4 +1,4 @@
-//	$Id: si_string.cpp,v 1.4 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: si_string.cpp,v 1.4 2003/07/06 16:27:46 sugiura Exp $
 /*
  *	si_string.cpp
  *	文字列サービスの関数

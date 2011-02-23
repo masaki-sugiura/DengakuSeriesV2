@@ -1,4 +1,4 @@
-//	$Id: cds_handler.cpp,v 1.2 2002-02-20 16:48:40 sugiura Exp $
+//	$Id: cds_handler.cpp,v 1.2 2002/02/20 16:48:40 sugiura Exp $
 /*
  *	cds_handler.cpp
  *	コモンダイアログサービスの実装

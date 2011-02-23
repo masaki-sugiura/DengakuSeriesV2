@@ -1,4 +1,4 @@
-//	$Id: cs_func.cpp,v 1.7 2007-05-13 17:02:41 sugiura Exp $
+//	$Id: cs_func.cpp,v 1.7 2007/05/13 17:02:41 sugiura Exp $
 /*
  *	cs_func.cpp
  *	共通サービスの関数

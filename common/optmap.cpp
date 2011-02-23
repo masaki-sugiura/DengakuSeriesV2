@@ -1,4 +1,4 @@
-//	$Id: optmap.cpp,v 1.2 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: optmap.cpp,v 1.2 2003/07/06 16:27:46 sugiura Exp $
 /*
  *	optmap.cpp
  *	OptMap ƒNƒ‰ƒX‚ÌŽÀ‘•

@@ -1,4 +1,4 @@
-//	$Id: hmjre_mngr.cpp,v 1.8 2009-09-20 13:49:01 sugiura Exp $
+//	$Id: hmjre_mngr.cpp,v 1.8 2009/09/20 13:49:01 sugiura Exp $
 /*
  *	hmjre_mngr.cpp
  *	HmJre_Manager ƒNƒ‰ƒX‚ÌŽÀ‘•

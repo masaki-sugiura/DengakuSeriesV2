@@ -1,4 +1,4 @@
-// $Id: ddeobjs.h,v 1.4 2007-04-29 16:11:35 sugiura Exp $
+// $Id: ddeobjs.h,v 1.4 2007/04/29 16:11:35 sugiura Exp $
 /*
  *	ddeobjs.h
  *	DDE 通信で使うデータをラップするクラスの定義

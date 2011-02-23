@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+# $Id: Makefile,v 1.1.1.1 2001/10/07 14:41:22 sugiura Exp $
 
 CC = gcc
 ifdef DEBUG

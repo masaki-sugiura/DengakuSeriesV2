@@ -1,4 +1,4 @@
-//	$Id: main.cpp,v 1.10 2011-01-07 16:08:38 sugiura Exp $
+//	$Id: main.cpp,v 1.10 2011/01/07 16:08:38 sugiura Exp $
 /*
  *	main.cpp
  *	田楽サーバ本体

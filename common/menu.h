@@ -1,4 +1,4 @@
-//	$Id: menu.h,v 1.2 2001-11-22 13:37:08 sugiura Exp $
+//	$Id: menu.h,v 1.2 2001/11/22 13:37:08 sugiura Exp $
 /*
  *	menu.h
  *	メニュー表示に関するクラス

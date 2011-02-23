@@ -1,4 +1,4 @@
-//	$Id: seq_op.cpp,v 1.7 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: seq_op.cpp,v 1.7 2003/07/06 16:27:46 sugiura Exp $
 /*
  *	seq_op.cpp
  *	SequentialOp ƒNƒ‰ƒX‚ÌŽÀ‘•

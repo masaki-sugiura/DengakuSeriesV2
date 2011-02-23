@@ -1,4 +1,4 @@
-//	$Id: dlgdata.h,v 1.19 2011-01-07 16:08:38 sugiura Exp $
+//	$Id: dlgdata.h,v 1.19 2011/01/07 16:08:38 sugiura Exp $
 /*
  *	dlgdata.h
  *	ダイアログを扱うクラス

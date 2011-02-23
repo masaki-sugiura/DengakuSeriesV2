@@ -1,4 +1,4 @@
-//	$Id: common.h,v 1.2 2007-03-05 13:04:54 sugiura Exp $
+//	$Id: common.h,v 1.2 2007/03/05 13:04:54 sugiura Exp $
 /*
  *	common.h
  *	その他サーバ特有の定義

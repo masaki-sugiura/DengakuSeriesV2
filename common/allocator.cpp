@@ -1,4 +1,4 @@
-//	$Id: allocator.cpp,v 1.1 2001-11-22 13:42:41 sugiura Exp $
+//	$Id: allocator.cpp,v 1.1 2001/11/22 13:42:41 sugiura Exp $
 /*
  *	allocator.cpp
  *	Allocator ƒNƒ‰ƒX‚ÌŽÀ‘•

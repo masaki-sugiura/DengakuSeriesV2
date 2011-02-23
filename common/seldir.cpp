@@ -1,4 +1,4 @@
-//	$Id: seldir.cpp,v 1.9 2011-01-07 16:08:38 sugiura Exp $
+//	$Id: seldir.cpp,v 1.9 2011/01/07 16:08:38 sugiura Exp $
 /*
  *	seldir.cpp
  *	ディレクトリ選択ダイアログの実装

@@ -1,4 +1,4 @@
-//	$Id: allocator.h,v 1.1 2001-11-22 13:42:41 sugiura Exp $
+//	$Id: allocator.h,v 1.1 2001/11/22 13:42:41 sugiura Exp $
 /*
  *	allocator.h
  *	slab allocator ƒNƒ‰ƒX

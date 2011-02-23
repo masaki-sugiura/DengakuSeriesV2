@@ -1,4 +1,4 @@
-// $Id: convdata.cpp,v 1.8 2007-06-02 17:40:59 sugiura Exp $
+// $Id: convdata.cpp,v 1.8 2007/06/02 17:40:59 sugiura Exp $
 /*
  *	convdata.cpp
  *	ConvData クラスのコア部分の実装

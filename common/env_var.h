@@ -1,4 +1,4 @@
-//	$Id: env_var.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: env_var.h,v 1.1.1.1 2001/10/07 14:41:22 sugiura Exp $
 /*
  *	env_var.h
  *	ŠÂ‹«•Ï”‚ÌŠÇ—‚ÉŠÖ‚·‚éƒNƒ‰ƒX

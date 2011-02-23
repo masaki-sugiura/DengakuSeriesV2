@@ -1,4 +1,4 @@
-//	$Id: array.h,v 1.5 2005-07-04 15:58:21 sugiura Exp $
+//	$Id: array.h,v 1.5 2005/07/04 15:58:21 sugiura Exp $
 /*
  *	array.h
  *	(primitive Œ^ŒÀ’è)”z—ñƒNƒ‰ƒX

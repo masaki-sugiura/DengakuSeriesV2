@@ -1,4 +1,4 @@
-//	$Id: cmdline.cpp,v 1.7 2011-01-07 16:08:38 sugiura Exp $
+//	$Id: cmdline.cpp,v 1.7 2011/01/07 16:08:38 sugiura Exp $
 /*
  *	cmdline.cpp
  *	文字列のパース＆リスト化

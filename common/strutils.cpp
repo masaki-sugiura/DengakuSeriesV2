@@ -1,4 +1,4 @@
-//	$Id: strutils.cpp,v 1.6 2007-02-10 19:00:02 sugiura Exp $
+//	$Id: strutils.cpp,v 1.6 2007/02/10 19:00:02 sugiura Exp $
 /*
  *	strutils.cpp
  *	C 文字列のためのユーティリティ関数群の実装

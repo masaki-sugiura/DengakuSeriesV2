@@ -1,4 +1,4 @@
-//	$Id: si_datetime.cpp,v 1.2 2002-08-06 13:33:04 sugiura Exp $
+//	$Id: si_datetime.cpp,v 1.2 2002/08/06 13:33:04 sugiura Exp $
 /*
  *	si_datetime.cpp
  *	日付・時刻サービスの関数

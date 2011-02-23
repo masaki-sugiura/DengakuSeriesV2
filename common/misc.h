@@ -1,4 +1,4 @@
-//	$Id: misc.h,v 1.12 2007-05-13 17:02:41 sugiura Exp $
+//	$Id: misc.h,v 1.12 2007/05/13 17:02:41 sugiura Exp $
 /*
  *	misc.h
  *	雑多なユーティリティ関数

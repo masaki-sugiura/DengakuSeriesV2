@@ -1,4 +1,4 @@
-//	$Id: file.h,v 1.2 2002-12-15 12:09:49 sugiura Exp $
+//	$Id: file.h,v 1.2 2002/12/15 12:09:49 sugiura Exp $
 /*
  *	file.h
  *	ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‘‚«•‘®«‘€ì

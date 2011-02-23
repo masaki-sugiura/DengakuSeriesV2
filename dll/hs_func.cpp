@@ -1,4 +1,4 @@
-//	$Id: hs_func.cpp,v 1.3 2009-09-20 13:49:01 sugiura Exp $
+//	$Id: hs_func.cpp,v 1.3 2009/09/20 13:49:01 sugiura Exp $
 /*
  *	hs_func.cpp
  *	HmJre Ç…ä÷Ç∑ÇÈAPI

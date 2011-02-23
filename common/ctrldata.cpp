@@ -1,4 +1,4 @@
-//	$Id: ctrldata.cpp,v 1.59 2011-01-07 16:08:38 sugiura Exp $
+//	$Id: ctrldata.cpp,v 1.59 2011/01/07 16:08:38 sugiura Exp $
 /*
  *	ctrldata.cpp
  *	コントロールを扱うクラス

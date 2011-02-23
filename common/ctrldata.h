@@ -1,4 +1,4 @@
-//	$Id: ctrldata.h,v 1.27 2011-01-07 16:08:38 sugiura Exp $
+//	$Id: ctrldata.h,v 1.27 2011/01/07 16:08:38 sugiura Exp $
 /*
  *	ctrldata.h
  *	コントロールを扱うクラス

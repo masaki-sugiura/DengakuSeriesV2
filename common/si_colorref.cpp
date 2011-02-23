@@ -1,4 +1,4 @@
-//	$Id: si_colorref.cpp,v 1.1 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: si_colorref.cpp,v 1.1 2002/02/15 17:46:08 sugiura Exp $
 /*
  *	si_colorref.cpp
  *	カラーテーブルの管理に関するメソッドの実装

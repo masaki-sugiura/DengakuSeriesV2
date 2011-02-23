@@ -1,4 +1,4 @@
-//	$Id: dlgdata.cpp,v 1.42 2011-01-07 16:08:38 sugiura Exp $
+//	$Id: dlgdata.cpp,v 1.42 2011/01/07 16:08:38 sugiura Exp $
 /*
  *	dlgdata.cpp
  *	ダイアログを扱うクラス

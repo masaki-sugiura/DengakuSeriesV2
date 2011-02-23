@@ -1,4 +1,4 @@
-//	$Id: crs_handler.cpp,v 1.1 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: crs_handler.cpp,v 1.1 2002/02/15 17:46:08 sugiura Exp $
 /*
  *	crs_handler.cpp
  *	カラーテーブルサービスの実装

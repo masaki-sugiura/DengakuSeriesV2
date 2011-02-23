@@ -1,4 +1,4 @@
-//	$Id: common.cpp,v 1.53 2011-01-07 16:49:45 sugiura Exp $
+//	$Id: common.cpp,v 1.53 2011/01/07 16:49:45 sugiura Exp $
 /*
  *	common.cpp
  *	その他サーバ特有の定義

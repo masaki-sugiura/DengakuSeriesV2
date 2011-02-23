@@ -1,4 +1,4 @@
-// $Id: ddeserv.cpp,v 1.9 2011-01-07 16:08:38 sugiura Exp $
+// $Id: ddeserv.cpp,v 1.9 2011/01/07 16:08:38 sugiura Exp $
 /*
  *	ddeserv.cpp
  *	DdeServer ƒNƒ‰ƒX‚ÌÀ‘•

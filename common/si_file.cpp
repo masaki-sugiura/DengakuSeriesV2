@@ -1,4 +1,4 @@
-//	$Id: si_file.cpp,v 1.20 2011-01-07 16:08:38 sugiura Exp $
+//	$Id: si_file.cpp,v 1.20 2011/01/07 16:08:38 sugiura Exp $
 /*
  *	si_file.cpp
  *	SessionInstance: ファイルサービスの関数

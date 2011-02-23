@@ -1,4 +1,4 @@
-//	$Id: fs_func.cpp,v 1.5 2004-11-16 17:03:51 sugiura Exp $
+//	$Id: fs_func.cpp,v 1.5 2004/11/16 17:03:51 sugiura Exp $
 /*
  *	fs_func.cpp
  *	ファイルサービスの関数

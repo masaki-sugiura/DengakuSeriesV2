@@ -1,4 +1,4 @@
-//	$Id: sorter.h,v 1.1 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: sorter.h,v 1.1 2002/01/16 15:57:23 sugiura Exp $
 /*
  *	sorter.h
  *	ソートクラス

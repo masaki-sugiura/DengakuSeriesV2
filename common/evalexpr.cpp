@@ -1,4 +1,4 @@
-//	$Id: evalexpr.cpp,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: evalexpr.cpp,v 1.1.1.1 2001/10/07 14:41:22 sugiura Exp $
 /*
  *	evalexpr.cpp
  *	class EvalExpression ‚ÌŽÀ‘•

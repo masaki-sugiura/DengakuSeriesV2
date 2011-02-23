@@ -1,4 +1,4 @@
-// $Id: bitarray.h,v 1.6 2005-07-04 15:58:21 sugiura Exp $
+// $Id: bitarray.h,v 1.6 2005/07/04 15:58:21 sugiura Exp $
 /*
  *	bitarray.h
  *	ビット配列クラス

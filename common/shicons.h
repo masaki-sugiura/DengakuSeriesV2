@@ -1,4 +1,4 @@
-//	$Id: shicons.h,v 1.2 2002-02-19 15:34:22 sugiura Exp $
+//	$Id: shicons.h,v 1.2 2002/02/19 15:34:22 sugiura Exp $
 /*
  *	shicons.h
  *	shell32.dll からアイコンを抜き出す＆管理するクラス

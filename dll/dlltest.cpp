@@ -1,4 +1,4 @@
-//	$Id: dlltest.cpp,v 1.9 2009-09-20 13:49:01 sugiura Exp $
+//	$Id: dlltest.cpp,v 1.9 2009/09/20 13:49:01 sugiura Exp $
 /*
  *	dlltest.cpp
  *	テスト用アプリ

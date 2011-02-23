@@ -1,4 +1,4 @@
-//	$Id: si_menu.cpp,v 1.8 2011-01-07 16:08:38 sugiura Exp $
+//	$Id: si_menu.cpp,v 1.8 2011/01/07 16:08:38 sugiura Exp $
 /*
  *	si_menu.cpp
  *	ƒƒjƒ…[•\¦ŠÖ”

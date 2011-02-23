@@ -1,4 +1,4 @@
-// $Id: auto_ptr.h,v 1.2 2002-02-19 15:34:21 sugiura Exp $
+// $Id: auto_ptr.h,v 1.2 2002/02/19 15:34:21 sugiura Exp $
 /*
  *	auto_ptr.h
  *	スマートポインタクラス

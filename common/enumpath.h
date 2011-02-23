@@ -1,4 +1,4 @@
-//	$Id: enumpath.h,v 1.3 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: enumpath.h,v 1.3 2002/02/15 17:46:08 sugiura Exp $
 /*
  *	enumpath.h
  *	enum*** ‚ÉŠÖ‚·‚éƒNƒ‰ƒX

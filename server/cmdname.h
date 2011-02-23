@@ -1,4 +1,4 @@
-//	$Id: cmdname.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: cmdname.h,v 1.1.1.1 2001/10/07 14:41:22 sugiura Exp $
 /*
  *	cmdname.h
  *	コマンド名検索テーブルのための定義

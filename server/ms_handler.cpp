@@ -1,4 +1,4 @@
-//	$Id: ms_handler.cpp,v 1.5 2003-10-18 13:42:34 sugiura Exp $
+//	$Id: ms_handler.cpp,v 1.5 2003/10/18 13:42:34 sugiura Exp $
 /*
  *	ms_handler.cpp
  *	メニューサービスの実装

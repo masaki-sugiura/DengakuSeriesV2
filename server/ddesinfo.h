@@ -1,4 +1,4 @@
-//	$Id: ddesinfo.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+//	$Id: ddesinfo.h,v 1.1.1.1 2001/10/07 14:41:22 sugiura Exp $
 /*
  *	ddesinfo.h
  *	プロセス・DDE サーバの情報を集めたクラス(というより賢い構造体(^^;)

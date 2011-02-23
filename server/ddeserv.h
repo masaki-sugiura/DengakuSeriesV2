@@ -1,4 +1,4 @@
-// $Id: ddeserv.h,v 1.2 2007-03-05 13:04:54 sugiura Exp $
+// $Id: ddeserv.h,v 1.2 2007/03/05 13:04:54 sugiura Exp $
 /*
  *	ddeserv.h
  *	DDE サーバ本体のクラス定義

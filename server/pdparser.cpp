@@ -1,4 +1,4 @@
-// $Id: pdparser.cpp,v 1.2 2002-04-03 16:13:14 sugiura Exp $
+// $Id: pdparser.cpp,v 1.2 2002/04/03 16:13:14 sugiura Exp $
 /*
  *	pdparser.cpp
  *	PokeDataParser ƒNƒ‰ƒX‚ÌŽÀ‘•

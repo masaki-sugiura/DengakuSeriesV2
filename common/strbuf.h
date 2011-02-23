@@ -1,4 +1,4 @@
-//	$Id: strbuf.h,v 1.5 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: strbuf.h,v 1.5 2003/07/06 16:27:46 sugiura Exp $
 /*
  *	strbuf.h
  *	•¶Žš—ñƒNƒ‰ƒX

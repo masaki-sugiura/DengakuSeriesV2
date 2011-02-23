@@ -1,4 +1,4 @@
-//	$Id: stack.cpp,v 1.1 2002-03-29 17:11:59 sugiura Exp $
+//	$Id: stack.cpp,v 1.1 2002/03/29 17:11:59 sugiura Exp $
 /*
  *	stack.h
  *	スタッククラス(テンプレート)

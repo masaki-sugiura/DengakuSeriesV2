@@ -1,4 +1,4 @@
-//	$Id: shobj_wrapper.h,v 1.2 2002-08-05 16:06:17 sugiura Exp $
+//	$Id: shobj_wrapper.h,v 1.2 2002/08/05 16:06:17 sugiura Exp $
 /*
  *	shobj_wrapper.h
  *	Shell オブジェクトをラップするクラス

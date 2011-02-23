@@ -1,4 +1,4 @@
-//	$Id: hashtbl.h,v 1.3 2002-03-29 17:11:59 sugiura Exp $
+//	$Id: hashtbl.h,v 1.3 2002/03/29 17:11:59 sugiura Exp $
 /*
  *	hashtbl.h
  *	ハッシュテーブルクラス(テンプレート)

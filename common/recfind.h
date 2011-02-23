@@ -1,4 +1,4 @@
-//	$Id: recfind.h,v 1.3 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: recfind.h,v 1.3 2002/02/15 17:46:08 sugiura Exp $
 /*
  *	recfind.h
  *	enum** 関数のためのパス検索クラス

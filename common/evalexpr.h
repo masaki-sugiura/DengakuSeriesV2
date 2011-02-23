@@ -1,4 +1,4 @@
-// $Id: evalexpr.h,v 1.1.1.1 2001-10-07 14:41:22 sugiura Exp $
+// $Id: evalexpr.h,v 1.1.1.1 2001/10/07 14:41:22 sugiura Exp $
 /*
  * evalexpr.h
  * 計算式の評価を行うクラス

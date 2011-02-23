@@ -1,4 +1,4 @@
-//	$Id: ss_func.cpp,v 1.5 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: ss_func.cpp,v 1.5 2003/07/06 16:27:46 sugiura Exp $
 /*
  *	ss_func.cpp
  *	文字列サービスの関数

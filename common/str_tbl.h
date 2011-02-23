@@ -1,4 +1,4 @@
-//	$Id: str_tbl.h,v 1.8 2007-04-04 17:04:32 sugiura Exp $
+//	$Id: str_tbl.h,v 1.8 2007/04/04 17:04:32 sugiura Exp $
 /*
  *	str_tbl.h
  *	文字列テーブルの定義

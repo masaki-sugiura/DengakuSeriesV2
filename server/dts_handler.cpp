@@ -1,4 +1,4 @@
-//	$Id: dts_handler.cpp,v 1.1 2002-08-05 16:06:17 sugiura Exp $
+//	$Id: dts_handler.cpp,v 1.1 2002/08/05 16:06:17 sugiura Exp $
 /*
  *	dts_handler.cpp
  *	日付･時刻サービスの実装

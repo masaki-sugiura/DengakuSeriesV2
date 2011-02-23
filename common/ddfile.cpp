@@ -1,4 +1,4 @@
-//	$Id: ddfile.cpp,v 1.4 2005-01-18 13:52:08 sugiura Exp $
+//	$Id: ddfile.cpp,v 1.4 2005/01/18 13:52:08 sugiura Exp $
 /*
  *	ddfile.cpp
  *	ダイアログデータのデータファイルを扱うクラス

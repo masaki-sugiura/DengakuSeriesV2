@@ -1,4 +1,4 @@
-//	$Id: si_hmjre.cpp,v 1.4 2009-09-20 13:49:01 sugiura Exp $
+//	$Id: si_hmjre.cpp,v 1.4 2009/09/20 13:49:01 sugiura Exp $
 /*
  *	si_hmjre.cpp
  *	HmJre ‚ÉŠÖ‚·‚éƒNƒ‰ƒX

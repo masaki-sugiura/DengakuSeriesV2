@@ -1,4 +1,4 @@
-//	$Id: ddfile.h,v 1.4 2007-02-10 19:00:01 sugiura Exp $
+//	$Id: ddfile.h,v 1.4 2007/02/10 19:00:01 sugiura Exp $
 /*
  *	ddfile.h
  *	ダイアログデータのデータファイルを扱うクラス

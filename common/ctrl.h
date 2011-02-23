@@ -1,4 +1,4 @@
-//	$Id: ctrl.h,v 1.3 2002-02-17 17:28:41 sugiura Exp $
+//	$Id: ctrl.h,v 1.3 2002/02/17 17:28:41 sugiura Exp $
 /*
  *	ctrl.h
  *	コントロール名の定義＆汎用ヘッダ

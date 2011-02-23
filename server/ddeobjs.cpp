@@ -1,4 +1,4 @@
-// $Id: ddeobjs.cpp,v 1.5 2007-04-29 16:11:35 sugiura Exp $
+// $Id: ddeobjs.cpp,v 1.5 2007/04/29 16:11:35 sugiura Exp $
 /*
  *	ddeobjs.cpp
  *	DdeString ƒNƒ‰ƒX‚ÌŽÀ‘•

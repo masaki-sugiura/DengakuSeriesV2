@@ -1,4 +1,4 @@
-//	$Id: misc.cpp,v 1.22 2007-05-19 04:36:10 sugiura Exp $
+//	$Id: misc.cpp,v 1.22 2007/05/19 04:36:10 sugiura Exp $
 /*
  *	misc.cpp
  *	雑多なユーティリティ関数

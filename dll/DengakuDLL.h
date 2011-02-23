@@ -1,4 +1,4 @@
-//	$Id: DengakuDLL.h,v 1.2 2002-01-16 16:31:04 sugiura Exp $
+//	$Id: DengakuDLL.h,v 1.2 2002/01/16 16:31:04 sugiura Exp $
 /*
  *	DengakuDLL.h
  *	メインヘッダーファイル

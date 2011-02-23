@@ -1,4 +1,4 @@
-//	$Id: dirlist.h,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: dirlist.h,v 1.2 2002/01/16 15:57:23 sugiura Exp $
 /*
  *	dirlist.h
  *	各ドライブ毎のカレントディレクトリの管理を行う

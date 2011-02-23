@@ -1,4 +1,4 @@
-//	$Id: bs_func.cpp,v 1.3 2002-02-19 15:34:22 sugiura Exp $
+//	$Id: bs_func.cpp,v 1.3 2002/02/19 15:34:22 sugiura Exp $
 /*
  *	bs_func.cpp
  *	BRegexp ‚ÉŠÖ‚·‚éƒNƒ‰ƒX

@@ -1,4 +1,4 @@
-//	$Id: tokenizer.h,v 1.3 2002-06-16 14:56:09 sugiura Exp $
+//	$Id: tokenizer.h,v 1.3 2002/06/16 14:56:09 sugiura Exp $
 /*
  *	tokenizer.h
  *	文字列のトークン化クラス

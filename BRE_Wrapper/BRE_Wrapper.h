@@ -1,4 +1,4 @@
-//	$Id: BRE_Wrapper.h,v 1.1 2002-01-16 15:49:15 sugiura Exp $
+//	$Id: BRE_Wrapper.h,v 1.1 2002/01/16 15:49:15 sugiura Exp $
 /*
  *	BRE_Wrapper.h
  *	メインヘッダーファイル

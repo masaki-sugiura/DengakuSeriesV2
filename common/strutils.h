@@ -1,4 +1,4 @@
-//	$Id: strutils.h,v 1.4 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: strutils.h,v 1.4 2003/07/06 16:27:46 sugiura Exp $
 /*
  *	strutils.h
  *	C 文字列のためのユーティリティ関数群

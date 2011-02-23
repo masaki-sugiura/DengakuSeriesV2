@@ -1,4 +1,4 @@
-//	$Id: pathname.cpp,v 1.2 2002-01-16 15:57:23 sugiura Exp $
+//	$Id: pathname.cpp,v 1.2 2002/01/16 15:57:23 sugiura Exp $
 /*
  *	pathname.cpp
  *	パス名を扱うクラス

@@ -1,4 +1,4 @@
-//	$Id: ss_handler.cpp,v 1.3 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: ss_handler.cpp,v 1.3 2003/07/06 16:27:46 sugiura Exp $
 /*
  *	ss_handler.cpp
  *	文字列サービスの実装

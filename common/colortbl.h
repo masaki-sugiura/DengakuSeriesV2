@@ -1,4 +1,4 @@
-//	$Id: colortbl.h,v 1.2 2002-03-05 14:19:34 sugiura Exp $
+//	$Id: colortbl.h,v 1.2 2002/03/05 14:19:34 sugiura Exp $
 /*
  *	colortbl.h
  *	カラーテーブルを管理するクラス

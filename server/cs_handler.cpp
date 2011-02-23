@@ -1,4 +1,4 @@
-//	$Id: cs_handler.cpp,v 1.6 2007-05-13 17:02:41 sugiura Exp $
+//	$Id: cs_handler.cpp,v 1.6 2007/05/13 17:02:41 sugiura Exp $
 /*
  *	cs_handler.cpp
  *	共通サービスの実装

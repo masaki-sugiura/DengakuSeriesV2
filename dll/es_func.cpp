@@ -1,4 +1,4 @@
-//	$Id: es_func.cpp,v 1.3 2002-02-19 15:34:22 sugiura Exp $
+//	$Id: es_func.cpp,v 1.3 2002/02/19 15:34:22 sugiura Exp $
 /*
  *	es_func.cpp
  *	環境変数サービスの関数

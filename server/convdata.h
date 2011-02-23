@@ -1,4 +1,4 @@
-// $Id: convdata.h,v 1.2 2002-02-20 16:48:40 sugiura Exp $
+// $Id: convdata.h,v 1.2 2002/02/20 16:48:40 sugiura Exp $
 /*
  *	convdata.h
  *	DDE 通信毎に用意するリソース管理とコマンド処理を行うクラスの定義

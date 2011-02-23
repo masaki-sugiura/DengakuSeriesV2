@@ -1,4 +1,4 @@
-//	$Id: enumerator.h,v 1.2 2002-03-05 14:09:40 sugiura Exp $
+//	$Id: enumerator.h,v 1.2 2002/03/05 14:09:40 sugiura Exp $
 /*
  *	enumerator.h
  *	—ñ‹“qƒNƒ‰ƒX

@@ -1,4 +1,4 @@
-//	$Id: optmap.h,v 1.1 2002-04-17 16:23:31 sugiura Exp $
+//	$Id: optmap.h,v 1.1 2002/04/17 16:23:31 sugiura Exp $
 /*
  *	optmap.h
  *	オプション文字と対応するフラグ値を管理するクラス

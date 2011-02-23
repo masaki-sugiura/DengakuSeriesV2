@@ -1,4 +1,4 @@
-//	$Id: session.cpp,v 1.7 2008-06-29 15:19:43 sugiura Exp $
+//	$Id: session.cpp,v 1.7 2008/06/29 15:19:43 sugiura Exp $
 /*
  *	session.cpp
  *	SessionInstance クラスのコア部分の実装

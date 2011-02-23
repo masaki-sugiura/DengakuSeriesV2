@@ -1,4 +1,4 @@
-//	$Id: dirlist.cpp,v 1.3 2002-02-19 15:34:21 sugiura Exp $
+//	$Id: dirlist.cpp,v 1.3 2002/02/19 15:34:21 sugiura Exp $
 /*
  *	dirlist.cpp
  *	全ドライブのカレントディレクトリの管理

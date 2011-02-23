@@ -1,4 +1,4 @@
-//	$Id: shobj_wrapper.cpp,v 1.5 2011-01-07 16:08:38 sugiura Exp $
+//	$Id: shobj_wrapper.cpp,v 1.5 2011/01/07 16:08:38 sugiura Exp $
 /*
  *	shobj_wrapper.cpp
  *	Shell オブジェクトをラップするクラスの実装

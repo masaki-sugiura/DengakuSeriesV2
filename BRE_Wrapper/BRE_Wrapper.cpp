@@ -1,4 +1,4 @@
-//	$Id: BRE_Wrapper.cpp,v 1.5 2005-01-24 15:52:48 sugiura Exp $
+//	$Id: BRE_Wrapper.cpp,v 1.5 2005/01/24 15:52:48 sugiura Exp $
 /*
  *	BRE_Wrapper.cpp
  *	BRE_WRAP.DLL –{‘Ì•‚c‚k‚kŠÖ”

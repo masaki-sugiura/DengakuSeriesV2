@@ -1,4 +1,4 @@
-//	$Id: env_var.cpp,v 1.4 2006-05-20 17:02:50 sugiura Exp $
+//	$Id: env_var.cpp,v 1.4 2006/05/20 17:02:50 sugiura Exp $
 /*
  *	env_var.cpp
  *	ŠÂ‹«•Ï”‚ÌŠÇ—‚ÉŠÖ‚·‚éƒNƒ‰ƒX

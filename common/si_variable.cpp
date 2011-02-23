@@ -1,4 +1,4 @@
-//	$Id: si_variable.cpp,v 1.2 2002-09-26 13:13:24 sugiura Exp $
+//	$Id: si_variable.cpp,v 1.2 2002/09/26 13:13:24 sugiura Exp $
 /*
  *	si_variable.cpp
  *	環境変数サービスの関数

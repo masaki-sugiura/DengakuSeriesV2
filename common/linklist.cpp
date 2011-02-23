@@ -1,4 +1,4 @@
-//	$Id: linklist.cpp,v 1.2 2002-02-19 15:34:21 sugiura Exp $
+//	$Id: linklist.cpp,v 1.2 2002/02/19 15:34:21 sugiura Exp $
 /*
  *	linklist.cpp
  *	リンクリストクラス

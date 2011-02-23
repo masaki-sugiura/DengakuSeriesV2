@@ -1,4 +1,4 @@
-//	$Id: seldir.h,v 1.2 2002-02-10 09:27:32 sugiura Exp $
+//	$Id: seldir.h,v 1.2 2002/02/10 09:27:32 sugiura Exp $
 /*
  *	seldir.h
  *	ディレクトリ選択ダイアログ表示関数

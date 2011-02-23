@@ -1,4 +1,4 @@
-//	$Id: colortbl.cpp,v 1.4 2002-06-16 14:56:09 sugiura Exp $
+//	$Id: colortbl.cpp,v 1.4 2002/06/16 14:56:09 sugiura Exp $
 /*
  *	colortbl.cpp
  *	カラーテーブルを管理するクラスの実装

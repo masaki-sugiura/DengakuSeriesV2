@@ -1,4 +1,4 @@
-//	$Id: file.cpp,v 1.3 2006-06-16 15:43:57 sugiura Exp $
+//	$Id: file.cpp,v 1.3 2006/06/16 15:43:57 sugiura Exp $
 /*
  *	file.cpp
  *	ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‘‚«•‘®«‘€ì

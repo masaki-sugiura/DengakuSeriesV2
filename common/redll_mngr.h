@@ -1,4 +1,4 @@
-//	$Id: redll_mngr.h,v 1.3 2008-06-29 15:19:42 sugiura Exp $
+//	$Id: redll_mngr.h,v 1.3 2008/06/29 15:19:42 sugiura Exp $
 /*
  *	redll_mngr.h
  *	BRegExp_Manager, HmJre_Manager のスーパークラス

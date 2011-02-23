@@ -1,4 +1,4 @@
-// $Id: cds_func.cpp,v 1.4 2002-02-19 15:34:22 sugiura Exp $
+// $Id: cds_func.cpp,v 1.4 2002/02/19 15:34:22 sugiura Exp $
 /*
  *	cds_func.cpp
  *	コモンダイアログサービスの関数

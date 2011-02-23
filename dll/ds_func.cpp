@@ -1,4 +1,4 @@
-//	$Id: ds_func.cpp,v 1.14 2011-01-07 16:08:38 sugiura Exp $
+//	$Id: ds_func.cpp,v 1.14 2011/01/07 16:08:38 sugiura Exp $
 /*
  *	ds_func.cpp
  *	ダイアログ操作関数

@@ -1,4 +1,4 @@
-//	$Id: opencomdlg.cpp,v 1.2 2002-02-15 17:46:08 sugiura Exp $
+//	$Id: opencomdlg.cpp,v 1.2 2002/02/15 17:46:08 sugiura Exp $
 /*
  *	opencomdlg.cpp
  *	コモンダイアログを表示する関数の実装

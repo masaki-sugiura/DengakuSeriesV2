@@ -1,4 +1,4 @@
-//	$Id: pathname.h,v 1.5 2002-06-16 14:56:09 sugiura Exp $
+//	$Id: pathname.h,v 1.5 2002/06/16 14:56:09 sugiura Exp $
 /*
  *	pathname.h
  *	パス名を扱うクラス

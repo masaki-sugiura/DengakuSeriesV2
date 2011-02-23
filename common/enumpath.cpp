@@ -1,4 +1,4 @@
-//	$Id: enumpath.cpp,v 1.4 2009-09-20 13:49:01 sugiura Exp $
+//	$Id: enumpath.cpp,v 1.4 2009/09/20 13:49:01 sugiura Exp $
 /*
  *	enumpath.cpp
  *	enum*** ‚ÉŠÖ‚·‚éƒNƒ‰ƒX‚ÌŽÀ‘•

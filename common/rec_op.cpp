@@ -1,4 +1,4 @@
-//	$Id: rec_op.cpp,v 1.8 2003-07-06 16:27:46 sugiura Exp $
+//	$Id: rec_op.cpp,v 1.8 2003/07/06 16:27:46 sugiura Exp $
 /*
  *	rec_op.cpp
  *	再帰ファイル操作クラス群

@@ -1,4 +1,4 @@
-//	$Id: strbuf.cpp,v 1.13 2006-06-16 15:43:57 sugiura Exp $
+//	$Id: strbuf.cpp,v 1.13 2006/06/16 15:43:57 sugiura Exp $
 /*
  *	strbuf.cpp
  *	•¶Žš—ñƒNƒ‰ƒX

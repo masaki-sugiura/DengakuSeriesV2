@@ -1,4 +1,4 @@
-//	$Id: ms_func.cpp,v 1.7 2006-03-16 14:46:56 sugiura Exp $
+//	$Id: ms_func.cpp,v 1.7 2006/03/16 14:46:56 sugiura Exp $
 /*
  *	ms_func.cpp
  *	ƒƒjƒ…[•\¦ŠÖ”

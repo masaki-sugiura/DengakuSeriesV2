@@ -1,4 +1,4 @@
-//	$Id: cmd.h,v 1.22 2011-01-07 16:08:38 sugiura Exp $
+//	$Id: cmd.h,v 1.22 2011/01/07 16:08:38 sugiura Exp $
 /*
  *	cmd.h
  *	ƒRƒ}ƒ“ƒh–¼ˆê——

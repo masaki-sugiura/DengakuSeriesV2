@@ -1,4 +1,4 @@
-//	$Id: crs_func.cpp,v 1.2 2002-02-19 15:34:22 sugiura Exp $
+//	$Id: crs_func.cpp,v 1.2 2002/02/19 15:34:22 sugiura Exp $
 /*
  *	cs_func.cpp
  *	共通サービスの関数

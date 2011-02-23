@@ -1,4 +1,4 @@
-//	$Id: is_func.cpp,v 1.3 2002-02-19 15:34:22 sugiura Exp $
+//	$Id: is_func.cpp,v 1.3 2002/02/19 15:34:22 sugiura Exp $
 /*
  *	is_func.cpp
  *	‰æ‘œ‚ÌŠÇ—‚ÉŠÖ‚·‚éƒNƒ‰ƒX

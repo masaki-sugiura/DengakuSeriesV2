@@ -1,4 +1,4 @@
-//	$Id: linklist.h,v 1.3 2002-02-19 15:34:21 sugiura Exp $
+//	$Id: linklist.h,v 1.3 2002/02/19 15:34:21 sugiura Exp $
 /*
  *	linklist.h
  *	(単方向)リンクリストクラス

@@ -1,4 +1,4 @@
-//	$Id: si_bregexp.cpp,v 1.7 2006-03-16 14:46:56 sugiura Exp $
+//	$Id: si_bregexp.cpp,v 1.7 2006/03/16 14:46:56 sugiura Exp $
 /*
  *	si_bregexp.cpp
  *	BRegexp ‚ÉŠÖ‚·‚éƒNƒ‰ƒX

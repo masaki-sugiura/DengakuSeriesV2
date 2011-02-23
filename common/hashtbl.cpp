@@ -1,4 +1,4 @@
-//	$Id: hashtbl.cpp,v 1.2 2002-03-29 17:11:59 sugiura Exp $
+//	$Id: hashtbl.cpp,v 1.2 2002/03/29 17:11:59 sugiura Exp $
 /*
  *	hashtbl.cpp
  *	ハッシュ値を生成する関数

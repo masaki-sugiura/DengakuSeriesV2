@@ -1,4 +1,4 @@
-//	$Id: smalloc.cpp,v 1.6 2011-01-07 16:08:38 sugiura Exp $
+//	$Id: smalloc.cpp,v 1.6 2011/01/07 16:08:38 sugiura Exp $
 /*
  *	smalloc.cpp
  *	共有メモリ領域についての malloc, free インターフェイスの提供
