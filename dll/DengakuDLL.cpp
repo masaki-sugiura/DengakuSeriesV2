@@ -16,7 +16,11 @@ Auto_Ptr<SessionInstance> g_pSessionInstance(NULL);
 StringBuffer g_strBuffer;
 
 //	DLL のバージョン文字列
-const StringBuffer g_versionStr = "3.20";
+#ifndef	_WIN64
+const StringBuffer g_versionStr = "3.21";
+#else
+const StringBuffer g_versionStr = "3.21(x64)";
+#endif
 
 //	DLL エントリポイント
 extern "C" BOOL APIENTRY

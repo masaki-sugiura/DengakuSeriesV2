@@ -2772,8 +2772,8 @@ ComboCtrl::receiveData()
 BOOL
 ComboCtrl::onSetString(const StringBuffer& str)
 {
-	if (!SimpleCtrl::receiveData()) return FALSE;
-	if (m_state > 0) return FALSE;
+	SimpleCtrl::receiveData();
+//	if (m_state > 0) return FALSE;
 	return SimpleCtrl::onSetString(str);
 }
 

@@ -26,7 +26,11 @@ SessionInstance::SessionInstance(HINSTANCE hInstance, BOOL bTrueCD)
 
 	TCHAR buf[16];
 	wsprintf(buf, "%d.%d%d%s", (BYTE)(dwVersion >> 24), (BYTE)(dwVersion >> 16), (BYTE)(dwVersion >> 8),
+#ifndef	_WIN64
 			(BYTE)dwVersion == 0 ? "" : "b");
+#else
+			(BYTE)dwVersion == 0 ? "(x64)" : "b(x64)");
+#endif
 	m_strVersion = buf;
 }
 

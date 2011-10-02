@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="DllTest"
 	ProjectGUID="{80050633-58E4-4534-8FA4-721577A3DF76}"
+	RootNamespace="DllTest"
 	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
@@ -172,7 +173,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib .\Release\DengakuDLL.lib"
-				OutputFile=".\Release/DllTest.exe"
+				OutputFile="$(OutDir)\DllTest.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
@@ -357,7 +358,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile=".\Debug/DllTest.exe"
+				OutputFile="$(OutDir)\DllTest.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"

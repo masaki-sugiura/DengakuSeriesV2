@@ -28,7 +28,7 @@ extern SHOBJ_Allocator g_SHOBJ_Allocator;
 template<class T>
 class LPSHOBJ_Wrapper {
 public:
-	LPSHOBJ_Wrapper(T* lpShObj = NULL)
+	LPSHOBJ_Wrapper(T __unaligned * lpShObj = NULL)
 		: m_lpShObj(lpShObj), m_bOwner(TRUE)
 	{}
 	LPSHOBJ_Wrapper(const LPSHOBJ_Wrapper<T>& rhs)
@@ -50,7 +50,7 @@ public:
 		return *this;
 	}
 
-	LPSHOBJ_Wrapper<T>& operator=(T* prhs)
+	LPSHOBJ_Wrapper<T>& operator=(T __unaligned * prhs)
 	{
 		this->invalidatePtr();
 		m_lpShObj = prhs;
@@ -58,25 +58,25 @@ public:
 		return *this;
 	}
 
-	BOOL operator==(const T* prhs) const
+	BOOL operator==(const T __unaligned * prhs) const
 	{
 		return m_lpShObj == prhs;
 	}
-	BOOL operator!=(const T* prhs) const
+	BOOL operator!=(const T __unaligned * prhs) const
 	{
 		return !operator==(prhs);
 	}
 
-	operator T*&() { return m_lpShObj; }
-	operator const T*&() const { return (const T*&)m_lpShObj; }
+	operator T __unaligned *&() { return m_lpShObj; }
+	operator const T __unaligned *&() const { return (const T __unaligned *&)m_lpShObj; }
 
-	T* operator->() { return m_lpShObj; }
-	const T* operator->() const { return m_lpShObj; }
-	T& operator*() { return *m_lpShObj; }
-	const T& operator*() const { return *m_lpShObj; }
+	T __unaligned * operator->() { return m_lpShObj; }
+	const T __unaligned * operator->() const { return m_lpShObj; }
+	T __unaligned& operator*() { return *m_lpShObj; }
+	const T __unaligned& operator*() const { return *m_lpShObj; }
 
 protected:
-	T*   m_lpShObj;
+	T __unaligned *   m_lpShObj;
 	mutable BOOL m_bOwner;
 
 	virtual void invalidatePtr() = 0;
