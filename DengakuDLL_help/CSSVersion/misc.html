@@ -1,0 +1,228 @@
+<html>
+<head>
+<title>田楽(でんがく)DLL API Reference Manual [その他]</title>
+</head>
+<body bgcolor="#efefef">
+<a name="getversion"><hr size=1></a>
+<h3><font color="blue">GETVERSION</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETVERSION");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		DengakuDLL.dll のバージョンを表す文字列を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		"X.YY" または "X.YYβ"<br>
+		(X はメジャーバージョン、YY はマイナーバージョン)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+if (leftstr(dllfuncstr("GETVERSION"),1) == "0") {
+    // 0.0X の場合
+} else {
+    // それ以上の場合
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="getosinfo"><hr size=1></a>
+<h3><font color="blue">GETOSINFO</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETOSINFO",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		OS の情報を表す文字列を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>
+			<ol>
+			<li>取得したい情報を表す文字列：</li>
+			<ul>
+				<li>ＯＳの種類 ("type")<br>
+				Windows NT または Windows 2000 の場合は "NT"、
+				Windows 95 または Windows 98 の場合は
+				"9X" という文字列になります。</li>
+				<li>メジャーバージョン番号 ("major")<br>
+				Windows NT3.51 の場合は "3"、Windows NT4.0 の場合は "4"、
+				Windows 2000 の場合は "5"、
+				Windows 95/98 の場合は "4" という文字列になります。</li>
+				<li>マイナーバージョン番号 ("minor")<br>
+				Windows NT3.51 の場合は "51"、Windows NT4.0/2000 の場合は "0"、
+				Windows 95 の場合は "0"、Windows 98 の場合は "10" という
+				文字列になります。Windows 98SE(Second Edition)の場合は…
+				誰か教えて下さい(^^;。</li>
+				<li>ビルド番号 ("build")<br>
+				ビルド番号を返します。まぁ、あまり役には立ちませんが…(^^;。
+				</li>
+				<li>その他の情報 ("extra")<br>
+				ＯＳ固有の情報を返します。Windows NT の場合は "Service Pack X"
+				(X には番号が入る)という文字列が、Windows 95 OSR2 の場合は
+				" B" という文字列が返ってきます。</li>
+			</ul>
+			<br>
+			<li>"/f" に続けて書式指定を渡すと、
+				その書式に従った文字列を返します。
+				書式指定は普通の文字と "%" に続けて特定の文字が続いたものから
+				構成されます。
+				これらは以下の物を使用できます。<br>
+				<table>
+				<tr>
+					<td>"%t"</td><td>ＯＳの種類</td>
+				</tr>
+				<tr>
+					<td>"%M"</td><td>メジャーバージョン番号</td>
+				</tr>
+				<tr>
+					<td>"%m"</td><td>マイナーバージョン番号</td>
+				</tr>
+				<tr>
+					<td>"%b"</td><td>ビルド番号</td>
+				</tr>
+				<tr>
+					<td>"%e"</td><td>その他の情報</td>
+				</tr>
+				</table>
+				</li>
+			<br>
+			<li>$s1 に "" を指定した場合は
+				各情報をカンマで区切ったものが返されます。</li>
+			</ol>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		$s1 の指定に従った文字列を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+if (dllfuncstr("GETOSINFO","type") == "NT") {
+    // NT の場合
+    message dllfuncstr("GETOSINFO","/f 'Windows NT%M.%m(build:%b) %e'");
+    //  例： "Windows NT4.0(build:1381) Service Pack 5"
+} else {
+    // 95/98 の場合
+    message dllfuncstr("GETOSINFO","/f 'Windows %t (version:%M.%m%e)'");
+    //  例： "Windows 95 (version:4.0B)"
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<!--
+<a name="calc"><hr size=1></a>
+<h3><font color="blue">CALC</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("CALC",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		$s2 の計算結果を $s1 の書式指定に従って返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top>$s1 :</td>
+			<td>
+				出力書式指定文字列を指定します。
+				書式は C 言語の printf 関数と同様です。
+			</td>
+		</tr>
+		<tr>
+			<td valign=top>$s2 :</td>
+			<td>
+				計算式を指定します。
+				数値、四則演算の演算子(+,-,*,/)、
+				及び括弧(()) が使えます。
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		計算結果を書式指定に従って表した文字列を返します。
+		計算結果が不正な場合は空文字("") を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+message dllfuncstr("CALC","%f","1+2+3+4"); // "10.000"
+message dllfuncstr("CALC","ans : %3f","1.5*3"); // "ans : 4.5"
+message dllfuncstr("CALC","%f","1/0"); // ""</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+-->
+</body>
+</html>

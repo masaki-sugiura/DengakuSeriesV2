@@ -1,0 +1,876 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=iso-2022-jp">
+<title>田楽(でんがく)DLL API Reference Manual [HMJRE DLL]</title>
+</head>
+<body bgcolor="#efefef">
+<a name="hmjre_load"><hr size=1></a>
+<h3><font color="blue">HMJRE_LOAD</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("HMJRE_LOAD", $s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		秀丸エディタ付属の正規表現ライブラリ HMJRE.DLL をロードします。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>HMJRE.DLL のパス名<br>
+				フォルダ名を省略するか、空文字列を指定すると、
+				ＯＳ標準のDLL検索方法により HMJRE.DLL を探します。
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		DLL のロードに成功した場合は 1、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+if (!dllfunc("HMJRE_LOAD", "HMJRE.DLL")) {
+    message "HMJRE.DLL が見つかりません";
+    freedll;
+    endmacro;
+}
+// ...(省略)
+#r = dllfunc("HMJRE_FREE"); // 使い終わったら HMJRE_FREE() で開放</pre>
+        </td></tr>
+        </table>
+    </td>
+</tr>
+</table>
+<br>
+<a name="hmjre_free"><hr size=1></a>
+<h3><font color="blue">HMJRE_FREE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("HMJRE_FREE");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		<a href="#hmjre_load">HMJRE_LOAD()</a> でロードした HMJRE.DLL を
+		アンロードします。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		DLL のアンロードに成功した場合は 1、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(<a href="#hmjre_load">HMJRE_LOAD()</a> の例を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<body bgcolor="#efefef">
+<a name="hmjre_get_version"><hr size=1></a>
+<h3><font color="blue">HMJRE_GET_VERSION</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("HMJRE_GET_VERSION");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		ロードした HMJRE.DLL のバージョン情報を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		HMJRE.DLL の JreGetVersion() によって得られるバージョン番号を
+		"X.XX"の形式で表現した文字列
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(省略)
+	</td>
+</tr>
+</table>
+<br>
+<a name="hmjre_match"><hr size=1></a>
+<h3><font color="blue">HMJRE_MATCH</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$pos = dllfuncstr("HMJRE_MATCH", $ptn, $str, #offset, #flags, #fuzzy);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		与えられた正規表現・あいまい検索パターンに一致する
+		部分文字列の範囲を返します。<br>
+		なお、パターン中の丸括弧に一致する部分は
+		<a href="#hmjre_get_tag_position">HMJRE_GET_TAG_POSITION()</a> で
+		取得することができます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$ptn :</nobr></td>
+			<td>正規表現パターン文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$str :</nobr></td>
+			<td>検索対象文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#offset :</nobr></td>
+			<td>$str中の検索開始位置(バイト単位)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#flags :</nobr></td>
+			<td>あいまい検索フラグ<br>
+			以下の数値の和（何も指定しない場合は0）を指定します。
+			（#fuzzy == -1 の場合は無視されます）
+			<br>
+			<ul>
+				<table>
+				<tr>
+					<td valign=top>1</td>
+					<td>半角英数字の大文字／小文字を区別しない</td>
+				</tr>
+				<tr>
+					<td valign=top>4</td>
+					<td>半角／全角を区別しない</td>
+				</tr>
+				<tr>
+					<td valign=top>8</td>
+					<td>ひらがなとカタカナを区別しない</td>
+				</tr>
+				<tr>
+					<td valign=top>16</td>
+					<td>大きい「あ」と小さい「ぁ」を区別しない</td>
+				</tr>
+				<tr>
+					<td valign=top>32</td>
+					<td>濁音、半濁音を区別しない。
+						「は」、「ば」、「ぱ」を同一視する</td>
+				</tr>
+				<tr>
+					<td valign=top>64</td>
+					<td>かなの「ー」と英数の「−」を同一視する</td>
+				</tr>
+				<tr>
+					<td valign=top>128</td>
+					<td>空白／タブ文字を無視する</td>
+				</tr>
+				<tr>
+					<td valign=top>256</td>
+					<td>改行を無視する</td>
+				</tr>
+				</table>
+			</ul>
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#fuzzy :</nobr></td>
+			<td>検索文字列が正規表現の式になっている場合は1、<br>
+				検索文字列が正規表現の式になっていないが、
+				正規表現で検索したい場合は2、<br>
+				検索文字列が正規表現の式になってなくて、
+				検索自体も普通にやりたい場合は0（あいまい検索の一部が無効になります）、<br>
+				あいまい検索を一切使用せずに正規表現で検索したい場合は-1を指定します。
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		$str 中の $ptn にマッチした範囲を表す文字列。<br>
+		書式は以下の通り。<br>
+		<br>
+		<ul>
+			<code><i>head</i>:<i>len</i></code><br>
+			<br>
+			<table>
+			<tr>
+				<td valign=top><nobr><code><i>head</i></code>:</nobr></td>
+				<td>マッチした範囲の先頭位置(0 から数えます)</td>
+			</tr>
+			<tr>
+				<td valign=top><nobr><code><i>len</i></code>:</nobr></td>
+				<td>マッチした範囲のバイト数</td>
+			</tr>
+			</table>
+		</ul>
+		<br>
+		パターンに一致する部分がなかったときは "" を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$str = "Name:Ｍａｓａｋｉ Family:Sugi\nura Age:39";
+
+//	半角英数字の大文字・小文字を同一視、半角・全角を同一視、改行を無視
+$pos = dllfuncstr("HMJRE_MATCH", "Name:([A-Z]+) Family:([A-Z]+) Age:([0-9]+)", $str, 0, 1 + 4 + 256, 1);
+if ($pos != "") {
+    // 見つかった文字列を表示
+    message dllfuncstr("HMJRE_GET_MATCH_STRING", $str, $pos);
+
+    #a = 1;
+    while (#a <= 3)
+    {
+        // タグつき正規表現でマッチした部分マッチの結果を返す
+        // #n1: タグの番号(1〜9)
+        // return: マッチした範囲（"pos:length"）
+        // マッチした範囲がない、またはエラーの場合は空文字列
+        $pos = dllfuncstr("HMJRE_GET_TAG_POSITION", #a);
+
+        $s = dllfuncstr("HMJRE_GET_MATCH_STRING", $str, $pos);
+
+        message "\"" + $s + "\"";
+
+        #a = #a + 1;
+    }
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="hmjre_get_tag_position"><hr size=1></a>
+<h3><font color="blue">HMJRE_GET_TAG_POSITION</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("HMJRE_GET_TAG_POSITION", #tag);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		<a href="#hmjre_match">HMJRE_MATCH()</a> でタグつき正規表現を使用した場合、
+		指定した番号のタグにマッチした範囲を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>#tag :</nobr></td>
+			<td>タグ番号（1〜9）</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		指定した番号のタグにマッチした範囲
+		（書式は<a href="#hmjre_match">HMJRE_MATCH()</a> の戻り値と同じ）
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+	(<a href="#hmjre_match">HMJRE_MATCH()</a> の例を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="hmjre_get_match_string"><hr size=1></a>
+<h3><font color="blue">HMJRE_GET_MATCH_STRING</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("HMJRE_GET_MATCH_STRING", $str, $pos);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		$str 中の $pos で指定された範囲の文字列を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$str :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$pos :</nobr></td>
+			<td><a href="#hmjre_match">HMJRE_MATCH()</a>、
+				<a href="#hmjre_get_tag_position">HMJRE_GET_TAG_POSITION()</a>
+				から返された範囲を表す文字列（"<i>pos</i>:<i>length</i>"）</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		$str から抜き出された文字列
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+	(<a href="#hmjre_match">HMJRE_MATCH()</a> の例を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="hmjre_find_regular"><hr size=1></a>
+<h3><font color="blue">HMJRE_FIND_REGULAR</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("HMJRE_FIND_REGULAR", $ptn, $str, #offset);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		HMJRE.DLL の FindRegular() 関数を呼び出します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$ptn :</nobr></td>
+			<td>検索文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$str :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#offset :</nobr></td>
+			<td>$str中の検索開始位置（バイト単位）</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		ヒットした場合は桁位置（0以上の値）を返します。
+		ヒットしなかった場合は-1を返します。
+		正規表現の解釈その他でエラーが起きた場合は-2を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$target = "Name:Masaki Family:Sugiura Age:39";
+
+#pos = dllfunc("HMJRE_FIND_REGULAR", "Name:([A-Za-z]+) Family:([A-Za-z]+) Age:([0-9]+)", $target, 0);
+message str(#pos);
+
+#length = dllfunc("HMJRE_GET_LAST_MATCH_LENGTH");
+message midstr($target, #pos, #length);	// $target 全体がマッチ
+
+#a = 1;
+while (#a <= 3)
+{
+    #pos = dllfunc("HMJRE_GET_LAST_MATCH_TAG_POSITION", #a);
+    #length = dllfunc("HMJRE_GET_LAST_MATCH_TAG_LENGTH", #a);
+    message midstr($target, #pos, #length); //  "Masaki", "Sugiura", "39"
+    #a = #a + 1;
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="hmjre_find_regular_no_case_sense"><hr size=1></a>
+<h3><font color="blue">HMJRE_FIND_REGULAR_NO_CASE_SENSE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("HMJRE_FIND_REGULAR_NO_CASE_SENSE", $ptn, $str, #offset);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		HMJRE.DLL の FindRegularNoCaseSense() 関数を呼び出します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$ptn :</nobr></td>
+			<td>検索文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$str :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#offset :</nobr></td>
+			<td>$str中の検索開始位置（バイト単位）</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		ヒットした場合は桁位置（0以上の値）を返します。
+		ヒットしなかった場合は-1を返します。
+		正規表現の解釈その他でエラーが起きた場合は-2を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+	（省略）
+	</td>
+</tr>
+</table>
+<br>
+<a name="hmjre_replace_regular"><hr size=1></a>
+<h3><font color="blue">HMJRE_REPLACE_REGULAR</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("HMJRE_REPLACE_REGULAR", $ptn, $str, #offset, $repl, #replaceall);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		HMJRE.DLL の ReplaceRegular() 関数を呼び出します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$ptn :</nobr></td>
+			<td>検索文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$str :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#offset :</nobr></td>
+			<td>$str中の検索開始位置（バイト単位）</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$repl :</nobr></td>
+			<td>置換文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#replaceall :</nobr></td>
+			<td>0 の場合最初にマッチした文字列のみを置換、
+				1 の場合マッチした全ての文字列を置換</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		何らかの置換が発生した場合は置換後の全体の文字列、
+		何も置換されなかった場合は空文字列を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$target = "Name:Masaki Family:Sugiura Age:39";
+
+$jpn = dllfuncstr("HMJRE_REPLACE_REGULAR", "Name:([A-Za-z]+) Family:([A-Za-z]+) Age:([0-9]+)", $target, 0, "姓: \\1 名: \\2 年齢: \\3", 1);
+message $jpn;</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="hmjre_replace_regular_no_case_sense"><hr size=1></a>
+<h3><font color="blue">HMJRE_REPLACE_REGULAR_NO_CASE_SENSE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("HMJRE_REPLACE_REGULAR_NO_CASE_SENSE", $ptn, $str, #offset, $repl, #replaceall);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		HMJRE.DLL の ReplaceRegularNoCaseSense() 関数を呼び出します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$ptn :</nobr></td>
+			<td>検索文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$str :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#offset :</nobr></td>
+			<td>$str中の検索開始位置（バイト単位）</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$repl :</nobr></td>
+			<td>置換文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#replaceall :</nobr></td>
+			<td>0 の場合最初にマッチした文字列のみを置換、
+				1 の場合マッチした全ての文字列を置換</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		何らかの置換が発生した場合は置換後の全体の文字列、
+		何も置換されなかった場合は空文字列を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+	（省略）
+	</td>
+</tr>
+</table>
+<br>
+<a name="hmjre_get_last_match_length"><hr size=1></a>
+<h3><font color="blue">HMJRE_GET_LAST_MATCH_LENGTH</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#len = dllfunc("HMJRE_GET_LAST_MATCH_LENGTH");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		<a href="#hmjre_find_regular">HMJRE_FIND_REGULAR()</a>,
+		<a href="#hmjre_find_regular_no_case_sense">HMJRE_FIND_REGULAR_NO_CASE_SENSE()</a>
+		で最後にマッチした文字列の長さを返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		直前の <a href="#hmjre_find_regular">HMJRE_FIND_REGULAR()</a>,
+		<a href="#hmjre_find_regular_no_case_sense">HMJRE_FIND_REGULAR_NO_CASE_SENSE()</a> でマッチした範囲の長さ（バイト単位）
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+	(<a href="#hmjre_find_regular">HMJRE_FIND_REGULAR()</a> の例を参照して下さい。)
+	</td>
+</tr>
+</table>
+<br>
+<a name="hmjre_get_last_match_tag_position"><hr size=1></a>
+<h3><font color="blue">HMJRE_LAST_MATCH_TAG_POSITION</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#pos = dllfunc("HMJRE_GET_LAST_MATCH_TAG_POSITION", #tag);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		<a href="#hmjre_find_regular">HMJRE_FIND_REGULAR()</a>,
+		<a href="#hmjre_find_regular_no_case_sense">HMJRE_FIND_REGULAR_NO_CASE_SENSE()</a>
+		でタグつき正規表現を用いた場合、
+		指定した番号のタグにマッチした文字列の位置を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>#tag :</nobr></td>
+			<td>タグ番号（1〜9）</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		直前の <a href="#hmjre_find_regular">HMJRE_FIND_REGULAR()</a>,
+		<a href="#hmjre_find_regular_no_case_sense">HMJRE_FIND_REGULAR_NO_CASE_SENSE()</a> で指定番号のタグにマッチした文字列の先頭位置
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+	(<a href="#hmjre_find_regular">HMJRE_FIND_REGULAR()</a> の例を参照して下さい。)
+	</td>
+</tr>
+</table>
+<br>
+<a name="hmjre_get_last_match_tag_length"><hr size=1></a>
+<h3><font color="blue">HMJRE_LAST_MATCH_TAG_LENGTH</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#len = dllfunc("HMJRE_GET_LAST_MATCH_TAG_LENGTH", #tag);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		<a href="#hmjre_find_regular">HMJRE_FIND_REGULAR()</a>,
+		<a href="#hmjre_find_regular_no_case_sense">HMJRE_FIND_REGULAR_NO_CASE_SENSE()</a>
+		でタグつき正規表現を用いた場合、
+		指定した番号のタグにマッチした文字列の長さを返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>#tag :</nobr></td>
+			<td>タグ番号（1〜9）</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		直前の <a href="#hmjre_find_regular">HMJRE_FIND_REGULAR()</a>,
+		<a href="#hmjre_find_regular_no_case_sense">HMJRE_FIND_REGULAR_NO_CASE_SENSE()</a> で指定番号のタグにマッチした文字列の長さ（バイト単位）
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+	(<a href="#hmjre_find_regular">HMJRE_FIND_REGULAR()</a> の例を参照して下さい。)
+	</td>
+</tr>
+</table>
+<br>
+<a name="hmjre_env_changed"><hr size=1></a>
+<h3><font color="blue">HMJRE_ENV_CHANGED</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#ret = dllfunc("HMJRE_ENV_CHANGED");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		あいまい検索関係の設定をレジストリから読み込み直しします。
+		マクロからあいまい検索の設定をいじりたい場合には、
+		まずはHmJre.dll用のレジストリを適当に書き換えてから
+		この関数を呼んでください。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		HMJRE.DLL の EnvChanged() 関数の戻り値。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+	(省略)
+	</td>
+</tr>
+</table>
+<br>
+<a name="hmjre_option_dialog"><hr size=1></a>
+<h3><font color="blue">HMJRE_OPTION_DIALOG</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("HMJRE_OPTION_DIALOG", #hwnd, #flags);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		あいまい検索のためのオプションを指定するダイアログを表示します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>#hwnd :</nobr></td>
+			<td>親ウィンドウのウィンドウハンドル</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#flags :</nobr></td>
+			<td>無効状態にしたい設定項目の指定
+				（指定方法は<a href="#hmjre_match">HMJRE_MATCH()</a> の
+				第４引数と同じ）</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		OKボタンを押して設定を完了した場合は1、
+		キャンセルボタンを押した場合は0を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+	(省略)
+	</td>
+</tr>
+</table>
+<br>
+</body>
+</html>

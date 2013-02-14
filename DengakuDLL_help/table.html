@@ -1,0 +1,312 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=iso-2022-jp">
+<title>田楽(でんがく)DLL API Reference Manual [Header]</title>
+<base target="body">
+</head>
+<body bgcolor="#efefef">
+<font size=3>
+<h3>【目次】</h3>
+<br>
+<ul>
+	<li type=square><a href="#intro" target="table">一覧の見方</a></li>
+	<li type=square><a href="#func" target="table">関数一覧</a></li>
+	<li type=square><a href="#control" target="table">コントロール一覧</a></li>
+	<li type=square><a href="#misc" target="table">その他</a></li>
+</ul>
+<br>
+<br>
+<a name="intro"><hr size=1></a>
+<h3>【一覧の見方】</h3>
+<ul>
+	<li type=square><a href="intro.html#func_table">関数一覧</a></li>
+	<li type=square><a href="intro.html#ctrl_table">コントロール一覧</a></li>
+</ul>
+<br>
+<br>
+<a name="func"><hr size=1></a>
+<h3>【関数一覧】</h3>
+<font size=1>※黒丸(●)は文字列、白丸(○)は数値を返す</font>
+<h4>コモンダイアログ操作系</h4>
+<ul>
+	<li type=disk><a href="comdlg.html#getfilename">GETFILENAME</a></li>
+	<li type=disk><a href="comdlg.html#getdirname">GETDIRNAME</a></li>
+	<li type=disk><a href="comdlg.html#getdirnameex">GETDIRNAMEEX</a>
+	(1.3x 〜)</li>
+	<li type=disk><a href="comdlg.html#getcolor">GETCOLOR</a></li>
+	<li type=disk><a href="comdlg.html#getfont">GETFONT</a></li>
+</ul>
+<br>
+<h4>メニュー操作系</h4>
+<ul>
+	<li type=circle><a href="menu.html#newmenu">NEWMENU</a></li>
+	<li type=circle><a href="menu.html#addmenuitem">ADDMENUITEM</a></li>
+	<li type=circle><a href="menu.html#addmenuitemex">ADDMENUITEMEX</a> (1.1x 〜)</li>
+	<li type=circle><a href="menu.html#changemenuitem">CHANGEMENUITEM</a></li>
+	<li type=circle><a href="menu.html#changemenuitemex">CHANGEMENUITEMEX</a> (1.1x 〜)</li>
+	<li type=circle><a href="menu.html#deletemenuitem">DELETEMENUITEM</a></li>
+	<li type=disk><a href="menu.html#menu">MENU</a></li>
+	<li type=disk><a href="menu.html#menuex">MENUEX</a> (2.6x 〜)</li>
+</ul>
+<br>
+<h4>ダイアログ操作系</h4>
+<ul>
+	<li type=circle><a href="dialog.html#showdialog">SHOWDIALOG</a></li>
+	<li type=circle><a href="dialog.html#enddialog">ENDDIALOG</a></li>
+	<li type=disk><a href="dialog.html#waitctrlnotify">WAITCTRLNOTIFY</a></li>
+	<li type=circle><a href="dialog.html#showmessage">SHOWMESSAGE</a></li>
+	<li type=circle><a href="dialog.html#showquestion">SHOWQUESTION</a></li>
+	<li type=circle><a href="dialog.html#newdialog">NEWDIALOG</a></li>
+	<li type=circle><a href="dialog.html#newdlgpage">NEWDLGPAGE</a></li>
+	<li type=circle><a href="dialog.html#setcurdlgpage">SETCURDLGPAGE</a>
+	(1.2x 〜)</li>
+	<li type=disk><a href="dialog.html#getcurdlgpage">GETCURDLGPAGE</a>
+	(1.2x 〜)</li>
+	<li type=circle><a href="dialog.html#setdlgtitle">SETDLGTITLE</a></li>
+	<li type=disk><a href="dialog.html#getdlgtitle">GETDLGTITLE</a></li>
+	<li type=circle><a href="dialog.html#savedialog">SAVEDIALOG</a></li>
+	<li type=circle><a href="dialog.html#loaddialog">LOADDIALOG</a></li>
+	<li type=disk><a href="dialog.html#getsignature">GETSIGNATURE</a></li>
+	<li type=circle><a href="dialog.html#setdlgpos">SETDLGPOS</a> (2.6x 〜)</li>
+	<li type=disk><a href="dialog.html#getdlgpos">GETDLGPOS</a> (2.6x 〜)</li>
+	<li type=disk><a href="dialog.html#getdlgsize">GETDLGSIZE</a> (2.7x 〜)</li>
+	<li type=circle><a href="dialog.html#setdlgimestate">SETDLGIMESTATE</a> (2.7x 〜)</li>
+	<li type=disk><a href="dialog.html#getdlgimestate">GETDLGIMESTATE</a> (2.7x 〜)</li>
+	<li type=circle><a href="dialog.html#setdlgexproperty">SETDLGEXPROPERTY</a> (3.11 〜)</li>
+	<li type=disk><a href="dialog.html#getdlgexproperty">GETDLGEXPROPERTY</a> (3.11 〜)</li>
+	<li type=circle><a href="dialog.html#newcontrol">NEWCONTROL</a></li>
+	<li type=circle><a href="dialog.html#enablectrl">ENABLECTRL</a></li>
+	<li type=circle><a href="dialog.html#newcolumn">NEWCOLUMN</a></li>
+	<li type=circle><a href="dialog.html#newpage">NEWPAGE</a></li>
+	<li type=circle><a href="dialog.html#setctrlstring">SETCTRLSTRING</a></li>
+	<li type=disk><a href="dialog.html#getctrlstring">GETCTRLSTRING</a></li>
+	<li type=circle><a href="dialog.html#setctrlstate">SETCTRLSTATE</a></li>
+	<li type=disk><a href="dialog.html#getctrlstate">GETCTRLSTATE</a></li>
+	<li type=circle><a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a></li>
+	<li type=circle><a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a></li>
+	<li type=circle><a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a></li>
+	<li type=circle><a href="dialog.html#setctrlfont">SETCTRLFONT</a></li>
+	<li type=circle><a href="dialog.html#setctrlimestate">SETCTRLIMESTATE</a>
+	(1.5x 〜)</li>
+	<li type=disk><a href="dialog.html#getctrlimestate">GETCTRLIMESTATE</a>
+	(1.5x 〜)</li>
+	<li type=circle><a href="dialog.html#setfocusedctrl">SETFOCUSEDCTRL</a>
+	(2.0x 〜)</li>
+	<li type=disk><a href="dialog.html#getfocusedctrl">GETFOCUSEDCTRL</a>
+	(2.0x 〜)</li>
+	<li type=circle><a href="dialog.html#setctrlsort">SETCTRLSORT</a>
+	(2.3x 〜)</li>
+	<li type=disk><a href="dialog.html#getctrlsort">GETCTRLSORT</a>
+	(2.3x 〜)</li>
+	<li type=circle><a href="dialog.html#setctrlitem">SETCTRLITEM</a></li>
+	<li type=circle><a href="dialog.html#changectrlitem">CHANGECTRLITEM</a></li>
+	<li type=circle><a href="dialog.html#deletectrlitem">DELETECTRLITEM</a></li>
+	<li type=circle><a href="dialog.html#resetctrlitem">RESETCTRLITEM</a></li>
+	<li type=disk><a href="dialog.html#getctrlitem">GETCTRLITEM</a></li>
+	<li type=circle><a href="dialog.html#setctrlfocuseditem">SETCTRLFOCUSEDITEM</a>
+	(2.9x 〜)</li>
+	<li type=disk><a href="dialog.html#getctrlfocuseditem">GETCTRLFOCUSEDITEM</a>
+	(2.9x 〜)</li>
+	<li type=circle><a href="dialog.html#setctrlexproperty">SETCTRLEXPROPERTY</a>
+	(3.10 〜)</li>
+	<li type=disk><a href="dialog.html#getctrlexproperty">GETCTRLEXPROPERTY</a>
+	(3.10 〜)</li>
+</ul>
+<br>
+<h4>ファイル・フォルダ操作系</h4>
+<ul>
+	<li type=circle><a href="file.html#appendcopy">APPENDCOPY</a></li>
+	<li type=circle><a href="file.html#appendcopytext">APPENDCOPYTEXT</a></li>
+	<li type=circle><a href="file.html#copy">COPY</a></li>
+	<li type=circle><a href="file.html#move">MOVE</a></li>
+	<li type=circle><a href="file.html#remove">REMOVE</a></li>
+	<li type=circle><a href="file.html#setattribute">SETATTRIBUTE</a></li>
+	<li type=circle><a href="file.html#touch">TOUCH</a></li>
+	<li type=disk><a href="file.html#fileopresult">FILEOPRESULT</a>
+	(2.0x 〜)</li>
+	<li type=disk><a href="file.html#getcurdir">GETCURDIR</a></li>
+	<li type=circle><a href="file.html#setcurdir">SETCURDIR</a></li>
+	<li type=circle><a href="file.html#mkdir">MKDIR</a></li>
+	<li type=circle><a href="file.html#rmdir">RMDIR</a></li>
+	<li type=circle><a href="file.html#enumfile">ENUMFILE</a></li>
+	<li type=circle><a href="file.html#enumdir">ENUMDIR</a></li>
+	<li type=circle><a href="file.html#enumpath">ENUMPATH</a></li>
+	<li type=disk><a href="file.html#findnext">FINDNEXT</a></li>
+	<li type=disk><a href="file.html#isreadonly">ISREADONLY</a></li>
+	<li type=disk><a href="file.html#sizeof">SIZEOF</a></li>
+	<li type=disk><a href="file.html#timestampof">TIMESTAMPOF</a></li>
+	<li type=disk><a href="file.html#timecountof">TIMECOUNTOF</a></li>
+	<li type=disk><a href="file.html#attributeof">ATTRIBUTEOF</a></li>
+	<li type=disk><a href="file.html#getdrives">GETDRIVES</a></li>
+	<li type=disk><a href="file.html#getlongname">GETLONGNAME</a></li>
+	<li type=circle><a href="file.html#run">RUN</a>
+	(1.7x 〜)</li>
+	<li type=circle><a href="file.html#run">MAXRUN</a>
+	(1.7x 〜)</li>
+	<li type=circle><a href="file.html#run">ICONRUN</a>
+	(1.7x 〜)</li>
+	<li type=circle><a href="file.html#run">HIDERUN</a>
+	(1.7x 〜)</li>
+</ul>
+<br>
+<h4>文字列操作系</h4>
+<ul>
+	<li type=circle><a href="string.html#atoi">ATOI</a>
+	(1.7x 〜)</li>
+	<li type=disk><a href="string.html#itoa">ITOA</a>
+	(1.7x 〜)</li>
+	<li type=circle><a href="string.html#stricmp">STRICMP</a></li>
+	<li type=circle><a href="string.html#strcount">STRCOUNT</a></li>
+	<li type=disk><a href="string.html#gsub">GSUB</a></li>
+	<li type=disk><a href="string.html#gettoken">GETTOKEN</a></li>
+	<li type=circle><a href="string.html#hasmoretokens">HASMORETOKENS</a></li>
+	<li type=disk><a href="string.html#ltrim">LTRIM</a></li>
+	<li type=disk><a href="string.html#rtrim">RTRIM</a></li>
+	<li type=circle><a href="string.html#strlen">STRLEN/STRLEN2</a></li>
+	<li type=circle><a href="string.html#strstr">STRSTR/STRSTR2</a></li>
+	<li type=circle><a href="string.html#strrstr">STRRSTR/STRRSTR2</a></li>
+	<li type=disk><a href="string.html#leftstr">LEFTSTR/LEFTSTR2</a></li>
+	<li type=disk><a href="string.html#rightstr">RIGHTSTR/RIGHTSTR2</a></li>
+	<li type=disk><a href="string.html#midstr">MIDSTR/MIDSTR2</a></li>
+	<li type=disk><a href="string.html#tolower">TOLOWER/TOLOWER2</a></li>
+	<li type=disk><a href="string.html#toupper">TOUPPER/TOUPPER2</a></li>
+	<li type=disk><a href="string.html#reverse">REVERSE/REVERSE2</a> (2.5x 〜)</li>
+	<li type=disk><a href="string.html#tohankaku">TOHANKAKU</a> (2.6x 〜)</li>
+	<li type=disk><a href="string.html#tozenkakuhira">TOZENKAKUHIRA</a> (2.6x 〜)</li>
+	<li type=disk><a href="string.html#tozenkakukata">TOZENKAKUKATA</a> (2.6x 〜)</li>
+</ul>
+<br>
+<h4>BREGEXP DLL 操作系 (2.0x 〜)</h4>
+<ul>
+	<li type=circle><a href="bre_wrap.html#bre_load">BRE_LOAD</a></li>
+	<li type=circle><a href="bre_wrap.html#bre_free">BRE_FREE</a></li>
+	<li type=disk><a href="bre_wrap.html#bre_version">BRE_VERSION</a></li>
+	<li type=disk><a href="bre_wrap.html#bre_errormsg">BRE_ERRORMSG</a></li>
+	<li type=disk><a href="bre_wrap.html#bre_match">BRE_MATCH</a></li>
+	<li type=disk><a href="bre_wrap.html#bre_subst">BRE_SUBST</a></li>
+	<li type=disk><a href="bre_wrap.html#bre_trans">BRE_TRANS</a></li>
+	<li type=circle><a href="bre_wrap.html#bre_split">BRE_SPLIT</a></li>
+	<li type=disk><a href="bre_wrap.html#bre_getnext">BRE_GETNEXT</a></li>
+	<li type=disk><a href="bre_wrap.html#bre_postostr">BRE_POSTOSTR</a></li>
+	<li type=circle><a href="bre_wrap.html#bre_hasmoreresults">BRE_HASMORERESULTS</a></li>
+</ul>
+<br>
+<h4>HMJRE DLL 操作系 (2.97 〜)</h4>
+<ul>
+	<li type=circle><a href="hm_jre.html#hmjre_load">HMJRE_LOAD</a></li>
+	<li type=circle><a href="hm_jre.html#hmjre_free">HMJRE_FREE</a></li>
+	<li type=disk><a href="hm_jre.html#hmjre_get_version">HMJRE_GET_VERSION</a></li>
+	<li type=disk><a href="hm_jre.html#hmjre_match">HMJRE_MATCH</a></li>
+	<li type=disk><a href="hm_jre.html#hmjre_get_tag_position">HMJRE_GET_TAG_POSITION</a></li>
+	<li type=disk><a href="hm_jre.html#hmjre_get_match_string">HMJRE_GET_MATCH_STRING</a></li>
+	<li type=circle><a href="hm_jre.html#hmjre_find_regular">HMJRE_FIND_REGULAR</a></li>
+	<li type=circle><a href="hm_jre.html#hmjre_find_regular_no_case_sense">HMJRE_FIND_REGULAR_NO_CASE_SENSE</a></li>
+	<li type=disk><a href="hm_jre.html#hmjre_replace_regular">HMJRE_REPLACE_REGULAR</a> (3.10 〜)</li>
+	<li type=disk><a href="hm_jre.html#hmjre_replace_regular_no_case_sense">HMJRE_REPLACE_REGULAR_NO_CASE_SENSE</a> (3.10 〜)</li>
+	<li type=circle><a href="hm_jre.html#hmjre_get_last_match_length">HMJRE_GET_LAST_MATCH_LENGTH</a></li>
+	<li type=circle><a href="hm_jre.html#hmjre_get_last_match_tag_position">HMJRE_GET_LAST_MATCH_TAG_POSITION</a></li>
+	<li type=circle><a href="hm_jre.html#hmjre_get_last_match_tag_length">HMJRE_GET_LAST_MATCH_TAG_LENGTH</a></li>
+	<li type=circle><a href="hm_jre.html#hmjre_env_changed">HMJRE_ENV_CHANGED</a></li>
+	<li type=circle><a href="hm_jre.html#hmjre_option_dialog">HMJRE_OPTION_DIALOG</a></li>
+</ul>
+<br>
+<h4>グローバル変数操作系 (1.2x 〜)</h4>
+<ul>
+	<li type=circle><a href="variable.html#setvar">SETVAR</a></li>
+	<li type=disk><a href="variable.html#getvar">GETVAR</a></li>
+	<li type=circle><a href="variable.html#delvar">DELVAR</a></li>
+	<li type=circle><a href="variable.html#existvar">EXISTVAR</a></li>
+	<li type=circle><a href="variable.html#enumvar">ENUMVAR</a></li>
+	<li type=disk><a href="variable.html#nextvar">NEXTVAR</a></li>
+	<li type=circle><a href="variable.html#hasmorevars">HASMOREVARS</a></li>
+</ul>
+<br>
+<h4>画像(Susie Plug-in)操作系 (1.2x 〜)</h4>
+<ul>
+	<li type=circle><a href="image.html#loadspi">LOADSPI</a></li>
+	<li type=circle><a href="image.html#freespi">FREESPI</a></li>
+	<li type=disk><a href="image.html#getspiinfo">GETSPIINFO</a></li>
+	<li type=circle><a href="image.html#issupportedpic">ISSUPPORTEDPIC</a></li>
+	<li type=disk><a href="image.html#getpicinfo">GETPICINFO</a></li>
+</ul>
+<br>
+<h4>色指定操作系 (2.0x 〜)</h4>
+<ul>
+	<li type=circle><a href="color.html#clr_load">CLR_LOAD</a></li>
+	<li type=circle><a href="color.html#clr_save">CLR_SAVE</a></li>
+	<li type=circle><a href="color.html#clr_setname">CLR_SETNAME</a></li>
+	<li type=disk><a href="color.html#clr_getname">CLR_GETNAME</a></li>
+	<li type=disk><a href="color.html#clr_getrgb">CLR_GETRGB</a></li>
+</ul>
+<br>
+<b><a href="color.html#format">色指定及びデータファイルの書式について</a></b><br>
+<br>
+<br>
+<h4>その他</h4>
+<ul>
+	<li type=disk><a href="misc.html#getversion">GETVERSION</a></li>
+	<li type=disk><a href="misc.html#getosinfo">GETOSINFO</a></li>
+<!--	<li type=disk><a href="misc.html#calc">CALC</a></li>	-->
+	<li type=disk><a href="misc.html#getcaretpos">GETCARETPOS</a> (2.7x 〜)</li>
+	<li type=disk><a href="misc.html#getcursorpos">GETCURSORPOS</a> (2.7x 〜)</li>
+	<li type=circle><a href="misc.html#sleep">SLEEP</a> (2.7x 〜)</li>
+	<li type=disk><a href="misc.html#msgbox">MSGBOX</a> (2.8x 〜)</li>
+</ul>
+<br>
+<br>
+<a name="control"><hr size=1></a>
+<h3>【コントロール一覧】</h3>
+<br>
+<h4>テキスト表示・入力</h4>
+<ul>
+	<li type=square><a href="controls.html#text">スタティックテキスト</a></li>
+	<li type=square><a href="controls.html#line">横・縦棒</a></li>
+	<li type=square><a href="controls.html#edit">(複数行・パスワード入力(Ver.2.0X 〜))エディットボックス</a></li>
+</ul>
+<br>
+<h4>ボタン</h4>
+<ul>
+	<li type=square><a href="controls.html#button">(デフォルト)プッシュボタン</a></li>
+	<li type=square><a href="controls.html#refbutton">参照ボタン</a></li>
+	<li type=square><a href="controls.html#check">チェック・ラジオボタン</a></li>
+	<li type=square><a href="controls.html#okcancel">ＯＫ・キャンセルボタン</a></li>
+</ul>
+<br>
+<h4>項目選択</h4>
+<ul>
+	<li type=square><a href="controls.html#radio">グループボックス付きラジオボタン</a></li>
+	<li type=square><a href="controls.html#list">リストボックス</a></li>
+	<li type=square><a href="controls.html#combo">コンボボックス・ドロップダウンリスト(Ver.2.0x 〜)</a></li>
+	<li type=square><a href="controls.html#lview">複数列リスト</a></li>
+	<li type=square><a href="controls.html#chklist">チェックリスト</a></li>
+	<li type=square><a href="controls.html#tree">ツリービュー</a></li>
+</ul>
+<br>
+<h4>数値選択</h4>
+<ul>
+	<li type=square><a href="controls.html#spin">スピンボタン</a></li>
+	<li type=square><a href="controls.html#track">トラックバー</a></li>
+</ul>
+<br>
+<h4>子ダイアログ表示</h4>
+<ul>
+	<li type=square><a href="controls.html#frame">フレーム</a></li>
+	<li type=square><a href="controls.html#tab">タブ</a></li>
+	<li type=square><a href="controls.html#group">グループボックス</a></li>
+</ul>
+<br>
+<b><a href="controls.html#nimonic">ニモニック指定について</a></b><br>
+<br>
+<br>
+<a name="misc"><hr size=1></a>
+<h3>【その他】</h3>
+<br>
+<ul>
+	<li type=square><a href="info.html#copyright">著作権・配布条件等</a></li>
+	<li type=square><a href="info.html#to_authors">田楽ＤＬＬを使うソフトウェアの作者の方へ</a></li>
+	<li type=square><a href="info.html#acknowledgement">謝辞</a></li>
+	<li type=square><a href="info.html#history">更新履歴</a></li>
+</ul>
+</font>
+</body>
+</html>

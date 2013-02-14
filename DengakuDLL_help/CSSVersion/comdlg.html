@@ -1,0 +1,451 @@
+<html>
+<head>
+<title>田楽(でんがく)DLL API Reference Manual [コモンダイアログ]</title>
+</head>
+<body bgcolor="#efefef">
+<a name="getfilename"><hr size=1></a>
+<h3><font color="blue">GETFILENAME</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETFILENAME",#n1,$s2,$s3,$s4);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		「ファイルを開く」コモンダイアログを表示して、
+		ユーザーが選んだファイル名を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>#n1 :</nobr></td>
+			<td>オーナーウィンドウのウィンドウハンドル(または 0)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>ダイアログのタイトル文字列(ex. "ファイルの参照")</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s3 :</nobr></td>
+			<td>初期フォルダ名(\初期ファイル名)<br>
+				"" または "." を指定すると現在のフォルダになります。<br>
+				また、現在のフォルダで初期ファイル名を指定したい時は
+				".\初期ファイル名" として下さい。</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s4 :</nobr></td>
+			<td>「ファイルの種類」コンボボックスに追加するフィルタ文字列
+				（複数指定可。なければ "" を指定）<br>
+				<br>
+				(一つの)フィルタ文字列の書式は以下の通りです。<br>
+				<ul>
+					<code>"<i>explain</i>(<i>ext</i>[;<i>ext</i>...])"</code><br>
+					<br>
+					<table>
+					<tr>
+						<td valign=top><nobr><code><i>explain</i>:</code></nobr></td>
+						<td>説明文</td>
+					</tr>
+					<tr>
+						<td valign=top><nobr><code><i>ext</i>:</code></nobr></td>
+						<td>拡張子指定(例："*.txt")<br>
+							(複数ある場合はセミコロンで区切って指定)</td>
+					</tr>
+					</table>
+				</ul>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		ダイアログで指定されたファイルのフルパス名が返ります。<br>
+		ファイルが複数指定された場合は、
+		フォルダ名に続けてファイル名を
+		"|" で区切ったものが返ってきます
+		(<code>"dirname|file1|file2|.."</code>)。<br>
+		キャンセルの場合は "" が返ります。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$selectfile = dllfuncstr("GETFILENAME",
+                hidemaruhandle(0),
+                "ファイルを選択して下さい",
+                "C:\\windows",
+                "'実行ファイル(*.com;*.exe)' 'スクリーンセーバー(*.scr)'"
+            );
+if ($selectfile != "") {
+    message "選択されたファイルは " + $selectfile + " です";
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="getdirname"><hr size=1></a>
+<h3><font color="blue">GETDIRNAME</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETDIRNAME",#n1,$s2,$s3);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		「フォルダの指定」コモンダイアログを表示して、
+		ユーザーが選んだフォルダ名を返します。<br>
+		<br>
+		なお、各フォルダは名前順にソートされます
+		(<a href="#getdirnameex">GETDIRNAMEEX()</a> も同様)。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>#n1 :</nobr></td>
+			<td>オーナーウィンドウのウィンドウハンドル(または 0)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>ダイアログのタイトル文字列(ex. "フォルダの参照")</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s3 :</nobr></td>
+			<td>初期フォルダ（＆ファイル）名("" ならカレントフォルダ)</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		ダイアログで指定されたフォルダ名が返ります。
+		キャンセルの場合は "" が返ります。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$selectdir = dllfuncstr("GETDIRNAME",
+                hidemaruhandle(0),
+                "フォルダを選択して下さい",
+                "C:\\windows"
+            );
+if ($selectdir != "") {
+    message "選択されたフォルダは " + $selectdir + " です";
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="getdirnameex"><hr size=1></a>
+<h3><font color="blue">GETDIRNAMEEX</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETDIRNAMEEX",#n1,$s2,$s3,#n4);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		「フォルダの指定」コモンダイアログを表示して、
+		ユーザーが選んだフォルダ名を返します。
+		<a href="#getdirname">GETDIRNAME 関数</a>とは異なり、
+		フォルダの作成・名前の変更・削除ができるようになっています。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>#n1 :</nobr></td>
+			<td>オーナーウィンドウのウィンドウハンドル(または 0)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>ダイアログのタイトル文字列(ex. "フォルダの参照")</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s3 :</nobr></td>
+			<td>初期フォルダ（＆ファイル）名("" ならカレントフォルダ)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n4 :</nobr></td>
+			<td>1 を指定するとフォルダ操作ができるようになります。<br>
+				0 を指定するとフォルダ操作を禁止します。</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		ダイアログで指定されたフォルダ名が返ります。
+		キャンセルの場合は "" が返ります。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$selectdir = dllfuncstr("GETDIRNAMEEX",
+                hidemaruhandle(0),
+                "フォルダを選択して下さい",
+                "C:\\windows",
+                1
+            );
+if ($selectdir != "") {
+    message "選択されたフォルダは " + $selectdir + " です";
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="getcolor"><hr size=1></a>
+<h3><font color="blue">GETCOLOR</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETCOLOR",#n1,$s2,$s3);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		「色の指定」コモンダイアログを表示して、
+		ユーザーが選んだ色を RGB 値の文字列で返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>#n1 :</nobr></td>
+			<td>オーナーウィンドウのウィンドウハンドル(または 0)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>ダイアログのタイトル文字列(ex. "フォルダの参照")</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s3 :</nobr></td>
+			<td>初期色指定<br>
+				(色指定については
+				<a href="color.html#format">こちら</a>を参照して下さい)<br>
+				空白またはカンマで区切って(※)複数の色を
+				指定することができますが、
+				その場合最初の指定が初期選択色、
+				それ以降の指定はユーザー定義の色指定になります。<br>
+				<br>
+				<table>
+				<tr>
+					<td valign=top>※</td>
+					<td>(Ver.1.XX との互換性により)
+						RGB 値による指定の場合に限り、
+						<code>"#FF0000#010101#F0F0F0"</code> のように
+						連続して指定することもできます。</td>
+				</tr>
+				</table>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		ダイアログで選択された色指定（＋ユーザー定義色）が RGB 値で返ります。
+		キャンセルの場合は "" が返ります。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$selectcolors = dllfuncstr("GETCOLOR",
+                    hidemaruhandle(0),
+                    "色を選択して下さい",
+                    "white #0F0F0F #E0E0E0" // "white #0F0F0F#E0E0E0" もＯＫ
+                );
+// $selectcolors == "#??????#0F0F0F#E0E0E0" (#?????? はユーザーが選んだ色)
+if ($selectcolors != "") {
+    message "選択された色は " + leftstr($selectcolors,7) + " です";
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="getfont"><hr size=1></a>
+<h3><font color="blue">GETFONT</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETFONT",#n1,$s2,$s3);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		「フォントの選択」コモンダイアログを表示して、
+		ユーザーが選んだフォント名その他の属性を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>#n1 :</nobr></td>
+			<td>オーナーウィンドウのウィンドウハンドル(または 0)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>ダイアログのタイトル文字列(ex. "フォルダの参照")</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s3 :</nobr></td>
+			<td>初期フォント名＆属性指定<br>
+				<br>
+				$s3 （と返り値）の書式は以下の通りです。<br>
+				<ul>
+					<code>"<i>face</i>,<i>size</i>,<i>color</i>,<i>attr</i>"</code><br>
+					<br>
+					<table>
+					<tr>
+						<td valign=top><nobr><code><i>face</i>:</code></nobr></td>
+						<td>フォント名</td>
+					</tr>
+					<tr>
+						<td valign=top><nobr><code><i>size</i>:</code></nobr></td>
+						<td>フォントサイズ (単位は pt)</td>
+					</tr>
+					<tr>
+						<td valign=top><nobr><code><i>color</i>:</code></nobr></td>
+						<td>色指定
+						(<a href="color.html#format">こちら</a>を参照して下さい)</td>
+					</tr>
+					<tr>
+						<td valign=top><nobr><code><i>attr</i>:</code></nobr></td>
+						<td>属性指定 (以下の文字の組み合わせ)<br>
+							<table>
+							<tr><td><code>b</code></td><td>ボールド体</td></tr>
+							<tr><td><code>i</code></td><td>イタリック体</td></tr>
+							<tr><td><code>u</code></td><td>下線あり</td></tr>
+							<tr><td><code>s</code></td><td>打ち消し線あり</td></tr>
+							</table>
+							（例： "biu" …ボールド＆イタリック＆下線あり）
+						</td>
+					</tr>
+					</table>
+				</ul>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		ダイアログで指定されたフォント指定が返ります。
+		キャンセルの場合は "" が返ります。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$selectfont = dllfuncstr("GETFONT",
+                    hidemaruhandle(0),
+                    "フォントを選択して下さい",
+                    "ＭＳ Ｐゴシック,12,black,bi"
+                );
+if ($selectfont != "") {
+    $face = dllfuncstr("GETTOKEN",$selectfont,",");
+    $size = dllfuncstr("GETTOKEN","",",");
+    $color = dllfuncstr("GETTOKEN","",",");
+    $attr = "(なし)";
+    if (dllfunc("HASMORETOKENS")) {
+        $$a = dllfuncstr("GETTOKEN","",",");
+        if (strstr($$a,"b") != -1) $attr = "ボールド";
+        if (strstr($$a,"i") != -1) {
+            if (strlen($attr) > 0) $attr = $attr + ",";
+            $attr = $attr + "イタリック";
+        }
+        if (strstr($$a,"u") != -1) {
+            if (strlen($attr) > 0) $attr = $attr + ",";
+            $attr = $attr + "下線あり";
+        }
+        if (strstr($$a,"s") != -1) {
+            if (strlen($attr) > 0) $attr = $attr + ",";
+            $attr = $attr + "打ち消し線あり";
+        }
+    }
+    message "選択されたフォントは\n" + 
+            "　フォント名： " + $face + "\n" + 
+            "　サイズ　　： " + $size + " pt\n" + 
+            "　色　　　　： " + $color + "\n" + 
+            "　属性　　　： " + $attr + "\n" + 
+            "です";
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+</body>
+</html>

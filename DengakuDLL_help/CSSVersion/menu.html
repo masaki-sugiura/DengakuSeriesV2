@@ -1,0 +1,580 @@
+<html>
+<head>
+<title>田楽(でんがく)DLL API Reference Manual [メニュー]</title>
+</head>
+<body bgcolor="#efefef">
+<a name="newmenu"><hr size=1></a>
+<h3><font color="blue">NEWMENU</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("NEWMENU",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		<a href="#menu">MENU 関数</a> で表示するための
+		ポップアップメニューの作成を開始します。
+		この関数は単に新しいメニュー(の識別名)を定義するだけです。
+		実際にメニューの項目を追加するには
+		<a href="#addmenuitem">ADDMENUITEM 関数</a> を使用します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>
+				メニューの識別名
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		関数が成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+		<pre>
+if (dllfunc("NEWMENU","main") == 0  ||
+    dllfunc("ADDMENUITEM","","項目１","") == 0  ||
+    dllfunc("ADDMENUITEM","","","") == 0    ||
+    dllfunc("ADDMENUITEM","","サブメニュー","sub") == 0) {
+    message "メインメニューの作成に失敗!!";
+    ...
+}
+if (dllfunc("NEWMENU","sub") == 0   ||
+    dllfunc("ADDMENUITEM","","サブ項目１","") == 0  ||
+    dllfunc("ADDMENUITEM","","サブ項目２","") == 0) {
+    message "サブメニューの作成に失敗!!";
+    ...
+}
+$select_item = dllfuncstr("MENU","main",hidemaruhandle(0));
+if ($select_item == "!") {
+    //  エラー！！
+} else if ($select_item == "0") {
+    //  キャンセル
+} else if (leftstr($select_item,4) == "main") {
+    //  メインメニュー("main")の項目が選択された
+    #index = val(midstr($select_item,5,1)); //  項目のインデックス
+    ...
+} else {
+    //  サブメニュー("sub")の項目が選択された
+    #index = val(midstr($select_item,4,1)); //  項目のインデックス
+    ...
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="addmenuitem"><hr size=1></a>
+<h3><font color="blue">ADDMENUITEM</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("ADDMENUITEM",$s1,$s2,$s3);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		<a href="#newmenu">NEWMENU 関数</a> で作成したメニューに
+		項目を追加します。<br>
+		(<a href="#addmenuitemex">ADDMENUITEMEX 関数</a> の
+		第４引数に "" を指定した場合と同じです。)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td><a href="#newmenu">NEWMENU 関数</a> の引数で指定した
+					メニューの識別名<br>
+					（"" を指定すると、最新の NEWMENU 関数で作成したメニュー
+					を指定したと解釈されます）</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>メニュー項目の文字列<br>
+				（"" を指定するとセパレータと解釈されます）</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s3 :</nobr></td>
+			<td>この項目がサブメニューを持つ時はそのサブメニューの識別名<br>
+				サブメニューがない時は ""</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		関数が成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(<a href="#newmenu">NEWMENU 関数</a> の例を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="addmenuitemex"><hr size=1></a>
+<h3><font color="blue">ADDMENUITEMEX</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("ADDMENUITEMEX",$s1,$s2,$s3,$s4);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		
+		<a href="#newmenu">NEWMENU 関数</a> で作成したメニューに
+		項目を追加します。
+		チェックの有無や有効・無効の状態を指定できます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td><a href="#newmenu">NEWMENU 関数</a> の引数で指定した
+					メニューの識別名<br>
+					（"" を指定すると、最新の NEWMENU 関数で作成したメニュー
+					を指定したと解釈されます）</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>メニュー項目の文字列<br>
+				（"" を指定するとセパレータと解釈されます）</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s3 :</nobr></td>
+			<td>この項目がサブメニューを持つ時はそのサブメニューの識別名<br>
+				サブメニューがない時は ""</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s4 :</nobr></td>
+			<td>項目の状態<br>
+				"c" を指定すると項目の前にチェックがつきます。<br>
+				また "d" を指定すると項目が無効状態(グレー表示)になり、
+				選択できなくなります。<br>
+				"cd" のように両方を同時に指定することもできます。</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		関数が成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+		<pre>
+#n = dllfunc("ADDMENUITEMEX","","チェックをつける","","c");
+#n = dllfunc("ADDMENUITEMEX","","無効にする","","d");
+#n = dllfunc("ADDMENUITEMEX","","両方の指定","","cd");</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="changemenuitem"><hr size=1></a>
+<h3><font color="blue">CHANGEMENUITEM</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("CHANGEMENUITEM",$s1,#n2,$s3);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		メニュー項目のテキストを変更します。
+		なお、項目の種類（普通の項目か、セパレータか、サブメニューの有無）は
+		変更できません。<br>
+		(<a href="#changemenuitemex">CHANGEMENUITEMEX 関数</a> の
+		第４引数に "" を指定した場合と同じです。)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td><a href="#newmenu">NEWMENU 関数</a> の引数で指定した
+					メニューの識別名<br>
+					（"" を指定すると、最新の NEWMENU 関数で作成したメニュー
+					を指定したと解釈されます）</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n2 :</nobr></td>
+			<td>変更する項目の番号<br>
+				（番号は <b>セパレータも含めて</b> 1 から数えます）</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s3 :</nobr></td>
+			<td>新しい項目テキスト</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		関数が成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+if (!dllfunc("NEWMENU","test")  ||
+    !dllfunc("ADDMENUITEM","","1 回目の表示","")) {
+    message "メニューの作成に失敗しました";
+    ...
+}
+#n = 1;
+while (1) {
+    $sel = dllfuncstr("MENU","test",hidemaruhandle(0));
+    if ($sel == "!" || $sel == "") break;
+    #n = #n + 1;
+    if (!dllfunc("CHANGEMENUITEM","test",1,str(#n)+" 回目の表示")) break;
+}
+...</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<a name="changemenuitemex"><hr size=1></a>
+<h3><font color="blue">CHANGEMENUITEMEX</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("CHANGEMENUITEMEX",$s1,#n2,$s3,$4);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		メニュー項目のテキスト及び属性を変更します。
+		なお、項目の種類（普通の項目か、セパレータか、サブメニューの有無）は
+		変更できません。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td><a href="#newmenu">NEWMENU 関数</a> の引数で指定した
+					メニューの識別名<br>
+					（"" を指定すると、最新の NEWMENU 関数で作成したメニュー
+					を指定したと解釈されます）</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n2 :</nobr></td>
+			<td>変更する項目の番号<br>
+				（番号は <b>セパレータも含めて</b> 1 から数えます）</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s3 :</nobr></td>
+			<td>新しい項目テキスト</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s4 :</nobr></td>
+			<td>新しい項目属性<br>
+				(指定方法は <a href="#addmenuitemex">ADDMENUITEMEX 関数</a>
+				と同じです)</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		関数が成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(省略)
+	</td>
+</tr>
+</table>
+<br>
+<a name="deletemenuitem"><hr size=1></a>
+<h3><font color="blue">DELETEMENUITEM</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("DELETEMENUITEM",$s1,#n2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		指定したメニュー項目を削除します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td><a href="#newmenu">NEWMENU 関数</a> の引数で指定した
+					メニューの識別名<br>
+					（"" を指定すると、最新の NEWMENU 関数で作成したメニュー
+					を指定したと解釈されます）</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n2 :</nobr></td>
+			<td>削除する項目の番号<br>
+				（番号は <b>セパレータも含めて</b> 1 から数えます）
+				（0 を指定すると全ての項目を削除します）</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		関数が成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+...
+if (!dllfunc("DELETEMENUITEM","main",0)) {
+    message "メニュー項目のクリアに失敗しました";
+    ...
+}
+##a = 1;
+while (##a &gt; 10) {
+    if (!dllfunc("ADDMENUITEM","main","新項目"+str(##a),"") break;
+    ##a = ##a + 1;
+}
+...</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="menu"><hr size=1></a>
+<h3><font color="blue">MENU</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("MENU",$s1,#n2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		<a href="#newmenu">NEWMENU 関数</a>、
+		<a href="#addmenuitem">ADDMENUITEM 関数</a> 等で作成した
+		メニューを表示して、ユーザーが選択した結果を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td><a href="#newmenu">NEWMENU 関数</a> の引数で指定した
+				メニューの識別名</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n2 :</nobr></td>
+			<td>マウスカーソルの位置にメニューを表示する時は 0、<br>
+				キャレット（|）の位置にメニューを表示する時は
+				秀丸のウィンドウハンドル(= hidemaruhandle(0))</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<ul>
+			<li>エラーの場合は "!"</li>
+			<li>キャンセルの場合は "0"</li>
+			<li>選択された場合は
+				"<code><i>menuname</i><b>:</b><i>index</i></code>"<br>
+				<i>menuname</i>
+				は選択項目を含むメニュー（またはサブメニュー）の識別名、
+				<i>index</i> は項目の番号
+				（一番上が 1 で、<b>セパレータも含めて</b>順番に
+				1 づつ増える）</li>
+		</ul>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(<a href="#newmenu">NEWMENU 関数</a> の例を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="menuex"><hr size=1></a>
+<h3><font color="blue">MENUEX</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("MENUEX",$s1,#n2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		<a href="#newmenu">NEWMENU 関数</a>、
+		<a href="#addmenuitem">ADDMENUITEM 関数</a> 等で作成した
+		メニューを指定した位置に表示して、
+		ユーザーが選択した結果を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td><a href="#newmenu">NEWMENU 関数</a> の引数で指定した
+				メニューの識別名</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n2 :</nobr></td>
+			<td>マウスカーソルの位置にメニューを表示する時は 0、<br>
+				キャレット（|）の位置にメニューを表示する時は
+				秀丸のウィンドウハンドル(= hidemaruhandle(0))</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n3 :</nobr></td>
+			<td>#2 で指定した位置からの横方向のずれ(ピクセル単位)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n4 :</nobr></td>
+			<td>#2 で指定した位置からの縦方向のずれ(ピクセル単位)</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<ul>
+			<li>エラーの場合は "!"</li>
+			<li>キャンセルの場合は "0"</li>
+			<li>選択された場合は
+				"<code><i>menuname</i><b>:</b><i>index</i></code>"<br>
+				<i>menuname</i>
+				は選択項目を含むメニュー（またはサブメニュー）の識別名、
+				<i>index</i> は項目の番号
+				（一番上が 1 で、<b>セパレータも含めて</b>順番に
+				1 づつ増える）</li>
+		</ul>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+		<pre>
+// (これ以前に "main" という名前でメニューを作成しておく)
+
+// カーソル位置から１行分下にメニューを表示
+// (fontsize はフォントの高さを表す秀丸マクロのキーワード)
+$select_item = dllfuncstr("MENUEX","main",hidemaruhandle(0),0,fontsize);
+if ($select_item == "!") {
+    //  エラー！！
+} else if ($select_item == "0") {
+    //  キャンセル
+} else if (leftstr($select_item,4) == "main") {
+    //  メインメニュー("main")の項目が選択された
+    #index = val(midstr($select_item,5,1)); //  項目のインデックス
+    ...
+} else {
+    //  サブメニュー("sub")の項目が選択された
+    #index = val(midstr($select_item,4,1)); //  項目のインデックス
+    ...
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+</body>
+</html>

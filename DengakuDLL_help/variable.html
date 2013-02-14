@@ -1,0 +1,380 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=iso-2022-jp">
+<title>田楽(でんがく)DLL API Reference Manual [グローバル変数]</title>
+</head>
+<body bgcolor="#efefef">
+<a name="setvar"><hr size=1></a>
+<h3><font color="blue">SETVAR</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SETVAR",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		DengakuDLL.DLL を使用する全てのプロセス(秀丸ウィンドウ)で共有される、
+		(永続的な)グローバル変数を定義します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>変数の名前<br>
+				変数名の先頭に "@" を付けるとその変数は永続的なものになり、
+				DLL がアンロードされた後も保存され、
+				次回の DLL のロード時に自動的に読み込まれます。<br>
+				なお、変数用に用意されているメモリは変数名とその値を合わせて
+				16MB 程度なので、
+				大量のデータを定義する際はその制限に十分注意して下さい。
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>変数の値</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>備考：</b></nobr></td>
+	<td></td>
+	<td>
+        Ver.2.20 からグローバル変数の実装を変更したため、
+		それ以前のバージョンの田楽ＤＬＬ/サーバとグローバル変数の共有が
+		できなくなりました。したがって、
+		２つのウィンドウ(プロセス)間で変数を共有する場合は
+		両者共に Ver.2.20 以降のＤＬＬ/サーバを利用してください。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+		<pre>
+//  元ウィンドウで DLL をロード
+loaddll hidemarudir + "\\DengakuDLL.dll";
+//  グローバル変数の定義
+if (dllfunc("SETVAR","arg0","this is arg 0.") == 0  ||
+    dllfunc("SETVAR","arg1","this is arg 1.") == 0  ||
+    dllfunc("SETVAR","arg2","this is arg 2.") == 0) {
+    message "変数の定義に失敗!!";
+    ...
+}
+//  別ウィンドウのオープン
+openfile "foo.txt";
+//  別ウィンドウで新たに DLL をロード
+loaddll hidemarudir + "\\DengakuDLL.dll";
+//  定義しておいたグローバル変数を読み込む
+##a = 0;
+while (##a &lt; 3) {
+    $arg[##a] = dllfuncstr("GETVAR","arg" + str(##a));
+    if (dllfunc("DELVAR","arg" + str(##a))) break;
+    ##a = ##a + 1;
+}
+...
+//  永続的なグローバル変数の定義(マクロ終了後も保存される)
+if (dllfunc("SETVAR","@super_global","this is super-global var.") == 0) {
+    message "永続的変数の定義に失敗!!";
+}
+//  別ウィンドウでロードした DLL のアンロード
+//  (この時点では全てのグローバル変数がメモリ上に残った状態になる)
+freedll;
+closehidemaruforced hidemaruhandle(0);
+//  元ウィンドウでロードした DLL のアンロード
+//  (この時点で @super_global の値(のみ)が保存される)
+freedll;
+...</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="getvar"><hr size=1></a>
+<h3><font color="blue">GETVAR</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETVAR",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        <a href="#setvar">SETVAR 関数</a> で定義した変数の値を取り出します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>変数の名前</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        変数の値<br>
+		(未定義の変数に対しては "" を返しますが、
+		これだけでは "" という値を持つ変数と区別ができません。
+		変数が定義されているかどうかの判断は
+		<a href="#existvar">EXISTVAR 関数</a> で行って下さい。)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(<a href="#setvar">SETVAR 関数</a> の例を参照して下さい。)
+	</td>
+</tr>
+</table>
+<br>
+<a name="delvar"><hr size=1></a>
+<h3><font color="blue">DELVAR</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("DELVAR",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		変数を削除します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>変数の名前</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(<a href="#setvar">SETVAR 関数</a> の例を参照して下さい。)
+	</td>
+</tr>
+</table>
+<br>
+<a name="existvar"><hr size=1></a>
+<h3><font color="blue">EXISTVAR</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("EXISTVAR",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		変数が定義されているかどうかを調べます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>変数の名前</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        変数が定義されている場合は 1 を、そうでなければ 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(省略)
+	</td>
+</tr>
+</table>
+<br>
+<a name="enumvar"><hr size=1></a>
+<h3><font color="blue">ENUMVAR</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("ENUMVAR");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		現在定義されている変数名を列挙します。
+		列挙された変数名を取得するには <a href="#nextvar">NEXTVAR 関数</a>
+		を使用します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+		<pre>
+if (dllfunc("ENUMVAR") == 0) {
+    message "変数の列挙に失敗!!";
+    ...
+}
+while (dllfunc("HASMOREVARS")) {
+    $name = dllfuncstr("NEXTVAR");
+    $value = dllfuncstr("GETVAR",$name);
+    ...
+}
+...</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="nextvar"><hr size=1></a>
+<h3><font color="blue">NEXTVAR</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("NEXTVAR");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		<a href="#enumvar">ENUMVAR 関数</a> で列挙された変数名を
+		順に取り出します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		変数名。列挙が終了したら "" を返します。
+		なお、列挙の順序は不定です。
+		あと、NEXTVAR 関数の呼出しの途中で
+		<a href="#setvar">SETVAR 関数</a> を呼び出して、
+		新しく変数を追加した場合の動作も不定になります。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(<a href="#enumvar">ENUMVAR 関数</a> の例を参照して下さい。)
+	</td>
+</tr>
+</table>
+<br>
+<a name="hasmorevars"><hr size=1></a>
+<h3><font color="blue">HASMOREVARS</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("HASMOREVARS");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		<a href="#enumvar">ENUMVAR 関数</a> の呼出しの後、
+		まだ取り出されていない変数があるかどうかを調べます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		まだ変数が残っている場合は 1 を、そうでなければ 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(<a href="#enumvar">ENUMVAR 関数</a> の例を参照して下さい。)
+	</td>
+</tr>
+</table>
+<br>
+</body>
+</html>

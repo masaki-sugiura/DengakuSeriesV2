@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="iso-2022-jp"?>
+<!DOCTYPE reference [
+
+]>
+<reference name="DengakuDLL">
+
+<category name="ComDlgService" ver="1.0x">
+<refentry name="GETFILENAME" type="s" args="nsss">
+<description>
+「ファイルを開く」コモンダイアログを表示して、
+ユーザーが選んだファイル名を返します。
+</description>
+<syntax>
+<arg id="1" type="n">
+<description>オーナーウィンドウのウィンドウハンドル(または 0)</description>
+</arg>
+<arg id="2" type="s">
+<description>ダイアログのタイトル文字列(ex. "ファイルの参照")</description>
+</arg>
+<arg id="3" type="s">
+<description>初期フォルダ名(\初期ファイル名)</description>
+<supplement>
+"" または "." を指定すると現在のフォルダになります。
+また、現在のフォルダで初期ファイル名を指定したい時は
+".\初期ファイル名" として下さい。
+</supplement>
+</arg>
+<arg id="4" type="s">
+「ファイルの種類」コンボボックスに追加するフィルタ文字列
+（複数指定可。なければ "" を指定）
+<format>
+<syntax><arg id="1" desc="1">explain</arg>(<arg id="2">ext</arg>[;<arg id="2">ext</arg>...])</syntax>
+<description id="1">
+説明文
+</description>
+<description id="2">
+拡張子指定(例："*.txt") (複数ある場合はセミコロンで区切って指定)
+</description>
+</format>
+</arg>
+<retval type="s">
+ダイアログで指定されたファイルのフルパス名。
+キャンセルの場合は ""。
+<supplement>
+複数のファイルを指定された場合の書式は以下の通りです。
+<format>
+<syntax><arg id="1">dirname</arg>|<arg id="2">file1</arg>[|<arg id="2">file2</arg>...]"</syntax>
+<description id="1">
+フォルダ名
+</description>
+<description id="2">
+ファイル名
+</description>
+</format>
+</supplement>
+</retval>
+</syntax>
+<supplement>
+</supplement>
+<example>
+$selectfile = dllfuncstr("GETFILENAME",
+                hidemaruhandle(0),
+                "ファイルを選択して下さい",
+                "C:\\windows",
+                "'実行ファイル(*.com;*.exe)' 'スクリーンセーバー(*.scr)'"
+            );
+if ($selectfile != "") {
+    message "選択されたファイルは " + $selectfile + " です";
+}
+</example>
+</refentry>
+
+
+</category>
+
+
+</reference>

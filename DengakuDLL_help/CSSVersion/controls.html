@@ -1,0 +1,4325 @@
+<html>
+<head>
+<title>田楽(でんがく)DLL API Reference Manual [コントロール]</title>
+</head>
+<body bgcolor="#efefef">
+<a name="text"><hr size=1></a>
+<h3><font color="blue">スタティックテキスト</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>コントロール名：</b></nobr></td>
+	<td>　</td>
+	<td><code><b>text</b></code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		テキスト（文字列）を表示します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数＆返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<table cellpadding=5 border=0>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#newcontrol">NEWCONTROL</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>表示するテキスト
+						(<a href="#nimonic">ニモニック指定</a>有効)</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlfont">SETCTRLFONT</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstring">SETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>表示するテキスト
+						(<a href="#nimonic">ニモニック指定</a>有効)</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstring">GETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				表示中のテキスト
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstate">SETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstate">GETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlimestate">SETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlimestate">GETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlsort">SETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlsort">GETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#changectrlitem">CHANGECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#deletectrlitem">DELETECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#resetctrlitem">RESETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlitem">GETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#enablectrl">ENABLECTRL</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="line"><hr size=1></a>
+<h3><font color="blue">横・縦棒</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>コントロール名：</b></nobr></td>
+	<td>　</td>
+	<td><code><b>hline</b>(横)、<b>vline</b>(縦)</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		縦、または横線を表示します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数＆返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<table cellpadding=5 border=0>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#newcontrol">NEWCONTROL</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>#n2 :</code></nobr></td>
+					<td>(hline のみ)線の長さ（単位は半角文字１文字分）</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>#n2 :</code></nobr></td>
+					<td>(vline のみ)線の長さ（単位は半角文字１文字分）</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlfont">SETCTRLFONT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstring">SETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstring">GETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstate">SETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstate">GETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlimestate">SETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlimestate">GETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlsort">SETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlsort">GETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#changectrlitem">CHANGECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#deletectrlitem">DELETECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#resetctrlitem">RESETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlitem">GETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#enablectrl">ENABLECTRL</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="edit"><hr size=1></a>
+<h3><font color="blue">(複数行/パスワード入力)エディットボックス</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>コントロール名：</b></nobr></td>
+	<td>　</td>
+	<td><code><b>edit</b>(１行)、
+			<b>mledit</b>(複数行)、
+			<b>pwdedit</b>(パスワード入力)</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		文字の入力・編集をするコントロールを配置します。<br>
+		通常は１行のみ(<code>edit</code>)ですが、
+		複数行に渡るテキスト(<code>mledit</code>)や
+		入力したものを表示したくないテキスト(<code>pwdedit</code>)も
+		扱えます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数＆返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<table cellpadding=5 border=0>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#newcontrol">NEWCONTROL</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>最初に表示するテキスト<br>
+						改行は "\n" で指定(mledit のみ有効)<br>
+						※pwdedit の場合、
+						テキストは全て "*" の並びで表示されます。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlfont">SETCTRLFONT</a>
+			</code></td>
+			<td>　</td>
+			<td>※色指定は無視されます。</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>テキストが変更された時の通知コードを指定</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstring">SETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>表示するテキスト</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstring">GETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				入力されているテキスト
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstate">SETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>コントロールがフォーカスを得た時、<br>
+						常に IME を ON にする時は "1"、<br>
+						常に IME を OFF にする時は "2"、<br>
+						IME の状態を変更しない時は "0" を指定<br>
+						(旧版との互換性のために残してありますが、
+						なるべく SETCTRLIMESTATE 関数を使用して下さい。)</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstate">GETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				入力されているテキストの先頭から数値と解釈できる部分
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlimestate">SETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>#n2 :</code></nobr></td>
+					<td>コントロールがフォーカスを得た時、<br>
+						常に IME を ON にする時は 1、<br>
+						常に IME を OFF にする時は 2、<br>
+						IME の状態を指定しない時は 0 を指定</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlimestate">GETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+					コントロールがフォーカスを得た時、<br>
+					常に IME が ON になる時は "1"、<br>
+					常に IME が OFF になる時は "2"、<br>
+					IME の状態が指定されていない時は "0"
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlsort">SETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlsort">GETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#changectrlitem">CHANGECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#deletectrlitem">DELETECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#resetctrlitem">RESETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlitem">GETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#enablectrl">ENABLECTRL</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="button"><hr size=1></a>
+<h3><font color="blue">(デフォルト)プッシュボタン</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>コントロール名：</b></nobr></td>
+	<td>　</td>
+	<td><code><b>button</b>(通常)、<b>defbutton</b>(デフォルト)</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		プッシュボタンを配置します。
+		（デフォルトプッシュボタンはダイアログ表示中
+		[Enter] キーを押した時に押されたと見なされるボタンのことです。）
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数＆返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<table cellpadding=5 border=0>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#newcontrol">NEWCONTROL</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>ボタンに表示するテキスト
+						(<a href="#nimonic">ニモニック指定</a>有効)</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlfont">SETCTRLFONT</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				※色指定は無視されます
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>ボタンが押された時の通知コード</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstring">SETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>ボタンに表示するテキスト
+						(<a href="#nimonic">ニモニック指定</a>有効)</td>
+				</td>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstring">GETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				ボタンに表示されているテキスト
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstate">SETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstate">GETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlimestate">SETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlimestate">GETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlsort">SETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlsort">GETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#changectrlitem">CHANGECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#deletectrlitem">DELETECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#resetctrlitem">RESETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlitem">GETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#enablectrl">ENABLECTRL</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="refbutton"><hr size=1></a>
+<h3><font color="blue">「参照」ボタン</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>コントロール名：</b></nobr></td>
+	<td>　</td>
+	<td><code><b>reffilebutton</b>(ファイル)、<b>refdirbutton</b>(フォルダ)、
+		<b>refcolorbutton</b>(色)、<b>reffontbutton</b>(フォント)</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		押された時に「〜の選択」コモンダイアログを表示するボタンを配置します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数＆返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<table cellpadding=5 border=0>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#newcontrol">NEWCONTROL</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>ボタンに表示するテキスト（"" の時は「参照」）
+						(<a href="#nimonic">ニモニック指定</a>有効)</td>
+				</td>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlfont">SETCTRLFONT</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				※色指定は無視されます
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>コモンダイアログの「ＯＫ」ボタンが押された時の
+						通知コード</td>
+				</td>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstring">SETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstring">GETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				選択されたファイル・フォルダ・色・フォント指定が返ります
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstate">SETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstate">GETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlimestate">SETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlimestate">GETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlsort">SETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlsort">GETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td><a href="comdlg.html">コモンダイアログ操作系の関数</a>
+						の第２引数以降を指定<br>
+						(refdirbutton は
+						<a href="comdlg.html#getdirnameex">
+						GETDIRNAMEEX() 関数</a> に対応)</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>追加する場所（１以上）。
+						０以下または省略時は項目リストの一番最後に
+						追加されます。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#changectrlitem">CHANGECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td><a href="comdlg.html">コモンダイアログ操作系の関数</a>
+						の第２引数以降を指定</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>変更する場所（１以上）。
+						０以下または省略時は一番最後の項目を変更します。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#deletectrlitem">DELETECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>削除する場所（１以上）</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#resetctrlitem">RESETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlitem">GETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#enablectrl">ENABLECTRL</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="check"><hr size=1></a>
+<h3><font color="blue">チェックボタン・（単独の）ラジオボタン</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>コントロール名：</b></nobr></td>
+	<td>　</td>
+	<td><code><b>check</b>(チェックボタン)、
+		<b>rdbtn</b>(単独のラジオボタン)</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		チェックボタン、または単独のラジオボタンを配置します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数＆返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<table cellpadding=5 border=0>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#newcontrol">NEWCONTROL</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>表示するテキスト
+						(<a href="#nimonic">ニモニック指定</a>有効)</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlfont">SETCTRLFONT</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>ボタンが押された時の通知コード</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstring">SETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>表示するテキスト
+						(<a href="#nimonic">ニモニック指定</a>有効)</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstring">GETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				表示中のテキスト
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstate">SETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>"1" がチェックされた状態、"0" が未チェックの状態</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstate">GETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				"1" がチェックされた状態、"0" が未チェックの状態
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlimestate">SETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlimestate">GETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlsort">SETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlsort">GETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#changectrlitem">CHANGECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#deletectrlitem">DELETECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#resetctrlitem">RESETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlitem">GETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#enablectrl">ENABLECTRL</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="okcancel"><hr size=1></a>
+<h3><font color="blue">ＯＫ・キャンセルボタン</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>コントロール名：</b></nobr></td>
+	<td>　</td>
+	<td><code><b>okcancel</b></code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		「ＯＫ」と「キャンセル」ボタンを配置します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数＆返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<table cellpadding=5 border=0>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#newcontrol">NEWCONTROL</a>
+			</code></td>
+			<td>　</td>
+			<td>※引数は全て無視されます</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlfont">SETCTRLFONT</a>
+			</code></td>
+			<td>　</td>
+			<td>(無効)</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）<br>
+				「ＯＫ」ボタンには "1"、「キャンセル」ボタンには "0"
+				が割り当てられています（変更不可）。</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstring">SETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstring">GETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstate">SETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstate">GETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlimestate">SETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlimestate">GETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlsort">SETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlsort">GETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#changectrlitem">CHANGECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#deletectrlitem">DELETECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#resetctrlitem">RESETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlitem">GETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#enablectrl">ENABLECTRL</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="radio"><hr size=1></a>
+<h3><font color="blue">グループボックス付きラジオボタン</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>コントロール名：</b></nobr></td>
+	<td>　</td>
+	<td><code><b>radio</b></code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		グループボックスで囲まれたラジオボタンを配置します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数＆返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<table cellpadding=5 border=0>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#newcontrol">NEWCONTROL</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>グループボックスに表示するテキスト
+						(<a href="#nimonic">ニモニック指定</a>有効)</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				※項目数＋１以下の値は指定できません
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlfont">SETCTRLFONT</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>ボタンが押された時の通知コードを指定</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstring">SETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>グループボックスのテキストを指定
+						(<a href="#nimonic">ニモニック指定</a>有効)</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstring">GETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				グループボックスのテキストを返します
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstate">SETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>選択する項目の番号（１以上）。<br>
+						省略または "0" の時は未選択状態になる。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstate">GETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				選択されている項目の番号（１以上）。
+				未選択状態の場合は "0"。
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlimestate">SETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlimestate">GETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlsort">SETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlsort">GETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>項目テキスト
+						(<a href="#nimonic">ニモニック指定</a>有効)</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>追加する場所（１以上）。<br>
+						省略または "0" の場合は現在の選択位置、<br>
+						未選択状態または "-1" の場合は一番最後に追加します。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				※ダイアログが非表示の時のみ有効
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#changectrlitem">CHANGECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>項目テキスト
+						(<a href="#nimonic">ニモニック指定</a>有効)</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>変更する場所（１以上）。<br>
+						省略または "0" の場合は現在の選択位置を変更します。<br>
+						未選択状態で "0" を指定した場合は何もしません。<br>
+						"-1" の場合は一番最後の項目を変更します。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				※ダイアログが非表示の時のみ有効
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#deletectrlitem">DELETECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>削除する場所（１以上）。<br>
+						省略または "0" の場合は現在の選択位置を削除します。<br>
+						未選択状態で "0" を指定した場合は何もしません。<br>
+						"-1" の場合は一番最後の項目を削除します。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				※ダイアログが非表示の時のみ有効
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#resetctrlitem">RESETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				※ダイアログが非表示の時のみ有効
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlitem">GETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s1 :</code></nobr></td>
+					<td>項目の番号（１以上）。<br>
+						省略または "0" の場合は現在選択されている項目、<br>
+						"-1" の場合は一番最後の項目になります。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				項目テキスト
+				（未選択状態で "0" を指定した場合は ""）
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#enablectrl">ENABLECTRL</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="list"><hr size=1></a>
+<h3><font color="blue">リストボックス</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>コントロール名：</b></nobr></td>
+	<td>　</td>
+	<td><code><b>list</b></code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		リストボックスを配置します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数＆返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<table cellpadding=5 border=0>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#newcontrol">NEWCONTROL</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>※無視されます</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlfont">SETCTRLFONT</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				※色指定は無視されます
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>１）リストがダブルクリックされた時の通知コード<br>
+						２）選択が変更された時の通知コード</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstring">SETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstring">GETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				選択されている項目があればその項目テキストを返します
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstate">SETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>選択する項目の番号（１以上）。<br>
+						省略または "0" の時は未選択状態になります。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstate">GETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				選択されている項目の番号（１以上）。
+				未選択状態の場合は "0"。
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlimestate">SETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlimestate">GETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlsort">SETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>"yes" でソートが有効、それ以外の文字列で無効</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlsort">GETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>返り値</h4>
+				ソートが有効な場合は "yes"、無効な場合は "no"
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>項目テキスト</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>追加する場所（１以上）。<br>
+						省略または "0" 以下の場合は一番最後に追加します。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#changectrlitem">CHANGECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>項目テキスト</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>変更する場所（１以上）。<br>
+						省略または "0" の場合は現在の選択項目を変更します。<br>
+						未選択状態で "0" を指定した場合は何もしません。<br>
+						"-1" の場合は一番最後の項目を変更します。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#deletectrlitem">DELETECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>削除する場所（１以上）。<br>
+						省略または "0" の場合は現在の選択項目を削除します。<br>
+						未選択状態で "0" を指定した場合は何もしません。<br>
+						"-1" の場合は一番最後の項目を削除します。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#resetctrlitem">RESETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlitem">GETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s1 :</code></nobr></td>
+					<td>項目の番号（１以上）。<br>
+						省略または "0" の場合は現在選択されている項目、<br>
+						"-1" の場合は一番最後の項目になります。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				項目テキスト
+				（未選択状態で "0" を指定した場合は ""）
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#enablectrl">ENABLECTRL</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="combo"><hr size=1></a>
+<h3><font color="blue">コンボボックス・ドロップダウンリスト</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>コントロール名：</b></nobr></td>
+	<td>　</td>
+	<td><code><b>combo</b></code> (編集可能),
+		<code><b>cmblist</b></code> (編集不可)</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		コンボボックスを配置します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数＆返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<table cellpadding=5 border=0>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#newcontrol">NEWCONTROL</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>エディットボックスの初期テキスト<br>
+						※cmblist では無効</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）（１に固定）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlfont">SETCTRLFONT</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				※色指定は無視されます
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>１）エディットボックスが入力によって変更された時の
+						通知コード(combo のみ)<br>
+						２）選択が変更された時の通知コード</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstring">SETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>エディットボックスのテキスト<br>
+						※cmblist では無効</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstring">GETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				エディットボックスのテキスト
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstate">SETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>選択する項目の番号（１以上）。<br>
+						省略または "0" の時はエディットボックスの内容に
+						なります(combo のみ)。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstate">GETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				選択されている項目の番号（１以上）。<br>
+				0 の場合は以下の通り<br>
+				<nobr>combo:</nobr> エディットボックスに入力がある
+				<nobr>cmblist:</nobr> 未選択状態
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlimestate">SETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>#n2 :</code></nobr></td>
+					<td>コントロールがフォーカスを得た時、<br>
+						常に IME を ON にする時は 1、<br>
+						常に IME を OFF にする時は 2、<br>
+						IME の状態を指定しない時は 0 を指定<br>
+						※cmblist では無効</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlimestate">GETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+					コントロールがフォーカスを得た時、<br>
+					常に IME が ON になる時は "1"、<br>
+					常に IME が OFF になる時は "2"、<br>
+					IME の状態が指定されていない時は "0"
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlsort">SETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>"yes" でソートが有効、それ以外の文字列で無効</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlsort">GETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>返り値</h4>
+				ソートが有効な場合は "yes"、無効な場合は "no"
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>項目テキスト</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>追加する場所（１以上）。<br>
+						省略または "0" 以下の場合は一番最後に追加します。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#changectrlitem">CHANGECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>項目テキスト</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>変更する場所（１以上）。<br>
+						省略または "0" の場合は現在の選択項目を変更します。<br>
+						未選択状態で "0" を指定した場合は何もしません。<br>
+						"-1" の場合は一番最後の項目を変更します。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#deletectrlitem">DELETECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>削除する場所（１以上）。<br>
+						省略または "0" の場合は現在の選択項目を削除します。<br>
+						未選択状態で "0" を指定した場合は何もしません。<br>
+						"-1" の場合は一番最後の項目を削除します。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#resetctrlitem">RESETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlitem">GETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s1 :</code></nobr></td>
+					<td>項目の番号（１以上）。<br>
+						省略または "0" の場合は選択された項目になります。<br>
+						"-1" の場合は一番最後の項目になります。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				項目テキスト
+				（未選択状態で "0" を指定した場合は ""）
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#enablectrl">ENABLECTRL</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="lview"><hr size=1></a>
+<h3><font color="blue">複数列（ヘッダ付き）リスト</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>コントロール名：</b></nobr></td>
+	<td>　</td>
+	<td><code><b>lview</b></code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		（複数項目を選択可能な）複数列（ヘッダ付き）リストを配置します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数＆返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<table cellpadding=5 border=0>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#newcontrol">NEWCONTROL</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td><code>"<i>num</i>[:<i>hdr1</i>:..]"</code><br>
+						<code><i>num </i> :</code> 列数<br>
+						<code><i>hdr?</i> :</code> ヘッダテキスト
+											(ヘッダ付きの場合のみ)</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlfont">SETCTRLFONT</a>
+			</code></td>
+			<td>　</td>
+			<td>※色指定は無視されます</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>
+						<code><i>dbl_clicked</i>[,<i>sel_changed</i>[,<i>header1_clicked</i>[, ...]]]</code><br>
+						<br>
+						<i>dbl_clicked</i> :
+						リストがダブルクリックされた時の通知コード<br>
+						<i>sel_changed</i> :
+						選択が変更された時の通知コード<br>
+						<i>header1_clicked[, ...]</i>
+						ヘッダをクリックした時の通知コード<br>
+						<br>
+						※途中の通知コードで指定したくないものについては
+						  65535 を指定して下さい。<br>
+						例）"65535,65535,21,22,65535,24"<br>
+						ヘッダ１がクリックされた場合は 21、
+						ヘッダ２がクリックされた場合は 22、
+						ヘッダ４がクリックされた場合は 24、
+						それ以外は通知されない。
+					</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstring">SETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstring">GETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstate">SETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>選択する項目の番号（１以上）。<br>
+						省略または "0" の時は未選択状態になります。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstate">GETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				選択されている項目の番号（１以上）をカンマで区切ったもの。
+				未選択状態の場合は ""。
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlimestate">SETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlimestate">GETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlsort">SETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>
+						<code>yes [, <i>column</i> [, <i>order</i>]]</code>
+						(ソートを有効にする)<br>
+						<code>no</code>
+						(ソートを無効にする)<br>
+						<br>
+						<i>column</i> : ソートのキーとなる列番号(1〜)<br>
+						<i>order</i> : "a" で昇順、"d" で降順
+					</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlsort">GETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>返り値</h4>
+				ソートが有効な場合は "yes,<i>column</i>,<i>order</i>"、
+				無効な場合は "no"
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>項目テキスト(列数分を空白またはカンマで区切って指定)</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>追加する場所（１以上）。<br>
+						省略または "0" 以下の場合は一番最後に追加します。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#changectrlitem">CHANGECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>項目テキスト(列数分を空白またはカンマで区切って指定)</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>変更する場所（１以上）。<br>
+						省略または "0" の場合は現在選択されている
+						（複数ある場合は最初の）選択項目を変更します。<br>
+						未選択状態で "0" を指定した場合は何もしません。<br>
+						"-1" の場合は一番最後の項目を変更します。<br>
+						"-2" の場合はヘッダ項目を変更します。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#deletectrlitem">DELETECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>削除する場所（１以上）。<br>
+						省略または "0" の場合は現在選択されている
+						（複数ある場合は最初の）選択項目を削除します。<br>
+						未選択状態で "0" を指定した場合は何もしません。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#resetctrlitem">RESETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlitem">GETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s1 :</code></nobr></td>
+					<td>項目の番号（１以上）。<br>
+						省略または "0" の場合は
+						現在選択されている（複数ある場合は最初の）
+						選択項目になります。<br>
+						"-1" の場合は一番最後の項目になります。<br>
+						"-2" の場合はヘッダ項目になります。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				項目テキスト(列数分をカンマで区切って返されます)
+				（未選択状態で "0" を指定した場合は ""）
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#enablectrl">ENABLECTRL</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="chklist"><hr size=1></a>
+<h3><font color="blue">チェックリスト</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>コントロール名：</b></nobr></td>
+	<td>　</td>
+	<td><code><b>chklist</b></code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		チェックボックスを持つリストを配置します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数＆返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<table cellpadding=5 border=0>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#newcontrol">NEWCONTROL</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>※無視されます</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlfont">SETCTRLFONT</a>
+			</code></td>
+			<td>　</td>
+			<td>※色指定は無視されます。</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>１）リストがダブルクリックされた時の通知コード<br>
+						２）選択が変更された時の通知コード</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstring">SETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstring">GETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstate">SETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>チェックする項目の番号（１以上）を
+						カンマで区切ったもの。<br>
+						省略した時は全て未選択状態になります。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstate">GETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				選択されている項目の番号（１以上）をカンマで区切ったもの。
+				未選択状態の場合は ""。
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlimestate">SETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlimestate">GETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlsort">GETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>返り値</h4>
+				ソートが有効な場合は "yes"、無効な場合は "no"
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>項目テキスト</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>追加する場所（１以上）。<br>
+						省略または "0" 以下の場合は一番最後に追加します。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>項目テキスト</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>追加する場所（１以上）。<br>
+						省略または "0" 以下の場合は一番最後に追加します。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#changectrlitem">CHANGECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>項目テキスト(列数分を空白またはカンマで区切って指定)</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>変更する場所（１以上）。<br>
+						省略または "0" の場合は現在選択されている
+						（複数ある場合は最初の）選択項目を変更します。<br>
+						未選択状態で "0" を指定した場合は何もしません。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#deletectrlitem">DELETECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>削除する場所（１以上）。<br>
+						省略または "0" の場合は現在選択されている
+						（複数ある場合は最初の）選択項目を削除します。<br>
+						未選択状態で "0" を指定した場合は何もしません。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#resetctrlitem">RESETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlitem">GETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s1 :</code></nobr></td>
+					<td>項目の番号（１以上）。<br>
+						省略または "0" の場合は現在選択されている
+						（複数ある場合は最初の）選択項目になります。<br>
+						"-1" の場合は一番最後の項目になります。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				項目テキスト(列数分をカンマで区切って返されます)
+				（未選択状態で "0" を指定した場合は ""）
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#enablectrl">ENABLECTRL</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="tree"><hr size=1></a>
+<h3><font color="blue">ツリービュー</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>コントロール名：</b></nobr></td>
+	<td>　</td>
+	<td><code><b>tree</b></code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		ツリービューコントロールを配置します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数＆返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<table cellpadding=5 border=0>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#newcontrol">NEWCONTROL</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>※無視されます</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlfont">SETCTRLFONT</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				※色指定は無視されます
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>選択が変更された時の通知コード</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstring">SETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstring">GETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstate">SETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>選択する項目の項目識別名</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstate">GETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				選択されている項目の項目識別名。
+				未選択状態の場合は ""。
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlimestate">SETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlimestate">GETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlsort">GETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>返り値</h4>
+				ソートが有効な場合は "yes"、無効な場合は "no"
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>項目テキスト</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>追加する場所（１以上）。<br>
+						省略または "0" 以下の場合は一番最後に追加します。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td><code>"<i>name</i>,<i>text</i>"</code><br>
+						<code><i>name</i> :</code> 項目識別名<br>
+						<code><i>text</i> :</code> 項目テキスト</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>親項目の項目識別名。<br>
+						トップレベルに追加する場合は "root" を指定します。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#changectrlitem">CHANGECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>項目テキスト</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>変更する項目の項目識別名。<br>
+						省略した場合は現在の選択項目を変更します。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#deletectrlitem">DELETECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>削除する項目の項目識別名。<br>
+						省略した場合は現在の選択項目を削除します。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#resetctrlitem">RESETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlitem">GETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s1 :</code></nobr></td>
+					<td>項目の項目識別名。<br>
+						省略した場合は現在の選択項目になります。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				項目テキスト
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#enablectrl">ENABLECTRL</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="spin"><hr size=1></a>
+<h3><font color="blue">エディットボックス付きスピンボタン</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>コントロール名：</b></nobr></td>
+	<td>　</td>
+	<td><code><b>spin</b></code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		エディットボックス付きのスピンボタンを配置します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数＆返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<table cellpadding=5 border=0>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#newcontrol">NEWCONTROL</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td><code>"<i>min</i>:<i>max</i>"</code><br>
+						<code><i>min</i>: </code>最小値<br>
+						<code><i>max</i>: </code>最大値</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）（１に固定）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlfont">SETCTRLFONT</a>
+			</code></td>
+			<td>　</td>
+			<td>※色指定は無視されます</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>１）エディットボックスに入力された時の通知コード<br>
+						２）ボタン操作で数値が変更された時の通知コード<br>
+						（２を省略した場合は全ての変更で
+						１の通知コードが通知される）</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstring">SETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>数値を表すテキスト</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstring">GETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				現在の数値を表すテキスト
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstate">SETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>数値を表すテキスト</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstate">GETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				現在の数値を表すテキスト
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlimestate">SETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlimestate">GETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#changectrlitem">CHANGECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#deletectrlitem">DELETECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlsort">SETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlsort">GETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#resetctrlitem">RESETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlitem">GETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#enablectrl">ENABLECTRL</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="track"><hr size=1></a>
+<h3><font color="blue">トラックバー</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>コントロール名：</b></nobr></td>
+	<td>　</td>
+	<td><code><b>track</b></code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		トラックバーコントロールを配置します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数＆返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<table cellpadding=5 border=0>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#newcontrol">NEWCONTROL</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td><code>"<i>min</i>:<i>max</i>:<i>tic</i>"</code><br>
+						<code><i>min</i>: </code>最小値<br>
+						<code><i>max</i>: </code>最大値<br>
+						<code><i>tic</i>: </code>目盛幅</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）（２に固定）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlfont">SETCTRLFONT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>１）クリックまたはキー操作で変更された時の通知コード<br>
+						２）マウスドラッグで数値が変更された時の通知コード<br>
+						（２を省略した場合は全ての変更で
+						１の通知コードが通知される）</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstring">SETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstring">GETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstate">SETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>数値を表すテキスト</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstate">GETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				現在の数値を表すテキスト
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlimestate">SETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlimestate">GETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlsort">SETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlsort">GETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#changectrlitem">CHANGECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#deletectrlitem">DELETECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#resetctrlitem">RESETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlitem">GETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#enablectrl">ENABLECTRL</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="frame"><hr size=1></a>
+<h3><font color="blue">子ダイアログ表示フレーム</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>コントロール名：</b></nobr></td>
+	<td>　</td>
+	<td><code><b>frame</b></code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		子ダイアログを表示するためのフレーム（枠）を配置します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数＆返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<table cellpadding=5 border=0>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#newcontrol">NEWCONTROL</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>※無視されます</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlfont">SETCTRLFONT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstring">SETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstring">GETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstate">SETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>表示するページの番号（１以上）</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstate">GETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				現在表示中のページの番号（１以上）
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlimestate">SETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlimestate">GETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlsort">SETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlsort">GETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>子ダイアログの識別名</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>追加する位置（１以上）。<br>
+						省略または "0" 以下の場合は最後に追加。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				※ダイアログが非表示の場合のみ有効
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#changectrlitem">CHANGECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>子ダイアログの識別名</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>変更する位置（１以上）。<br>
+						省略または "0" の場合は現在選択されているものを変更。<br>
+						"-1" の場合は最後の項目を変更。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				※ダイアログが非表示の場合のみ有効
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#deletectrlitem">DELETECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>削除する位置（１以上）。<br>
+						省略または "0" の場合は現在選択されているものを削除。<br>
+						"-1" の場合は最後の項目を削除。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				※ダイアログが非表示の場合のみ有効
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#resetctrlitem">RESETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>※ダイアログが非表示の場合のみ有効</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlitem">GETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>取得する位置（１以上）。<br>
+						省略または "0" の場合は現在選択されているものを取得。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				子ダイアログの識別名
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#enablectrl">ENABLECTRL</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="tab"><hr size=1></a>
+<h3><font color="blue">タブコントロール</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>コントロール名：</b></nobr></td>
+	<td>　</td>
+	<td><code><b>tab</b></code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		内部に子ダイアログを表示するタブコントロールを配置します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数＆返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<table cellpadding=5 border=0>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#newcontrol">NEWCONTROL</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>※無視されます</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlfont">SETCTRLFONT</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				※色指定のみ無効
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>ページが変更された時の通知コード</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstring">SETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstring">GETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstate">SETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>表示するページの番号（１以上）</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstate">GETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				現在表示中のページの番号（１以上）
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlimestate">SETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlimestate">GETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlsort">SETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlsort">GETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td><code>"<i>name</i>,<i>text</i>"</code><br>
+						<code><i>name</i> :</code> 子ダイアログの識別名<br>
+						<code><i>text</i> :</code> タブに表示するテキスト
+						(<a href="#nimonic">ニモニック指定</a>有効)</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>追加する位置（１以上）。<br>
+						省略または "0" 以下の場合は最後に追加。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				※ダイアログが非表示の場合のみ有効
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#changectrlitem">CHANGECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>タブに表示するテキスト
+						(<a href="#nimonic">ニモニック指定</a>有効)</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>変更する位置（１以上）。<br>
+						省略または "0" の場合は現在選択されているものを変更。<br>
+						"-1" の場合は最後の項目を変更</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				※ダイアログが非表示の場合のみ有効
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#deletectrlitem">DELETECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>削除する位置（１以上）。<br>
+						省略または "0" の場合は現在選択されているものを削除。<br>
+						"-1" の場合は最後の項目を削除</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				※ダイアログが非表示の場合のみ有効
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#resetctrlitem">RESETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>※ダイアログが非表示の場合のみ有効</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlitem">GETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>取得する位置（１以上）。<br>
+						省略または "0" の場合は現在選択されているものを取得。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				タブに表示されているテキスト
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#enablectrl">ENABLECTRL</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="group"><hr size=1></a>
+<h3><font color="blue">グループボックス</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>コントロール名：</b></nobr></td>
+	<td>　</td>
+	<td><code><b>group</b></code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		内部に子ダイアログを表示するグループボックスを配置します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数＆返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		<table cellpadding=5 border=0>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#newcontrol">NEWCONTROL</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>グループボックスのテキスト
+						(<a href="#nimonic">ニモニック指定</a>有効)</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlfont">SETCTRLFONT</a>
+			</code></td>
+			<td>　</td>
+			<td>※グループボックスのテキストのフォントを変更します</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstring">SETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>グループボックスのテキスト
+						(<a href="#nimonic">ニモニック指定</a>有効)</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstring">GETCTRLSTRING</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				グループボックスのテキスト
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlstate">SETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>表示するページの番号（１以上）</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				--
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlstate">GETCTRLSTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				--
+				<h4>返り値</h4>
+				現在表示中のページの番号（１以上）
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlimestate">SETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlimestate">GETCTRLIMESTATE</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlsort">SETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlsort">GETCTRLSORT</a>
+			</code></td>
+			<td>　</td>
+			<td>（無効）</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>子ダイアログの識別名</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>追加する位置（１以上）。<br>
+						省略または "0" 以下の場合は最後に追加。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				※ダイアログが非表示の場合のみ有効
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#changectrlitem">CHANGECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>子ダイアログの識別名</td>
+				</tr>
+				<tr>
+					<td valign=top><nobr><code>$s3 :</code></nobr></td>
+					<td>変更する位置（１以上）。<br>
+						省略または "0" の場合は現在選択されているものを変更。<br>
+						"-1" の場合は最後の項目を変更</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				※ダイアログが非表示の場合のみ有効
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#deletectrlitem">DELETECTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>削除する位置（１以上）。<br>
+						省略または "0" の場合は現在選択されているものを削除。<br>
+						"-1" の場合は最後の項目を削除</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				※ダイアログが非表示の場合のみ有効
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#resetctrlitem">RESETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>※ダイアログが非表示の場合のみ有効</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#getctrlitem">GETCTRLITEM</a>
+			</code></td>
+			<td>　</td>
+			<td>
+				<h4>引数</h4>
+				<table>
+				<tr>
+					<td valign=top><nobr><code>$s2 :</code></nobr></td>
+					<td>取得する位置（１以上）。<br>
+						省略または "0" の場合は現在選択されているものを取得。</td>
+				</tr>
+				</table>
+				<h4>返り値</h4>
+				子ダイアログの識別名
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><code>
+				<a href="dialog.html#enablectrl">ENABLECTRL</a>
+			</code></td>
+			<td>　</td>
+			<td>--</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<br>
+<a name="nimonic"><hr size=1></a>
+<h3>ニモニック指定について</h3>
+<ul>
+ニモニック指定が有効になっている場合、
+そのコントロールの(ある項目の)テキストに半角の＆が含まれていると、
+その次の半角文字に下線が引かれた状態でテキストが表示されます。<br>
+<br>
+（例： dllfunc("SETCTRLSTRING","","&Apply") → <u>A</u>pply）<br>
+<br>
+また、この文字を入力した時にそのコントロール(または項目)を
+選択したとみなされるようになります。
+なお、ニモニックが有効になっているテキストで半角の＆を表示したい時は、
+"&&" のように＆を２つ重ねて下さい。<br>
+<br>
+（例： dllfunc("SETCTRLSTRING","","&&Apply") → &Apply）
+</ul>
+<br>
+</body>
+</html>

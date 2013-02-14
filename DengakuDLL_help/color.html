@@ -1,0 +1,410 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=iso-2022-jp">
+<title>田楽(でんがく)DLL API Reference Manual [色指定]</title>
+</head>
+<body bgcolor="#efefef">
+<a name="clr_load"><hr size=1></a>
+<h3><font color="blue">CLR_LOAD</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("CLR_LOAD", $s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		色の名前("black", "yellow", etc.)と
+		RGB 値による色指定("#000000", "#FFFF00", etc.)の関連付けを定義した
+		データファイルをロードします。<br>
+		(データファイルの書式については
+		<a href="#format">こちら</a>を参照して下さい)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>データファイルのパス名<br>
+				(存在しないファイル名を指定してこの関数を呼ぶと、
+				ＤＬＬが内部で管理しているテーブルを初期化します)
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		常に 1 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(省略)
+    </td>
+</tr>
+</table>
+<br>
+<a name="clr_save"><hr size=1></a>
+<h3><font color="blue">CLR_SAVE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("CLR_SAVE", $s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		ＤＬＬが保持している色指定テーブルの内容をファイルに保存します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>データファイルのパス名</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		常に 1 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(省略)
+    </td>
+</tr>
+</table>
+<br>
+<a name="clr_setname"><hr size=1></a>
+<h3><font color="blue">CLR_SETNAME</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("CLR_SETNAME", $name, $rgb);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		ＤＬＬが保持している色指定テーブルに色名($name)とRGB値($rgb)の
+		対応を追加(または変更)します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$name :</nobr></td>
+			<td>色の名前("black", "yellow", etc.)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$rgb :</nobr></td>
+			<td>色の RGB 値("#000000", "#FFFF00", etc.)</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		色指定テーブルの変更に成功した場合は 1、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+#r = dllfunc("CLR_SETNAME", "purple", "#800080");
+// ... (省略)
+
+//	テーブルに登録しておけば、他の関数で色指定を名前で行うことができる
+//	#r = dllfunc("GETCOLOR", hidemaruhandle(0), "色の指定", "#800080");
+#r = dllfunc("GETCOLOR", hidemaruhandle(0), "色の指定", "purple");</pre>
+		</td></tr>
+		</table>
+
+    </td>
+</tr>
+</table>
+<br>
+<a name="clr_getname"><hr size=1></a>
+<h3><font color="blue">CLR_GETNAME</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("CLR_GETNAME", $rgb);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		ＤＬＬが保持している色指定テーブルから RGB 値が $rgb に一致する
+		全ての色名を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$rgb :</nobr></td>
+			<td>色の RGB 値("#000000", "#FFFF00", etc.)</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		$rgb に一致した色の名前<br>
+		複数ある場合は色名をカンマで区切ったものが返ります。
+		また、一致するものがなければ "" が返ります。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+// #r = dllfunc("CLR_SETNAME", "black", "#000000"); // 初期状態で登録済み
+#r = dllfunc("CLR_SETNAME", "kuro", "#000000");  // 同じRGB値を別名で登録
+
+message dllfuncstr("CLR_GETNAME", "#000000");
+// "black,kuro" と表示される</pre>
+		</td></tr>
+		</table>
+    </td>
+</tr>
+</table>
+<br>
+<a name="clr_getrgb"><hr size=1></a>
+<h3><font color="blue">CLR_GETRGB</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$rgb = dllfuncstr("CLR_GETRGB", $name);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		ＤＬＬが保持している色指定テーブルから色名($name) に対応する
+		RGB 値を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$name :</nobr></td>
+			<td>色の名前("black", "yellow", etc.)</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		$name に対応する色の RGB 値("#000000", "#FFFF00", etc.)<br>
+		名前に対応するものがなければ "" が返ります。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+//	色の名前に対応する RGB 値を表示
+$cname = input("色の名前を指定して下さい", "black");
+message "色の RGB 値 ＝ " + dllfuncstr("CLR_GETRGB", $cname);</pre>
+		</td></tr>
+		</table>
+    </td>
+</tr>
+</table>
+<br>
+<br>
+<a name="format"><hr size=1></a>
+<h3>色指定及びデータファイルの書式について</h3>
+<ul>
+	田楽ＤＬＬの関数の中で（フォント等の）色を指定する時には、
+	以下の書式に従って RGB 値によって指定するか、
+	ＤＬＬが内部で保持している色名と RGB 値の対応テーブルに
+	登録されている名前によって指定します。<br>
+	<br>
+	RGB 値の書式：<br>
+	<br>
+	<ul>
+		<code>#<i><font color="red">RR</font><font color="green">GG</font><font color="blue">BB</font></i></code><br>
+		<br>
+		ここで、
+		<i><font color="red">RR</font></i>,
+		<i><font color="green">GG</font></i>,
+		<i><font color="blue">BB</font></i>
+		は、各々の色の割合を
+		0 〜 255 の数値(を 16 進数で表したもの)で指定します。<br>
+	</ul>
+	<br>
+	ＤＬＬが内部で保持しているテーブルに登録されている色名：<br>
+	<br>
+	<ul>
+		以下の表は(初期状態の)テーブルに登録されている色名と RGB 値の対応です。
+		<br>
+		<br>
+		<table border=1>
+		<tr>
+			<th>色名</th>
+			<th>RGB 値</th>
+			<th>色</th>
+			<th></th>
+			<th>色名</th>
+			<th>RGB 値</th>
+			<th>色</th>
+			<th></th>
+			<th>色名</th>
+			<th>RGB 値</th>
+			<th>色</th>
+			<th></th>
+			<th>色名</th>
+			<th>RGB 値</th>
+			<th>色</th>
+		</tr>
+		<tr>
+			<td>black</td>
+			<td>#000000</td>
+			<td bgcolor="black">　</td>
+			<td></td>
+			<td>white</td>
+			<td>#FFFFFF</td>
+			<td bgcolor="white">　</td>
+			<td></td>
+			<td>red</td>
+			<td>#FF0000</td>
+			<td bgcolor="red">　</td>
+			<td></td>
+			<td>lime</td>
+			<td>#00FF00</td>
+			<td bgcolor="lime">　</td>
+		</tr>
+		<tr>
+			<td>blue</td>
+			<td>#0000FF</td>
+			<td bgcolor="blue">　</td>
+			<td></td>
+			<td>fuchsia</td>
+			<td>#FF00FF</td>
+			<td bgcolor="fuchsia">　</td>
+			<td></td>
+			<td>yellow</td>
+			<td>#FFFF00</td>
+			<td bgcolor="yellow">　</td>
+			<td></td>
+			<td>aqua</td>
+			<td>#00FFFF</td>
+			<td bgcolor="aqua">　</td>
+		</tr>
+		<tr>
+			<td>navy</td>
+			<td>#000080</td>
+			<td bgcolor="navy">　</td>
+			<td></td>
+			<td>teal</td>
+			<td>#008080</td>
+			<td bgcolor="teal">　</td>
+			<td></td>
+			<td>green</td>
+			<td>#008000</td>
+			<td bgcolor="green">　</td>
+			<td></td>
+			<td>maroon</td>
+			<td>#800000</td>
+			<td bgcolor="maroon">　</td>
+		</tr>
+		<tr>
+			<td>purple</td>
+			<td>#800080</td>
+			<td bgcolor="purple">　</td>
+			<td></td>
+			<td>olive</td>
+			<td>#808000</td>
+			<td bgcolor="olive">　</td>
+			<td></td>
+			<td>gray</td>
+			<td>#808080</td>
+			<td bgcolor="gray">　</td>
+			<td></td>
+			<td>silver</td>
+			<td>#C0C0C0</td>
+			<td bgcolor="silver">　</td>
+		</tr>
+		</table>
+		<br>
+		なお、これらの色名以外をテーブルに登録したい場合は
+		<a href="#clr_load">CLR_LOAD()</a> や
+		<a href="#clr_setname">CLR_SETNAME()</a> 等の関数で
+		テーブルの内容を追加・変更して下さい。
+	</ul>
+	<br>
+	色名と RGB 値の対応テーブルの定義データファイルの書式：<br>
+	<br>
+	<ul>
+		<a href="#clr_load">CLR_LOAD()</a>/<a href="#clr_save">CLR_SAVE()</a>
+		で扱うデータファイルの書式は以下の通りです
+		(中身は INI ファイル)。<br>
+		<br>
+		<table border=1>
+		<tr><td bgcolor="white">
+		<code>[RGBNames]</code><br>
+		<code>black=#000000</code><br>
+		<code>white=#FFFFFF</code><br>
+		<code>red=#FF0000</code><br>
+		<code>...</code>
+		</td></tr>
+		</table>
+		<br>
+		色名(左辺)と対応する RGB 値(右辺)を "=" でつなげます。
+	</ul>
+</ul>
+<br>
+</body>
+</html>

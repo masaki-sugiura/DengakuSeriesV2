@@ -1,0 +1,1123 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=iso-2022-jp">
+<title>田楽(でんがく)DLL API Reference Manual [文字列]</title>
+</head>
+<body bgcolor="#efefef">
+<a name="atoi"><hr size=1></a>
+<h3><font color="blue">ATOI</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("ATOI",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		数値の文字列表現 $s1 を数値に変換します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>数値の文字列表現<br>
+				文字列の先頭が "0x" (または "0X") で始まる場合は１６進数、<br>
+				"0b" または "0B" で始まる場合は２進数、<br>
+				そうでなく先頭が "0" で始まる場合は８進数、<br>
+				それ以外の場合は１０進数とみなして変換します。
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		数値
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+#n = dllfunc("ATOI","0xC");    //  #n == 12  (１６進数)
+#n = dllfunc("ATOI","0b1100"); //  #n == 12  (２進数)
+#n = dllfunc("ATOI","014");    //  #n == 12  (８進数)
+#n = dllfunc("ATOI","12");     //  #n == 12  (１０進数)</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="itoa"><hr size=1></a>
+<h3><font color="blue">ITOA</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("ITOA",#n1,#n2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		整数 #n1 の #n2 進数表現を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>#n1 :</nobr></td>
+			<td>数値</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n2 :</nobr></td>
+			<td>基数(2 は２進数, 8 は８進数, 16 は１６進数、
+				それ以外は１０進数になります)</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		--- (８進数の先頭の "0"、１６進数の先頭の "0x" は付加されません)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$s = dllfuncstr("ITOA",12,2);  //  $s == "1100" (２進数)
+$s = dllfuncstr("ITOA",12,8);  //  $s == "14"   (８進数)
+$s = dllfuncstr("ITOA",12,16); //  $s == "c"    (１６進数)
+$s = dllfuncstr("ITOA",12,0);  //  $s == "12"   (１０進数)</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="stricmp"><hr size=1></a>
+<h3><font color="blue">STRICMP</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("STRICMP",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        半角アルファベットの大小を無視して２つの文字列を比較します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>文字列１</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>文字列２</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		２つの文字列が一致していれば 0 を返します。
+		異なっている場合は正または負の整数を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+#r = dllfunc("STRICMP","ABC","Abc");    //  #r == 0
+#r = dllfunc("STRICMP","ＡＢＣ","ａｂｃ");  //  #r != 0 (全角文字のため)</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="strcount"><hr size=1></a>
+<h3><font color="blue">STRCOUNT</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("STRCOUNT",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        文字列中の部分文字列の個数を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>検索対象文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>部分文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		見つかった部分文字列の個数を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$str = hidemarudir;
+message $str + " 中の円記号の個数は " + 
+        str(dllfunc("STRCOUNT",$str,"\\")) + " 個です";
+$str = "AAAAA";
+message $str + " 中の AA の個数は " + 
+        str(dllfunc("STRCOUNT",$str,"AA")) + " 個です"; // 2 個になります</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="gsub"><hr size=1></a>
+<h3><font color="blue">GSUB</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GSUB",$s1,$s2,$s3,#n4);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        文字列中の部分文字列を別の文字列に置換します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>置換対象文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>検索文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s3 :</nobr></td>
+			<td>置換文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n4 :</nobr></td>
+			<td>最初から何個の文字列を置換するか<br>
+				(-1 を指定すると見つかったものを全て置換します)</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		置換された結果の文字列が返ります。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$str = "C:\\usr\\home\\sugiura\\public_html\\index.html";
+message "DOS  name: " + $str + "\n" + 
+        "UNIX name: " + dllfuncstr("GSUB",$str,"\\","/",-1);</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="gettoken"><hr size=1></a>
+<h3><font color="blue">GETTOKEN</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETTOKEN",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        文字列から指定文字を区切り子として分割し、分割された文字列を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>区切り文字 (複数指定可)</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		最初の呼出しで先頭の文字列が返ります。
+		２回目以降の呼出しで $s1 を "" とすると
+		次々に文字列を返します。<br>
+		なお、取り出せる文字列がまだ残っているかどうかは
+		<a href="#hasmoretokens">HASMORETOKENS 関数</a>で調べて下さい。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+//  円記号、コロン、ピリオドを区切りとして文字列を分割
+$token = dllfuncstr("GETTOKEN","C:\\dir\\foo.txt","\\:.");
+while (1) {
+    //  "C", "", "dir", "foo", "txt" の順に表示される
+    message "取り出された文字列は " + $token + " です。";
+    //  まだ文字列があるかどうか確認
+    if (dllfunc("HASMORETOKENS") == 0) break;
+    //  次の文字列を取り出す
+    $token = dllfuncstr("GETTOKEN","","\\:.");
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="hasmoretokens"><hr size=1></a>
+<h3><font color="blue">HASMORETOKENS</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("HASMORETOKENS");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        <a href="#gettoken">GETTOKEN 関数</a> の実行中に
+		まだ取り出せる文字列が残っているかどうかを調べます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		まだ取り出せる文字列が残っていれば０でない値を、
+		もう取り出す文字列がない場合は０を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(<a href="#gettoken">GETTOKEN 関数</a> の例を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="ltrim"><hr size=1></a>
+<h3><font color="blue">LTRIM</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("LTRIM",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        文字列の左端にある空白文字(半角スペース、タブ等)を取り除きます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		空白を除いた残りの文字列を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(省略)
+	</td>
+</tr>
+</table>
+<br>
+<a name="rtrim"><hr size=1></a>
+<h3><font color="blue">RTRIM</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("RTRIM",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        文字列の右端にある空白文字(半角スペース、タブ等)を取り除きます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		空白を除いた残りの文字列を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(省略)
+	</td>
+</tr>
+</table>
+<br>
+<a name="strlen"><hr size=1></a>
+<h3><font color="blue">STRLEN/STRLEN2</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("STRLEN",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		文字列の長さを返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		文字列の長さを返します。
+        STRLEN は全角文字を２文字と数えた長さを返しますが、
+		STRLEN2 は全角文字も１文字と数えた長さを返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+#len = dllfunc("STRLEN","こんにちは"); // #len == 10
+#len = dllfunc("STRLEN2","こんにちは"); // #len == 5</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="strstr"><hr size=1></a>
+<h3><font color="blue">STRSTR/STRSTR2</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("STRSTR",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		文字列中の先頭から部分文字列を検索し、
+		最初に見つかった位置を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>検索文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        見つかった場合はその位置を返します。
+        先頭が 0 です。見つからなかった場合は -1 を返します。
+        STRSTR は全角文字を２文字と数えますが、
+		STRSTR2 は全角文字も１文字と数えます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+#s = dllfunc("STRSTR","こんばんは","ん"); // #s == 2
+#s = dllfunc("STRSTR2","こんばんは","ん"); // #s == 1</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="strrstr"><hr size=1></a>
+<h3><font color="blue">STRRSTR/STRRSTR2</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("STRRSTR",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		文字列中の最後から部分文字列を検索し、
+		最初に見つかった位置を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>検索文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        見つかった場合はその位置を返します。
+        先頭が 0 です。見つからなかった場合は -1 を返します。
+        STRRSTR は全角文字を２文字と数えますが、
+		STRRSTR2 は全角文字も１文字と数えます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+#s = dllfunc("STRRSTR","こんばんは","ん"); // #s == 6
+#s = dllfunc("STRRSTR2","こんばんは","ん"); // #s == 3</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="leftstr"><hr size=1></a>
+<h3><font color="blue">LEFTSTR/LEFTSTR2</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("LEFTSTR",$s1,#n2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		文字列の左端から指定文字分を抜き出します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n2 :</nobr></td>
+			<td>抜き出す文字数</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        抜き出した文字列を返します。
+		$s1 の長さが #n2 より短い場合は $s1 が そのまま返されます。
+        LEFTSTR は全角文字を２文字と数えますが、
+		LEFTSTR2 は全角文字も１文字と数えます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$s = dllfuncstr("LEFTSTR","こんばんは",4); // $s == "こん"
+$s = dllfuncstr("LEFTSTR2","こんばんは",4); // $s == "こんばん"</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="rightstr"><hr size=1></a>
+<h3><font color="blue">RIGHTSTR/RIGHTSTR2</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("RIGHTSTR",$s1,#n2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		文字列の右端から指定文字分を抜き出します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n2 :</nobr></td>
+			<td>抜き出す文字数</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        抜き出した文字列を返します。
+		$s1 の長さが #n2 より短い場合は $s1 が そのまま返されます。
+        RIGHTSTR は全角文字を２文字と数えますが、
+		RIGHTSTR2 は全角文字も１文字と数えます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$s = dllfuncstr("RIGHTSTR","こんばんは",4); // $s == "んは"
+$s = dllfuncstr("RIGHTSTR2","こんばんは",4); // $s == "んばんは"</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="midstr"><hr size=1></a>
+<h3><font color="blue">MIDSTR/MIDSTR2</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("MIDSTR",$s1,#n2,#n3);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		文字列の途中から指定文字数分の文字列を抜き出します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n2 :</nobr></td>
+			<td>抜き出す文字列の先頭の位置</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n3 :</nobr></td>
+			<td>抜き出す文字数</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        抜き出された文字列を返します。
+		#n2 が 0 の時は dllfuncstr("LEFTSTR",$s1,#n3) と同じ結果になります。
+        MIDSTR は全角文字を２文字と数えますが、
+		MIDSTR2 は全角文字も１文字と数えます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$s = dllfuncstr("MIDSTR","こんにちは",2,2); // $s == "ん"
+$s = dllfuncstr("MIDSTR2","こんにちは",2,2); // $s == "にち"</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="tolower"><hr size=1></a>
+<h3><font color="blue">TOLOWER/TOLOWER2</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("TOLOWER",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定文字列中のアルファベットの大文字を
+		全て小文字に変換したものを返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		変換された文字列が返ります。
+		TOLOWER は半角アルファベットのみを変換しますが、
+		TOLOWER2 は全角アルファベットも変換します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$s = dllfuncstr("TOLOWER","ABCＤＥＦ"); // $s == "abcＤＥＦ"
+$s = dllfuncstr("TOLOWER2","ABCＤＥＦ"); // $s == "abcｄｅｆ"</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="toupper"><hr size=1></a>
+<h3><font color="blue">TOUPPER/TOUPPER2</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("TOUPPER",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定文字列中のアルファベットの小文字を
+		全て大文字に変換したものを返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		変換された文字列が返ります。
+		TOUPPER は半角アルファベットのみを変換しますが、
+		TOUPPER2 は全角アルファベットも変換します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$s = dllfuncstr("TOUPPER","abcｄｅｆ"); // $s == "ABCｄｅｆ"
+$s = dllfuncstr("TOUPPER2","abcｄｅｆ"); // $s == "ABCＤＥＦ"</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="reverse"><hr size=1></a>
+<h3><font color="blue">REVERSE/REVERSE2</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("REVERSE",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定文字列の文字の並びを反転したものを返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		変換された文字列が返ります。
+		REVERSE は２バイト文字を意識せずに反転しますが、
+		REVERSE2 は２バイト文字を意識して反転します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$s = dllfuncstr("REVERSE","abcde");  // $s == "edcba"
+// "ＡＢ" == "\x82\x60\x82\x61"
+$s = dllfuncstr("REVERSE","ＡＢ"); // $s == "x61x82x60x82"</pre>
+$s = dllfuncstr("REVERSE2","ＡＢ"); // $s == "ＢＡ"</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="tohankaku"><hr size=1></a>
+<h3><font color="blue">TOHANKAKU</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("TOHANKAKU",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        全角文字を半角に変換します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		変換された文字列が返ります。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$s = dllfuncstr("TOHANKAKU","Ａあ％"); // $s == "Aア%"</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="tozenkakuhira"><hr size=1></a>
+<h3><font color="blue">TOZENKAKUHIRA</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("TOZENKAKUHIRA",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        半角文字を全角ひらがなに変換します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		変換された文字列が返ります。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$s = dllfuncstr("TOZENKAKUHIRA","Aア%"); // $s == "Ａあ％"</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="tozenkakukata"><hr size=1></a>
+<h3><font color="blue">TOZENKAKUKATA</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("TOZENKAKUKATA",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        半角文字を全角カタカナに変換します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>対象文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		変換された文字列が返ります。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$s = dllfuncstr("TOZENKAKUHIRA","Aア%"); // $s == "Ａア％"</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+</body>
+</html>

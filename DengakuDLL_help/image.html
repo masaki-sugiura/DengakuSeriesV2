@@ -1,0 +1,270 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=iso-2022-jp">
+<title>田楽(でんがく)DLL API Reference Manual [画像(Susie Plug-in)操作]</title>
+</head>
+<body bgcolor="#efefef">
+<a name="loadspi"><hr size=1></a>
+<h3><font color="blue">LOADSPI</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("LOADSPI",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		Susie Plug-in をロードします。<br>
+		<br>
+		なお、既にプラグインがロードされている時はこの関数は失敗します。
+		別のプラグインを使いたい時は、一度
+		<a href="#freespi">FREESPI 関数</a> を呼び出した後に
+		再度 LOADSPI 関数でロードして下さい。<br>
+		<br>
+		ちなみに、プラグインには画像処理用と
+		圧縮ファイル展開用の２種類がありますが、
+		この関数では画像処理用の物だけロードすることができます＆
+		圧縮ファイル展開用の物をロードしようとしても失敗します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>Susie Plug-in のファイル名</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+		<pre>
+//  Susie プラグインのロード
+if (dllfunc("LOADSPI","c:\\Program Files\\susie32\\ifjpeg.spi") == 0) {
+    message "Susie Plug-in のロードに失敗!!";
+    ...
+}
+//  プラグインの情報を取得
+message "Plug-in version : " + dllfuncstr("GETSPIINFO",0);
+message "Info string : " + dllfuncstr("GETSPIINFO",1);
+##a = 1;
+while (1) {
+    $$type = dllfuncstr("GETSPIINFO",##a*2);
+    if ($$type == "") break;
+    message "Supported format [" + str(##a) + "]\n Extension(s) : " + $type + 
+            "\n Info string : " + dllfuncstr("GETSPIINFO",##a*2+1);
+    ##a = ##a + 1;
+}
+//  現在のプラグインが指定した画像に対応しているかどうかを調べる
+$image = "c:\\My Documents\\image\\jpeg\\foo.jpg";
+if (dllfunc("ISSUPPORTEDPIC",$image) == 0) {
+    message "このプラグインは JPEG フォーマットに対応していません。";
+    ...
+}
+//  画像に関する情報を取得
+$info = dllfuncstr("GETPICINFO",$image);
+##left   = val(dllfuncstr("GETTOKEN",$info,","));
+##top    = val(dllfuncstr("GETTOKEN","",","));
+##width  = val(dllfuncstr("GETTOKEN","",","));
+##height = val(dllfuncstr("GETTOKEN","",","));
+...
+//  プラグインのアンロード
+##r = dllfunc("FREESPI");
+...</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="freespi"><hr size=1></a>
+<h3><font color="blue">FREESPI</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("FREESPI");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        <a href="#loadspi">LOADSPI 関数</a> でロードした
+		プラグインをアンロードします。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(<a href="#loadspi">LOADSPI 関数</a> の例を参照して下さい。)
+	</td>
+</tr>
+</table>
+<br>
+<a name="getspiinfo"><hr size=1></a>
+<h3><font color="blue">GETSPIINFO</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETSPIINFO",#n1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		<a href="#loadspi">LOADSPI 関数</a> でロードしたプラグインの
+		情報を取得します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>#n1 :</nobr></td>
+			<td>取得したい情報を表す数値<br>
+				(意味は Susie Plug-in API の GetPluginInfo を参照)</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		取得された情報
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(<a href="#loadspi">LOADSPI 関数</a> の例を参照して下さい。)
+	</td>
+</tr>
+</table>
+<br>
+<a name="issupportedpic"><hr size=1></a>
+<h3><font color="blue">ISSUPPORTEDPIC</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("ISSUPPORTEDPIC",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		現在ロードされているプラグインが
+		指定した画像に対応しているかどうかを調べます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>画像ファイルのファイル名</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        対応している場合は 1 を、そうでなければ 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(省略)
+	</td>
+</tr>
+</table>
+<br>
+<a name="getpicinfo"><hr size=1></a>
+<h3><font color="blue">GETPICINFO</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETPICINFO",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		画像の情報を取得します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>画像ファイルのファイル名</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		Susie Plug-in API の GetPictureInfo で返される値を
+		カンマで区切ったものを返します。
+		エラーの場合は "" を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(<a href="#loadspi">LOADSPI 関数</a> の例を参照して下さい。)
+	</td>
+</tr>
+</table>
+<br>
+</body>
+</html>

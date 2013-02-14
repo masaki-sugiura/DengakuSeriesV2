@@ -1,0 +1,627 @@
+<html>
+<head>
+<title>田楽(でんがく)DLL API Reference Manual [BREGEXP DLL]</title>
+</head>
+<body bgcolor="#efefef">
+<a name="bre_load"><hr size=1></a>
+<h3><font color="blue">BRE_LOAD</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("BRE_LOAD", $s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		Ｂａｂａさん作の Perl 互換正規表現ライブラリ BREGEXP.DLL を
+		ロードします。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>BREGEXP.DLL のパス名<br>
+				フォルダを省略するとＯＳ標準のDLL検索方法により
+				BREGEXP.DLL を探します。
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		DLL のロードに成功した場合は 1、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+if (!dllfunc("BRE_LOAD", "BREGEXP.DLL")) {
+    message "BREGEXP.DLL が見つかりません";
+    freedll;
+    endmacro;
+}
+// ...(省略)
+#r = dllfunc("BRE_FREE"); // 使い終わったら BRE_FREE() で開放</pre>
+        </td></tr>
+        </table>
+    </td>
+</tr>
+</table>
+<br>
+<a name="bre_free"><hr size=1></a>
+<h3><font color="blue">BRE_FREE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("BRE_FREE");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		<a href="#bre_load">BRE_LOAD()</a> でロードした BREGEXP.DLL を
+		アンロードします。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		DLL のアンロードに成功した場合は 1、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(<a href="#bre_load">BRE_LOAD()</a> の例を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<body bgcolor="#efefef">
+<a name="bre_version"><hr size=1></a>
+<h3><font color="blue">BRE_VERSION</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("BRE_VERSION");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		ロードした BREGEXP.DLL のバージョン情報を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		BREGEXP.DLL の BRegexpVersion() によって得られるバージョン情報文字列
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(省略)
+	</td>
+</tr>
+</table>
+<br>
+<a name="bre_errormsg"><hr size=1></a>
+<h3><font color="blue">BRE_ERRORMSG</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("BRE_ERRORMSG");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		BREGEXP DLL の最後に呼び出した関数のエラーメッセージを返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		BREGEXP.DLL の BMatch(), BSubst(), BTrans(), BSplit() の呼び出し時に
+		得られた最後のエラーメッセージ
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$ret = dllfuncstr("BRE_MATCH", "/[0-9]+/", "abcdef");
+if ($ret == "") {
+    message dllfuncstr("BRE_ERRORMSG"); // エラーの原因を表示
+}
+// ...</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="bre_match"><hr size=1></a>
+<h3><font color="blue">BRE_MATCH</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$pos = dllfuncstr("BRE_MATCH", $ptn, $str);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		与えられた正規表現パターンに一致する部分文字列の範囲を返します。<br>
+		なお、パターン中の丸括弧に一致する部分は
+		<a href="#bre_getnext">BRE_GETNEXT()</a>,
+		<a href="#bre_hasmoreresults">BRE_HASMORERESULTS()</a> で
+		取得することができます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$ptn :</nobr></td>
+			<td>正規表現パターン文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$str :</nobr></td>
+			<td>検索対象文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		$str 中の $ptn にマッチした範囲を表す文字列。<br>
+		書式は以下の通り。<br>
+		<br>
+		<ul>
+			<code><i>head</i>:<i>len</i></code><br>
+			<br>
+			<table>
+			<tr>
+				<td valign=top><nobr><code><i>head</i></code>:</nobr></td>
+				<td>マッチした範囲の先頭位置(0 から数えます)</td>
+			</tr>
+			<tr>
+				<td valign=top><nobr><code><i>len</i></code>:</nobr></td>
+				<td>マッチした範囲のバイト数</td>
+			</tr>
+			</table>
+		</ul>
+		<br>
+		パターンに一致する部分がなかったときは "" を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$str = "Yokohama 045-222-1111"; // この中から電話番号を抜き出す
+
+$pos = dllfuncstr("BRE_MATCH", "/0\\d{1,4}-\\d{1,4}-\\d{4}/", $str);
+if ($pos != "") {
+    // 見つかったら番号を表示
+    ##s = strstr($pos, ":");
+    ##head = val(leftstr($pos, ##s));
+    ##len  = val(midstr($pos, ##s + 1, strlen($pos)));
+    message "電話番号：" + midstr($str, ##head, ##len);
+    // 上の４行は以下の１行と等価
+//  message "電話番号：" + dllfuncstr("BRE_POSTOSTR", $pos);
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="bre_subst"><hr size=1></a>
+<h3><font color="blue">BRE_SUBST</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("BRE_SUBST", $ptn, $str);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		与えられた正規表現パターンに一致する部分文字列を
+		パターン内で指定した別の文字列に置換します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$ptn :</nobr></td>
+			<td>正規表現パターン文字列＋置換文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$str :</nobr></td>
+			<td>置換対象文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		置換結果の文字列
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+//  $str を $ptn の指定に従って置換したものを出力します。
+$ptn = "s/(\\d\\d)-\\d{4}-\\d{4}/$1-xxxx-xxxx/g";
+$str = "Yokohama 045-222-1111  Osaka 06-5555-6666";
+
+$s = dllfuncstr("BRE_SUBST", $ptn, $str);
+insert "result: " + $s + "\n";
+//  出力結果
+//  result: Yokohama 045-222-1111  Osaka 06-xxxx-xxxx</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="bre_trans"><hr size=1></a>
+<h3><font color="blue">BRE_TRANS</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("BRE_TRANS", $ptn, $str);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		与えられたパターンの通りに文字を置換します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$ptn :</nobr></td>
+			<td>置換パターン文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$str :</nobr></td>
+			<td>置換対象文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		置換結果の文字列
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+//  $str を $ptn の指定に従って置換したものを出力します。
+$ptn = "tr/A-Z0-9/a-zx/g"; // アルファベットを小文字に、数字を x に置換
+$str = "Yokohama 045-222-1111  Osaka 06-5555-6666";
+
+$s = dllfuncstr("BRE_TRANS", $ptn, $str);
+insert "result: " + $s + "\n";
+//  出力結果
+//  result: yokohama xxx-xxx-xxxx  osaka xx-xxxx-xxxx</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="bre_split"><hr size=1></a>
+<h3><font color="blue">BRE_SPLIT</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("BRE_SPLIT", $ptn, $str, #lim);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		与えられた正規表現パターンを区切り文字列として文字列を分割します。<br>
+		なお、区切られた部分文字列は
+		<a href="#bre_getnext">BRE_GETNEXT()</a>,
+		<a href="#bre_hasmoreresults">BRE_HASMORERESULTS()</a>
+		等で取得することができます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$ptn :</nobr></td>
+			<td>置換パターン文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$str :</nobr></td>
+			<td>置換対象文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#lim :</nobr></td>
+			<td>分割の最大数(0 を指定すると無制限に分割)</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		分割された数<br>
+		何らかのエラーが起こった場合は -1 が返ります。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+//  $str を $ptn にマッチする文字列を区切り文字列として分割します。
+$ptn = "/[ \t]*/"; // 空白またはタブで区切る
+$str = "Yokohama 045-222-1111  Osaka 06-5555-6666";
+
+#n = dllfunc("BRE_SPLIT", $ptn, $str, 0);
+while (dllfunc("BRE_HASMORERESULTS")) {
+    $$p = dllfuncstr("BRE_GETNEXT");
+    if ($$p == "") break;
+    $s = dllfuncstr("BRE_POSTOSTR", $$p);
+    insert " split content: " + $s + "\n";
+}
+//  出力結果
+//  split content: Yokohama
+//  split content: 045-222-1111
+//  split content: Osaka
+//  split content: 06-5555-6666</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="bre_getnext"><hr size=1></a>
+<h3><font color="blue">BRE_GETNEXT</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$pos = dllfuncstr("BRE_GETNEXT");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		<a href="#bre_match">BRE_MATCH()</a>,
+		<a href="#bre_split">BRE_SPLIT()</a>
+		で得られた結果(範囲)を順に取得します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		直前の <a href="#bre_match">BRE_MATCH()</a>,
+		<a href="#bre_split">BRE_SPLIT()</a> の呼び出し時に渡した
+		文字列内の範囲
+		(書式は <a href="#bre_match">BRE_MATCH()</a> を参照して下さい)<br>
+		返すものがなくなったら以後は "" を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$$p = dllfuncstr("BRE_MATCH",
+                 "/(\\d{1,4})-(\\d{1,4})-(\\d{4})/",
+                 "03-765-5678");
+
+if (dllfunc("BRE_HASMORERESULTS")) {
+    $$p = dllfuncstr("BRE_GETNEXT");
+    insert "市外局番：" + dllfuncstr("BRE_POSTOSTR", $$p) + "\n";
+}
+if (dllfunc("BRE_HASMORERESULTS")) {
+    $$p = dllfuncstr("BRE_GETNEXT");
+    insert "局番：" + dllfuncstr("BRE_POSTOSTR", $$p) + "\n";
+}
+if (dllfunc("BRE_HASMORERESULTS")) {
+    $$p = dllfuncstr("BRE_GETNEXT");
+    insert "番号：" + dllfuncstr("BRE_POSTOSTR", $$p) + "\n";
+}
+//  出力結果
+//  市外局番：03
+//  局番：765
+//  番号：5678</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="bre_postostr"><hr size=1></a>
+<h3><font color="blue">BRE_POSTOSTR</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("BRE_POSTOSTR", $pos);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		<a href="#bre_match">BRE_MATCH()</a>,
+		<a href="#bre_getnext">BRE_GETNEXT()</a>
+		で返された範囲の文字列を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$pos :</nobr></td>
+			<td>直前の BRE_MATCH(), BRE_GETNEXT() の戻り値</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		BRE_MATCH(), BRE_SPLIT() の呼び出し時に渡した文字列中の
+		$pos の範囲にある文字列
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(<a href="#bre_split">BRE_SPLIT()</a>,
+		<a href="#bre_getnext">BRE_GETNEXT()</a> の例を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="bre_hasmoreresults"><hr size=1></a>
+<h3><font color="blue">BRE_HASMORERESULTS</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("BRE_HASMORERESULTS");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		<a href="#bre_getnext">BRE_GETNEXT()</a> の呼び出しが
+		まだ成功するかどうかを返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		BRE_GETNEXT() によってまだ範囲情報が取得できる場合は 0 でない値、
+		そうでなければ 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(<a href="#bre_split">BRE_SPLIT()</a>,
+		<a href="#bre_getnext">BRE_GETNEXT()</a> の例を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+</body>
+</html>

@@ -1,0 +1,317 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=iso-2022-jp">
+<title>田楽(でんがく)DLL API Reference Manual [Introduction]</title>
+</head>
+<body bgcolor="#efefef">
+<a name="func_table"><hr size=1></a>
+<h3><font color="blue">関数一覧の見方</font></h3>
+<ul>
+<table width="90%" border=1>
+<tr><td>
+	<hr size=1>
+	<h4><font color="blue">GETFILENAME</font></h4>
+	<table cellpadding=10>
+	<tr>
+		<td valign=top><font size=2><nobr><b>使い方：</b></nobr></font>
+		</td>
+		<td>　</td>
+		<td><font size=2>
+			<code>$s = dllfuncstr("GETFILENAME",#n1,$s2,$s3,$s4);</code>
+			</font><br>
+			<font color="red">↑関数の呼出し規約の説明です
+			(引数リスト及び返り値で
+			"#" で始まるものは数値型、"$" で始まるものは文字列型を意味します)
+			</font>
+		</td>
+	</tr>
+	<tr>
+		<td valign=top><font size=2><nobr><b>説明：</b></nobr></font></td>
+		<td></td>
+		<td>
+			<font size=2>「ファイルを開く」コモンダイアログを表示して、
+			ユーザーが選んだファイル名を返します。</font><br>
+			<font color="red">↑関数の機能の簡単な説明です</font>
+		</td>
+	</tr>
+	<tr>
+		<td valign=top><font size=2><nobr><b>引数：</b></nobr></font></td>
+		<td></td>
+		<td>
+			<table border=0>
+			<tr>
+				<td valign=top><font size=2><nobr>#n1 :</nobr></font></td>
+				<td><font size=2>
+					オーナーウィンドウのウィンドウハンドル(または 0)
+					</font>
+				</td>
+			</tr>
+			<tr>
+				<td valign=top><font size=2><nobr>$s2 :</nobr></font></td>
+				<td><font size=2>
+					ダイアログのタイトル文字列(ex. "ファイルの参照")
+					</font>
+				</td>
+			</tr>
+			<tr>
+				<td valign=top><font size=2><nobr>$s3 :</nobr></font></td>
+				<td><font size=2>
+					初期フォルダ（＆ファイル）名("" ならカレントフォルダ)
+					</font>
+				</td>
+			</tr>
+			<tr>
+				<td valign=top><font size=2><nobr>$s4 :</nobr></font></td>
+				<td><font size=2>
+					「ファイルの種類」コンボボックスに追加する
+					フィルタ文字列
+					（複数指定可。なければ "" を指定）
+					</font><br>
+					<br>
+					<font size=2>
+					(一つの)フィルタ文字列の書式は以下の通りです。<br>
+					<ul>
+						<code>"<i>explain</i>(<i>ext</i>[;<i>ext</i>...])"</code><br>
+						<br>
+						<table>
+						<tr>
+							<td valign=top><nobr><code><i>explain</i>:</code></nobr></td>
+							<td>説明文</td>
+						</tr>
+						<tr>
+							<td valign=top><nobr><code><i>ext</i>:</code></nobr></td>
+							<td>拡張子指定(例："*.txt")<br>
+								(複数ある場合はセミコロンで区切って指定)</td>
+						</tr>
+						</table>
+						</font><br>
+						<font color="red">↑引数の詳細な説明です
+						(斜体は実際には適当な値に置き換えるべきものを示します。
+						また、角かっこ "[","]" で囲まれたものは省略できることを
+						示します。)</font>
+					</ul>
+				</td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td valign=top><font size=2><nobr><b>返り値：</b></nobr></font>
+		</td>
+		<td></td>
+		<td><font size=2>
+			ダイアログで指定されたファイルのフルパス名が返ります。<br>
+			ファイルが複数指定された場合は、
+			フォルダ名に続けてファイル名を
+			"|" で区切ったものが返ってきます
+			(<code>"dirname|file1|file2|.."</code>)。<br>
+			キャンセルの場合は "" が返ります。
+			</font><br>
+			<font color="red">↑関数の返り値の意味の説明です</font>
+		</td>
+	</tr>
+	<tr>
+		<td valign=top><font size=2><nobr><b>例：</b></nobr></font></td>
+		<td></td>
+		<td>
+			<table border=1>
+			<tr><td bgcolor="white"><font size=2>
+<pre>
+$selectfile = dllfuncstr("GETFILENAME",
+                hidemaruhandle(0),
+                "ファイルを選択して下さい",
+                "C:\\windows",
+                "'実行ファイル(*.com;*.exe)' 'スクリーンセーバー(*.scr)'"
+            );
+if ($selectfile != "") {
+    message "選択されたファイルは " + $selectfile + " です";
+}</pre></font>
+			</td></tr>
+			</table>
+			<font color="red">↑関数の使用例です
+			(DLL の初期化等の処理は省いてあります。
+			また "..." もコードを省いてあることを示しています。)</font>
+		</td>
+	</tr>
+	</table>
+	<br>
+</td></tr>
+</table>
+</ul>
+<br>
+<a name="ctrl_table"><hr size=1></a>
+<h3><font color="blue">コントロール一覧の見方</font></h3>
+<ul>
+	<table width="90%" border=1>
+	<tr><td>
+		<hr size=1>
+		<h4><font color="blue">スタティックテキスト</font></h4>
+		<table cellpadding=8>
+		<tr>
+			<td valign=top><font size=2><nobr><b>コントロール名：</b></nobr>
+			</font></td>
+			<td>　</td>
+			<td><font size=2><code><b>text</b></code></font><br>
+				<font color="red">
+				(↑<a href="dialog.html#newcontrol">NEWCONTROL 関数</a> の
+				第１引数で指定するコントロールの名前です)</font>
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><font size=2><nobr><b>説明：</b></nobr></font></td>
+			<td></td>
+			<td><font size=2>
+				テキスト（文字列）を表示します。</font><br>
+				<font color="red">(↑コントロールの種類の説明です)</font>
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><font size=2><nobr><b>引数＆返り値：</b></nobr>
+			</font></td>
+			<td></td>
+			<td>
+				<table cellpadding=4 border=0>
+				<tr>
+					<td valign=top><font size=2><code>
+						<a href="dialog.html#newcontrol">NEWCONTROL</a>
+					</code></font></td>
+					<td>　</td>
+					<td><font size=2>
+						<h5>引数</h5>
+						<table>
+						<tr>
+							<td valign=top><nobr><code>$s3</code></nobr></td>
+							<td>表示するテキスト</td>
+						</tr>
+						</table>
+						<h5>返り値</h5>
+						--</font>
+					</td>
+				</tr>
+				<tr>
+					<td valign=top><font size=2><code>
+						<a href="dialog.html#setctrlwidth">SETCTRLWIDTH</a>
+					</code></font></td>
+					<td>　</td>
+					<td><font size=2>--</font></td>
+				</tr>
+				<tr>
+					<td valign=top><font size=2><code>
+						<a href="dialog.html#setctrlheight">SETCTRLHEIGHT</a>
+					</code></font></td>
+					<td>　</td>
+					<td><font size=2>--</font></td>
+				</tr>
+				<tr>
+					<td valign=top><font size=2><code>
+						<a href="dialog.html#setctrlfont">SETCTRLFONT</a>
+					</code></font></td>
+					<td>　</td>
+					<td><font size=2>--</font></td>
+				</tr>
+				<tr>
+					<td valign=top><font size=2><code>
+						<a href="dialog.html#setctrlnotify">SETCTRLNOTIFY</a>
+					</code></font></td>
+					<td>　</td>
+					<td><font size=2>（無効）</font></td>
+				</tr>
+				<tr>
+					<td valign=top><font size=2><code>
+						<a href="dialog.html#setctrlstring">SETCTRLSTRING</a>
+					</code></font></td>
+					<td>　</td>
+					<td><font size=2>
+						<h5>引数</h5>
+						<table>
+						<tr>
+							<td valign=top><nobr><code>$s2</code></nobr></td>
+							<td>表示するテキスト</td>
+						</tr>
+						</table>
+						<h5>返り値</h5>
+						--</font>
+					</td>
+				</tr>
+				<tr>
+					<td valign=top><font size=2><code>
+						<a href="dialog.html#getctrlstring">GETCTRLSTRING</a>
+					</code></font></td>
+					<td>　</td>
+					<td><font size=2>
+						<h5>引数</h5>
+						--
+						<h5>返り値</h5>
+						表示中のテキスト</font>
+					</td>
+				</tr>
+				<tr>
+					<td valign=top><font size=2><code>
+						<a href="dialog.html#setctrlstate">SETCTRLSTATE</a>
+					</code></font></td>
+					<td>　</td>
+					<td><font size=2>（無効）</font></td>
+				</tr>
+				<tr>
+					<td valign=top><font size=2><code>
+						<a href="dialog.html#getctrlstate">GETCTRLSTATE</a>
+					</code></font></td>
+					<td>　</td>
+					<td><font size=2>（無効）</font></td>
+				</tr>
+				<tr>
+					<td valign=top><font size=2><code>
+						<a href="dialog.html#setctrlitem">SETCTRLITEM</a>
+					</code></font></td>
+					<td>　</td>
+					<td><font size=2>（無効）</font></td>
+				</tr>
+				<tr>
+					<td valign=top><font size=2><code>
+						<a href="dialog.html#changectrlitem">CHANGECTRLITEM</a>
+					</code></font></td>
+					<td>　</td>
+					<td><font size=2>（無効）</font></td>
+				</tr>
+				<tr>
+					<td valign=top><font size=2><code>
+						<a href="dialog.html#deletectrlitem">DELETECTRLITEM</a>
+					</code></font></td>
+					<td>　</td>
+					<td><font size=2>（無効）</font></td>
+				</tr>
+				<tr>
+					<td valign=top><font size=2><code>
+						<a href="dialog.html#resetctrlitem">RESETCTRLITEM</a>
+					</code></font></td>
+					<td>　</td>
+					<td><font size=2>（無効）</font></td>
+				</tr>
+				<tr>
+					<td valign=top><font size=2><code>
+						<a href="dialog.html#getctrlitem">GETCTRLITEM</a>
+					</code></font></td>
+					<td>　</td>
+					<td><font size=2>（無効）</font></td>
+				</tr>
+				<tr>
+					<td valign=top><font size=2><code>
+						<a href="dialog.html#enablectrl">ENABLECTRL</a>
+					</code></font></td>
+					<td>　</td>
+					<td><font size=2>--</font></td>
+				</tr>
+				</table>
+				<font color="red">(↑各コントロール操作関数による
+				効果及び引数の意味の説明です。
+				<code>"--"</code> は自明な意味を持つこと、
+				"（無効）" は効果がないことを意味します。)</font>
+			</td>
+		</tr>
+		</table>
+		<br>
+	</td></tr>
+	</table>
+</ul>
+</body>
+</html>

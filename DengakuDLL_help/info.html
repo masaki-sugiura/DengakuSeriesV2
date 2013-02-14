@@ -1,0 +1,224 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=iso-2022-jp">
+<title>田楽(でんがく)DLL API Reference Manual [Misc Info]</title>
+</head>
+<body bgcolor="#efefef">
+<a name="copyright"><hr size=1></a>
+<h3><font color="blue">著作権・配布条件等</font></h3>
+<ul>
+	<li>著作権</li>
+	<ul>
+		この田楽(でんがく)ＤＬＬの著作権は作者である 杉浦まさき
+		(<a href="mailto:sugiura@ceres.dti.ne.jp">sugiura@ceres.dti.ne.jp</a>)
+		が所有しています。
+	</ul>
+	<br>
+	<li>ソフトウェアの種別</li>
+	<ul>
+		田楽(でんがく)ＤＬＬ は <b>フリーソフトウェア</b> です。
+		すなわち、
+		<ul>
+			<li>もし貴方が望めば(*1)このソフトウェアのソースコードを
+				入手・閲覧及び改変できること</li>
+			<li>このソフトウェアを使用するにあたり、
+				誰に対しても一切お金を払う必要も義務もないこと(*2)</li>
+		</ul>
+		を、今現在はもちろんのこと、将来に渡っても永久に保証します。<br>
+		<br>
+		<table>
+		<tr>
+			<td valign=top><nobr><font size=-1>(*1)</font></nobr></td>
+			<td><font size=-1>一次配布先と同じ場所から入手可能です。</font></td>
+		</tr>
+		<tr>
+			<td valign=top><nobr><font size=-1>(*2)</font></nobr></td>
+			<td><font size=-1>再配布の際の手数料等については特に規定しません。
+				</font></td>
+		</tr>
+		</table>
+	</ul>
+	<br>
+	<li>再配布について</li>
+	<ul>
+		基本的には自由ですが、雑誌の付録や Web/FTP サイト上での公開の際は
+		一応作者にご連絡を頂けると嬉しいです(義務ではありません)。
+	</ul>
+	<br>
+	<li><a name="attach_condition">
+		他のソフトウェア(マクロ・スクリプト等)に同梱する際の条件</a></li>
+	<ul>
+		最低限 DengakuDLL.dll 本体と共に DengakuDLL.txt を同梱して下さい。
+		あと公開前に一応作者まで連絡を頂けると嬉しいです(義務ではありません)。
+	</ul>
+	<br>
+	<li>免責事項</li>
+	<ul>
+		このソフトウェアを使用したことによって如何なる不幸(^^;が生じても、
+		著作権者がそれらに対して補償を行う義務は無いものとさせて頂きます。
+	</ul>
+	<br>
+	<li>サポート・連絡先</li>
+	<ul>
+		このソフトウェアに関する質問やバグ報告等々は作者
+		(<a href="mailto:sugiura@ceres.dti.ne.jp">sugiura@ceres.dti.ne.jp</a>)
+		までメールして頂くか、
+		作者のWebページ
+		(URL: <a href="http://www.ceres.dti.ne.jp/~sugiura/index.html">
+		http://www.ceres.dti.ne.jp/~sugiura/index.html</a>)
+		にある「サポート会議室」にて発言して下さい。
+		時間が取れれば(^^;なるべく早く返事を出すようにしていますが、
+		それでも返事が遅れるかもしれないことを予めご了解下さい。
+	</ul>
+	<br>
+	<li>最新版の入手方法</li>
+	<ul>
+		上記の Web ページが正式な(１次)配布場所ですが、
+		「秀まるおのホームページ
+		(URL: <a href="http://hide.maruo.co.jp/">
+		http://hide.maruo.co.jp/</a>)」の
+		秀丸マクロライブラリにも置かせてもらっています。
+	</ul>
+	<br>
+	<li>その他</li>
+	<ul>
+		画像の操作で使用する Susie Plug-in に関する情報は、
+		たけちんさんの「Susie の部屋
+		(URL:<a href="http://www.digitalpad.co.jp/~takechin/">
+		http://www.digitalpad.co.jp/~takechin/</a>)」その他から入手して下さい。
+		なお、Plug-in の開発者は必ずしもたけちんさんとは限らないので、
+		質問等をする際は十分注意して下さい。
+		<br>
+		BREGEXP DLL 操作系関数で使用する BREGEXP.DLL に関する情報は、
+		Baba さんの Web サイト(http://www.hi-ho.ne.jp/babaq/index.html)
+		その他から入手して下さい。
+	</ul>
+</ul>
+<br>
+<a name="to_authors"><hr size=1></a>
+<h3><font color="blue">田楽ＤＬＬを使うソフトウェアの作者の方へ</font></h3>
+<ul>
+	同梱の際の条件については
+	<a href="#attach_condition">こちら</a>をご覧ください。<br>
+	<br>
+	<a href="misc.html#getversion">田楽ＤＬＬのバージョン番号</a>は
+	以下のポリシーに従ってつけられています。
+	同梱の際には以下の点に十分に注意して下さい。<br>
+	<br>
+	<table border=1 cellpadding=10>
+	<tr><td bgcolor="white">
+	<code><font size=+1><b>Ver. 
+		<font color="red">X</font>.<!--
+		--><font color="blue">Y</font><!--
+		--><font color="green">Z</font>(β)</b></font></code>
+	</td></tr>
+	</table>
+	<br>
+	<table>
+	<tr>
+		<td valign=top><font color="red"><b><code>X</code></b></font></td>
+		<td valign=top>:</td>
+		<td valign=top>
+			このメジャーバージョンが異なるものには
+			基本的には互換性の保証はありません。<br>
+			※Ver.2.XX は Ver.1.XX の上位互換です。
+		</td>
+	</tr>
+	<tr>
+		<td valign=top><font color="blue"><b><code>Y</code></b></font></td>
+		<td valign=top>:</td>
+		<td valign=top>
+			このマイナーバージョンの１桁目が異なるだけのものには
+			上位互換性が保証されています。
+			つまり、Ver.1.0* で動作するマクロは
+			Ver.1.1* の DLL でも動作しますが、
+			逆のケースでは動作は保証されません。<br>
+			※Ver.2.20 以前とそれ以降の物との間で
+			グローバル変数を共有できなくなりました。
+			が、マクロ自体は修正しなくても大丈夫です。
+		</td>
+	</tr>
+	<tr>
+		<td valign=top><font color="green"><b><code>Z</code></b></font></td>
+		<td valign=top>:</td>
+		<td valign=top>
+			このマイナーバージョンの２桁目が異なるだけのものには
+			(バグによる誤動作を除いた)関数仕様の同一性が保証されています。
+		</td>
+	</tr>
+	<tr>
+		<td valign=top><b><code>β</code></b></td>
+		<td valign=top>:</td>
+		<td valign=top>
+			テスト公開のバージョンだけにつけられます。
+			<font color="red">このバージョンの同梱は行わないで下さい。</font>
+		</td>
+	</tr>
+	</table>
+</ul>
+<br>
+<a name="acknowledgement"><hr size=1></a>
+<h3><font color="blue">謝辞</font></h3>
+<ul>
+	<li>まず、このＤＬＬを作るきっかけとなった
+		秀丸マクロのＤＬＬ呼出し機能を追加して頂いた＆
+		田楽ＤＬＬの実現のためにいくつかの機能追加と修正をして頂いた、
+		秀丸エディタの開発者の方々に感謝致します。</li>
+	<li>この田楽ＤＬＬの機能は拙作の「田楽サーバ」のものを踏襲していますが、
+		田楽サーバそのものはさらに「秀まるおのマクロサーバ」の
+		上位互換クローンとなっています。
+		というわけで、マクロサーバの作者である秀まるおさんに
+		感謝致します。</li>
+	<li>このＤＬＬの開発の過程で
+		メールやサポート会議室等で様々な方からの貴重な報告や要望を頂きました。
+		驚くほど貧弱な(笑)開発＆テスト環境しか持っていない僕が
+		このＤＬＬを何とか使える程度に保守・管理できているのは
+		こうした方々のおかげ以外の何物でもありません。
+		皆さんいつもありがとうございますm(_ _)m。</li>
+	<li>最後になりましたが、
+		このマニュアルを読んで頂いて田楽ＤＬＬを使って
+		マクロなりスクリプトを書いて下さっている方々、
+		何らかの形で
+		このＤＬＬを利用して下さっている方々に心から感謝致します。</li>
+</ul>
+<br>
+<a name="history"><hr size=1></a>
+<h3><font color="blue">更新履歴</font></h3>
+<ul>
+	[Ver.3.10 → Ver.3.20]<br>
+	<ul>
+		<li>SETDLGEXPROPERTY(), GETDLGEXPROPERTY() 関数の追加</li>
+		<li>list, combo, lview, chklist コントロールに
+			view_order_of_***, index_of_*** 拡張属性を追加</li>
+	</ul>
+	<br>
+	[Ver.3.01 → Ver.3.10]<br>
+	<ul>
+		<li>HMJRE_REPLACE_REGULAR(), HMJRE_REPLACE_REGULAR_NO_CASE_SENSE()
+			関数の追加</li>
+		<li>SETCTRLEXPROPERTY(), GETCTRLEXPROPERTY() 関数の追加</li>
+	</ul>
+	<br>
+	[Ver.3.00 → Ver.3.01]<br>
+	<ul>
+		<li>ウィンドウ右上の[×]ボタンが押されて１回通知コードを送信した後、
+			以後何も通知コードを返さない状態になっていた不具合の修正</li>
+	</ul>
+	<br>
+	[Ver.2.99 → Ver.3.00]<br>
+	<ul>
+		<li>フォルダ選択ダイアログでサブフォルダのないフォルダの下に
+			新規フォルダを作成した場合、
+			そのフォルダがすぐに表示されていなかった不具合の修正</li>
+		<li>GETDIRNAMEEX()において、
+			フォルダ名の変更が戻り値に反映されないことがあった不具合の修正</li>
+	</ul>
+	<br>
+	<br>
+	※Ver.2.9X 以前の更新履歴については
+	<a href="http://www.ceres.dti.ne.jp/~sugiura/hidemaru/macros/dgserver/">
+	作者の Web ページ</a> を参照して下さい。<br>
+	<br>
+</ul>
+</body>
+</html>

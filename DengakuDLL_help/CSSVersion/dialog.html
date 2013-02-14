@@ -1,0 +1,2130 @@
+<html>
+<head>
+<title>田楽(でんがく)DLL API Reference Manual [ダイアログ]</title>
+</head>
+<body bgcolor="#efefef">
+<a name="showdialog"><hr size=1></a>
+<h3><font color="blue">SHOWDIALOG</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SHOWDIALOG",#n1,#n2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        <a href="#newdialog">NEWDIALOG</a>,
+		<a href="#newcontrol">NEWCONTROL</a> 関数等で作成した
+		ユーザー定義ダイアログを表示します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>#n1 :</nobr></td>
+			<td>ダイアログのオーナーウィンドウのハンドル(または 0)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n2 :</nobr></td>
+			<td>常に手前に表示する場合は 1、そうでなければ 0</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。<br>
+		<br>
+		この関数はダイアログ表示中に呼び出すと必ず失敗します。
+		したがって、一度に表示可能なダイアログは１つだけです。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="enddialog"><hr size=1></a>
+<h3><font color="blue">ENDDIALOG</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("ENDDIALOG");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        <a href="#showdialog">SHOWDIALOG 関数</a> で表示したダイアログを
+		閉じます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="waitctrlnotify"><hr size=1></a>
+<h3><font color="blue">WAITCTRLNOTIFY</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("WAITCTRLNOTIFY",#n1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        ダイアログからの通知コードを取得します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>#n1 :</nobr></td>
+			<td>ダイアログからの通知コードを待つ時間(単位はミリ秒)<br>
+				（0 以下の値を指定すると、
+				関数呼出しの時点で通知コードが届いていなければ
+				すぐに復帰します）</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		コントロールの通知コードが（文字列で）返ります。
+		ダイアログが表示されていないか、
+        通知コードが届かなかった場合は "" を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="showmessage"><hr size=1></a>
+<h3><font color="blue">SHOWMESSAGE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SHOWMESSAGE",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        (ユーザー定義のダイアログを表示中に)メッセージボックスを表示します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>「ＯＫ」ボタンが押された時に通知する通知コード</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>メッセージ文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		メッセージボックスの表示に成功したら 1 を、失敗したら 0 を返します。
+		「ＯＫ」ボタンが押されたかどうかは
+		<a href="#waitctrlnotify">WAITCTRLNOTIFY 関数</a> の返り値(通知コード)
+		で判定して下さい。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+#n = dllfunc("NEWDIALOG","メッセージボックスのテスト",20,"0 0 center");
+#n = dllfunc("NEWCONTROL","button","","ボタン１");
+#n = dllfunc("SETCTRLNOTIFY","","10");
+#n = dllfunc("NEWCONTROL","okcancel","","");
+#n = dllfunc("SHOWDIALOG",0,1);
+while (1) {
+    $ntf_code = dllfuncstr("WAITCTRLNOTIFY",100);
+    if ($ntf_code == "" || $nft_code == "999") continue;
+    else if ($ntf_code == "1" || $ntf_code == "0") break;
+    else if ($ntf_code == "10") {
+        // ボタンが押されたらメッセージボックスを表示
+        #n = dllfunc("SHOWMESSAGE","999","ボタンが押されました。");
+    }
+}
+#n = dllfunc("ENDDIALOG");
+...</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="showquestion"><hr size=1></a>
+<h3><font color="blue">SHOWQUESTION</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SHOWQUESTION",$s1,$s2,$s3);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        (ユーザー定義のダイアログを表示中に)
+		質問のためのメッセージボックスを表示します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>「はい」ボタンが押された時に通知する通知コード</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>「いいえ」ボタンが押された時に通知する通知コード</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s3 :</nobr></td>
+			<td>メッセージ文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		メッセージボックスの表示に成功したら 1 を、失敗したら 0 を返します。
+		「はい」と「いいえ」のどちらのボタンが押されたかは
+		<a href="#waitctrlnotify">WAITCTRLNOTIFY 関数</a> の返り値(通知コード)
+		で判定して下さい。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+#n = dllfunc("NEWDIALOG","メッセージボックスのテスト",20,"0 0 center");
+#n = dllfunc("NEWCONTROL","button","","ボタン１");
+#n = dllfunc("SETCTRLNOTIFY","","10");
+#n = dllfunc("NEWCONTROL","okcancel","","");
+#n = dllfunc("SHOWDIALOG",0,1);
+while (1) {
+    $ntf_code = dllfuncstr("WAITCTRLNOTIFY",100);
+    if ($ntf_code == "" || $ntf_code == "999") continue;
+    else if ($ntf_code == "1" || $ntf_code == "0") break;
+    else if ($ntf_code == "10") {
+        // ボタンが押されたらメッセージボックスを表示
+        #n = dllfunc("SHOWQUESTION","100","200","何ですか？");
+    } else if ($ntf_code == "100") {
+        //  「はい」ボタンが押された場合
+        #n = dllfunc("SHOWMESSAGE","999","「はい」が押されました。");
+    } else if ($ntf_code == "200") {
+        //  「いいえ」ボタンが押された場合
+        #n = dllfunc("SHOWMESSAGE","999","「いいえ」が押されました。");
+    }
+}
+#n = dllfunc("ENDDIALOG");
+...</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="newdialog"><hr size=1></a>
+<h3><font color="blue">NEWDIALOG</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("NEWDIALOG",$s1,#n2,$s3);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        ユーザー定義ダイアログのテンプレートの作成を開始します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>ダイアログのタイトル文字列</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n2 :</nobr></td>
+			<td>ダイアログの横幅（単位は半角文字１文字分）</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s3 :</nobr></td>
+			<td>ダイアログの表示位置その他のオプション<br>
+				<br>
+				書式は以下の通りです(後ろから順に省略可能)。<br>
+				<ul>
+                    <code>"<i>x</i> <i>y</i> <i>origin</i> <i>fontname</i> <i>fontsize</i> <i>unit</i>"</code><br>
+					<br>
+					<table>
+					<tr>
+		                <td valign=top><nobr><code><i>x</i>:</code></nobr></td>
+						<td>ダイアログの表示位置の x 座標(デフォルト = 0)
+						単位は半角文字幅の４分の１です。</td>
+					</tr>
+					<tr>
+		                <td valign=top><nobr><code><i>y</i>:</code></nobr></td>
+						<td>ダイアログの表示位置の y 座標(デフォルト = 0)
+						単位は文字高の８分の１です。</td>
+					</tr>
+					<tr>
+		                <td valign=top><nobr><code><i>origin</i>:</code></nobr></td>
+						<td>ダイアログの表示位置(の座標原点)を指定<br>
+							<table>
+							<tr>
+		                    	<td valign=top><nobr><code>window:</code></nobr></td>
+								<td>親ウィンドウのクライアント領域の左上が原点</td>
+							</tr>
+							<tr>
+			                    <td valign=top><nobr><code>screen:</code></nobr></td>
+								<td>デスクトップの左上が原点</td>
+							</tr>
+							<tr>
+			                    <td valign=top><nobr><code>caret:</code></nobr></td>
+								<td>文字入力カーソル位置が原点(Ver.2.20〜)</td>
+							</tr>
+							<tr>
+			                    <td valign=top><nobr><code>cursor:</code></nobr></td>
+								<td>マウスカーソル位置が原点(Ver.2.20〜)</td>
+							</tr>
+							<tr>
+			                    <td valign=top><nobr><code>center:</code></nobr></td>
+								<td>デスクトップの中央に表示
+									(<code>x, y</code> は無視される)</td>
+							</tr>
+							<tr>
+			                    <td valign=top><nobr>それ以外:</nobr></td>
+								<td>親ウィンドウのクライアント領域の中央に表示
+									(<code>x, y</code> は無視される) (デフォルト)</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td valign=top><nobr><code><i>fontname</i>:</code></nobr></td>
+						<td>フォント名 (デフォルト = システム定義)</td>
+					</tr>
+					<tr>
+	 	            	<td valign=top><nobr><code><i>fontsize</i>:</code></nobr></td>
+						<td>フォントサイズ(単位は pt) (デフォルト = システム定義)</td>
+					</tr>
+					<tr>
+	 	            	<td valign=top><nobr><code><i>unit</i>:</code></nobr></td>
+						<td>"px" を指定すると、<i>x</i>, <i>y</i> の各座標
+						指定をピクセル値とみなすようになります
+						(デフォルト = 無指定)</td>
+					</tr>
+					</table>
+				</ul>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。<br>
+		なお、この関数はダイアログ表示中に呼び出すと必ず失敗します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="newdlgpage"><hr size=1></a>
+<h3><font color="blue">NEWDLGPAGE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("NEWDLGPAGE",$s1,#n2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        frame, group, tab コントロールの内部に表示する
+		子ダイアログの作成を開始します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>子ダイアログの名前("root" は予約名なので使わないで下さい)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n2 :</nobr></td>
+			<td>子ダイアログの横幅（単位は半角文字１文字分）</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。<br>
+		なお、この関数はダイアログ表示中に呼び出すと必ず失敗します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="setcurdlgpage"><hr size=1></a>
+<h3><font color="blue">SETCURDLGPAGE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SETCURDLGPAGE",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		<a href="#newcontrol">NEWCONTROL 関数</a>で
+		コントロールを追加する対象の(子)ダイアログを変更します。<br>
+		<br>
+		<table>
+		<tr>
+			<td valign=top>※</td>
+			<td>frame や tab コントロールのページ切り替えは
+			<a href="#setctrlstate">SETCTRLSTATE()</a> 関数を使って下さい。
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>子ダイアログの名前(親ダイアログを指定する時は "root")</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。<br>
+		なお、この関数はダイアログ表示中は必ず失敗します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+...
+add_groupbox:
+    //  現在追加対象の子ダイアログの名前を取得
+    $$cur_page = dllfuncstr("GETCURDLGPAGE");
+    if ($$cur_page == "gb1") {
+        message "同じ名前の子ダイアログが既に登録されています。";
+        return;
+    }
+    //  追加対象の子ダイアログを変更/新規作成
+    if (!dllfunc("SETCURDLGPAGE","gb1"))
+        if (!dllfunc("NEWDLGPAGE","gb1",30)) goto exit;
+    //  子ダイアログにコントロールを追加
+    if (!dllfunc("NEWCONTROL","rdbtn","rdb1@gb1","item1")) goto exit;
+    if (!dllfunc("NEWCONTROL","rdbtn","rdb2@gb1","item2")) goto exit;
+    if (!dllfunc("NEWCONTROL","rdbtn","rdb3@gb1","item3")) goto exit;
+    if (!dllfunc("SETCTRLWIDTH","",10)) goto exit;
+    if (!dllfunc("NEWCONTROL","edit","ed3@gb1","")) goto exit;
+    //  追加対象を元に戻す
+    if (!dllfunc("SETCURDLGPAGE",$$cur_page)) goto exit;
+    //  今作成した子ダイアログをグループボックス内に表示させる
+    if (!dllfunc("NEWCONTROL","group","grp1","select")) goto exit;
+    if (!dllfunc("SETCTRLITEM","","gb1","0")) goto exit;
+    return;
+...
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="getcurdlgpage"><hr size=1></a>
+<h3><font color="blue">GETCURDLGPAGE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETCURDLGPAGE");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		現在コントロールを追加する対象になっている
+		(子)ダイアログの名前を返します。<br>
+		<br>
+		<table>
+		<tr>
+			<td valign=top>※</td>
+			<td>frame や tab コントロールで表示中の子ダイアログの取得は
+			<a href="#getctrlstate">GETCTRLSTATE()</a> 関数を使って下さい。
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		現在コントロールを追加する対象になっている(子)ダイアログの名前。
+		追加対象が親ダイアログだった場合は "root" が返ります。
+		追加対象の(子)ダイアログがない場合は "" が返ります。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(<a href="#setcurdlgpage">SETCURDLGPAGE 関数</a> の例を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="setdlgtitle"><hr size=1></a>
+<h3><font color="blue">SETDLGTITLE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SETDLGTITLE",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        ダイアログのタイトルを(動的に)変更します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>ダイアログの新しいタイトル文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="getdlgtitle"><hr size=1></a>
+<h3><font color="blue">GETDLGTITLE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETDLGTITLE");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        ダイアログのタイトルを返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		ダイアログのタイトル文字列
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="savedialog"><hr size=1></a>
+<h3><font color="blue">SAVEDIALOG</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SAVEDIALOG",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        ダイアログのデータを指定されたデータファイルに保存します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>データファイル名</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>データファイルを識別するための署名文字列
+				(必要なければ "" を指定)</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(省略)
+	</td>
+</tr>
+</table>
+<br>
+<a name="loaddialog"><hr size=1></a>
+<h3><font color="blue">LOADDIALOG</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("LOADDIALOG",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        ダイアログのデータを指定されたデータファイルから読み込みます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>データファイル名</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>データファイルを識別するための署名文字列
+				(必要なければ "" を指定)<br>
+        		指定した場合は
+				データファイルの署名と指定したものが一致した時にのみデータ
+		        を読み込みます。
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+if (!dllfunc("LOADDIALOG",
+        "foo.dat",
+        "This is dialog data of HOGE macro"
+        )
+    ) {
+    message "ダイアログのデータファイルの読込みに失敗しました";
+    ...
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="getsignature"><hr size=1></a>
+<h3><font color="blue">GETSIGNATURE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETSIGNATURE",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定したデータファイルから署名を読み取ります。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>データファイル名</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		データファイルの署名文字列
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+if (dllfuncstr("GETSIGNATURE","foo.dat")
+        !=
+    "This is dialog data of HOGE macro") {
+    message "データファイルが違います";
+    ...
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="setdlgpos"><hr size=1></a>
+<h3><font color="blue">SETDLGPOS</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SETDLGPOS",#n1,#n2,$s3,$s4);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        ダイアログの位置を指定した位置に変更します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>#n1 :</nobr></td>
+			<td>ダイアログの横方向の座標値</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n2 :</nobr></td>
+			<td>ダイアログの縦方向の座標値</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s3 :</nobr></td>
+			<td>座標原点の指定<br>
+				<code>NEWDIALOG()</code> のダイアログ表示位置の指定と同じ
+				値を指定します（<code>center</code> または空文字指定の場合は
+				#n1, #n2 の値は無視されます）。</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s4 :</nobr></td>
+			<td>座標値の単位の指定<br>
+				""(空文字) を指定した場合はフォントサイズに基づいた値
+				（横方向は半角文字幅の４分の１、縦方向は文字高の８分の１）、
+				<code>"px"</code> を指定した場合はピクセル値と解釈されます。
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(省略)
+	</td>
+</tr>
+</table>
+<br>
+<a name="getdlgpos"><hr size=1></a>
+<h3><font color="blue">GETDLGPOS</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETDLGPOS");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        ダイアログの現在位置を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		ダイアログの現在の座標値を "<i>x</i>,<i>y</i>" という形式で返します。
+		ここで、各座標値は NEWDIALOG() または直前の SETDLGPOS() により
+		指定した座標原点および単位で表現されます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(省略)
+	</td>
+</tr>
+</table>
+<br>
+<a name="newcontrol"><hr size=1></a>
+<h3><font color="blue">NEWCONTROL</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("NEWCONTROL",$s1,$s2,$s3);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        (子)ダイアログにコントロールを追加します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コントロール名</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>コントロール識別名 (必要なければ "" を指定)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s3 :</nobr></td>
+			<td>コントロールの初期化のための文字列</td>
+		</tr>
+		<tr><td></td><td></td></tr>
+		<tr>
+			<td valign=top>※</td>
+			<td>コントロール名の一覧と初期化文字列の書式については
+				<a href="controls.html">こちら</a>を参照して下さい。
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。<br>
+		なお、この関数はダイアログ表示中は必ず失敗します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="enablectrl"><hr size=1></a>
+<h3><font color="blue">ENABLECTRL</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("ENABLECTRL",#n1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定したコントロールの表示状態を変更します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>#n1 :</nobr></td>
+			<td>1 なら通常の状態、
+				0 なら入力を受け付けない状態に変更</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>コントロール識別名（複数指定可）</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="newcolumn"><hr size=1></a>
+<h3><font color="blue">NEWCOLUMN</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("NEWCOLUMN",#n1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        現在コントロールを配置している列の右側に
+		新しいコントロール配置列を追加します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>#n1 :</nobr></td>
+			<td>新しい配置列の横幅（単位は半角文字１文字分）</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。<br>
+		なお、この関数はダイアログ表示中は必ず失敗します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="newpage"><hr size=1></a>
+<h3><font color="blue">NEWPAGE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("NEWPAGE",#n1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        現在のコントロール配置行の下に
+		新しいコントロール配置行を追加します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>#n1 :</nobr></td>
+			<td>新しい配置行の横幅（単位は半角文字１文字分）</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。<br>
+		なお、この関数はダイアログ表示中は必ず失敗します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="setctrlstring"><hr size=1></a>
+<h3><font color="blue">SETCTRLSTRING</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SETCTRLSTRING",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定したコントロールのテキストを(動的に)変更します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コントロール識別名<br>
+				("" を指定すると直前に
+				<a href="#newcontrol">NEWCONTROL 関数</a> で追加した
+				コントロールが対象になります)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>コントロールのテキスト<br>
+			（コントロールの種類によって指定する値の意味が違います。
+			詳細は<a href="controls.html">こちら</a>を参照して下さい。）</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="getctrlstring"><hr size=1></a>
+<h3><font color="blue">GETCTRLSTRING</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETCTRLSTRING",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定したコントロールのテキストを返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コントロール識別名<br>
+				("" を指定すると直前に
+				<a href="#newcontrol">NEWCONTROL 関数</a> で追加した
+				コントロールが対象になります)</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		コントロールのテキスト
+		（コントロールの種類によって返される値の意味が違います。
+		詳細は<a href="controls.html">こちら</a>を参照して下さい。）
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="setctrlstate"><hr size=1></a>
+<h3><font color="blue">SETCTRLSTATE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SETCTRLSTATE",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定したコントロールの選択状態を(動的に)変更します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コントロール識別名<br>
+				("" を指定すると直前に
+				<a href="#newcontrol">NEWCONTROL 関数</a> で追加した
+				コントロールが対象になります)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>コントロールの選択状態を表す文字列<br>
+			（コントロールの種類によって指定する値の意味が違います。
+			詳細は<a href="controls.html">こちら</a>を参照して下さい。）</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="getctrlstate"><hr size=1></a>
+<h3><font color="blue">GETCTRLSTATE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETCTRLSTATE",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定したコントロールの選択状態を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コントロール識別名<br>
+				("" を指定すると直前に
+				<a href="#newcontrol">NEWCONTROL 関数</a> で追加した
+				コントロールが対象になります)</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		コントロールの状態を表す文字列
+		（コントロールの種類によって返される値の意味が違います。
+		詳細は<a href="controls.html">こちら</a>を参照して下さい。）
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="setctrlwidth"><hr size=1></a>
+<h3><font color="blue">SETCTRLWIDTH</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SETCTRLWIDTH",$s1,#n2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定したコントロールの幅を変更し、
+		次回の <a href="#newcontrol">NEWCONTROL 関数</a> で追加される
+		コントロールをその右側の余白に配置します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コントロール識別名<br>
+				("" を指定すると直前に
+				<a href="#newcontrol">NEWCONTROL 関数</a> で追加した
+				コントロールが対象になります)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n2 :</nobr></td>
+			<td>コントロールの横幅（単位は半角文字１文字分）<br>
+				（-1 を指定すると現在の余白の半分を指定したものと見なされます）
+				</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。<br>
+		なお、この関数はダイアログ表示中は必ず失敗します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="setctrlheight"><hr size=1></a>
+<h3><font color="blue">SETCTRLHEIGHT</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SETCTRLHEIGHT",$s1,#n2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定したコントロールの高さを変更します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コントロール識別名<br>
+				("" を指定すると直前に
+				<a href="#newcontrol">NEWCONTROL 関数</a> で追加した
+				コントロールが対象になります)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n2 :</nobr></td>
+			<td>コントロールの縦幅（単位は半角文字１文字分）<br>
+			（この関数による指定が無視されるコントロールがあります。
+			詳細は<a href="controls.html">こちら</a>を参照して下さい。）</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。<br>
+		なお、この関数はダイアログ表示中は必ず失敗します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="setctrlnotify"><hr size=1></a>
+<h3><font color="blue">SETCTRLNOTIFY</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SETCTRLNOTIFY",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定したコントロールの通知コードを指定します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コントロール識別名<br>
+				("" を指定すると直前に
+				<a href="#newcontrol">NEWCONTROL 関数</a> で追加した
+				コントロールが対象になります)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>コントロールに割り当てる通知コード<br>
+				コントロールの種類によっては複数の通知コードを
+				割り当てることができますが、
+				その場合は各通知コードを半角のカンマで区切って
+				指定して下さい。</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。<br>
+		なお、この関数はダイアログ表示中は必ず失敗します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="setctrlfont"><hr size=1></a>
+<h3><font color="blue">SETCTRLFONT</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SETCTRLFONT",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定したコントロールのフォントを(動的に)変更します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コントロール識別名<br>
+				("" を指定すると直前に
+				<a href="#newcontrol">NEWCONTROL 関数</a> で追加した
+				コントロールが対象になります)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>フォント属性を指定する文字列<br>
+				<br>
+				書式は以下の通りです。<br>
+				<ul>
+					<code>"<i>属性指定</i> <i>色指定</i> [<i>フォント名</i>]"</code><br>
+					<br>
+					<li><code><i>属性指定</i></code>：<br>
+						以下の文字の組み合わせを指定します。<br>
+						&nbsp;&nbsp;<code>"b" :</code>   ボールド体<br>
+						&nbsp;&nbsp;<code>"i" :</code>   イタリック体<br>
+						&nbsp;&nbsp;<code>"u" :</code>   下線あり<br>
+						&nbsp;&nbsp;<code>"s" :</code>   打ち消し線あり<br>
+						例： "biu" …ボールド＆イタリック＆下線あり<br>
+					<br>
+					<li><code><i>色指定</i></code>：<br>
+						(<a href="color.html#format">こちら</a> を参照して下さい)<br>
+					<br>
+					<li><code><i>フォント名</i></code>：<br>
+						"ＭＳ Ｐゴシック" 等のフォント名を指定して下さい。
+						省略した場合はシステムフォントを使用します。
+				</ul>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="setctrlimestate"><hr size=1></a>
+<h3><font color="blue">SETCTRLIMESTATE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SETCTRLIMESTATE",$s1,#n2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定したコントロールがフォーカスを得た時の IME の状態を指定します。<br>
+		(edit, mledit, combo コントロールのみで有効)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コントロール識別名<br>
+				("" を指定すると直前に
+				<a href="#newcontrol">NEWCONTROL 関数</a> で追加した
+				コントロールが対象になります)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>#n2 :</nobr></td>
+			<td>0: 指定なし、1: 常に IME を ON、2: 常に IME を OFF</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(省略)
+	</td>
+</tr>
+</table>
+<br>
+<a name="getctrlimestate"><hr size=1></a>
+<h3><font color="blue">GETCTRLIMESTATE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETCTRLIMESTATE",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定したコントロールがフォーカスを得た時の IME の状態を返します。<br>
+		(edit, mledit, combo コントロールのみで有効)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コントロール識別名<br>
+				("" を指定すると直前に
+				<a href="#newcontrol">NEWCONTROL 関数</a> で追加した
+				コントロールが対象になります)</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		"0": 指定なし、"1": 常に IME を ON、"2": 常に IME を OFF
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(省略)
+	</td>
+</tr>
+</table>
+<br>
+<a name="setfocusedctrl"><hr size=1></a>
+<h3><font color="blue">SETFOCUSEDCTRL</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SETFOCUSEDCTRL", $s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		フォーカスを得るコントロールを指定します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コントロール識別名<br>
+				("" を指定するとテキストコントロールを除いた一番左上の
+				コントロールが対象になります)</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		フォーカスの移動に成功した場合は 1、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+#r = dllfunc("NEWDIALOG", "フォーカスのテスト", 40, "");
+#r = dllfunc("NEWCONTROL", "edit", "edt1", "最初のコントロール");
+#r = dllfunc("NEWCONTROL", "edit", "edt2", "２番目のコントロール");
+#r = dllfunc("NEWCONTROL", "okcancel", "", "");
+#r = dllfunc("SETFOCUSEDCTRL", "edt2"); // ２番目のコントロールにフォーカスを移す
+// ... (省略)</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="getfocusedctrl"><hr size=1></a>
+<h3><font color="blue">GETFOCUSEDCTRL</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETFOCUSEDCTRL");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		(現在)フォーカスを得ているコントロールの識別名を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		現在フォーカスを得ているコントロールの識別名<br>
+		何らかの理由で関数が失敗した場合は "" を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(省略)
+	</td>
+</tr>
+</table>
+<br>
+<a name="setctrlsort"><hr size=1></a>
+<h3><font color="blue">SETCTRLSORT</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SETCTRLSORT",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定したコントロールの項目のソート機能の状態を指定します。<br>
+		(list, combo, cmblist, lview, chklist, tree コントロールのみで有効)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コントロール識別名<br>
+				("" を指定すると直前に
+				<a href="#newcontrol">NEWCONTROL 関数</a> で追加した
+				コントロールが対象になります)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>ソート機能の状態を指定する文字列<br>
+				（コントロールの種類によって指定する値の意味が違います。
+				詳細は<a href="controls.html">こちら</a>を参照して下さい。）
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。<br>
+		なお、ダイアログ表示中は必ず 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(省略)
+	</td>
+</tr>
+</table>
+<br>
+<a name="getctrlsort"><hr size=1></a>
+<h3><font color="blue">GETCTRLSORT</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETCTRLSORT",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定したコントロールのソート機能の状態を返します。<br>
+		(list, combo, cmblist, lview, chklist, tree コントロールのみで有効)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コントロール識別名<br>
+				("" を指定すると直前に
+				<a href="#newcontrol">NEWCONTROL 関数</a> で追加した
+				コントロールが対象になります)</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		（コントロールの種類によって返される値の意味が違います。
+		詳細は<a href="controls.html">こちら</a>を参照して下さい。）
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(省略)
+	</td>
+</tr>
+</table>
+<br>
+<a name="setctrlitem"><hr size=1></a>
+<h3><font color="blue">SETCTRLITEM</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SETCTRLITEM",$s1,$s2,$s3);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定したコントロールに(動的に)項目を追加します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コントロール識別名<br>
+				("" を指定すると直前に
+				<a href="#newcontrol">NEWCONTROL 関数</a> で追加した
+				コントロールが対象になります)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>コントロールの項目テキスト<br>
+			（コントロールの種類によって指定する値の意味が違います。
+			詳細は<a href="controls.html">こちら</a>を参照して下さい。）</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s3 :</nobr></td>
+			<td>項目を追加する位置を表す文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="changectrlitem"><hr size=1></a>
+<h3><font color="blue">CHANGECTRLITEM</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("CHANGECTRLITEM",$s1,$s2,$s3);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定したコントロールの既存の項目を(動的に)変更します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コントロール識別名<br>
+				("" を指定すると直前に
+				<a href="#newcontrol">NEWCONTROL 関数</a> で追加した
+				コントロールが対象になります)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>コントロールの項目テキスト<br>
+			（コントロールの種類によって指定する値の意味が違います。
+			詳細は<a href="controls.html">こちら</a>を参照して下さい。）</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s3 :</nobr></td>
+			<td>変更する項目の位置を表す文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="deletectrlitem"><hr size=1></a>
+<h3><font color="blue">DELETECTRLITEM</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("DELETECTRLITEM",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定したコントロールの既存の項目を削除します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コントロール識別名<br>
+				("" を指定すると直前に
+				<a href="#newcontrol">NEWCONTROL 関数</a> で追加した
+				コントロールが対象になります)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>削除する項目の位置を表す文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="resetctrlitem"><hr size=1></a>
+<h3><font color="blue">RESETCTRLITEM</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("RESETCTRLITEM",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定したコントロールの全項目を削除します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コントロール識別名<br>
+				("" を指定すると直前に
+				<a href="#newcontrol">NEWCONTROL 関数</a> で追加した
+				コントロールが対象になります)</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        成功した場合は 1 を、失敗した場合は 0 を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="getctrlitem"><hr size=1></a>
+<h3><font color="blue">GETCTRLITEM</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETCTRLITEM",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定したコントロールの項目テキストを返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コントロール識別名<br>
+				("" を指定すると直前に
+				<a href="#newcontrol">NEWCONTROL 関数</a> で追加した
+				コントロールが対象になります)</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>取得する項目の位置を表す文字列</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		取得された項目テキスト<br>
+		$s2 の位置指定が有効でない値だった場合は ""(空文字列)を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(同梱の <a href="dgdll.mac">dgdll.mac</a> を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+</body>
+</html>

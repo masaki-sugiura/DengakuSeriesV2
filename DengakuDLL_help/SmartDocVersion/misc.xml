@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="iso-2022-jp" ?>
+
+<doc xml:lang="ja">
+
+<head>
+<title>田楽(でんがく)ＤＬＬ API リファレンスマニュアル Ver.2.10</title>
+<subtitle></subtitle>
+<author>杉浦　まさき</author>
+<date>2002/04/12</date>
+<hp>http://www.ceres.dti.ne.jp/~sugiura/</hp>
+<email>sugiura@ceres.dti.ne.jp</email>
+<abstract></abstract>
+<header></header>
+<footer></footer>
+<prologue></prologue>
+<native></native>
+</head>
+
+<body>
+
+<chapter title="その他">
+
+<section title="GETVERSION">
+
+<subsection id="SYNTAX">
+<ul id="GETVERSION">
+<li id="name">GETVERSION</li>
+<li id="type">string</li>
+<li id="argc">0</li>
+</ul>
+</subsection>
+
+<subsection id="DESCRIPTION">
+DengakuDLL.dll のバージョンを表す文字列を返します。
+</subsection>
+
+<subsection id="ARGUMENTS">
+</subsection>
+
+<subsection id="RETURN">
+"X.YY" または "X.YYβ"
+(X はメジャーバージョン、YY はマイナーバージョン)
+</subsection>
+
+<subsection id="EXAMPLE">
+<program title="田楽ＤＬＬのバージョンによって処理を変える">
+if (leftstr(dllfuncstr("GETVERSION"), 1) == "0") {
+    // 0.0X の場合
+} else {
+    // それ以上の場合
+}
+</program>
+</subsection>
+
+</section>
+
+</chapter>
+
+</body>
+
+</doc>

@@ -1,0 +1,1935 @@
+<html>
+<head>
+<title>田楽(でんがく)DLL API Reference Manual [ファイル]</title>
+</head>
+<body bgcolor="#efefef">
+<a name="appendcopy"><hr size=1></a>
+<h3><font color="blue">APPENDCOPY</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("APPENDCOPY",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定ファイルの最後に別のファイルの内容を連結(追加コピー)します。<br>
+		(テキストファイルの連結には
+		<a href="#appendcopytext">APPENDCOPYTEXT 関数</a> を使用して下さい)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>追加・変更されるファイルの名前</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>追加するファイルの名前</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        #n が 1 なら成功、0 なら失敗しています。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+if (!dllfunc("APPENDCOPY","foo.dat","bar.dat")) {
+    message "foo.dat に bar.dat の内容を連結できませんでした";
+    ...
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="appendcopytext"><hr size=1></a>
+<h3><font color="blue">APPENDCOPYTEXT</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("APPENDCOPYTEXT",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定ファイルの最後に別のファイルの内容を連結(追加コピー)します。
+        追加されるファイルの最後に [EOF](^Z, 0x1A) があった場合は
+		それを削除してから連結します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>追加・変更されるファイルの名前</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>追加するファイルの名前</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        #n が 1 なら成功、0 なら失敗しています。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+if (!dllfunc("APPENDCOPY","foo.txt","bar.txt")) {
+    message "foo.txt に bar.txt の内容を連結できませんでした";
+    ...
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="copy"><hr size=1></a>
+<h3><font color="blue">COPY</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("COPY",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		ファイルまたはフォルダをコピーします。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>(オプション文字列＋)コピー元ファイル(フォルダ)名
+				(複数指定可)<br>
+				<br>
+        		書式は以下の通りです。<br>
+				<ul>
+			        <code>"[<i>options</i>] <i>file</i> [<i>file</i>...]"</code><br>
+					<br>
+        			<li>オプション文字列(<i>options</i>)
+					<table>
+					<tr>
+						<td valign=top><nobr><code>/r :</code></nobr></td>
+						<td>フォルダをその内容ごとコピーします。</td>
+					</tr>
+					<tr>
+						<td valign=top><nobr><code>/i :</code></nobr></td>
+						<td>全てのファイル・フォルダについて
+							上書きの確認をします。
+		                    通常は読取専用またはシステムファイルの
+							上書きのみ確認します。</td>
+					</tr>
+					<tr>
+            			<td valign=top><nobr><code>/f :</code></nobr></td>
+						<td>確認せずに全て強制的に上書きします。</td>
+					</tr>
+					<tr>
+	            		<td valign=top><nobr><code>/u :</code></nobr></td>
+						<td>コピー先のタイムスタンプがコピー元より
+							古い場合のみ上書きします。</td>
+					</tr>
+					<tr>
+            			<td valign=top><nobr><code>/n :</code></nobr></td>
+						<td>戻り値として実際にコピーしたファイルの数を返し、
+							処理結果を
+							<a href="#fileopresult">FILEOPRESULT()</a> で
+							取得できるようになります。</td>
+					</tr>
+					<tr>
+            			<td valign=top><nobr><code>/N :</code></nobr></td>
+						<td>上書きの確認を求めるダイアログに対して
+							自動で「いいえ」と答えたとして処理を進めます。
+							（上書きを一切したくない場合は
+							<b><code>/i</code></b> オプションと
+							併用して下さい）</td>
+					</tr>
+					</table>
+					</li>
+					<br>
+        			<li>ファイルまたはフォルダ名(<i>file</i>)<br>
+            			ファイル名またはフォルダ名を複数指定できます。
+						ワイルドカードも使用できます。
+            			ただしフォルダを指定する場合は
+						"/r" オプションを指定して下さい。
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>コピー先ファイル(フォルダ)名
+				<ul>
+					<li>もし $s2 が存在しないか、または既存のファイル名の場合は
+						$s1 の内容を $s2 を別名としてコピーします。</li>
+					<li>もし $s2 が既存のフォルダ名の場合は $s1 を $s2 の中に
+						同名でコピーします。</li>
+				</ul>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        #n が 1 なら成功、0 なら失敗しています。<br>
+		(/n を指定した場合を除く)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+//  別名コピー
+if (!dllfunc("COPY","index.html","index.orig")) {
+    message "ファイルのコピーに失敗しました";
+    ...
+}
+//  別フォルダへファイルをコピー
+if (!dllfunc("COPY","*.html *.txt","A:\\")) {
+    message "ファイルのコピーに失敗しました";
+    ...
+}
+//  別フォルダへフォルダ・ファイルをコピー
+if (!dllfunc("COPY",
+            "/ru 'C:\\Program Files\\*.*'",
+            "G:\\Backup\\Program Files"
+        )
+    ) {
+    message "プログラムフォルダのバックアップに失敗しました";
+    ...
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="move"><hr size=1></a>
+<h3><font color="blue">MOVE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("MOVE",$s1,$s2);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		ファイルまたはフォルダを移動(または名前を変更)します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>(オプション文字列＋)移動元ファイル(フォルダ)名
+				(複数指定可)<br>
+				<br>
+        		書式は以下の通りです。<br>
+				<ul>
+			        <code>"[<i>options</i>] <i>file</i> [<i>file</i>...]"</code><br>
+					<br>
+        			<li>オプション文字列(<i>options</i>)
+					<table>
+					<tr>
+						<td valign=top><nobr><code>/i :</code></nobr></td>
+						<td>全てのファイル・フォルダについて
+							上書きの確認をします。
+		                    通常は読取専用またはシステムファイルの
+							上書きのみ確認します。</td>
+					</tr>
+					<tr>
+	            		<td valign=top><nobr><code>/f :</code></nobr></td>
+						<td>確認せずに全て強制的に上書きします。</td>
+					</tr>
+					<tr>
+            			<td valign=top><nobr><code>/u :</code></nobr></td>
+						<td>コピー先のタイムスタンプがコピー元より
+							古い場合のみ上書きします。</td>
+					</tr>
+					<tr>
+            			<td valign=top><nobr><code>/n :</code></nobr></td>
+						<td>戻り値として実際に移動したファイルの数を返し、
+							処理結果を
+							<a href="#fileopresult">FILEOPRESULT()</a> で
+							取得できるようになります。</td>
+					</tr>
+					<tr>
+            			<td valign=top><nobr><code>/N :</code></nobr></td>
+						<td>上書きの確認を求めるダイアログに対して
+							自動で「いいえ」と答えたとして処理を進めます。
+							（上書きを一切したくない場合は
+							<b><code>/i</code></b> オプションと
+							併用して下さい）</td>
+					</tr>
+					</table>
+					</li>
+					<br>
+        			<li>ファイルまたはフォルダ名(<i>file</i>)<br>
+            			ファイル名またはフォルダ名を複数指定できます。
+						ワイルドカードも使用できます。
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td valign=top><nobr>$s2 :</nobr></td>
+			<td>移動先ファイル(フォルダ)名
+				<ul>
+					<li>$s2 が存在しない場合は $s1 を $s2 に名前を変えて
+						移動します。
+					<li>$s2 が既存のファイル名の場合は $s1 を $s2 に
+						上書き移動します。</li>
+					<li>もし $s2 が既存のフォルダ名の場合は $s1 を $s2 の中に
+						同名で移動します。</li>
+				</ul>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        #n が 1 なら成功、0 なら失敗しています。<br>
+		(/n を指定した場合を除く)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+//  名前の変更
+if (!dllfunc("MOVE","index.html","index.orig")) {
+    message "ファイルの名前の変更に失敗しました";
+    ...
+}
+//  別フォルダへファイル・フォルダを移動
+if (!dllfunc("MOVE","*.*","A:\\")) {
+    message "ファイルの移動に失敗しました";
+    ...
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="remove"><hr size=1></a>
+<h3><font color="blue">REMOVE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("REMOVE",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		ファイルまたはフォルダを削除します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>(オプション文字列＋)削除するファイル(フォルダ)名
+				(複数指定可)<br>
+        		書式は以下の通りです。<br>
+				<ul>
+			        <code>"[<i>options</i>] <i>file</i> [<i>file</i>...]"</code><br>
+					<br>
+        			<li>オプション文字列(<i>options</i>)
+					<table>
+					<tr>
+						<td valign=top><nobr><code>/r :</code></nobr></td>
+						<td>フォルダをその内容ごと削除します。</td>
+					</tr>
+					<tr>
+						<td valign=top><nobr><code>/i :</code></nobr></td>
+						<td>全てのファイル・フォルダについて
+							削除の確認をします。
+		                    通常は読取専用またはシステムファイルの
+							削除のみ確認します。</td>
+					</tr>
+					<tr>
+	            		<td valign=top><nobr><code>/f :</code></nobr></td>
+						<td>確認せずに全て強制的に削除します。</td>
+					</tr>
+					<tr>
+	            		<td valign=top><nobr><code>/g :</code></nobr></td>
+						<td>ファイルを実際に削除する代わりに
+							ごみ箱へ移動します。</td>
+					</tr>
+					<tr>
+            			<td valign=top><nobr><code>/n :</code></nobr></td>
+						<td>戻り値として実際に削除したファイルの数を返し、
+							処理結果を
+							<a href="#fileopresult">FILEOPRESULT()</a> で
+							取得できるようになります。</td>
+					</tr>
+					<tr>
+            			<td valign=top><nobr><code>/N :</code></nobr></td>
+						<td>削除の確認を求めるダイアログに対して
+							自動で「いいえ」と答えたとして処理を進めます。</td>
+					</tr>
+					</table>
+					</li>
+					<br>
+        			<li>ファイルまたはフォルダ名(<i>file</i>)<br>
+            			ファイル名またはフォルダ名を複数指定できます。
+						ワイルドカードも使用できます。
+			            ただしフォルダを指定する場合は
+						"/r" オプションを指定して下さい。</li>
+				</ul>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        #n が 1 なら成功、0 なら失敗しています。<br>
+		(/n を指定した場合を除く)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+if (!dllfunc("REMOVE","/f *.bak")) {
+    message "バックアップファイルの削除に失敗しました";
+    ...
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="setattribute"><hr size=1></a>
+<h3><font color="blue">SETATTRIBUTE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SETATTRIBUTE", $s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定されたファイル・フォルダの属性を変更します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top>$s1 :</td>
+			<td>(オプション文字列＋)属性指定子＋変更するファイル(フォルダ)名
+				(複数指定可)<br>
+				<br>
+        		書式は以下の通りです。<br>
+				<ul>
+			        <code>"[<i>options</i>] <i>modes</i> <i>file</i> [<i>file</i>...]"</code><br>
+					<br>
+        			<li>オプション文字列(<i>options</i>)
+					<table>
+					<tr>
+						<td valign=top><nobr><code>/R :</code></nobr></td>
+						<td>サブフォルダ内の全てのファイル・フォルダの
+							属性を変更します。</td>
+					</tr>
+					<tr>
+						<td valign=top><nobr><code>/n :</code></nobr></td>
+						<td>戻り値として実際に属性を変更した数を返し、
+							処理結果を
+							<a href="#fileopresult">FILEOPRESULT()</a> で
+							取得できるようになります。</td>
+					</tr>
+					</table>
+					</li>
+					<br>
+					<li>属性指定子(<i>modes</i>)<br>
+						書式は以下の通りです。<br>
+						<br>
+			            <code>"(+|-|=)<i>flags</i>[(+|-|=)<i>flags</i>...]"</code><br>
+						<br>
+						<table>
+						<tr>
+							<td valign=top><nobr><code>+ </code></nobr></td>
+							<td>現在の属性に flags の属性を加えます。</td>
+						</tr>
+						<tr>
+							<td valign=top><nobr><code>- </code></nobr></td>
+							<td>現在の属性から flags の属性を除きます。</td>
+						</tr>
+						<tr>
+							<td valign=top><nobr><code>= </code></nobr></td>
+							<td>現在の属性を flags の属性に置き換えます。</td>
+						</tr>
+						<tr>
+							<td valign=top><nobr><code>flags</code></nobr></td>
+							<td>以下の属性を複数指定できます。<br>
+								<code>a </code> アーカイブ属性<br>
+								<code>r </code> 読取専用属性<br>
+								<code>h </code> 隠し属性<br>
+								<code>s </code> システム属性</td>
+						</tr>
+						</table>
+					</li>
+					<br>
+        			<li>ファイル・フォルダ名(<i>file</i>)<br>
+            			ファイル・フォルダ名を複数指定できます。
+						ワイルドカードも指定できます。</li>
+				</ul>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        #n が 1 なら成功、0 なら失敗しています。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+//  読取専用・隠し・システムファイルに変更
+#r = dllfunc("SETATTRIBUTE","=rhs C:\\boot.ini");
+//  現在の属性に読取専用属性を加え、アーカイブ属性と隠し属性を除く
+#r = dllfunc("SETATTRIBUTE","/R +r-ah *.*");</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="touch"><hr size=1></a>
+<h3><font color="blue">TOUCH</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("TOUCH", $s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定されたファイルのタイムスタンプを(現在の時刻に)変更します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>(オプション文字列＋)変更するファイル(フォルダ)名
+				(複数指定可)<br>
+				<br>
+        		書式は以下の通りです。<br>
+				<ul>
+			        <code>"[<i>options</i>] <i>file</i> [<i>file</i>...]"</code><br>
+					<br>
+        			<li>オプション文字列(<i>options</i>)
+					<table>
+					<tr>
+						<td><code>/a :</code></td>
+						<td>最終アクセス日付・時刻のみを変更します。</td>
+					</tr>
+					<tr>
+						<td valign=top><code>/c :</code></td>
+						<td>存在するファイルのみ変更します。(下記参照)</td>
+					</tr>
+					<tr>
+						<td valign=top><code>/m :</code></td>
+						<td>最終更新日付・時刻のみを変更します。</td>
+					</tr>
+					<tr>
+						<td valign=top><code>/R :</code></td>
+						<td>フォルダが指定された場合に、
+							その下にあるファイル・サブフォルダも更新します。
+							</td>
+					</tr>
+					<tr>
+						<td valign=top><nobr><code>/r <i>reffile</i> :</code></nobr></td>
+						<td>現在の日付・時刻の代わりに
+							reffile のタイムスタンプを使用します。</td>
+					</tr>
+					<tr>
+						<td valign=top><nobr><code>/t <i>timestamp</i> :</code></nobr></td>
+						<td>現在の日付・時刻の代わりに指定した日付・時刻を
+							使用します。
+							指定(<i>timestamp</i>)は
+							"[YY]YY/MM/DD#hh:mm:ss" の形式で指定します。
+							(西暦が２桁の場合は 1900 年からの経過年として
+							処理します。)</td>
+					</tr>
+					<tr>
+						<td valign=top><nobr><code>/n :</code></nobr></td>
+						<td>戻り値として実際にタイムスタンプを変更した
+							ファイル・フォルダの数を返し、
+							処理結果を
+							<a href="#fileopresult">FILEOPRESULT()</a> で
+							取得できるようになります。</td>
+					</tr>
+					</table>
+					</li>
+					<br>
+        			<li>ファイル・フォルダ名(<i>file</i>)<br>
+            			ファイル・フォルダ名を複数指定できます。
+						ワイルドカードも指定できます。
+				        指定されたファイルがなければ
+						サイズ 0 のファイルを作成します
+						("/c" オプションを指定しない場合)。
+				</ul>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        #n が 1 なら成功、0 なら失敗しています。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+//  現在時刻のサイズ０のファイルを作成
+#r = dllfunc("TOUCH","newfile.txt");
+//  既存ファイルのタイムスタンプを foo.txt に揃える
+#r = dllfunc("TOUCH","/r foo.txt *.*");
+//  フォルダ内のファイル・フォルダを指定日付・時刻に変更する
+#r = dllfunc("TOUCH","/R /t 2000/01/01#00:00:00 dir1");</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="fileopresult"><hr size=1></a>
+<h3><font color="blue">FILEOPRESULT</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("FILEOPRESULT");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+		"/n" オプションを受け付けるファイル操作系関数
+        (<a href="#copy">COPY</a>,
+        <a href="#move">MOVE</a>,
+        <a href="#remove">REMOVE</a>,
+        <a href="#mkdir">MKDIR</a>,
+        <a href="#rmdir">RMDIR</a>,
+        <a href="#setattribute">SETATTRIBUTE</a>,
+        <a href="#touch">TOUCH</a>) の処理結果を受け取ります。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        １回の呼出し毎に直前のファイル操作系関数の処理結果が１つ返ります。
+		結果が存在しない時は "" を返します。<br>
+		ここで、処理結果の書式は以下の通りです。<br>
+		<ul>
+	        <code>"<i>result</i>|<i>filename</i>[|<i>filename2</i>]"</code><br>
+			<br>
+			<li>処理の結果コード(<i>result</i>)<br>
+				<table>
+				<tr><td>0:</td><td>成功</td></tr>
+				<tr><td>1:</td><td>失敗</td></tr>
+				<tr><td>2:</td><td>("/i" オプション指定時のみ)ユーザーが「いいえ」または「キャンセル」を選択</td></tr>
+				</table>
+			</li>
+			<br>
+			<li>処理対象のファイル・フォルダ名(<i>filename</i>)<br>
+				※実際に存在する場合はフルパス名、
+				そうでなければ引数で指定した名前になります。
+			</li>
+			<br>
+			<li>(COPY, MOVE のみ)コピー・移動先の
+				ファイル・フォルダ名(<i>filename2</i>)<br>
+				※実際に存在する場合はフルパス名、
+				そうでなければ引数で指定した名前になります。
+			</li>
+		</ul>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+// ユーザーに上書き確認をしつつ、ファイル・フォルダをコピー
+#r = dllfunc("COPY", "/rin 'C:\\My Documents\\*.*'", "D:\\backup");
+while (1) {
+    $res = dllfuncstr("FILEOPRESULT");
+    if ($res == "") break;
+    // GETTOKEN() により結果文字列を分割
+    $retcode = dllfuncstr("GETTOKEN", $res, "|"); // 結果コードの取得
+    $srcfile = dllfuncstr("GETTOKEN", "", "|");   // コピー元ファイル名
+    $dstfile = dllfuncstr("GETTOKEN", "", "|");   // コピー先ファイル名
+    if ($retcode == "0") {
+        // 処理に成功
+        insert $srcfile + " -> " + $dstfile + " : OK\n";
+    } else if ($retcode == "1") {
+        // 処理に失敗
+        insert $srcfile + " -> " + $dstfile + " : NG\n";
+    } else if ($retcode == "2") {
+        // ユーザーによりキャンセル
+        insert $srcfile + " -> " + $dstfile + " : キャンセル\n";
+    }
+}
+...</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="getcurdir"><hr size=1></a>
+<h3><font color="blue">GETCURDIR</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETCURDIR");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        カレントフォルダ名を取得します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        カレントフォルダ名が返ります。
+		なお、ルートフォルダの場合は最後が円記号で終了します(例："A:\")。
+		それ以外は最後に円記号はつきません。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(省略)
+	</td>
+</tr>
+</table>
+<br>
+<a name="setcurdir"><hr size=1></a>
+<h3><font color="blue">SETCURDIR</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("SETCURDIR",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        カレントフォルダを移動します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>フォルダ名 (UNC パスは指定できません)</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        #n が 1 なら成功、0 なら失敗しています。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+#r = dllfunc("SETCURDIR","C:\\Windows");
+if (!dllfunc("COPY","win.ini","win.bak")) {
+    message "win.ini のバックアップコピーに失敗しました";
+    ...
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="mkdir"><hr size=1></a>
+<h3><font color="blue">MKDIR</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("MKDIR",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定されたフォルダを作成します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>(オプション文字列＋)作成するフォルダ名
+				(複数指定可)<br>
+				<br>
+        		書式は以下の通りです。<br>
+				<ul>
+			        <code>"[<i>options</i>] <i>dir</i> [<i>dir</i>...]"</code><br>
+					<br>
+        			<li>オプション文字列(<i>options</i>)
+					<table>
+					<tr>
+						<td valign=top><nobr><code>/p :</code></nobr></td>
+						<td>(もし存在しなければ)
+							指定された全てのサブフォルダを作成します。
+							このオプションを付けない場合、
+							"C:\\dir1\\dir2" という指定で
+							dir1 が存在しない場合は関数が失敗します。</td>
+					</tr>
+					<tr>
+						<td valign=top><nobr><code>/n :</code></nobr></td>
+						<td>戻り値として実際に作成したフォルダの数を返し、
+							処理結果を
+							<a href="#fileopresult">FILEOPRESULT()</a> で
+							取得できるようになります。</td>
+					</tr>
+					</table>
+					</li>
+					<br>
+        			<li>フォルダ名(<i>dir</i>)<br>
+            			フォルダ名を複数指定できます。
+				</ul>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        #n が 1 なら成功、0 なら失敗しています。<br>
+		("/n" オプションを指定した場合を除く)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+if (!dllfunc("MKDIR","/p .\\newdir\\subdir")) {
+    message "フォルダの作成に失敗しました";
+    ...
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="rmdir"><hr size=1></a>
+<h3><font color="blue">RMDIR</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("RMDIR",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定された(空の)フォルダを削除します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr><code>$s1 :</code></nobr></td>
+			<td>(オプション文字列＋)削除するフォルダ名
+				(複数指定可)<br>
+				<br>
+        		書式は以下の通りです。<br>
+				<ul>
+			        <code>"[<i>options</i>] <i>dir</i> [<i>dir</i>...]"</code><br>
+					<br>
+        			<li>オプション文字列(<i>options</i>)
+					<table>
+					<tr>
+						<td valign=top><nobr><code>/i :</code></nobr></td>
+						<td>全てのフォルダについて削除の確認をします。
+							通常は読取専用またはシステムフォルダの削除のみ
+							確認します。</td>
+					</tr>
+					<tr>
+						<td valign=top><nobr><code>/f :</code></nobr></td>
+						<td>確認せずにすべて強制的に削除します。</td>
+					</tr>
+					<tr>
+						<td valign=top><nobr><code>/n :</code></nobr></td>
+						<td>戻り値として実際に削除したフォルダの数を返し、
+							処理結果を
+							<a href="#fileopresult">FILEOPRESULT()</a> で
+							取得できるようになります。</td>
+					</tr>
+					<tr>
+            			<td valign=top><nobr><code>/N :</code></nobr></td>
+						<td>削除の確認を求めるダイアログに対して
+							自動で「いいえ」と答えたとして処理を進めます。</td>
+					</tr>
+					</table>
+					</li>
+					<br>
+        			<li>フォルダ名(<i>dir</i>)<br>
+            			フォルダ名を複数指定できます。
+						なお、フォルダの中にファイルまたはサブフォルダがある
+						場合この関数は失敗します。
+						(<a href="#remove">REMOVE 関数</a> も参照して下さい)
+					</li>
+				</ul>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        #n が 1 なら成功、0 なら失敗しています。<br>
+		("/n" オプションを指定した場合を除く)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+if (!dllfunc("RMDIR","/f *.*")) {
+    message "フォルダの削除に失敗しました";
+    ...
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="enumfile"><hr size=1></a>
+<h3><font color="blue">ENUMFILE</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("ENUMFILE",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        (ワイルドカードで)指定されたファイルを検索します。
+        なお、実際に見つかったファイル名を取得するには
+ 		<a href="#findnext">FINDNEXT 関数</a> を使用します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr><code>$s1 :</code></nobr></td>
+			<td>(オプション文字列＋)ワイルドカード指定<br>
+				<br>
+        		書式は以下の通りです。<br>
+				<ul>
+			        <code>"[<i>options</i>] <i>wildcard_specs</i>"</code><br>
+					<br>
+        			<li>オプション文字列(<i>options</i>)
+					<table>
+					<tr>
+						<td valign=top><nobr><code>/o <i>order_spec</i> :</code></nobr></td>
+						<td>ファイル・フォルダ名のソートの
+							優先順位を指定します。
+							<code><i>order_spec</i></code> には
+							以下の４つの文字を
+							優先度の高い順に並べたものを指定します。<br>
+							<table>
+							<tr>
+								<td valign=top><nobr>n :</nobr></td>
+								<td>ファイル名でソート</td>
+							</tr>
+							<tr>
+								<td valign=top><nobr>e :</nobr></td>
+								<td>拡張子(ファイルの種類)でソート</td>
+							</tr>
+							<tr>
+								<td valign=top><nobr>t :</nobr></td>
+								<td>タイムスタンプでソート</td>
+							</tr>
+							<tr>
+								<td valign=top><nobr>s :</nobr></td>
+								<td>ファイルサイズでソート</td>
+							</tr>
+							</table>
+							<br>
+							このオプションによる指定をしなかった場合は、
+							"-o nets" を指定した場合と同じ結果になります。<br>
+							なお、n が最初に来る指定をした場合は
+							デフォルトの動作と同じになることに注意して下さい。
+							同一のフォルダに同じ名前のファイルは
+							存在しないため、
+							残りのソート指定は実際には使われないからです。
+						</td>
+					</tr>
+					<tr>
+						<td valign=top><nobr><code>/r :</code></nobr></td>
+						<td>ソート順序を逆順にします。</td>
+					</tr>
+					</table>
+					</li>
+					<br>
+        			<li>ワイルドカード指定(<i>wildcard_specs</i>)<br>
+						以下の方法のいずれかで指定して下さい。<br>
+						<ul>
+							<li><code><i>folder_name</i>\<i>spec</i></code></li>
+							<li><code><i>folder_name</i>&nbsp;<i>specs</code></i>
+						</ul>
+						ここで、<br>
+						<i>folder_name</i> は検索対象のフォルダ名、<br>
+						<i>spec</i> は１つのワイルドカード指定、<br>
+						<i>specs</i> は複数のワイルドカード指定を
+						セミコロンまたは空白で区切ったもの<br>
+						です。
+				</ul>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        #n が 1 なら成功、0 なら失敗しています。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+// カレントフォルダの *.bak ファイルを検索
+#r = dllfunc("ENUMFILE","*.bak");
+while (1) {
+    $file = dllfuncstr("FINDNEXT");
+    if ($file == "") break;
+    #r = dllfunc("REMOVE","/i '" + $file + "'");
+}
+// カレントフォルダ(.)の *.bat, *.cmd, *.com, *.exe ファイルを検索し、
+// タイムスタンプ、拡張子(ファイルの種類)、ファイルサイズ、名前、
+// という優先順位でソートしたものを逆順に取得
+#r = dllfunc("ENUMFILE","/r /o tesn . *.bat;*.cmd *.com *.exe");
+while (1) {
+    $file = dllfuncstr("FINDNEXT");
+    if ($file == "") break;
+    message $file;
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="enumdir"><hr size=1></a>
+<h3><font color="blue">ENUMDIR</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("ENUMDIR",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        (ワイルドカードで)指定されたフォルダを検索します。
+        実際に見つかったフォルダ名を取得するには
+ 		<a href="#findnext">FINDNEXT 関数</a> を使用します。
+		なお、現在のフォルダを表す "." と、
+		親フォルダを表す ".." は必ず返されるので注意して下さい。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr><code>$s1 :</code></nobr></td>
+			<td>(オプション文字列＋)ワイルドカード指定<br>
+				<br>
+        		書式は以下の通りです。<br>
+				<ul>
+			        <code>"[<i>options</i>] <i>wildcard_specs</i>"</code><br>
+					<br>
+        			<li>オプション文字列(<i>options</i>)
+					<table>
+					<tr>
+						<td valign=top><nobr><code>/o <i>order_spec</i> :</code></nobr></td>
+						<td>ファイル・フォルダ名のソートの
+							優先順位を指定します。<br>
+							具体的な指定方法は
+							<a href="#enumfile">ENUMFILE 関数</a> の説明を
+							参照して下さい。</td>
+					</tr>
+					<tr>
+						<td valign=top><nobr><code>/r :</code></nobr></td>
+						<td>ソート順序を逆順にします。
+							但し、"." と ".." は最初に返されるので
+							注意して下さい。</td>
+					</tr>
+					</table>
+					</li>
+					<br>
+        			<li>ワイルドカード指定(<i>wildcard_specs</i>)<br>
+						具体的な指定方法は
+						<a href="#enumfile">ENUMFILE 関数</a> の説明を
+						参照して下さい。
+				</ul>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        #n が 1 なら成功、0 なら失敗しています。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+// Windows フォルダのサブフォルダを検索
+#r = dllfunc("ENUMDIR",windir + "\\*.*");
+while (1) {
+    $dir = dllfuncstr("FINDNEXT");
+    if ($dir == "") break;
+    else if ($dir == "." || $dir == "..") continue;
+	message $dir;
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="enumpath"><hr size=1></a>
+<h3><font color="blue">ENUMPATH</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("ENUMPATH",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        (ワイルドカードで)指定されたファイルを
+		サブフォルダの中も含めて再帰的に検索します。
+		なお、実際に見つかったファイル名を取得するには
+		<a href="#findnext">FINDNEXT 関数</a> を使用します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>(オプション文字列＋)ワイルドカード指定<br>
+				<br>
+        		書式は以下の通りです。<br>
+				<ul>
+			        <code>"[<i>options</i>] <i>wildcard_specs</i>"</code><br>
+					<br>
+        			<li>オプション文字列(<i>options</i>)
+					<table>
+					<tr>
+						<td valign=top><nobr><code>/o <i>order_spec</i> :</code></nobr></td>
+						<td>ファイル・フォルダ名のソートの
+							優先順位を指定します。<br>
+							具体的な指定方法は
+							<a href="#enumfile">ENUMFILE 関数</a> の説明を
+							参照して下さい。</td>
+					</tr>
+					<tr>
+						<td valign=top><nobr><code>/r :</code></nobr></td>
+						<td>通常はファイル→フォルダの順に検索しますが、
+							これを指定した場合はフォルダ→ファイルの順に
+							検索します。
+							また、/o によるソート指定も逆順になります。</td>
+					</tr>
+					<tr>
+						<td valign=top><nobr><code>/f :</code></nobr></td>
+						<td>通常は(全ての)サブフォルダ名を表示しますが、
+							これを指定した場合は(サブフォルダ内部も含めて)
+							ファイルのみを検索します。</td>
+					</tr>
+					</table>
+					</li>
+					<br>
+        			<li>ワイルドカード指定(<i>wildcard_specs</i>)<br>
+						具体的な指定方法は
+						<a href="#enumfile">ENUMFILE 関数</a> の説明を
+						参照して下さい。
+				</ul>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        #n が 1 なら成功、0 なら失敗しています。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+// My Documents フォルダとそのサブフォルダ内にある *.bak ファイルを全て削除
+#r = dllfunc("ENUMPATH","/f 'C:\\My Documents\\*.bak'");
+while (1) {
+    $file = dllfuncstr("FINDNEXT");
+    if ($file == "") break;
+    #r = dllfunc("REMOVE","/i 'C:\\My Documents\\" + $file + "'");
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="findnext"><hr size=1></a>
+<h3><font color="blue">FINDNEXT</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("FINDNEXT");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        <a href="#enumpath">ENUMPATH</a>,
+		<a href="#enumfile">ENUMFILE</a>,
+		<a href="#enumdir">ENUMDIR</a> 関数による
+		ファイル(フォルダ)の検索の結果を受け取ります。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        １回の呼出し毎に１つのファイル(フォルダ)名を返します。
+		もうファイルが存在しない時は "" を返します。
+		なお、<a href="#enumpath">ENUMPATH 関数</a> の場合は
+		検索を開始したフォルダからの相対パスが返されます。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(<a href="#enumpath">ENUMPATH</a>,
+		<a href="#enumfile">ENUMFILE</a>,
+		<a href="#enumdir">ENUMDIR</a> 関数の例を参照して下さい)
+	</td>
+</tr>
+</table>
+<br>
+<a name="isreadonly"><hr size=1></a>
+<h3><font color="blue">ISREADONLY</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("ISREADONLY",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        ファイルまたはフォルダが書き込み禁止かどうかを調べます。
+        なお、<a href="#findnext">FINDNEXT 関数</a> の実行後に
+		引数なし($s1 = "")で呼び出すと、
+		FINDNEXT で取得したファイルについての情報を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>ファイル(フォルダ)名 (または "")</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		書き込み禁止の場合は "!" を、そうでなければ "" を返します。
+		なお、ファイルが見つからなかった場合も "" を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+if (!dllfunc("ENUMFILE","*.txt")) goto END;
+while (1) {
+    $file = dllfuncstr("FINDNEXT");
+    if ($file == "") break;
+    else if (dllfuncstr("ISREADONLY","") == "!") {
+        message $file + " は読取専用ファイルです";
+    }
+}
+...</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="sizeof"><hr size=1></a>
+<h3><font color="blue">SIZEOF</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("SIZEOF",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        ファイルのサイズを(文字列で)返します。
+        なお、<a href="#findnext">FINDNEXT 関数</a> の実行後に
+		引数なし($s1 = "")で呼び出すと、
+		FINDNEXT で取得したファイルについての情報を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>ファイル(フォルダ)名 (または "")</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		サイズを文字列で表したものが返ります。
+		ファイルが見つからなかった場合は "" を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+if (!dllfunc("ENUMFILE","*.txt")) goto END;
+while (1) {
+    $file = dllfuncstr("FINDNEXT");
+    if ($file == "") break;
+    message $file + " のファイルサイズは " + 
+            dllfuncstr("SIZEOF","") + " です";
+}
+...</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="timestampof"><hr size=1></a>
+<h3><font color="blue">TIMESTAMPOF</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("TIMESTAMPOF",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定ファイルのタイムスタンプを返します。
+        なお、<a href="#findnext">FINDNEXT 関数</a> の実行後に
+		ファイル名なしで呼び出すと、
+		FINDNEXT で取得したファイルについての情報を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>(オプション文字列＋)ファイル(フォルダ)名<br>
+				<br>
+        		書式は以下の通りです。<br>
+				<ul>
+			        <code>"[<i>options</i>] <i>file</i>"</code><br>
+					<br>
+        			<li>オプション文字列(<i>options</i>)
+					<table>
+					<tr>
+						<td valign=top><nobr><code>/l :</code></nobr></td>
+						<td>タイムスタンプの西暦を４桁にしたものを返します。</td>
+					</tr>
+					</table>
+					</li>
+					<br>
+        			<li>ファイル(フォルダ)名(<i>file</i>)<br>
+            			ファイルまたはフォルダ名
+				</ul>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		タイムスタンプを "[YY]YY/MM/DD HH:MM:SS" の形式で返します。
+        ファイルが見つからなかった場合は "" を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+if (!dllfunc("ENUMFILE","*.txt")) goto END;
+while (1) {
+    $file = dllfuncstr("FINDNEXT");
+    if ($file == "") break;
+    message $file + " のタイムスタンプは " + 
+            dllfuncstr("TIMESTAMPOF","/l") + " です";
+}
+...</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="timecountof"><hr size=1></a>
+<h3><font color="blue">TIMECOUNTOF</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("TIMECOUNTOF",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定ファイルのタイムスタンプをある整数値(を文字列)で返します。
+        なお、<a href="#findnext">FINDNEXT 関数</a> の実行後に
+		引数なし($s1 = "")で呼び出すと、
+		FINDNEXT で取得したファイルについての情報を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>ファイル(フォルダ)名 (または "")</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		タイムスタンプを世界標準時(UTC)に変換して32ビットの
+        整数で表したものを文字列として返します。
+		ここで、各ビットには以下のように日付・時刻が割り当てられています。
+		<ul>
+			<table>
+			<tr>
+				<td>0-4</td><td>ビット</td><td>　</td>
+				<td>２秒刻みの秒</td>
+			</tr>
+			<tr>
+				<td>5-10</td><td>ビット</td><td></td>
+				<td>分(0-59)</td>
+			</tr>
+			<tr>
+				<td>11-15</td><td>ビット</td><td></td>
+				<td>24時間形式での時(0-23)</td>
+			</tr>
+			<tr>
+				<td>16-20</td><td>ビット</td><td></td>
+				<td>日(1-31)</td>
+			</tr>
+			<tr>
+				<td>21-24</td><td>ビット</td><td></td>
+				<td>月(1-12)</td>
+			</tr>
+			<tr>
+				<td>25-31</td><td>ビット</td><td></td>
+				<td>1980 年からの経過年(+1980 で実際の年になる)</td>
+			</tr>
+			</table>
+		</ul>
+        ファイルが見つからなかった場合は "" を返します。
+		<table>
+		<tr>
+			<td valign=top>※</td>
+			<td>ややこしい定義ですが、
+				要するにタイムスタンプが新しければこの整数値は
+				より大きくなるようになっています。</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$ftm1 = dllfuncstr("TIMECOUNTOF","file1.txt");
+$ftm2 = dllfuncstr("TIMECOUNTOF","file2.txt");
+if (val($ftm1) >= val($ftm2))
+    message "file1.txt は file2.txt より新しい(か同時刻の)ファイルです";
+else
+    message "file1.txt は file2.txt より古いファイルです";
+...</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="attributeof"><hr size=1></a>
+<h3><font color="blue">ATTRIBUTEOF</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("ATTRIBUTEOF",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定ファイル・フォルダの属性を表す文字列を返します。
+        なお、<a href="#findnext">FINDNEXT 関数</a> の実行後に
+		引数なし($s1 = "")で呼び出すと、
+		FINDNEXT で取得したファイルについての情報を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>ファイル(フォルダ)名 (または "")</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		以下の文字の組み合わせが返ります。
+		<ul>
+			<table>
+			<tr><td>a</td><td>　</td><td>アーカイブ属性</td></tr>
+			<tr><td>r</td><td>　</td><td>読取専用属性</td></tr>
+			<tr><td>h</td><td>　</td><td>隠し属性</td></tr>
+			<tr><td>s</td><td>　</td><td>システム属性</td></tr>
+			<tr><td>d</td><td>　</td><td>フォルダ</td></tr>
+			</table>
+		</ul>
+		ファイルがないか属性がない場合は "" を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+if (!dllfunc("ENUMPATH","*.*")) goto END;
+while (1) {
+    $file = dllfuncstr("FINDNEXT");
+    if ($file == "") break;
+    else if (strstr(dllfuncstr("ATTRIBUTEOF",""),"d") != -1) {
+        message $file + " はフォルダです";
+    }
+}
+...</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="getdrives"><hr size=1></a>
+<h3><font color="blue">GETDRIVES</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETDRIVES");</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        現在利用可能なディスクドライブを取得します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		(なし)
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		"1" または "0" からなる 32 文字の文字列で返ってきます。
+		例えば、以下のような感じです。
+		<ul>
+	        <code>"10110000000000000000000000000000"</code>
+		</ul>
+        左から順に A, B, C ドライブに対応しています。
+		"1" の場合は利用可能、"0" の場合は利用不可能です。
+		上記の例の場合、A と C と D ドライブが利用可能です。
+		27 文字目(ドライブ Z)以降は意味がありません。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		(省略)
+	</td>
+</tr>
+</table>
+<br>
+<a name="getlongname"><hr size=1></a>
+<h3><font color="blue">GETLONGNAME</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>$s = dllfuncstr("GETLONGNAME",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        指定ファイルまたはフォルダのロングファイル名をフルパスで返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>ファイル(フォルダ)名</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+		ロングファイルネームに変換された
+		フルパスのファイル(フォルダ)名が返ります。
+		パスの最後のファイルまたはフォルダ名は
+		実際に存在しないものでも構いませんが、
+		途中のサブフォルダが存在しない場合は "" を返します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+$file = "C:\\PROGRA~1";
+message $file + " のロングファイル名は " + 
+        dllfuncstr("GETLONGNAME",$file) + " です";
+...</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+<a name="run"><hr size=1></a>
+<h3><font color="blue">RUN / MAXRUN / ICONRUN / HIDERUN</font></h3>
+<table cellpadding=10>
+<tr>
+	<td valign=top><nobr><b>使い方：</b></nobr></td>
+	<td>　</td>
+	<td><code>#n = dllfunc("RUN",$s1);</code></td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>説明：</b></nobr></td>
+	<td></td>
+	<td>
+        $s1 をコマンドとみなしてプログラムを実行します。
+		それぞれ
+		普通に (RUN)、最大化状態で (MAXRUN)、
+		アイコン化状態で (ICONRUN)、不可視状態で (HIDERUN)
+		実行します。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>引数：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=0>
+		<tr>
+			<td valign=top><nobr>$s1 :</nobr></td>
+			<td>コマンド名、及びオプションを指定します。<br>
+				なお、ファイルがアプリケーションに関連付けられている時は、
+				そのファイル名だけを指定すれば
+				関連付けられたアプリケーションでそのファイルを開きます。</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>返り値：</b></nobr></td>
+	<td></td>
+	<td>
+        #n が 1 なら成功、0 なら失敗しています。
+	</td>
+</tr>
+<tr>
+	<td valign=top><nobr><b>例：</b></nobr></td>
+	<td></td>
+	<td>
+		<table border=1>
+		<tr><td bgcolor="white">
+<pre>
+// foo.txt を最大化状態で開く
+if (!dllfunc("MAXRUN", hidemarudir + "\\hidemaru.exe foo.txt")) {
+    message "foo.txt を開けませんでした";
+    ...
+}
+// 通常使うブラウザで bar.html を開く
+if (!dllfunc("RUN", "bar.html")) {
+    message "bar.html を開けませんでした";
+    ...
+}</pre>
+		</td></tr>
+		</table>
+	</td>
+</tr>
+</table>
+<br>
+</body>
+</html>
