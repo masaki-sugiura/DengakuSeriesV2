@@ -17,9 +17,9 @@ StringBuffer g_strBuffer;
 
 //	DLL のバージョン文字列
 #ifndef	_WIN64
-const StringBuffer g_versionStr = "3.21";
+const StringBuffer g_versionStr = "3.22";
 #else
-const StringBuffer g_versionStr = "3.21(x64)";
+const StringBuffer g_versionStr = "3.22(x64)";
 #endif
 
 //	DLL エントリポイント

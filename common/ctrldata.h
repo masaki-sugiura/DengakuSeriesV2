@@ -519,6 +519,7 @@ protected:
 	DWORD m_imestate;
 	BOOL  m_bAlreadyFocused;
 	BOOL  m_bSelectOnFocused;
+	BOOL  m_bAutoHScroll;
 };
 
 //	hline, vline

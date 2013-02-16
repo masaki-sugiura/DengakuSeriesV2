@@ -9,20 +9,29 @@
 
 #include "session.h"
 
+//#ifdef _WIN64
+#if 0
+#define DLL_EXPORT
+#define	DLL_IMPORT
+#else
+#define DLL_EXPORT	__declspec(dllexport)
+#define	DLL_IMPORT	__declspec(dllimport)
+#endif
+
 #ifdef DENGAKUDLL_EXPORTS
 
 #ifdef __cplusplus
-#define DENGAKUDLL_API extern "C" __declspec(dllexport)
+#define DENGAKUDLL_API extern "C" DLL_EXPORT
 #else
-#define DENGAKUDLL_API __declspec(dllexport)
+#define DENGAKUDLL_API DLL_EXPORT
 #endif /* __cplusplus */
 
 #else
 
 #ifdef __cplusplus
-#define DENGAKUDLL_API extern "C" __declspec(dllimport)
+#define DENGAKUDLL_API extern "C" DLL_IMPORT
 #else
-#define DENGAKUDLL_API __declspec(dllimport)
+#define DENGAKUDLL_API DLL_IMPORT
 #endif /* __cplusplus */
 
 #endif /* DENGAKUDLL_EXPORTS */

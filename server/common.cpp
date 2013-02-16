@@ -8,7 +8,7 @@
 
 LPCSTR svr_strings[] = {
 	"",
-	"3.20",
+	"3.22",
 	"田楽(でんがく)サーバ",
 	"DengakuServer",
 	"HideMacroServer",

@@ -1481,25 +1481,42 @@ EditCtrl::onImeNotify(WPARAM wParam, LPARAM lParam)
 int
 EditCtrl::onSetCtrlExProperty(const StringBuffer& key, const StringBuffer& value)
 {
-	if (key.compareTo("select_on_focused") != 0)
+	if (key.compareTo("select_on_focused") == 0)
 	{
-		return SimpleCtrl::onSetCtrlExProperty(key, value);
+		m_bSelectOnFocused = (value.compareTo("true") == 0);
+
+		return 1;
+	}
+	else if (key.compareTo("auto_h_scroll") == 0)
+	{
+		if (value.compareTo("true") == 0)
+		{
+			m_pcp->m_style |= ES_AUTOHSCROLL;
+		}
+		else
+		{
+			m_pcp->m_style &= ~ES_AUTOHSCROLL;
+		}
+
+		return 1;
 	}
 
-	m_bSelectOnFocused = (value.compareTo("true") == 0);
-
-	return 1;
+	return SimpleCtrl::onSetCtrlExProperty(key, value);
 }
 
 StringBuffer
 EditCtrl::onGetCtrlExProperty(const StringBuffer& key)
 {
-	if (key.compareTo("select_on_focused") != 0)
+	if (key.compareTo("select_on_focused") == 0)
 	{
-		return SimpleCtrl::onGetCtrlExProperty(key);
+		return m_bSelectOnFocused ? "true" : "false";
+	}
+	else if (key.compareTo("auto_h_scroll") == 0)
+	{
+		return (m_pcp->m_style & ES_AUTOHSCROLL) != 0 ? "true" : "false";
 	}
 
-	return m_bSelectOnFocused ? "true" : "false";
+	return SimpleCtrl::onGetCtrlExProperty(key);
 }
 
 BOOL
